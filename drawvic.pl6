@@ -1,7 +1,8 @@
 #!/usr/bin/perl6
 
-#use DBIish;
-#use UTM;
+use DBIish;
+BEGIN { @*INC.push: '.'; } # for testing
+use UTM;
 
 my $symbols = 'Symbols_GA';
 
@@ -14,7 +15,7 @@ my ($lleasting, $llnorthing);
 my ($lreasting, $lrnorthing);
 my ($uleasting, $ulnorthing);
 my ($ureasting, $urnorthing);
-my $zone;
+my Str $zone;
 
 my @featuretype = ();
 my %featuretype = ();
@@ -60,10 +61,21 @@ sub add_annotation(Real $long, Real $lat, Real $xoffset, Real $yoffset,Str $stri
     #note "Adding annotation at $long,$lat: $string\n";
 }
 
-my %papersizes = (
-    'a3' => '297.0, 420.0',
-    'a4' => '210.0, 297.0',
-    );
+# Could add non-metric sizes to the hash here.
+# Keys are papersize, values are a string with
+# width and length in mm separated by commas.
+my %papersizes;
+
+# Calculate metric A paper sizes
+  my $l = 1000 * sqrt(sqrt(2));
+  my $w = 1e6/$l;
+# $l * $w should be 1 square metre (1e6 mm^2) with a ratio of sqrt(2)
+  for ^10 -> $s {
+    %papersizes{'a' ~ $s.Str} = "$w, $l";
+    $l = $w;
+    $w = $l / sqrt(2);
+  }
+
 my $papersize = 'a3';
 my ($paperwidth, $paperheight);
 my $orientation = 'landscape';
@@ -78,8 +90,8 @@ my $graticule_spacing = .25;
 my ($ongrid, $ongraticule) = (0, 0);
 my ($bleedright, $bleedtop) = (0, 0);
 
-sub process_option($arg) {
-#    note "Processing option $arg\n";
+sub process_option($arg is copy) {
+    note "Processing option $arg";
     if $arg ~~ / ^ annotation \=
                  ( \-? <[\d .]>+ )
                  <[, \s]>+ ( \-? <[\d .]>+ )
@@ -93,29 +105,29 @@ sub process_option($arg) {
 # ignore whitespace in all remaining options
     $arg ~~ s:g/\s+//;
     if $arg ~~ / ^ papersize '=' (.*) / {
-	$papersize = $1;
+	$papersize = $0;
 	return;
     }
     if $arg ~~ / orientation '=' (.*) / {
-	$orientation = $1;
+	$orientation = $0;
 	return;
     }
     if $arg ~~ / bleedright '=' (.*) / {
-	$bleedright = $1;
+	$bleedright = $0;
 	$rightmarginwidth = -20;
 	return;
     }
     if ($arg ~~ / bleedtop '=' (.*)/) {
-	$bleedtop = $1;
+	$bleedtop = $0;
 	$uppermarginwidth = -10;
 	return;
     }
     if ($arg ~~ /^leftmarginwidth '=' (d+(\.\d+)?)$/) {
-        $leftmarginwidth = $1;
+        $leftmarginwidth = $0;
         return;
     }
     if ($arg ~~ /^rightmarginwidth '=' (d+(\.\d+)?)$/) {
-        $rightmarginwidth = $1;
+        $rightmarginwidth = $0;
         return;
     }
     if ($arg ~~ /^(lower|bottom)marginwidth '=' (d+(\.\d+)?)$/) {
@@ -130,13 +142,13 @@ sub process_option($arg) {
 	$db = $3;
 	return;
     }
-    if ($arg ~~ m:i/^lat(itude)? '=' (\-?[\d\.]+)$/) {
-	$lllatitude = $2;
+    if $arg ~~ m/^ lat[itude]? '=' ( \-? <[\d\.]>+ ) $ / {
+	$lllatitude = +$0;
 	$ongraticule = 1;
 	return;
     }
-    if ($arg ~~ m:i/^long(itude)? '=' (\-?[\d\.]+)$/) {
-	$lllongitude = $2;
+    if $arg ~~ m/^ long[itude]? '=' ( \-? <[\d\.]>+ ) $ / {
+	$lllongitude = +$0;
 	$ongraticule = 1;
 	return;
     }
@@ -146,20 +158,20 @@ sub process_option($arg) {
 	$ongrid = 1;
         return;
     }
-    if ($arg ~~ m:i/^north(ing)? '=' (\d+)(k?)m?$/) {
-        $llnorthing = $2;
-	$llnorthing *= 1000 if lc $3 eq 'k';
+    if ($arg ~~ m:i/^north[ing]? '=' (\d+)(k?)m?$/) {
+        $llnorthing = $0;
+	$llnorthing *= 1000 if lc $1 eq 'k';
 	$ongrid = 1;
         return;
     }
     if ($arg ~~ /^width '=' (\d+(\.\d+)?)([kK])?([dDmM]?)$/) {
 	if (lc $4 eq 'm') {
-	    $gridwidth = $1;
+	    $gridwidth = $0;
             $gridwidth *= 1000 if lc $3 eq 'k';
 	    $ongrid = 1;
 	    #note "Grid width: $gridwidth\n";
 	} else {
-	    $graticulewidth = $1;
+	    $graticulewidth = $0;
 	    $ongraticule = 1;
 	}
         return;
@@ -177,7 +189,7 @@ sub process_option($arg) {
         return;
     }
     if ($arg ~~ m:i/^zone? '=' (\d+<[ A .. Z ]>?)$/) {
-        $zone = uc $1;
+        $zone = uc $0;
 	note "Zone: $zone\n";
         return;
     }
@@ -187,14 +199,17 @@ sub process_option($arg) {
 	$scale *= 1000000 if lc $3 eq 'm';
 	return;
     }
-    if ($arg ~~ m:i/^grid(spacing)?\=(\d+)(<[kK]>?)m?$/) {
-	$grid_spacing = $2;
-	$grid_spacing *= 1000 if lc $3 eq 'k';
+    if ($arg ~~ m/ ^ grid[spacing]? \= (\d+) (k?) m?$/) {
+	$grid_spacing = $0;
+	$grid_spacing *= 1000 if $1.defined && $1.lc eq 'k';
+note "grid spacing: $grid_spacing ($0 \"$1\")";
 	return;
     }
-    if ($arg ~~ m:i/^graticule(spacing)?\=(\d+)(<[dDmM]>?)$/) {
-	$graticule_spacing = $2;
-	$graticule_spacing /= 60 unless lc $3 eq 'd';
+    if $arg ~~ m/^ graticule[spacing]? \= (\d+) (<[dDmM]>?) $/ {
+note "Set graticule spacing -- $0 \"$1\"";
+	$graticule_spacing = $0;
+	$graticule_spacing /= 60 unless $1.lc eq 'd';
+note "Graticule spacing set to $graticule_spacing";
 	return;
     }
     if ($arg ~~ m:i/^display '=' all$/) {
@@ -205,7 +220,7 @@ sub process_option($arg) {
 	return;
     }
     if ($arg ~~ m:i/^display '=' (\S+)$/) {
-	%drawobjects{lc $1} = 1;
+	%drawobjects{lc $0} = 1;
 	return;
     }
     if ($arg ~~ m:i/^nodisplay '=' all$/) {
@@ -213,23 +228,23 @@ sub process_option($arg) {
 	return;
     }
     if ($arg ~~ m:i/^nodisplay '=' (\S+)$/) {
-	%drawobjects{lc $1} = Nil;
+	%drawobjects{lc $0} = Nil;
 	return;
     }
     if ($arg ~~ m:i/^nofeature '=' (\S+)$/)
     {
-        my $ft = $1;
+        my $ft = $0;
         $ft ~~ s:g/_/ /;
         %nofeature{$ft} = 1;
         #note "No feature: $ft\n";
 	return;
     }
     if ($arg ~~ m:i/^symbols '=' (\S+)$/) {
-	$symbols = lc $1;
+	$symbols = lc $0;
         return;
     }
     if ($arg ~~ m:i/^file '=' (.*)/) {
-	#note "Including file $1\n";
+	#note "Including file $0\n";
         my IO::Handle $INC;
         $INC.open($0) and {
 	    for $INC.lines -> $line {
@@ -247,28 +262,21 @@ sub process_option($arg) {
     note "Unknown option \"$arg\" ignored\n";
 }
 
-my IO::Handle $OPT;
-$OPT.open(@*ENV<HOME> ~~ '/.drawrc') &&
-    do for $OPT.lines -> $line {
-	s/'#' .*//;
-	s/^\s+//;
-	s/\s+$//;
-	next unless $_;
-	process_option($_);
+for '/home/kevinp/.drawrc', '.drawrc' -> $cfgfile {
+note "Handling config file $cfgfile";
+  if my $opt = $cfgfile.IO.open {
+    for $opt.lines -> $line {
+      s/'#' .*//;
+      s/^\s+//;
+      s/\s+$//;
+      next unless $_;
+      process_option($_);
     }
-    $OPT.close;
+    $opt.close;
+  }
+}
 
-$OPT.open('.drawrc') &&
-    do for $OPT.lines -> $line {
-	s/'#' .*//;
-	s/^\s+//;
-	s/\s+$//;
-	next unless $_;
-	process_option($_);
-    }
-    $OPT.close;
-
-for @*ARGV -> $arg {
+for @*ARGS -> $arg {
     process_option($arg);
 }
 
@@ -284,6 +292,7 @@ if (! %papersizes{$papersize}.defined) {
     fail "Invalid paper size $papersize";
 }
 
+note "Orientation is \"$orientation\"";
 given $orientation {
   when 'portrait'
     { ($paperwidth, $paperheight) = %papersizes{$papersize}.split(','); }
@@ -292,7 +301,7 @@ given $orientation {
   default
     { fail "Invalid paper orientation $orientation\n"; }
 }
-note "Page width: $paperwidth, height $paperheight\n";
+note "Page width: $paperwidth, height $paperheight";
 $imagewidth
     = ($paperwidth  - $leftmarginwidth  - $rightmarginwidth) * $scale/1000;
 $imageheight
@@ -303,9 +312,15 @@ $imageheight
 if ($ongraticule) {
     if (defined $lllongitude and defined $lllatitude) {
 	my $tzone;
+        if $zone.defined && $zone ne '' {
 	($tzone, $lleasting, $llnorthing)
-	    = latlon_to_utm_force_zone('WGS-84', $lllatitude, $lllongitude, $zone);
-	$zone = $tzone unless $zone.defined && $zone;
+	    = latlon_to_utm_force_zone('WGS-84', $zone, $lllatitude, $lllongitude);
+note "Calculated grid as $lleasting:$llnorthing from lat $lllatitude long $lllongitude zone $zone";
+        } else {
+	  ($zone, $lleasting, $llnorthing)
+	    = latlon_to_utm('WGS-84', $lllatitude, $lllongitude);
+          note "Calculated grid as $lleasting:$llnorthing from lat $lllatitude long $lllongitude calculated zone $zone";
+      }
     } else {
 	fail "No location specified\n";
     }
@@ -313,6 +328,7 @@ if ($ongraticule) {
 	my ($tlat, $tlong, Nil)
 	    = utm_to_latlon('WGS-84', $zone, $lleasting+$imagewidth, $llnorthing);
 	$graticulewidth = $tlong - $lllongitude;
+note "Calculated graticule width as $tlong - $lllongitude ($lleasting $llnorthing $imagewidth) tlat = $tlat";
     }
     if (!defined $graticuleheight) {
 	my ($tlat, $tlong, Nil)
@@ -323,14 +339,15 @@ if ($ongraticule) {
     $ullatitude = $urlatitude = $lllatitude + $graticuleheight;
     $ullongitude = $lllongitude;
     $lrlatitude = $lllatitude;
-    (Nil, $lleasting, $llnorthing)
-	= latlon_to_utm('WGS-84', $lllatitude, $lllongitude, $zone);
-    (Nil, $lreasting, $lrnorthing)
-	= latlon_to_utm('WGS-84', $lrlatitude, $lrlongitude, $zone);
-    (Nil, $uleasting, $ulnorthing)
-	= latlon_to_utm('WGS-84', $ullatitude, $ullongitude, $zone);
-    (Nil, $ureasting, $urnorthing)
-	= latlon_to_utm('WGS-84', $urlatitude, $urlongitude, $zone);
+note "$graticulewidth: $lrlongitude $ullatitude $ullongitude $lrlatitude";
+    (*, $lleasting, $llnorthing)
+	= latlon_to_utm_force_zone('WGS-84', $zone, $lllatitude, $lllongitude);
+    (*, $lreasting, $lrnorthing)
+	= latlon_to_utm_force_zone('WGS-84', $zone, $lrlatitude, $lrlongitude);
+    (*, $uleasting, $ulnorthing)
+	= latlon_to_utm_force_zone('WGS-84', $zone, $ullatitude, $ullongitude);
+    (*, $ureasting, $urnorthing)
+	= latlon_to_utm_force_zone('WGS-84', $zone, $urlatitude, $urlongitude);
 } else { # on grid
     if (!defined $lleasting or !defined $llnorthing or !defined $zone) {
 	note "No location specified\n";
@@ -358,32 +375,28 @@ if ($ongraticule) {
     note "$lllatitude $lllongitude $urlatitude $urlongitude\n";
 }
 
-note "width $graticulewidth; height $graticuleheight";
-
 if ($bleedright) {
-    my (Nil, $teast, $tnorth)
-	= latlon_to_utm('WGS-84', $urlatitude, $lllongitude, $zone);
-    my (Nil, $urlatitude, $urlongitude)
-	= utm_to_latlon('WGS-84', $zone, $teast+$imagewidth, $tnorth);
+    my (Nil, $teast, $tnorth) = latlon_to_utm_force_zone('WGS-84', $zone, $urlatitude.Real, $lllongitude.Real);
+    my (Nil, $urlatitude, $urlongitude) = utm_to_latlon('WGS-84', $zone, $teast+$imagewidth, $tnorth);
 
 }
 
 if ($bleedtop) {
     my (Nil, $teast, $tnorth)
-	= latlon_to_utm('WGS-84', $lllatitude, $urlongitude, $zone);
+	= latlon_to_utm_force_zone('WGS-84', $zone, $lllatitude.Real, $urlongitude.Real);
     my (Nil, $urlatitude, $urlongitude)
 	= utm_to_latlon('WGS-84', $zone, $teast+$imagewidth, $tnorth);
 }
 
-note q:to 'EOF';
+note qq:to 'EOF';
 Grid corners:
     $uleasting $ulnorthing   $ureasting $urnorthing
     $lleasting $llnorthing   $lreasting $lrnorthing
 EOF
 
-  my IO::Handle $TMP;
-  $TMP.open("/tmp/$*PID") or fail "Could not open /tmp/$*PID: $!";
-  $TMP.unlink(); # saves cleaning up later
+  my $tmpfile = '/tmp/' ~ $*PID.Str;
+  my $TMP = $tmpfile.IO.open(:a) or fail "Could not open /tmp/$*PID: $!";
+  # FIX LATER unlink($tmpfile); # saves cleaning up later
 
 print qq :to 'EOF';
 \%!PS-Adobe
@@ -394,10 +407,10 @@ EOF
 
 say "$paperheight 0 translate 90 rotate" if $orientation eq 'landscape';
 
-print Q :to 'EOF';
+print Q:to 'EOF';
 /Helvetica findfont
 dup length dict begin
-\{ 1 index /FID ne \{def} \{pop pop} ifelse } forall
+{ 1 index /FID ne {def} {pop pop} ifelse } forall
 /Encoding ISOLatin1Encoding def
 currentdict
 end
@@ -405,7 +418,7 @@ end
 
 /Helvetica-Narrow findfont
 dup length dict begin
-\{ 1 index /FID ne \{def} \{pop pop} ifelse } forall
+{ 1 index /FID ne {def} {pop pop} ifelse } forall
 /Encoding ISOLatin1Encoding def
 currentdict
 end
@@ -413,7 +426,7 @@ end
 
 /Helvetica-Narrow-Oblique findfont
 dup length dict begin
-\{ 1 index /FID ne \{def} \{pop pop} ifelse } forall
+{ 1 index /FID ne {def} {pop pop} ifelse } forall
 /Encoding ISOLatin1Encoding def
 currentdict
 end
@@ -421,7 +434,7 @@ end
 
 /Helvetica-Narrow-BoldOblique findfont
 dup length dict begin
-\{ 1 index /FID ne \{def} \{pop pop} ifelse } forall
+{ 1 index /FID ne {def} {pop pop} ifelse } forall
 /Encoding ISOLatin1Encoding def
 currentdict
 end
@@ -429,7 +442,7 @@ end
 
 /Helvetica-BoldOblique findfont
 dup length dict begin
-\{ 1 index /FID ne \{def} \{pop pop} ifelse } forall
+{ 1 index /FID ne {def} {pop pop} ifelse } forall
 /Encoding ISOLatin1Encoding def
 currentdict
 end
@@ -461,7 +474,8 @@ $maxy = $urlatitude + .001;
 my $xscale = 1000/$scale; # convert metres on the ground to mm on the map
 my $yscale = $xscale;
 
-my $dbh = DBIish.connect("dbi:Pg:dbname=$db", "", "", {AutoCommit => 0});
+my $passwd = 'xyz123';
+my $dbh = DBIish.connect("Pg", user => 'ro', password => $passwd, dbname => $db);
 
 # Get featuretypes
 
@@ -480,12 +494,12 @@ sub grid2page(Real $xin, Real $yin) {
 
 sub latlon2page(Str $zone, Real $xin, Real $yin) {
     ++$point_count;
-    my (Nil, $xout, $yout) = latlon_to_utm_force_zone('WGS-84', $yin, $xin, $zone);
+    my ($tzone, $xout, $yout) = latlon_to_utm_force_zone('WGS-84', $zone, $yin, $xin);
     return grid2page($xout, $yout);
 }
 
-sub sbsb(Str $s1, Str $b1, Str $s2, Str $b2) {
-    print $TMP, q:to 'EOF';
+sub sbsb(Int $s1, Int $b1, Str $s2, Str $b2) {
+    $TMP.print: qq:to 'EOF';
 /Helvetica-Latin1 4 selectfont
 ($b2) stringwidth pop ($b1) stringwidth pop add
 /Helvetica-Latin1 2 selectfont
@@ -498,8 +512,8 @@ sub sbsb(Str $s1, Str $b1, Str $s2, Str $b2) {
 EOF
 }
 
-sub lsbsb(Str $s1, Str $b1, Str $s2, Str $b2) {
-    print $TMP, qq:to 'EOF';
+sub lsbsb(Int $s1, Int $b1, Str $s2, Str $b2) {
+    $TMP.print: qq:to 'EOF';
 0 0 moveto
 /Helvetica-Latin1 2 selectfont ($s1) show
 /Helvetica-Latin1 4 selectfont ($b1) show
@@ -508,8 +522,8 @@ sub lsbsb(Str $s1, Str $b1, Str $s2, Str $b2) {
 EOF
 }
 
-sub rsbsb(Str $s1, Str $b1, Str $s2, Str $b2) {
-    print qq:to 'EOF';
+sub rsbsb(Int $s1, Int $b1, Str $s2, Str $b2) {
+    $TMP.print: qq:to 'EOF';
 /Helvetica-Latin1 4 selectfont
 ($b2) stringwidth pop ($b1) stringwidth pop add
 /Helvetica-Latin1 2 selectfont
@@ -522,8 +536,8 @@ neg 0 moveto
 EOF
 }
 
-sub get_ann_string(Str $element) {
-    my $length = unpack "V", $element.substr(0, 4);
+sub get_ann_string(Buf $element) {
+    my $length = $element.substr(0, 4).unpack('V');
     substr($element, 0, 4) = '';
     my $string = '';
     while ($length > 0) {
@@ -543,36 +557,36 @@ sub get_ann_astring(Str $element) {
     return ($string, $element);
 }
 
-sub ann_lastring(Str $element) {
-    my $length = unpack "V", substr($element, 0, 4);
+sub ann_lastring(Buf $element) {
+    my $length = substr($element, 0, 4).unpack('V');
     substr($element, 0, 4) = '';
     my $string = substr($element, 0, $length);
     substr($element, 0, $length) = '';
     return ($string, $element);
 }
 
-sub ann_byte(Str $element) {
-    my $val = unpack "C", $element;
+sub ann_byte(Buf $element) {
+    my $val = $element.unpack('C');
     return $val;
 }
 
-sub ann_short($element) {
-    my $val = unpack "v", $element;
+sub ann_short(Buf $element) {
+    my $val = $element.unpack('v');
     return $val;
 }
 
-sub ann_int($element) {
-    my $val = unpack "V", $element;
+sub ann_int(Buf $element) {
+    my $val = $element.unpack('V');
     return $val;
 }
 
-sub ann_double($element) {
-    my $val = unpack "d", $element;
+sub ann_double(Buf $element) {
+    my $val = $element.unpack('d');
     return $val;
 }
 
 sub ann_colour($element) {
-    my ($cyan, $magenta, $yellow, $black) = unpack "CCCC", $element;
+    my ($cyan, $magenta, $yellow, $black) = $element.unpack('CCCC');
     #note "Colour: $cyan $magenta $yellow $black\n";
     $cyan /= 100;
     $magenta /= 100;
@@ -581,7 +595,7 @@ sub ann_colour($element) {
     return ($cyan, $magenta, $yellow, $black);
 }
 
-sub latlon2string($val, $dirs, $full) {
+sub latlon2string($val is copy, $dirs, $full is copy) {
     my $dir;
     if ($val < 0) {
 	$val = - $val;
@@ -612,13 +626,13 @@ my Real $prev_y;
 
 sub plot_point(Str $Zone, Real $x, Real $y, Bool $moveto) {
     my ($x1, $y1) = latlon2page $zone, $x, $y;
-    printf $TMP, "%.5g %.5g %s\n", $x1, $y1, $moveto ?? 'moveto' !! 'lineto';
+    $TMP.print: sprintf "%.5g %.5g %s\n", $x1, $y1, $moveto ?? 'moveto' !! 'lineto';
 }
 
 my $prev_moveto;
 sub plot_previous_point(Str $zone) {
     if $prev_x.defined and $prev_y.defined && !$prev_moveto {
-#	say $TMP, "%plot_previous_point $zone $prev_x $prev_y $prev_moveto";
+#	$TMP.say: "%plot_previous_point $zone $prev_x $prev_y $prev_moveto";
 	plot_point($zone, $prev_x, $prev_y, $prev_moveto);
 	$prev_x = (Real);
 	$prev_y = (Real);
@@ -635,7 +649,7 @@ sub add_point(Str $zone, Real $x, Real $y) {
     $new_quadrant += 3 if $y < $miny;
     $new_quadrant -= 3 if $y > $maxy;
     
-#    say $TMP, "%add_point: $zone $x $y";
+#    $TMP.say: "%add_point: $zone $x $y";
     if ($quadrant == 5 || $quadrant != $new_quadrant) {
 	plot_previous_point($zone) if $quadrant != 5;
 	plot_point($zone, $x, $y, $moveto);
@@ -655,7 +669,7 @@ sub put_line(Str $zone, Str $shape, Str $func, Real $featurewidth) {
     $prev_y = Nil;
 
 #note "put_line: $shape";
-#    say $TMP, "% $zone $shape";
+#    $TMP.say: "% $zone $shape";
     $shape ~~ s/^MULTILINESTRING\(\(//;
     $shape ~~ s/\)\)$//;
     my @segments = $shape.split: '\)\,?\s*\(';
@@ -667,18 +681,18 @@ sub put_line(Str $zone, Str $shape, Str $func, Real $featurewidth) {
 #note "$#points points";
 	for @points -> $point {
 	    #note "$point";
-	    #say $TMP, "% $zone $point";
+	    #$TMP.say: "% $zone $point";
 	    $point ~~ /(\-?[\d\.]+)\s+(\-?[\d\.]+)/;
 	    add_point($zone, $1, $2);
 	}
 	plot_previous_point($zone) if $quadrant != 5;
     }
     plot_previous_point($zone) if $quadrant != 5;
-    say $TMP, "$featurewidth $func";
+    $TMP.say: "$featurewidth $func";
     %dependencies{$func}++;
 }
 
-my $sth_sym = $dbh.prepare("SELECT symbol_ga FROM vicmap_symbols WHERE type = ? AND ftype = ?");
+my $sth_sym = $dbh.prepare('SELECT symbol_ga FROM vicmap_symbols WHERE type = ? AND ftype = ?');
 
 my %symbol;
 
@@ -721,28 +735,28 @@ my $powerdirection = 1;
 my $tickdirection = 0;
 
 sub powerline(Real $x, Real $y, Real $angle, Real $width, Real $thick, Str $colour) {
-#   say $TMP, " % powerline: at $x, $y angle $angle";
+#   $TMP.say: " % powerline: at $x, $y angle $angle";
     if ($powerlinestart) {
 	$powerlinestart = 0;
 	$powerdirection = 1;
-	print $TMP, "$x $y moveto\n";
+	$TMP.print: "$x $y moveto\n";
     } else {
         $angle *= 3.14159265 / 180;
 	my $nx = $x - $thick / 2 * sin($angle) * $powerdirection;
 	my $ny = $y + $thick / 2 * cos($angle) * $powerdirection;
-	print $TMP, "$nx $ny lineto\n";
+	$TMP.print: "$nx $ny lineto\n";
 	$powerdirection = $powerdirection > 0 ?? -1 !! 1;
     }
 }
 
 sub leftticks(Real $x, Real $y, Real $angle, Real $width, Real $thick, Str $colour) {
 #   note "lefttick: at $x, $y angle $angle";
-    print $TMP, "gsave $x $y translate $angle rotate $colour setcmykcolor $thick setlinewidth 0 0 moveto 0 $width lineto stroke grestore\n";
+    $TMP.print: "gsave $x $y translate $angle rotate $colour setcmykcolor $thick setlinewidth 0 0 moveto 0 $width lineto stroke grestore\n";
 }
 
 sub altticks(Real $x, Real $y, Real $angle, Real $width, Real $thick, Str $colour) {
     $width *= -1 if $tickdirection;
-    print $TMP, "gsave $x $y translate $angle rotate $colour setcmykcolor $thick setlinewidth 0 0 moveto 0 $width lineto stroke grestore\n";
+    $TMP.print: "gsave $x $y translate $angle rotate $colour setcmykcolor $thick setlinewidth 0 0 moveto 0 $width lineto stroke grestore\n";
     $tickdirection = $tickdirection ?? 0 !! 1;
 }
 
@@ -783,7 +797,7 @@ sub follow_line(Str $zone, Str $shape, $spacing, $func, Real $width, Real $thick
 	    $oldy = $y;
 	}
     }
-#    say $TMP, "$featurewidth $func";
+#    $TMP.say: "$featurewidth $func";
 }
 
 sub draw_ftype(Str $zone, Str $table, Int $symbol) {
@@ -802,7 +816,7 @@ sub draw_ftype(Str $zone, Str $table, Int $symbol) {
     }
 }
 
-sub draw_lines(Str $zone, Str $table, Int $default_symbol) {
+sub draw_lines(Str $zone, Str $table, Int $default_symbol = 0) {
     note "$table lines...";
     my $sth = $dbh.prepare("SELECT ftype_code, st_astext(the_geom) as shape FROM $table WHERE the_geom && $rect");
     
@@ -830,11 +844,11 @@ sub draw_lines(Str $zone, Str $table, Int $default_symbol) {
 	} elsif ($symbol == 542) { # Powerline
 	    $powerlinestart = 1;
 	    follow_line($zone, $shape, .5, \&powerline, .5, .2, '1 .73 0 0');
-	    say $TMP, "1 .73 0 0 setcmykcolor .2 setlinewidth stroke";
+	    $TMP.say: "1 .73 0 0 setcmykcolor .2 setlinewidth stroke";
 	} elsif ($symbol == 543) { # Powerline (WAC)
 	    $powerlinestart = 1;
 	    follow_line($zone, $shape, .5, \&powerline, .5, .2, '.79 .9 0 0');
-	    say $TMP, ".79 .9 0 0 setcmykcolor .2 setlinewidth stroke";
+	    $TMP.say: ".79 .9 0 0 setcmykcolor .2 setlinewidth stroke";
 	} elsif ($symbol == 920) { # Cliff (WAC)
 	    put_line($zone, $shape, "line920A", 0);
 	    follow_line($zone, $shape, 1, \&leftticks, .4, .15, '0 .59 1 .18');
@@ -1055,7 +1069,7 @@ sub draw_points(Str $zone, Str $table) {
 	$position ~~ /\((\-?[\d\.]+)\s+(\-?[\d\.]+)\)/;
 	my ($x, $y) = latlon2page $zone, $1, $2;
 	%dependencies{"point$symbol"}++;
-	printf $TMP, "$orientation %.6g %.6g $featurewidth point$symbol\n", $x, $y;
+	$TMP.printf: "$orientation %.6g %.6g $featurewidth point$symbol\n", $x, $y;
     }
 }
 
@@ -1075,7 +1089,7 @@ sub draw_annotations(Str $zone) {
 	my $justn = 0;
 	my ($rotangle, $xdiff, $ydiff);
 	
-	#{my $el = $element; while ($el) {printf $TMP, "%02.2x ", ord(substr($el, 0, 1)); substr($el, 0, 1) = ''; } print $TMP, "\n";}
+	#{my $el = $element; while ($el) {$TMP.printf: "%02.2x ", ord(substr($el, 0, 1)); substr($el, 0, 1) = ''; } $TMP.print: "\n";}
 	substr($element, 0, 54) = ''; # first 54 bytes are invariant
 	($string2, $element) = get_ann_string($element);
 	#note "draw_annotation: $string2\n";
@@ -1114,7 +1128,7 @@ sub draw_annotations(Str $zone) {
 	#note "Font: $font\n";
 	substr($element, 0, 18) = ''; # invariant
 	$unknown1 = ann_byte(substr($element, 0, 1)); substr($element, 0, 1) = '';
-	#print $TMP, "unknown1: $unknown1\n"; ###
+	#$TMP.print: "unknown1: $unknown1\n"; ###
 	if ($unknown1 == 16) {
 	    substr($element, 0, 17) = ''; # invariant
 	    $unknown1 = ann_short(substr($element, 0, 2)); substr($element, 0, 2) = '';
@@ -1123,11 +1137,11 @@ sub draw_annotations(Str $zone) {
 	    $y1 = ann_double(substr($element, 0, 8)); substr($element, 0, 8) = '';
 	    $x2 = ann_double(substr($element, 0, 8)); substr($element, 0, 8) = '';
 	    $y2 = ann_double(substr($element, 0, 8)); substr($element, 0, 8) = '';
-	    #print $TMP, "16: $x1 $y1 $x2 $y2\n"; ###
+	    #$TMP.print: "16: $x1 $y1 $x2 $y2\n"; ###
 	    substr($element, 0, 4) = '';
 	    my $count = ann_int(substr($element, 0, 4)); substr($element, 0, 4) = '';
 	    substr($element, 0, 4) = ''; # invariant
-	    #print $TMP, "count: $count\n"; ###
+	    #$TMP.print: "count: $count\n"; ###
 	    if ($count) {
 		my @coords = ();
 		while ($count--) {
@@ -1139,13 +1153,13 @@ sub draw_annotations(Str $zone) {
 		($x2, $y2) = @(@coords[1]);
 		if (%drawobjects{'annotation_position'}) {
 		    my ($tx, $ty) = latlon2page($zone, $x1, $y1);
-		    print $TMP, "%%%%%%%\n$tx $ty moveto\n";
+		    $TMP.print: "%%%%%%%\n$tx $ty moveto\n";
 		    for @coords -> $posn {
 			my ($x, $y) = @$posn;
 			($tx, $ty) = latlon2page($zone, $x, $y);
-			print $TMP, "$tx $ty lineto\n";
+			$TMP.print: "$tx $ty lineto\n";
 		    }
-		    print $TMP, "1 1 0 0 setcmykcolor 0.5 setlinewidth stroke\n";
+		    $TMP.print: "1 1 0 0 setcmykcolor 0.5 setlinewidth stroke\n";
 		}
 		$xdiff = 0;
 		$ydiff = 0;
@@ -1160,7 +1174,7 @@ sub draw_annotations(Str $zone) {
 	    #note "65: $x1 $y1\n";
 	    if (%drawobjects{'annotation_position'}) {
 		my ($tx, $ty) = latlon2page $zone, $x1, $y1;
-		print $TMP, "$tx $ty moveto 1 0 rlineto 1 1 0 0 setcmykcolor 0.5 setlinewidth stroke %%%%%\n";
+		$TMP.print: "$tx $ty moveto 1 0 rlineto 1 1 0 0 setcmykcolor 0.5 setlinewidth stroke %%%%%\n";
 	    }
 	    $xdiff = $ydiff = 0;
 	} else {
@@ -1175,7 +1189,7 @@ sub draw_annotations(Str $zone) {
 	# Check for valid location -- sometimes we gat lat/lon with NaN values!
 	if ($x1 == $x1 and $y1 == $y1) {
 	    $font = ($font eq 'Zurich Cn BT') ?? 'Helvetica-Narrow-Latin1' !! 'Helvetica-Latin1';
-	    printf $TMP, "/$font %.4g selectfont\n", $pointsize;
+	    $TMP.printf: "/$font %.4g selectfont\n", $pointsize;
 	    
 	    my $annotation = $string2;
 	    ($x1, $y1) = latlon2page $zone, $x1, $y1;
@@ -1190,13 +1204,13 @@ sub draw_annotations(Str $zone) {
 	    $annotation ~~ s:g/\\/\\\\/;
 	    $annotation ~~ s:g/\(/\\\(/;
 	    $annotation ~~ s:g/\)/\\\)/;
-	    printf $TMP, "gsave %.6g %.6g translate %.6g rotate 0 0 moveto %.4g %.4g %.4g %.4g setcmykcolor ", $x1+$xdiff, $y1+$ydiff, $angle, $cyan, $magenta, $yellow, $black;
+	    $TMP.printf: "gsave %.6g %.6g translate %.6g rotate 0 0 moveto %.4g %.4g %.4g %.4g setcmykcolor ", $x1+$xdiff, $y1+$ydiff, $angle, $cyan, $magenta, $yellow, $black;
 	    if ($justn == 2) {
-		print $TMP, "($annotation) stringwidth pop neg 0 rmoveto ";
+		$TMP.print: "($annotation) stringwidth pop neg 0 rmoveto ";
 	    } elsif ($justn == 1) {
-		print $TMP, "($annotation) stringwidth pop 2 div neg 0 rmoveto ";
+		$TMP.print: "($annotation) stringwidth pop 2 div neg 0 rmoveto ";
 	    }
-	    printf $TMP, "($annotation) show grestore\n";
+	    $TMP.printf: "($annotation) show grestore\n";
 	}
     }
 }
@@ -1215,15 +1229,15 @@ sub label_grid(Str $zone, Bool $left, Bool $right) {
     ($lat, $long, $z) = utm_to_latlon('WGS-84', $zone, $starteasting, $maxnorthing);
     ($x, $y2) = latlon2page($zone, $long, $urlatitude);
     $y2 += 1;
-    print $TMP, "gsave $x $y1 translate ";
+    $TMP.print: "gsave $x $y1 translate ";
     my $a = $starteasting / $grid_spacing;
     my $b = ($a/10).Int;
     $a -= $b*10;
-    sbsb($b, $a, '0 000m ', 'E');
-    say $TMP, " grestore";
-    print $TMP, "gsave $x $y2 translate ";
-    sbsb($b, $a, '0 000m ', 'E');
-    print $TMP, " grestore\n";
+    sbsb($b.Int, $a.Int, '0 000m ', 'E');
+    $TMP.say: " grestore";
+    $TMP.print: "gsave $x $y2 translate ";
+    sbsb($b.Int, $a.Int, '0 000m ', 'E');
+    $TMP.print: " grestore\n";
     $easting = $starteasting + $grid_spacing;
     
     while ($easting <= $maxeasting) {
@@ -1235,15 +1249,15 @@ sub label_grid(Str $zone, Bool $left, Bool $right) {
 	($x, $y2) = latlon2page($zone, $long, $urlatitude);
 #	($x, $y2) = grid2page($easting, $maxnorthing);
 	$y2 += 1;
-	print $TMP, "gsave $x $y1 translate\n";
+	$TMP.print: "gsave $x $y1 translate\n";
 	$a = $easting / $grid_spacing;
-	$b = int($a/10);
+	$b = ($a/10).Int;
 	$a -= $b*10;
-	sbsb($b, $a, '', '');
-	print $TMP, "grestore\n";
-	print $TMP, "gsave $x $y2 translate\n";
-	sbsb($b, $a, '', '');
-	print $TMP, "grestore\n";
+	sbsb($b, $a.Int, '', '');
+	$TMP.print: "grestore\n";
+	$TMP.print: "gsave $x $y2 translate\n";
+	sbsb($b, $a.Int, '', '');
+	$TMP.print: "grestore\n";
 	$easting += $grid_spacing;
     }
     
@@ -1254,11 +1268,11 @@ sub label_grid(Str $zone, Bool $left, Bool $right) {
 #	my ($x, $y) = grid2page($mineasting, $startnorthing);
 	$x -= 1;
 	my $a = $startnorthing / $grid_spacing;
-	my $b = int($a/10);
+	my $b = ($a/10).Int;
 	$a -= $b * 10;
-	print $TMP, "gsave $x $y translate 90 rotate\n";
-	sbsb($b, $a, '0 000m ', 'N');
-	print $TMP, "grestore\n";
+	$TMP.print: "gsave $x $y translate 90 rotate\n";
+	sbsb($b, $a.Int, '0 000m ', 'N');
+	$TMP.print: "grestore\n";
 	my $northing = $startnorthing + $grid_spacing;
 	
 	while ($northing <= $maxnorthing) {
@@ -1268,11 +1282,11 @@ sub label_grid(Str $zone, Bool $left, Bool $right) {
 	    $x -= 1;
 	    $y -= 2;
 	    $a = $northing / $grid_spacing;
-	    $b = int($a/10);
+	    $b = ($a/10).Int;
 	    $a -= $b * 10;
-	    print $TMP, "gsave $x $y translate\n";
-	    rsbsb($b, $a, '', '');
-	    print $TMP, "grestore\n";
+	    $TMP.print: "gsave $x $y translate\n";
+	    rsbsb($b, $a.Int, '', '');
+	    $TMP.print: "grestore\n";
 	    $northing += $grid_spacing;
 	}
     }	
@@ -1282,11 +1296,11 @@ sub label_grid(Str $zone, Bool $left, Bool $right) {
 #	my ($x, $y) = grid2page($maxeasting, $startnorthing);
 	$x += 4;
 	my $a = $startnorthing / $grid_spacing;
-	my $b = int($a/10);
+	my $b = ($a/10).Int;
 	$a -= $b * 10;
-	print $TMP, "gsave $x $y translate 90 rotate\n";
-	sbsb($b, $a, '0 000m ', 'N');
-	print $TMP, "grestore\n";
+	$TMP.print: "gsave $x $y translate 90 rotate\n";
+	sbsb($b, $a.Int, '0 000m ', 'N');
+	$TMP.print: "grestore\n";
 	my $northing = $startnorthing + $grid_spacing;
 	
 	while ($northing <= $maxnorthing) {
@@ -1296,11 +1310,11 @@ sub label_grid(Str $zone, Bool $left, Bool $right) {
 	    $x += 1;
 	    $y -= 2;
 	    $a = $northing / $grid_spacing;
-	    $b = int($a/10);
+	    $b = ($a/10).Int;
 	    $a -= $b * 10;
-	    print $TMP, "gsave $x $y translate\n";
-	    lsbsb($b, $a, '', '');
-	    print $TMP, "grestore\n";
+	    $TMP.print: "gsave $x $y translate\n";
+	    lsbsb($b, $a.Int, '', '');
+	    $TMP.print: "grestore\n";
 	    $northing += $grid_spacing;
 	}
     }
@@ -1309,7 +1323,7 @@ sub label_grid(Str $zone, Bool $left, Bool $right) {
 sub label_graticule(Str $zone, Bool $left, Bool $right) {    
 # Now label the lines of longitude and latitude:
     
-    print $TMP, "0 0 0 1 setcmykcolor /Helvetica-Latin1 4 selectfont\n";
+    $TMP.print: "0 0 0 1 setcmykcolor /Helvetica-Latin1 4 selectfont\n";
     
     my $startlat = ($lllatitude/$graticule_spacing).Int * $graticule_spacing;
     $startlat += $graticule_spacing if $startlat < $lllatitude;
@@ -1326,10 +1340,10 @@ sub label_graticule(Str $zone, Bool $left, Bool $right) {
 	my ($x, $y) = latlon2page $zone, $long, $lllatitude;
 	$y -= 10;
 	my $string = latlon2string($long, "EW", $first);
-	print $TMP, "$x $y moveto ($string) dup stringwidth pop 2 div neg 0 rmoveto show\n" unless ($first && ! $left);
+	$TMP.print: "$x $y moveto ($string) dup stringwidth pop 2 div neg 0 rmoveto show\n" unless ($first && ! $left);
 	($x, $y) = latlon2page $zone, $long, $urlatitude;
 	$y += 7;
-	print $TMP, "$x $y moveto ($string) dup stringwidth pop 2 div neg 0 rmoveto show\n" unless ($first && !$left);
+	$TMP.print: "$x $y moveto ($string) dup stringwidth pop 2 div neg 0 rmoveto show\n" unless ($first && !$left);
 	$long += $graticule_spacing;
 	$first = 0;
     }
@@ -1341,32 +1355,32 @@ sub label_graticule(Str $zone, Bool $left, Bool $right) {
 	
 	$first = 1;
 	while ($lat < $urlatitude + .0001) {
-	    print $TMP, "% Latitude $lat\n";
+	    $TMP.print: "% Latitude $lat\n";
 	    my $long = $lllongitude;
 	    my ($x, $y) = latlon2page $zone, $long, $lat;
 	    $x -= 7;
 	    $y -= 2;
 	    my $string = latlon2string $lat, "NS", $first;
-	    print $TMP, "$x $y moveto ($string) dup stringwidth pop neg 0 rmoveto show\n";
+	    $TMP.print: "$x $y moveto ($string) dup stringwidth pop neg 0 rmoveto show\n";
 	    $lat += $graticule_spacing;
 	    $first = 0;
 	}
     }
     if ($right) {
-	print $TMP, "0 0 0 1 setcmykcolor /Helvetica-Latin1 4 selectfont\n";
+	$TMP.print: "0 0 0 1 setcmykcolor /Helvetica-Latin1 4 selectfont\n";
 # Latitude
 	
 	my $lat = $startlat;
 	
 	$first = 1;
 	while ($lat < $urlatitude + .0001) {
-	    print $TMP, "% Latitude $lat\n";
+	    $TMP.print: "% Latitude $lat\n";
 	    my $long = $lllongitude;
 	    my $string = latlon2string $lat, "NS", $first;
 	    my ($x, $y) = latlon2page $zone, $urlongitude, $lat;
 	    $x += 7;
 	    $y -= 2;
-	    print $TMP, "$x $y moveto ($string) show\n";
+	    $TMP.print: "$x $y moveto ($string) show\n";
 	    $lat += $graticule_spacing;
 	    $first = 0;
 	}
@@ -1385,20 +1399,20 @@ sub draw_graticule(Str $zone) {
     
     my $long = $minlong;
     
-print $TMP, "% draw graticule from $minlong, $minlat to $urlongitude, $urlatitude\n";
+$TMP.print: "% draw graticule from $minlong, $minlat to $urlongitude, $urlatitude\n";
     while ($long < $urlongitude + .0001) {
 	my $lat = $lllatitude;
 	my ($x, $y) = latlon2page $zone, $long, $lat;
-	print $TMP, "% Longitude $long\n";
-	print $TMP, ".1 setlinewidth 0 0 0 1 setcmykcolor\n";
-	print $TMP, "$x $y moveto\n";
+	$TMP.print: "% Longitude $long\n";
+	$TMP.print: ".1 setlinewidth 0 0 0 1 setcmykcolor\n";
+	$TMP.print: "$x $y moveto\n";
 	$lat += 1.0/60.0;
 	while ($lat <= $urlatitude + .0001) {
 	    ($x, $y) = latlon2page $zone, $long, $lat;
-	    print $TMP, "$x $y lineto\n";
+	    $TMP.print: "$x $y lineto\n";
 	    $lat += 1.0/60.0;
 	}
-	print $TMP, "stroke\n";
+	$TMP.print: "stroke\n";
 	$long += $graticule_spacing;
     }
     
@@ -1411,10 +1425,10 @@ print $TMP, "% draw graticule from $minlong, $minlat to $urlongitude, $urlatitud
 	my ($x, $y) = latlon2page $zone, $long, $lat;
 	while ($lat <= $urlatitude + .0001) {
 	    ($x, $y) = latlon2page $zone, $long, $lat;
-	    print $TMP, "$x $y moveto -.5 0 rlineto 1 0 rlineto stroke\n";
+	    $TMP.print: "$x $y moveto -.5 0 rlineto 1 0 rlineto stroke\n";
 	    $lat += 1.0/60.0;
 	}
-	print $TMP, "stroke\n";
+	$TMP.print: "stroke\n";
 	$long += $graticule_spacing;
     }
     
@@ -1425,10 +1439,10 @@ print $TMP, "% draw graticule from $minlong, $minlat to $urlongitude, $urlatitud
 	my ($x, $y) = latlon2page $zone, $long, $lat;
 	while ($lat <= $urlatitude + .0001) {
 	    ($x, $y) = latlon2page $zone, $long, $lat;
-	    print $TMP, "$x $y moveto -1 0 rlineto 2 0 rlineto stroke\n";
+	    $TMP.print: "$x $y moveto -1 0 rlineto 2 0 rlineto stroke\n";
 	    $lat += 5.0/60.0;
 	}
-	print $TMP, "stroke\n";
+	$TMP.print: "stroke\n";
 	$long += $graticule_spacing;
     }
     
@@ -1439,15 +1453,15 @@ print $TMP, "% draw graticule from $minlong, $minlat to $urlongitude, $urlatitud
     while ($lat < $urlatitude + .0001) {
 	my $long = $lllongitude;
 	my ($x, $y) = latlon2page $zone, $long, $lat;
-	print $TMP, "% Latitude $lat\n";
-	print $TMP, "$x $y moveto\n";
+	$TMP.print: "% Latitude $lat\n";
+	$TMP.print: "$x $y moveto\n";
 	$long += 1.0/60.0;
 	while ($long <= $urlongitude + .1) {
 	    ($x, $y) = latlon2page $zone, $long, $lat;
-	    print $TMP, "$x $y lineto % $zone $long $lat\n";
+	    $TMP.print: "$x $y lineto % $zone $long $lat\n";
 	    $long += 1.0/60.0;
 	}
-	print $TMP, "stroke % latitude\n";
+	$TMP.print: "stroke % latitude\n";
 	$lat += $graticule_spacing;
     }
     
@@ -1456,26 +1470,26 @@ print $TMP, "% draw graticule from $minlong, $minlat to $urlongitude, $urlatitud
     $lat = $minlat;
     
     while ($lat < $urlatitude + .0001) {
-	my $long = (int($lllongitude*60))/60;;
+	my $long = ($lllongitude*60).Int/60;;
 	while ($long <= $urlongitude + .0001) {
 	    my ($x, $y) = latlon2page $zone, $long, $lat;
-	    print $TMP, "$x $y moveto 0 -.5 rlineto 0 1 rlineto stroke\n";
+	    $TMP.print: "$x $y moveto 0 -.5 rlineto 0 1 rlineto stroke\n";
 	    $long += 1.0/60.0;
 	}
-	print $TMP, "stroke\n";
+	$TMP.print: "stroke\n";
 	$lat += $graticule_spacing;
     }
     
     $lat = $minlat;
     
     while ($lat < $urlatitude + .0001) {
-	my $long = (int($lllongitude*12))/12;;
+	my $long = ($lllongitude*12).Int/12;;
 	while ($long <= $urlongitude + .0001) {
 	    my ($x, $y) = latlon2page $zone, $long, $lat;
-	    print $TMP, "$x $y moveto 0 -1 rlineto 0 2 rlineto stroke\n";
+	    $TMP.print: "$x $y moveto 0 -1 rlineto 0 2 rlineto stroke\n";
 	    $long += 5.0/60.0;
 	}
-	print $TMP, "stroke\n";
+	$TMP.print: "stroke\n";
 	$lat += $graticule_spacing;
     }
 }
@@ -1483,7 +1497,7 @@ print $TMP, "% draw graticule from $minlong, $minlat to $urlongitude, $urlatitud
 sub draw_grid(Str $zone) {
 # Finally draw the blue grid
     
-    print $TMP, "1 .1 0 .1 setcmykcolor\ngsave\n";
+    $TMP.say: "1 .1 0 .1 setcmykcolor\ngsave";
 
     $minnorthing = min($llnorthing, $lrnorthing);
     $startnorthing = (($minnorthing+($grid_spacing-1))/$grid_spacing).Int * $grid_spacing;
@@ -1492,12 +1506,12 @@ sub draw_grid(Str $zone) {
     my $maxeasting = max($lreasting, $ureasting);
     my $maxnorthing = max($ulnorthing, $urnorthing);
     
-print $TMP, "% draw grid: $mineasting, $minnorthing to $maxeasting, $maxnorthing by  $grid_spacing\n";
+    $TMP.say: "% draw grid: $mineasting, $minnorthing to $maxeasting, $maxnorthing by $grid_spacing";
     my $easting = $starteasting;
     while ($easting <= $maxeasting) {
 	my ($x1, $y1) = grid2page($easting, $minnorthing);
 	my ($x2, $y2) = grid2page($easting, $maxnorthing);
-	print $TMP, "$x1 $y1 moveto $x2 $y2 lineto stroke\n";
+	$TMP.print: "$x1 $y1 moveto $x2 $y2 lineto stroke\n";
 	$easting += $grid_spacing;
     }
     
@@ -1505,10 +1519,10 @@ print $TMP, "% draw grid: $mineasting, $minnorthing to $maxeasting, $maxnorthing
     while ($northing <= $maxnorthing) {
 	my ($x1, $y1) = grid2page($mineasting, $northing);
 	my ($x2, $y2) = grid2page($maxeasting, $northing);
-	print $TMP, "$x1 $y1 moveto $x2 $y2 lineto stroke\n";
+	$TMP.print: "$x1 $y1 moveto $x2 $y2 lineto stroke\n";
 	$northing += $grid_spacing;
     }
-    print $TMP, "grestore\n";
+    $TMP.print: "grestore\n";
 }
 
 sub format_dms(Real $lat, Str $pos, Str $neg) {
@@ -1551,18 +1565,18 @@ sub put_annotation(Str $zone, Real $pagex, Real $pagey, Real $long, Real $lat, R
 # Calculate box height
     my $height = @lines * 2 + 2;
 # Calculate box width
-    print $TMP, "gsave 0\n";
-    print $TMP, "/Helvetica-Narrow-Latin1 1.5 selectfont\n";
+    $TMP.print: "gsave 0\n";
+    $TMP.print: "/Helvetica-Narrow-Latin1 1.5 selectfont\n";
     for @lines -> $line {
-	say $TMP, "($line) stringwidth pop 2 copy lt \{exch\} if pop";
+	$TMP.say: "($line) stringwidth pop 2 copy lt \{exch\} if pop";
     }
-    print $TMP, "2 add $x2 $y2 translate 0.2 setlinewidth 0 0 0 1 setcmykcolor $x1 $y1 moveto 0 0 lineto stroke\n";
-    print $TMP, "$x1 $y1 translate dup 2 div neg $height 2 div moveto dup 0 rlineto 0 $height neg rlineto dup neg 0 rlineto closepath gsave 0 0 0 0 setcmykcolor fill grestore 0 0 0 1 setcmykcolor stroke\n";
-    print $TMP, "2 div neg 1 add $height 2 div 1.5 sub translate\n";
+    $TMP.print: "2 add $x2 $y2 translate 0.2 setlinewidth 0 0 0 1 setcmykcolor $x1 $y1 moveto 0 0 lineto stroke\n";
+    $TMP.print: "$x1 $y1 translate dup 2 div neg $height 2 div moveto dup 0 rlineto 0 $height neg rlineto dup neg 0 rlineto closepath gsave 0 0 0 0 setcmykcolor fill grestore 0 0 0 1 setcmykcolor stroke\n";
+    $TMP.print: "2 div neg 1 add $height 2 div 1.5 sub translate\n";
     for @lines -> $line {
-	print $TMP, "0 0 moveto ($line) show 0 -2 translate\n";
+	$TMP.print: "0 0 moveto ($line) show 0 -2 translate\n";
     }
-    print $TMP, "grestore\n";
+    $TMP.print: "grestore\n";
 }
 
 my @ann;
@@ -1622,13 +1636,13 @@ my ($lllong, $lllat, $urlong, $urlat) = ($lllongitude - 0.01,
 
 # First draw everything in the margin
     
-    (Nil, $xoffset, $yoffset)
-	= latlon_to_utm('WGS-84', $lllatitude, $lllongitude, $zone);
+    (*, $xoffset, $yoffset)
+	= latlon_to_utm_force_zone('WGS-84', $zone, $lllatitude, $lllongitude);
     
     $xoffset = -$xoffset;
     $yoffset = -$yoffset;
     
-    say $TMP, "save 1 .1 0 .1 setcmykcolor";
+    $TMP.say: "save 1 .1 0 .1 setcmykcolor";
 	
     $minnorthing = min($llnorthing, $lrnorthing);
     $maxnorthing = max($ulnorthing, $urnorthing);
@@ -1645,7 +1659,7 @@ my ($lllong, $lllat, $urlong, $urlat) = ($lllongitude - 0.01,
 	    $slope = atan2($y2-$y1, $x2-$x1) * 180 / 3.141596353 - 90;
 	    #note
             #   "Right hand edge from ($x1, $y1) to ($x2, $y2, slope $slope";
-	    printf $TMP,
+	    $TMP.print: sprintf
 		"$x1 $y1 translate %f rotate $x1 neg $y1 neg translate\n", -$slope;
 	    $xoff = $x1;
 	    $yoff = $y1;
@@ -1655,7 +1669,7 @@ my ($lllong, $lllat, $urlong, $urlat) = ($lllongitude - 0.01,
 	    $slope = atan2($y4-$y3, $x4-$x3) * 180 / 3.141596353 - 90;
 	    #note
 	    #   "Left hand edge from ($x3, $y3) to ($x4, $y4), slope $slope";
-	    printf $TMP,
+	    $TMP.printf:
 		"$xoff $yoff translate %f rotate $xmin neg $ymin neg translate\n", -$slope;
 	}
     }
@@ -1669,60 +1683,60 @@ my ($lllong, $lllat, $urlong, $urlat) = ($lllongitude - 0.01,
 	my $long = $lllongitude;
 	my $lat = $lllatitude;
 	my ($x, $y) = latlon2page($zone, $long, $lat);
-	print $TMP, "$x $y moveto\n";
+	$TMP.say: "$x $y moveto";
 	$long += 1/60;
-	while ($long < $urlongitude) {
-	    ($x, $y) = latlon2page ($zone, $long, $lat);
-	    print $TMP, "$x $y lineto\n";
+	while $long < $urlongitude {
+	    ($x, $y) = latlon2page($zone, $long, $lat);
+	    $TMP.say: "$x $y lineto";
 	    $long += 1/60;
 	}
 	$long = $urlongitude;
-	($x, $y) = latlon2page ($zone, $long, $lat);
-	print $TMP, "$x $y lineto\n";
+	($x, $y) = latlon2page($zone, $long, $lat);
+	$TMP.say: "$x $y lineto"; ### moveto???
 	
 	$lat += 1/60;
 	while ($lat <= $urlatitude) {
-	    ($x, $y) = latlon2page ($zone, $long, $lat);
-	    print $TMP, "$x $y lineto\n";
+	    ($x, $y) = latlon2page($zone, $long, $lat);
+	    $TMP.print: "$x $y lineto\n";
 	    $lat += 1/60;
 	}
 	$lat = $urlatitude;
-	($x, $y) = latlon2page ($zone, $long, $lat);
-	print $TMP, "$x $y lineto\n";
+	($x, $y) = latlon2page($zone, $long, $lat);
+	$TMP.print: "$x $y lineto\n";
 	
 	$long -= 1/60;
 	while ($long > $lllongitude) {
-	    ($x, $y) = latlon2page ($zone, $long, $lat);
-	    print $TMP, "$x $y lineto\n";
+	    ($x, $y) = latlon2page($zone, $long, $lat);
+	    $TMP.print: "$x $y lineto\n";
 	    $long -= 1/60;
 	}
 	$long = $lllongitude;
-	($x, $y) = latlon2page ($zone, $long, $lat);
-	print $TMP, "$x $y lineto\n";
+	($x, $y) = latlon2page($zone, $long, $lat);
+	$TMP.print: "$x $y lineto\n";
 	
 	$lat -= 1/60;
 	while ($lat > $lllatitude) {
-	    ($x, $y) = latlon2page ($zone, $long, $lat);
-	    print $TMP, "$x $y lineto\n";
+	    ($x, $y) = latlon2page($zone, $long, $lat);
+	    $TMP.print: "$x $y lineto\n";
 	    $lat -= 1/60;
 	}
     } else { # on grid
 	my ($x, $y) = grid2page($lleasting, $llnorthing);
-	print $TMP, "$x $y moveto\n";
+	$TMP.print: "$x $y moveto\n";
         ($x, $y) = grid2page($lreasting, $lrnorthing);
-        print $TMP, "$x $y lineto\n";
+        $TMP.print: "$x $y lineto\n";
         ($x, $y) = grid2page($ureasting, $urnorthing);
-        print $TMP, "$x $y lineto\n";
+        $TMP.print: "$x $y lineto\n";
         ($x, $y) = grid2page($uleasting, $ulnorthing);
-        print $TMP, "$x $y lineto\n";
+        $TMP.print: "$x $y lineto\n";
     }
 
-    print $TMP, "closepath\n";
+    $TMP.print: "closepath\n";
     if (%drawobjects{'graticule'}) {
-	print $TMP,
+	$TMP.print:
 	    ".1 setlinewidth 0 0 0 1 setcmykcolor gsave stroke grestore\n";
     }
-    print $TMP, "clip newpath\n";
+    $TMP.print: "clip newpath\n";
     
 # Fetch and display all the objects
     
@@ -1797,7 +1811,7 @@ my %line_has_width = (
 
     draw_userannotations($zone, $xoff, $yoff, $slope) if %drawobjects<userannotations>.defined;
 
-    say $TMP, "restore"; # undo the clip path
+    $TMP.say: "restore"; # undo the clip path
     ($lllongitude, $urlongitude, $lllatitude, $urlatitude) = ($tlllong, $turlong, $tlllat, $turlat);
 }
 
@@ -1805,9 +1819,9 @@ my ($leftzone, $rightzone);
 
 if ($ongraticule) {
     ($leftzone, *, *)
-	= latlon_to_utm('WGS-84', $lllatitude, $lllongitude+.0000001, Nil);
+	= latlon_to_utm('WGS-84', $lllatitude, $lllongitude+.0000001);
     ($rightzone, *, *)
-	= latlon_to_utm('WGS-84', $urlatitude, $urlongitude-.0000001, Nil);
+	= latlon_to_utm('WGS-84', $urlatitude, $urlongitude-.0000001);
 } else {
     $leftzone = $rightzone = $zone;
 }
@@ -1853,8 +1867,9 @@ for keys %dependencies -> $dep {
 
 $dbh.disconnect();
 
-$TMP.seek(0, 0);
-.print for $TMP.lines;
+$TMP.seek(0, 0) or fail "Could not seek in TMP file: $!";
+$TMP = $tmpfile.IO.open(:r);
+.say for $TMP.lines;
 $TMP.close;
 
 say "showpage";
