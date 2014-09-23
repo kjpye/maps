@@ -21,6 +21,7 @@ my @featuretype;
 my %featuretype;
 my @display_feature;
 my %nofeature;
+my @properties;
 
 my %drawobjects;
 my %allobjects = map {$_ => 1}, <
@@ -33,12 +34,15 @@ my %allobjects = map {$_ => 1}, <
                   hy_watercourse
                   lga_polygon
                   locality_polygon
+		  locality_name
+                  el_grnd_surface_point
                   tr_air_infra_area_polygon
                   tr_airport_infrastructure
                   tr_rail
                   tr_rail_infrastructure
                   tr_road
                   tr_road_infrastructure
+                  tree_density
                   graticule
                   grid
                   userannotations
@@ -254,6 +258,10 @@ note "Graticule spacing set to $graticule_spacing";
 	$symbols = $0.lc;
         return;
     }
+    if $arg ~~ m/^property \= (<[\d,]>+) / {
+       @properties.push: $0.split(',');
+       return;
+    }
     if ($arg ~~ m/^file '=' (.*)/) {
 	#note "Including file $0\n";
         my $includefile = $0;
@@ -462,7 +470,7 @@ EOF
 	print q :to 'EOF'
 /Helvetica-Narrow-Latin1 3 selectfont
 8 8 moveto
-(This product incorporates data which is Copyright\251 State of Victoria 2001-2013) show
+(This product incorporates data which is Copyright\251 State of Victoria 2001-2014) show
 EOF
 }
 
@@ -484,7 +492,20 @@ my $yscale = $xscale;
 my $passwd = 'xyz123';
 my $dbh = DBIish.connect("Pg", user => 'ro', password => $passwd, dbname => $db);
 
-# Get featuretypes
+sub read_points (Real $x, Real $y, Str $shape) {
+  if $shape ~~ s/^POLYGON\(\(// {
+    $shape ~~ s/\)\)$//;
+    my @points = $shape.split: ',';
+    for @points -> $point {
+      my ($px, $py) = $point.split: ' ';
+      #note "Adding point $px $py";
+      @($x).push: $px;
+      @($y).push: $py;
+    }
+    return @points.elems;
+  }
+  note "Unknown shape in $shape";
+}
 
 my $point_count = 0;
 my $object_count = 0;
@@ -710,11 +731,12 @@ sub get_symbol(Str $type, Str $ftype) {
     my $sym = 0;
     while ( my ($tsym) = $sth_sym.fetchrow_array()) {
 	$sym = $tsym;
+	$symbol{"$type:$ftype"} = $tsym;
 	note "Found $sym\n";
     }
-    %symbol{"$type:$ftype"} = $sym;
-    note "Unknown $type symbol $ftype" unless $sym;
-    return $sym;
+    return $symbol{"$type:$ftype"} if $symbol{"$type:$ftype"}.defined;
+    note "Unknown $type symbol $ftype";
+    return 0;
 }
 
 my $rect;
@@ -735,6 +757,25 @@ sub draw_areas(Str $zone, Str $table) {
 	++$object_count;
 	put_line($zone, $shape, "area$symbol", 0.0);
     }
+}
+
+sub draw_treeden(Str $zone) {
+  note "tree_density areas...";
+  my $sth = $dbh.prepare("SELECT ftype_code, tree_den, st_astext(geom) as shape FROM tree_density whereGEOM && $RECT");
+
+  $sth.execute;
+
+  while (my @row = $sth.fetchrow_array) {
+    my $ftype = @row[0];
+    my $density = @row[1];
+    my @shape = @row[2];
+
+    my $symbol = get_symbol('area', "{$ftype}_$density");
+
+    next unless $symbol;
+    ++$0bject_count;
+    put_line($zone, $shape, "area$symbol", 0.0);
+  }
 }
 
 my $powerlinestart = 1;
