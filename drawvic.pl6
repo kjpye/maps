@@ -26,6 +26,7 @@ my @properties;
 my %drawobjects;
 my %allobjects = map {$_ => 1}, <
                   el_contour
+                  el_grnd_surface_point
                   hy_water_area_polygon
                   hy_water_point
                   hy_water_struct_area_polygon
@@ -35,7 +36,7 @@ my %allobjects = map {$_ => 1}, <
                   lga_polygon
                   locality_polygon
 		  locality_name
-                  el_grnd_surface_point
+                  property
                   tr_air_infra_area_polygon
                   tr_airport_infrastructure
                   tr_rail
@@ -63,7 +64,7 @@ sub add_annotation(Real $long, Real $lat, Real $xoffset, Real $yoffset,Str $stri
     %($annotation)<yoffset> = $yoffset;
     %($annotation)<string>  = $string;
     @annotations.push: $annotation;
-    #note "Adding annotation at $long,$lat: $string\n";
+    note "Adding annotation at $long,$lat: $string\n";
 }
 
 # Could add non-metric sizes to the hash here.
@@ -280,7 +281,7 @@ note "Graticule spacing set to $graticule_spacing";
     note "Unknown option \"$arg\" ignored\n";
 }
 
-for '/home/kevin/.drawrc', '.drawrc' -> $cfgfile {
+for '/home/kevinp/.drawrc', '.drawrc' -> $cfgfile {
 note "Handling config file $cfgfile";
   if my $opt = $cfgfile.IO.open {
     for $opt.lines -> $line {
@@ -731,10 +732,10 @@ sub get_symbol(Str $type, Str $ftype) {
     my $sym = 0;
     while ( my ($tsym) = $sth_sym.fetchrow_array()) {
 	$sym = $tsym;
-	$symbol{"$type:$ftype"} = $tsym;
+        %symbol{"$type:$ftype"} = $tsym;
 	note "Found $sym\n";
     }
-    return $symbol{"$type:$ftype"} if $symbol{"$type:$ftype"}.defined;
+    return %symbol{"$type:$ftype"} if %symbol{"$type:$ftype"}.defined;
     note "Unknown $type symbol $ftype";
     return 0;
 }
@@ -761,19 +762,19 @@ sub draw_areas(Str $zone, Str $table) {
 
 sub draw_treeden(Str $zone) {
   note "tree_density areas...";
-  my $sth = $dbh.prepare("SELECT ftype_code, tree_den, st_astext(geom) as shape FROM tree_density whereGEOM && $RECT");
+  my $sth = $dbh.prepare("SELECT ftype_code, tree_den, st_astext(geom) as shape FROM tree_density where geom && $rect");
 
   $sth.execute;
 
   while (my @row = $sth.fetchrow_array) {
     my $ftype = @row[0];
     my $density = @row[1];
-    my @shape = @row[2];
+    my $shape = @row[2];
 
     my $symbol = get_symbol('area', "{$ftype}_$density");
 
     next unless $symbol;
-    ++$0bject_count;
+    ++$object_count;
     put_line($zone, $shape, "area$symbol", 0.0);
   }
 }
@@ -848,25 +849,9 @@ sub follow_line(Str $zone, Str $shape, $spacing, $func, Real $width, Real $thick
 #    $TMP.say: "$featurewidth $func";
 }
 
-sub draw_ftype(Str $zone, Str $table, Int $symbol) {
-    note "$table lines...\n";
-    my $sth = $dbh.prepare("SELECT ftype, st_astext(the_geom) as shape FROM $table WHERE the_geom && $rect");
-    
-    $sth.execute();
-    
-    while ( my @row = $sth.fetchrow_array ) {
-	my $ftype = @row[0];
-	my $shape = @row[1];
-	
-	next unless $symbol;
-	++$object_count;
-	put_line($zone, $shape, "line$symbol", 0.0);
-    }
-}
-
 sub draw_lines(Str $zone, Str $table, Int $default_symbol = 0) {
     note "$table lines...";
-    my $sth = $dbh.prepare("SELECT ftype_code, st_astext(the_geom) as shape FROM $table WHERE the_geom && $rect");
+    my $sth = $dbh.prepare("SELECT ftype_code, st_astext(geom) as shape FROM $table WHERE geom && $rect");
     
     $sth.execute();
     
@@ -914,6 +899,104 @@ sub draw_lines(Str $zone, Str $table, Int $default_symbol = 0) {
     }
 }
 
+sub draw_lines_f(Str $zone, Str $table, Int $default_symbol = 0) {
+    note "$table lines...";
+    my $sth = $dbh.prepare("SELECT ftype, st_astext(geom) as shape FROM $table WHERE geom && $rect");
+    
+    $sth.execute();
+    
+    while ( my @row = $sth.fetchrow_array ) {
+	my $ftype = @row[0];
+	my $shape = @row[1];
+	
+	my $symbol = 0;
+	if (defined $default_symbol and $default_symbol < 0) {
+	    $symbol = -$default_symbol;
+	} else {
+            $symbol = get_symbol('line', $ftype);
+	}
+	$symbol = $default_symbol if defined $default_symbol and ! $symbol;
+	next unless $symbol;
+	++$object_count;
+	if ($symbol == 57) { # Depression contour (index)
+	} elsif ($symbol ==  58) { # Depression contour (standard)
+	    put_line($zone, $shape, "line58A", 0.0);
+	    follow_line($zone, $shape, 4, \&leftticks, .3, .15, '0 .59 1 .18');
+	} elsif ($symbol ==  31) { # Embankment
+# TODO
+	} elsif ($symbol == 542) { # Powerline
+	    $powerlinestart = 1;
+	    follow_line($zone, $shape, .5, \&powerline, .5, .2, '1 .73 0 0');
+	    $TMP.say: "1 .73 0 0 setcmykcolor .2 setlinewidth stroke";
+	} elsif ($symbol == 543) { # Powerline (WAC)
+	    $powerlinestart = 1;
+	    follow_line($zone, $shape, .5, \&powerline, .5, .2, '.79 .9 0 0');
+	    $TMP.say: ".79 .9 0 0 setcmykcolor .2 setlinewidth stroke";
+	} elsif ($symbol == 920) { # Cliff (WAC)
+	    put_line($zone, $shape, "line920A", 0.0);
+	    follow_line($zone, $shape, 1, \&leftticks, .4, .15, '0 .59 1 .18');
+	} elsif ($symbol == 923) { # Cutting
+# TODO
+	} elsif ($symbol == 924) { # Cliff
+	    put_line($zone, $shape, "line924A", 0.0);
+	    follow_line($zone, $shape, 1, \&leftticks, .4, .15, '0 0 0 1');
+	} elsif ($symbol == 929) { # Razorback
+	    put_line($zone, $shape, "line929A", 0.0);
+	    follow_line($zone, $shape, 1, \&altticks, .4, .15, '0 0 0 1');
+	} else {
+	    put_line($zone, $shape, "line$symbol", 0.0);
+	}
+    }
+}
+
+sub put_outline(Str $text, Real $x, Real $y, Real $size, Str $colour, Real $thickness) { 
+    $TMP.printf: "%f %f moveto (%s) /Helvetica findfont %f scalefont setfont stringwidth pop 2 div neg 0 rmoveto (%s) false charpath %s setcmykcolor %f setlinewidth stroke\n", $x, $y, $text, $size, $text, $colour, $thickness;
+}
+
+sub draw_polygon_outline_names(Str $zone, Str $table, Str $column, Real $size, Real $thickness, Str $colour) {
+    note "$table outline names...";
+    my $sth = $dbh.prepare("SELECT $column, st_astext(st_envelope(geom)) as bbox FROM $table WHERE geom && $rect");
+    
+    $sth.execute();
+    
+    while ( my @row = $sth.fetchrow_array ) {
+        my $name  = @row[0];
+        my $shape = @row[1];
+        my @x;
+        my @y;
+        my $count = read_points(\@x, \@y, $shape);
+        my $centrex = (@x[0] + @x[2]) / 2;
+        my $centrey = (@y[0] + @y[2]) / 2;
+        note "Locality $name $centrex $centrey $count $shape";
+        my ($cx, $cy) = latlon2page($zone, $centrex, $centrey);
+        my @text = $name.split: ' ';
+        my $yoffset = (@text.elems + 1)/2;
+        for @text -> $text {
+            put_outline ($text, $cx, $cy+$yoffset, $size, $colour, $thickness);
+            $yoffset -= $size;
+        }
+        ++$object_count;
+    }
+}
+
+sub draw_properties(Str $zone) {
+    note "property lines...";
+    my $sth = $dbh.prepare("SELECT st_astext(geom) as shape FROM property_view WHERE pfi = ?");
+    
+    for @properties -> $property {
+        $sth.execute($property);
+    
+        while ( my @row = $sth.fetchrow_array ) {
+            my $shape = @row[0];
+            note "Property $property -- $shape";
+            
+            my $symbol = 927;
+            ++$object_count;
+            put_line($zone, $shape, "line$symbol", 0.0);
+        }
+    }
+}
+
 sub draw_wlines(Str $zone, Str $table, Int $default_symbol) {
     note "$table lines...";
     my $sth = $dbh.prepare("SELECT symbol, st_astext(shape) as shape, featurewidth FROM $table WHERE shape && $rect");
@@ -950,31 +1033,46 @@ sub draw_wlines(Str $zone, Str $table, Int $default_symbol) {
 # This shouldn't be here, but in a database somewhere
 
 my %roadsymbols = (
-  'road_0s'    => 250, # dual carriageway
-  'road_1s'    => 251, # principal sealed
-  'road_2s'    => 251, # principal sealed
-  'road_3s'    => 256, # secondary sealed
-  'road_4s'    => 256, # secondary sealed
-  'road_5s'    => 256, # secondary sealed
-  'road_6s'    => 257, # minor sealed
-  'road_7s'    => 257, # minor sealed
-  'road_8s'    => 257, # minor sealed
-  'road_9s'    => 257, # minor sealed
-  'road_10s'   => 257, # minor sealed
-  'road_11s'   => 257, # minor sealed
-  'road_0u'    => 258, # principal unsealed
-  'road_1u'    => 258, # principal unsealed
-  'road_2u'    => 258, # principal unsealed
-  'road_3u'    => 259, # secondary unsealed
-  'road_4u'    => 259, # secondary unsealed
-  'road_5u'    => 259, # secondary unsealed
-  'road_6u'    => 253, # minor unsealed
-  'road_7u'    => 253, # minor unsealed
-  'road_8u'    => 254, # vehicular track
-  'road_9u'    => 254, # vehicular track
-  'road_10u'   => 254, # vehicular track
-  'road_11u'   => 254, # vehicular track
-  'footbridge' => 268, # foot bridge
+  'road_0s'     => 250, # dual carriageway
+  'road_1s'     => 251, # principal sealed
+  'road_2s'     => 251, # principal sealed
+  'road_3s'     => 256, # secondary sealed
+  'road_4s'     => 256, # secondary sealed
+  'road_5s'     => 256, # secondary sealed
+  'road_6s'     => 257, # minor sealed
+  'road_7s'     => 257, # minor sealed
+  'road_8s'     => 257, # minor sealed
+  'road_9s'     => 257, # minor sealed
+  'road_10s'    => 257, # minor sealed
+  'road_11s'    => 257, # minor sealed
+  'road_12s'    =>  22, # minor sealed
+  'road_0u'     => 258, # principal unsealed
+  'road_1u'     => 258, # principal unsealed
+  'road_2u'     => 258, # principal unsealed
+  'road_3u'     => 259, # secondary unsealed
+  'road_4u'     => 259, # secondary unsealed
+  'road_5u'     => 259, # secondary unsealed
+  'road_6u'     => 253, # minor unsealed
+  'road_7u'     => 253, # minor unsealed
+  'road_8u'     => 254, # vehicular track
+  'road_9u'     => 254, # vehicular track
+  'road_10u'    => 254, # vehicular track
+  'road_12u'    =>  22, # foot track
+  'footbridge'  => 268, # foot bridge
+  'foot_bridge' => 268, # foot bridge
+  'ford'        => 253,
+  'bridge_0s'   => 260, # bridge
+  'bridge_1s'   => 260, # bridge
+  'bridge_2s'   => 260, # bridge
+  'bridge_3s'   => 260, # bridge
+  'bridge_4s'   => 260, # bridge
+  'bridge_5s'   => 260, # bridge
+  'bridge_6s'   => 260, # bridge
+  'bridge_5u'   => 260, # bridge
+  'bridge_6u'   => 260, # bridge
+  'bridge'      => 260, # bridge
+  'connector'   =>   0,
+  'roundabout'  => 256,
 );
 
 sub draw_roads(Str $zone) {
@@ -982,14 +1080,14 @@ sub draw_roads(Str $zone) {
     my $featurewidth;
 
     note "Roads...";
-    my $sth = $dbh.prepare("SELECT pfi, ftype_code, class_code, dir_code, road_seal, div_rd, st_astext(the_geom) as shape FROM tr_road WHERE the_geom && $rect");
+    my $sth = $dbh.prepare("SELECT pfi, ftype_code, class_code, dir_code, road_seal, div_rd, st_astext(geom) as shape FROM tr_road WHERE geom && $rect");
     
     $sth.execute();
     
     while ( my @row = $sth.fetchrow_array ) {
 	my $objectid     = @row[0];
 	my $ftype_code   = @row[1];
-	my $featurewidth = 0;
+	my $featurewidth = 0.9;
         my $class        = @row[2];
         my $dir          = @row[3];
         my $sealed       = @row[4];
@@ -997,7 +1095,9 @@ sub draw_roads(Str $zone) {
 	my $shape        = @row[6];
 	
         $sealed = ($sealed == 1) ?? 's' !! 'u';
-        my $symbol = %roadsymbols{"{$ftype_code}_$class$sealed"};
+        my $symbol = %roadsymbols{"{$ftype_code}"}; # get default
+        $symbol = %roadsymbols{"{$ftype_code}_$class$sealed"};
+	note "Unknown road type \"{$ftype_code}_$class$sealed\"" unless $symbol;
 	next unless $symbol;
 	@dual.push: $objectid if $symbol == 250;
 	++$object_count;
@@ -1006,13 +1106,16 @@ sub draw_roads(Str $zone) {
 
 # Now go back and draw the yellow centre line on dual carriageways
 
-    $sth = $dbh.prepare("SELECT symbol, st_astext(shape) as shape FROM Roads WHERE objectid = ?");
+    note "Centre lines of roads...";
+
+    $sth = $dbh.prepare("SELECT ftype_code, st_astext(shape) as shape FROM tr_road WHERE pfi = ?");
     for @dual -> $objectid {
 	$sth.execute($objectid);
 	
 	while ( my @row = $sth.fetchrow_array ) {
 	    my $symbol = @row[0];
 	    my $shape = @row[1];
+	    $featurewidth = 0.6;
 	    
 	    put_line($zone, $shape, 'line250A', $featurewidth);
 	}
@@ -1082,23 +1185,12 @@ sub draw_osmroads(Str $zone) {
     $osmdbh.disconnect();
 }
 
-#sub min {
-#    my $a = shift;
-#    my $b = shift;
-#    return $a if $a <= $b;
-#    return $b;
-#}
-
-#sub max {
-#    my $a = shift;
-#    my $b = shift;
-#    return $a if $a >= $b;
-#    return $b;
-#}
-
 sub draw_points(Str $zone, Str $table) {
     note "$table points...";
-    my $sth = $dbh.prepare("SELECT ftype_code, st_astext(the_geom) as position, rotation FROM $table WHERE the_geom && $rect");
+    my $sth = $dbh.prepare("SELECT ftype_code, st_astext(geom) AS position, rotation
+                            FROM $table
+			    WHERE geom && $rect
+			   ");
     
     $sth.execute();
     
@@ -1118,6 +1210,66 @@ sub draw_points(Str $zone, Str $table) {
 	my ($x, $y) = latlon2page $zone, $1, $2;
 	%dependencies{"point$symbol"}++;
 	$TMP.printf: "$orientation %.6g %.6g $featurewidth point$symbol\n", $x, $y;
+    }
+}
+
+sub spot_heights(Str $zone) {
+    note "spot heights...";
+    my $sth = $dbh.prepare("SELECT ftype_code, st_astext(geom) AS position, altitude FROM el_grnd_surface_point WHERE geom && $rect");
+    
+    $TMP.say: "/Helvetica-Latin1 2 selectfont 0 0 0 1 setcmykcolor";
+
+    $sth.execute();
+    
+    while ( my @row = $sth.fetchrow_array ) {
+        my $ftype    = @row[0];
+        my $position = @row[1];
+        my $altitude = @row[2] || 0;
+        my $featuretype = $ftype;
+
+        next unless $featuretype eq 'spot_height';
+        
+        $position ~~ / \( (\-?<[\d.]>+) \s+ (\-?<[\d.]>+) \) /;
+        my ($x, $y) = latlon2page $zone, $1, $2;
+        $TMP.printf: "%.6g %.6g moveto ($altitude) show newpath\n", $x+0.5, $y-0.5;
+    }
+}
+
+my @road_widths = (.9, .9, .9, .6, .6, .6, .4, .4, .4, .4, .2, .2, .2);
+
+sub draw_roadpoints(Str $zone) {
+    note "tr_road_infrastructure points...";
+    my $sth = $dbh.prepare("SELECT ftype_code, st_astext(geom) as position, rotation, ufi, width FROM tr_road_infrastructure WHERE geom && $rect");
+    my $sth2 = $dbh.prepare("SELECT ftype_code, class_code FROM tr_road WHERE from_ufi = ? OR to_ufi = ?");
+    
+    $sth.execute();
+    
+    while ( my @row = $sth.fetchrow_array ) {
+        my $ftype        = @row[0];
+        my $position     = @row[1];
+        my $orientation  = 90 - @row[2] || 0;
+        my $ufi          = @row[3];
+        my $featurewidth = @row[4];
+        my $featuretype  = $ftype;
+
+        my $symbol = get_symbol('point', $ftype);
+        
+        #next unless @display_feature[$featuretype]; ### TODO
+        next unless $symbol;
+        ++$object_count;
+        $position ~~ / \( (\-? <[\d.]>+) \s+ (\-? <[\d.]>+) \) /;
+        my ($x, $y) = latlon2page $zone, $1, $2;
+        %dependencies<point$symbol>++;
+        if $featurewidth <= 0 {
+# Find the width of the adjoining roads
+            my $adjcode = 12; # largest real class_code
+            $sth2.execute($ufi, $ufi);
+            while (my ($t, $c) = $sth2.fetchrow_array()) {
+                $adjcode = $c if $c < $adjcode;
+            }
+            $featurewidth = @road_widths[$adjcode];
+        }
+        $TMP.printf: "$orientation %.6g %.6g $featurewidth point$symbol\n", $x, $y;
     }
 }
 
@@ -1460,7 +1612,7 @@ $TMP.print: "% draw graticule from $minlong, $minlat to $urlongitude, $urlatitud
 	    $TMP.print: "$x $y lineto\n";
 	    $lat += 1.0/60.0;
 	}
-	$TMP.print: "stroke\n";
+	#$TMP.print: "stroke\n";
 	$long += $graticule_spacing;
     }
     
@@ -1476,7 +1628,7 @@ $TMP.print: "% draw graticule from $minlong, $minlat to $urlongitude, $urlatitud
 	    $TMP.print: "$x $y moveto -.5 0 rlineto 1 0 rlineto stroke\n";
 	    $lat += 1.0/60.0;
 	}
-	$TMP.print: "stroke\n";
+	#$TMP.print: "stroke\n";
 	$long += $graticule_spacing;
     }
     
@@ -1490,7 +1642,7 @@ $TMP.print: "% draw graticule from $minlong, $minlat to $urlongitude, $urlatitud
 	    $TMP.print: "$x $y moveto -1 0 rlineto 2 0 rlineto stroke\n";
 	    $lat += 5.0/60.0;
 	}
-	$TMP.print: "stroke\n";
+	#$TMP.print: "stroke\n";
 	$long += $graticule_spacing;
     }
     
@@ -1509,7 +1661,7 @@ $TMP.print: "% draw graticule from $minlong, $minlat to $urlongitude, $urlatitud
 	    $TMP.print: "$x $y lineto % $zone $long $lat\n";
 	    $long += 1.0/60.0;
 	}
-	$TMP.print: "stroke % latitude\n";
+	#$TMP.print: "stroke % latitude\n";
 	$lat += $graticule_spacing;
     }
     
@@ -1679,7 +1831,7 @@ my ($lllong, $lllat, $urlong, $urlat) = ($lllongitude - 0.01,
 					$urlongitude + 0.01,
 					$urlatitude + 0.01);
 
-    $rect = "GeometryFromText('POLYGON(($lllong $lllat, $urlong $lllat, $urlong $urlat, $lllong $urlat, $lllong $lllat))', 4283)";
+    $rect = "ST_GeometryFromText('POLYGON(($lllong $lllat, $urlong $lllat, $urlong $urlat, $lllong $urlat, $lllong $lllat))', 4283)";
     #note $rect;
 
 # First draw everything in the margin
@@ -1788,6 +1940,7 @@ my ($lllong, $lllat, $urlong, $urlat) = ($lllongitude - 0.01,
     
 # Fetch and display all the objects
     
+    draw_treeden($zone) if %drawobjects<tree_density>.defined;
     for <
           hy_water_area_polygon
           hy_water_struct_area_polygon
@@ -1798,13 +1951,16 @@ my ($lllong, $lllat, $urlong, $urlat) = ($lllongitude - 0.01,
 	}
     }
     
-    draw_lines($zone, 'Tracks', -1001)    if %drawobjects<tracks>.defined;
-    draw_lines($zone, 'MineAreas')        if %drawobjects<mineareas>.defined;
-    draw_lines($zone, 'Reserves', 65)     if %drawobjects<reserves>.defined;
-    draw_lines($zone, 'Lakes', -114)      if %drawobjects<lakes>.defined;
+    #draw_lines($zone, 'Tracks', -1001)    if %drawobjects<tracks>.defined;
+    #draw_lines($zone, 'MineAreas')        if %drawobjects<mineareas>.defined;
+    #draw_lines($zone, 'Reserves', 65)     if %drawobjects<reserves>.defined;
+    #draw_lines($zone, 'Lakes', -114)      if %drawobjects<lakes>.defined;
     draw_lines($zone, 'hy_water_area_polygon', -114)
                                           if %drawobjects<hy_water_area_polygon>.defined;
-    draw_lines($zone, 'Reservoirs', -114) if %drawobjects<reservoirs>.defined;
+    #draw_lines($zone, 'Reservoirs', -114) if %drawobjects<reservoirs>.defined;
+    draw_lines_f($zone, 'locality_polygon', -65) if %drawobjects<locality_polygon>.defined;
+    draw_polygon_outline_names($zone, 'locality_polygon', 'locality', 8, 0.2, '1 0 .86 0') if %drawobjects<locality_name>.defined;
+    draw_lines_f($zone, 'lga_polygon', -62) if %drawobjects<lga_polygon>.defined;
     
 my %line_has_width = (
                       el_contour => 0,
@@ -1815,33 +1971,30 @@ my %line_has_width = (
                      );
 
     for <
-          locality_polygon
-          lga_polygon
           el_contour
           hy_water_struct_line
           hy_watercourse
-          tr_rail
           tr_road
+          tr_rail
         > -> $object_type {
 	if %drawobjects{lc $object_type}.defined {
           if $object_type eq 'tr_road' {
             draw_roads($zone);
           } elsif $object_type eq 'OSMRoads' {
             draw_osmroads($zone);
-	  } elsif $object_type eq 'lga_polygon' {
-	      draw_ftype($zone, 'lga_polygon', 80);
-	  } elsif $object_type eq 'locality_polygon' {
-	      draw_ftype($zone, 'locality_polygon', 650);
 	  } elsif %line_has_width{$object_type} {
-	    draw_wlines($zone, $object_type) if %drawobjects{lc $object_type}.defined;
+	    draw_wlines($zone, $object_type);
 	  }
 	  else {
-	    draw_lines($zone, $object_type) if %drawobjects{lc $object_type}.defined;
+	    draw_lines($zone, $object_type);
 	  }
         }
     }
    
+    draw_properties($zone) if %drawobjects<property>.defined;
+
     for <
+          el_grnd_surface_point
           hy_water_point
           hy_water_struct_point
           tr_airport_infrastructure
@@ -1849,7 +2002,14 @@ my %line_has_width = (
           tr_road_infrastructure
         > -> $object_type {
 	if %drawobjects{lc $object_type}.defined {
-	    draw_points($zone, $object_type);
+          if ($object_type eq 'tr_road_infrastructure') {
+              draw_roadpoints($zone);
+          } elsif ($object_type eq 'el_grnd_surface_point') {
+              draw_points($zone, 'el_grnd_surface_point');
+              spot_heights($zone);
+          } else {
+              draw_points($zone, $object_type);
+          }
 	}
     }
 
