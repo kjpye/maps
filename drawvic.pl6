@@ -17,10 +17,10 @@ my ($uleasting, $ulnorthing);
 my ($ureasting, $urnorthing);
 my Str $zone;
 
-my @featuretype = ();
-my %featuretype = ();
-my @display_feature = ();
-my %nofeature = ();
+my @featuretype;
+my %featuretype;
+my @display_feature;
+my %nofeature;
 
 my %drawobjects;
 my %allobjects = map {$_ => 1}, <
@@ -44,9 +44,10 @@ my %allobjects = map {$_ => 1}, <
                   userannotations
                  >;
 
-for %allobjects.keys -> $type {
-    %drawobjects{$type} = 1; # default to drawing everything
-}
+%drawobjects = %allobjects.kv;
+#for %allobjects.keys -> $type {
+#    %drawobjects{$type} = 1; # default to drawing everything
+#}
 
 my @annotations;
 
@@ -64,17 +65,27 @@ sub add_annotation(Real $long, Real $lat, Real $xoffset, Real $yoffset,Str $stri
 # Could add non-metric sizes to the hash here.
 # Keys are papersize, values are a string with
 # width and length in mm separated by commas.
-my %papersizes;
+my %papersizes = (
+  'a'      => '216,   279',
+  'b'      => '279,   432',
+  'c'      => '432,   559',
+  'd'      => '559,   864',
+  'e'      => '864,   1118',
+  'letter' => '215.9, 279.4',
+);
 
-# Calculate metric A paper sizes
-  my $l = 1000 * sqrt(sqrt(2));
+# Calculate metric A and B paper sizes
+  my $sqsq2 = sqrt(sqrt(2));
+  my $l = 1000 * $sqsq2;
   my $w = 1e6/$l;
 # $l * $w should be 1 square metre (1e6 mm^2) with a ratio of sqrt(2)
   for ^10 -> $s {
     %papersizes{'a' ~ $s.Str} = "$w, $l";
+    %papersizes{'b' ~ $s.Str} = "{$w*$sqsq2}, {$l*$sqsq2}";
     $l = $w;
     $w = $l / sqrt(2);
   }
+note %papersizes;
 
 my $papersize = 'a3';
 my ($paperwidth, $paperheight);
@@ -87,8 +98,8 @@ my ($gridheight, $graticuleheight);
 my $db = 'vicmap';
 my $grid_spacing = 10000;
 my $graticule_spacing = .25;
-my ($ongrid, $ongraticule) = (0, 0);
-my ($bleedright, $bleedtop) = (0, 0);
+my (Bool $ongrid, Bool $ongraticule) = (False, False);
+my (Bool $bleedright, Bool $bleedtop) = (False, False);
 
 sub process_option($arg is copy) {
     note "Processing option $arg";
@@ -113,90 +124,90 @@ sub process_option($arg is copy) {
 	return;
     }
     if $arg ~~ / bleedright '=' (.*) / {
-	$bleedright = $0;
+	$bleedright = ?$0;
 	$rightmarginwidth = -20;
 	return;
     }
     if ($arg ~~ / bleedtop '=' (.*)/) {
-	$bleedtop = $0;
+	$bleedtop = ?$0;
 	$uppermarginwidth = -10;
 	return;
     }
-    if ($arg ~~ /^leftmarginwidth '=' (d+(\.\d+)?)$/) {
+    if ($arg ~~ /^leftmarginwidth '=' (d+[\.\d+]?)$/) {
         $leftmarginwidth = $0;
         return;
     }
-    if ($arg ~~ /^rightmarginwidth '=' (d+(\.\d+)?)$/) {
+    if ($arg ~~ /^rightmarginwidth '=' (d+[\.\d+]?)$/) {
         $rightmarginwidth = $0;
         return;
     }
-    if ($arg ~~ /^(lower|bottom)marginwidth '=' (d+(\.\d+)?)$/) {
+    if ($arg ~~ /^(lower|bottom)marginwidth '=' (d+[\.\d+]?)$/) {
         $lowermarginwidth = $2;
         return;
     }
-    if ($arg ~~ /^(upper|top)marginwidth '=' (d+(\.\d+)?)$/) {
+    if ($arg ~~ /^(upper|top)marginwidth '=' (d+[\.\d+]?)$/) {
         $uppermarginwidth = $2;
         return;
     }
-    if ($arg ~~/d(ata)?b(ase)? '=' (.*)/) {
-	$db = $3;
+    if ($arg ~~/d[ata]?b[ase]? '=' (.*)/) {
+	$db = $0;
 	return;
     }
     if $arg ~~ m/^ lat[itude]? '=' ( \-? <[\d\.]>+ ) $ / {
 	$lllatitude = +$0;
-	$ongraticule = 1;
+	$ongraticule = True;
 	return;
     }
     if $arg ~~ m/^ long[itude]? '=' ( \-? <[\d\.]>+ ) $ / {
 	$lllongitude = +$0;
-	$ongraticule = 1;
+	$ongraticule = True;
 	return;
     }
-    if ($arg ~~ m:i/^east(ing)? '=' (\d+)(k?)m?$/) {
-	$lleasting = $2;
-	$lleasting *= 1000 if lc $3 eq 'k';
-	$ongrid = 1;
+    if ($arg ~~ m:i/^east[ing]? '=' (\d+)(k?)m?$/) {
+	$lleasting = $0;
+	$lleasting *= 1000 if $1.lc eq 'k';
+	$ongrid = True;
         return;
     }
     if ($arg ~~ m:i/^north[ing]? '=' (\d+)(k?)m?$/) {
         $llnorthing = $0;
-	$llnorthing *= 1000 if lc $1 eq 'k';
-	$ongrid = 1;
+	$llnorthing *= 1000 if $1.lc eq 'k';
+	$ongrid = True;
         return;
     }
-    if ($arg ~~ /^width '=' (\d+(\.\d+)?)([kK])?([dDmM]?)$/) {
-	if (lc $4 eq 'm') {
+    if ($arg ~~ /^width '=' (\d+[\.\d+]?)([kK])?([dDmM]?)$/) {
+	if ($2.lc eq 'm') {
 	    $gridwidth = $0;
-            $gridwidth *= 1000 if lc $3 eq 'k';
-	    $ongrid = 1;
+            $gridwidth *= 1000 if $1.lc eq 'k';
+	    $ongrid = True;
 	    #note "Grid width: $gridwidth\n";
 	} else {
 	    $graticulewidth = $0;
-	    $ongraticule = 1;
+	    $ongraticule = True;
 	}
         return;
     }
-    if ($arg ~~ /^height '=' (\d+(\.\d+)?)([kK])?([dDmM]?)$/) {
-	if (lc $4 eq 'm') {
-	    $gridheight = $1;
-            $gridheight *= 1000 if lc $3 eq 'k';
+    if ($arg ~~ /^height '=' (\d+[\.\d+]?)([kK])?([dDmM]?)$/) {
+	if ($2.lc eq 'm') {
+	    $gridheight = $0;
+            $gridheight *= 1000 if $1.lc eq 'k';
 	    #note "Grid height: $gridheight\n";
-	    $ongrid = 1;
+	    $ongrid = True;
 	} else {
-	    $graticuleheight = $1;
-	    $ongraticule = 1;
+	    $graticuleheight = $0;
+	    $ongraticule = True;
 	}
         return;
     }
     if ($arg ~~ m:i/^zone? '=' (\d+<[ A .. Z ]>?)$/) {
-        $zone = uc $0;
+        $zone = $0.uc;
 	note "Zone: $zone\n";
         return;
     }
-    if ($arg ~~ m:i/^scale\=(1:)?(\d+)(<[kKmM]>?)$/) {
-	$scale = $2;
-	$scale *= 1000 if lc $3 eq 'k';
-	$scale *= 1000000 if lc $3 eq 'm';
+    if ($arg ~~ m:i/^scale\=[1:]?(\d+)(<[kKmM]>?)$/) {
+	$scale = $0;
+	$scale *= 1000    if $1.lc eq 'k';
+	$scale *= 1000000 if $1.lc eq 'm';
 	return;
     }
     if ($arg ~~ m/ ^ grid[spacing]? \= (\d+) (k?) m?$/) {
@@ -219,36 +230,35 @@ note "Graticule spacing set to $graticule_spacing";
 	}
 	return;
     }
-    if ($arg ~~ m:i/^display '=' (\S+)$/) {
-	%drawobjects{lc $0} = 1;
+    if ($arg ~~ m/^display '=' (\S+)$/) {
+	%drawobjects{$0.lc} = 1;
 	return;
     }
     if ($arg ~~ m:i/^nodisplay '=' all$/) {
 	%drawobjects = ();
 	return;
     }
-    if ($arg ~~ m:i/^nodisplay '=' (\S+)$/) {
-	%drawobjects{lc $0} = Nil;
+    if ($arg ~~ m/^nodisplay '=' (\S+)$/) {
+	%drawobjects{$0.lc} = Nil;
 	return;
     }
-    if ($arg ~~ m:i/^nofeature '=' (\S+)$/)
+    if ($arg ~~ m/^nofeature '=' (\S+)$/)
     {
         my $ft = $0;
         $ft ~~ s:g/_/ /;
-        %nofeature{$ft} = 1;
+        %nofeature{$ft.lc} = 1;
         #note "No feature: $ft\n";
 	return;
     }
-    if ($arg ~~ m:i/^symbols '=' (\S+)$/) {
-	$symbols = lc $0;
+    if ($arg ~~ m/^symbols '=' (\S+)$/) {
+	$symbols = $0.lc;
         return;
     }
-    if ($arg ~~ m:i/^file '=' (.*)/) {
+    if ($arg ~~ m/^file '=' (.*)/) {
 	#note "Including file $0\n";
-        my IO::Handle $INC;
-        $INC.open($0) and {
+        my $includefile = $0;
+        my $INC = $includefile.IO.open(:r) and {
 	    for $INC.lines -> $line {
-		$line.chomp;
 		$line ~~ s/'#' .*//;
 		$line ~~ s/^\s+//;
 		$line ~~ s/\s+$//;
@@ -289,7 +299,7 @@ if $ongrid && $ongraticule {
 # How much space do we have?
 
 if (! %papersizes{$papersize}.defined) {
-    fail "Invalid paper size $papersize";
+    fail "Unknown paper size $papersize";
 }
 
 note "Orientation is \"$orientation\"";
@@ -299,7 +309,7 @@ given $orientation {
   when 'landscape'
     { ($paperheight, $paperwidth) = %papersizes{$papersize}.split(','); }
   default
-    { fail "Invalid paper orientation $orientation\n"; }
+    { fail "Unknown paper orientation $orientation\n"; }
 }
 note "Page width: $paperwidth, height $paperheight";
 $imagewidth
@@ -377,15 +387,13 @@ note "$graticulewidth: $lrlongitude $ullatitude $ullongitude $lrlatitude";
 
 if ($bleedright) {
     my (Nil, $teast, $tnorth) = latlon_to_utm_force_zone('WGS-84', $zone, $urlatitude.Real, $lllongitude.Real);
-    my (Nil, $urlatitude, $urlongitude) = utm_to_latlon('WGS-84', $zone, $teast+$imagewidth, $tnorth);
+    my (Nil, $urlatitude, $urlongitude)  = utm_to_latlon('WGS-84', $zone, $teast+$imagewidth, $tnorth);
 
 }
 
 if ($bleedtop) {
-    my (Nil, $teast, $tnorth)
-	= latlon_to_utm_force_zone('WGS-84', $zone, $lllatitude.Real, $urlongitude.Real);
-    my (Nil, $urlatitude, $urlongitude)
-	= utm_to_latlon('WGS-84', $zone, $teast+$imagewidth, $tnorth);
+    my (Nil, $teast, $tnorth) = latlon_to_utm_force_zone('WGS-84', $zone, $lllatitude.Real, $urlongitude.Real);
+    my (Nil, $urlatitude, $urlongitude)  = utm_to_latlon('WGS-84', $zone, $teast+$imagewidth, $tnorth);
 }
 
 note qq:to 'EOF';
@@ -394,9 +402,9 @@ Grid corners:
     $lleasting $llnorthing   $lreasting $lrnorthing
 EOF
 
-  my $tmpfile = '/tmp/' ~ $*PID.Str;
-  my $TMP = $tmpfile.IO.open(:a) or fail "Could not open /tmp/$*PID: $!";
-  # FIX LATER unlink($tmpfile); # saves cleaning up later
+my $tmpfile = '/tmp/' ~ $*PID.Str;
+my $TMP = $tmpfile.IO.open(:a) or fail "Could not open /tmp/$*PID: $!";
+# FIX LATER unlink($tmpfile); # saves cleaning up later
 
 print qq :to 'EOF';
 \%!PS-Adobe
@@ -450,16 +458,15 @@ end
 
 EOF
 
-#    if ($lowermarginwidth > 20) {
-#	print q :to 'EOF'
-#/Helvetica-Narrow-Latin1 3 selectfont
-#8 8 moveto
-#(This product incorporates data which is Copyright\251 State of Victoria 2001-2013) show
-#EOF
-#}
+    if ($lowermarginwidth > 20) {
+	print q :to 'EOF'
+/Helvetica-Narrow-Latin1 3 selectfont
+8 8 moveto
+(This product incorporates data which is Copyright\251 State of Victoria 2001-2013) show
+EOF
+}
 
 my %dependencies;
-#my $rect;
 
 my ($xoffset, $yoffset, $xmin, $ymin);
 $xmin = $leftmarginwidth;
@@ -726,7 +733,7 @@ sub draw_areas(Str $zone, Str $table) {
 
 	next unless $symbol;
 	++$object_count;
-	put_line($zone, $shape, "area$symbol", '');
+	put_line($zone, $shape, "area$symbol", 0.0);
     }
 }
 
@@ -812,7 +819,7 @@ sub draw_ftype(Str $zone, Str $table, Int $symbol) {
 	
 	next unless $symbol;
 	++$object_count;
-	put_line($zone, $shape, "line$symbol", 0);
+	put_line($zone, $shape, "line$symbol", 0.0);
     }
 }
 
@@ -837,7 +844,7 @@ sub draw_lines(Str $zone, Str $table, Int $default_symbol = 0) {
 	++$object_count;
 	if ($symbol == 57) { # Depression contour (index)
 	} elsif ($symbol ==  58) { # Depression contour (standard)
-	    put_line($zone, $shape, "line58A", 0);
+	    put_line($zone, $shape, "line58A", 0.0);
 	    follow_line($zone, $shape, 4, \&leftticks, .3, .15, '0 .59 1 .18');
 	} elsif ($symbol ==  31) { # Embankment
 # TODO
@@ -850,18 +857,18 @@ sub draw_lines(Str $zone, Str $table, Int $default_symbol = 0) {
 	    follow_line($zone, $shape, .5, \&powerline, .5, .2, '.79 .9 0 0');
 	    $TMP.say: ".79 .9 0 0 setcmykcolor .2 setlinewidth stroke";
 	} elsif ($symbol == 920) { # Cliff (WAC)
-	    put_line($zone, $shape, "line920A", 0);
+	    put_line($zone, $shape, "line920A", 0.0);
 	    follow_line($zone, $shape, 1, \&leftticks, .4, .15, '0 .59 1 .18');
 	} elsif ($symbol == 923) { # Cutting
 # TODO
 	} elsif ($symbol == 924) { # Cliff
-	    put_line($zone, $shape, "line924A", 0);
+	    put_line($zone, $shape, "line924A", 0.0);
 	    follow_line($zone, $shape, 1, \&leftticks, .4, .15, '0 0 0 1');
 	} elsif ($symbol == 929) { # Razorback
-	    put_line($zone, $shape, "line929A", 0);
+	    put_line($zone, $shape, "line929A", 0.0);
 	    follow_line($zone, $shape, 1, \&altticks, .4, .15, '0 0 0 1');
 	} else {
-	    put_line($zone, $shape, "line$symbol", 0);
+	    put_line($zone, $shape, "line$symbol", 0.0);
 	}
     }
 }
@@ -875,7 +882,7 @@ sub draw_wlines(Str $zone, Str $table, Int $default_symbol) {
     while ( my @row = $sth.fetchrow_array ) {
 	my $symbol = @row[0];
 	my $shape = @row[1];
-	my $featurewidth = @row[3];
+	my Real $featurewidth = @row[3];
 	$featurewidth = 0 unless defined $featurewidth && $featurewidth;
 	
 	if (defined $default_symbol and $default_symbol < 0) {
@@ -1871,6 +1878,7 @@ $TMP.seek(0, 0) or fail "Could not seek in TMP file: $!";
 $TMP = $tmpfile.IO.open(:r);
 .say for $TMP.lines;
 $TMP.close;
+unlink $tmpfile;
 
 say "showpage";
 
