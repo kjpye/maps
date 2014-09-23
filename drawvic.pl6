@@ -272,7 +272,7 @@ note "Graticule spacing set to $graticule_spacing";
     note "Unknown option \"$arg\" ignored\n";
 }
 
-for '/home/kevinp/.drawrc', '.drawrc' -> $cfgfile {
+for '/home/kevin/.drawrc', '.drawrc' -> $cfgfile {
 note "Handling config file $cfgfile";
   if my $opt = $cfgfile.IO.open {
     for $opt.lines -> $line {
@@ -721,7 +721,7 @@ my $rect;
 
 sub draw_areas(Str $zone, Str $table) {
     note "$table areas...";
-    my $sth = $dbh.prepare("SELECT ftype_code, st_astext(the_geom) as shape FROM $table WHERE the_geom && $rect");
+    my $sth = $dbh.prepare("SELECT ftype_code, st_astext(geom) as shape FROM $table WHERE geom && $rect");
     
     $sth.execute();
     
