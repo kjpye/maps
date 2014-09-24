@@ -31,7 +31,7 @@ options.
 
 Other options:
 
-`papersize=a?` -- Generate an A? sized map (default is A3)
+`papersize=a2` -- Generate   map for a particular sized sheet of paper. Available sizes include A0-A9, B0-B9, A-E and letter (default is A3).
 
 `orientation=portrait`
 
