@@ -523,7 +523,7 @@ sub add_point(Str $zone, Real $x, Real $y) {
 	plot_point($zone, $x, $y, $moveto);
 	$prev_x = Nil;
 	$prev_y = Nil;
-	$moveto = 0;
+	$moveto = False;
     } else {
 	$prev_x = $x;
 	$prev_y = $y;
@@ -532,7 +532,7 @@ sub add_point(Str $zone, Real $x, Real $y) {
     $quadrant = $new_quadrant;
 }
 
-sub put_line(Str $zone, Str $shape, Str $func, Real $featurewidth) {
+sub put_line(Str $zone, Str $shape is copy, Str $func, Real $featurewidth) {
     $prev_x = Nil;
     $prev_y = Nil;
 
@@ -550,8 +550,8 @@ sub put_line(Str $zone, Str $shape, Str $func, Real $featurewidth) {
 	for @points -> $point {
 	    #note "$point";
 	    #$TMP.say: "% $zone $point";
-	    $point ~~ /(\-?[\d\.]+)\s+(\-?[\d\.]+)/;
-	    add_point($zone, $1, $2);
+	    $point ~~ / ( \-? <[\d\.]>+ ) \s+ ( \-? <[\d\.]>+ ) /;
+	    add_point($zone, +$0, +$1);
 	}
 	plot_previous_point($zone) if $quadrant != 5;
     }
@@ -566,12 +566,12 @@ my $sth_sym;
 
 sub get_symbol(Str $type, Str $ftype) {
     return %symbol{"$type:$ftype"} if %symbol{"$type:$ftype"}.defined;
-    note "Looking for $ftype($type)";
+    note "Looking for $ftype\($type)";
     $sth_sym.execute($type, $ftype);
     my $sym = 0;
-    while ( my ($tsym) = $sth_sym.fetchrow_array()) {
-	$sym = $tsym;
-        %symbol{"$type:$ftype"} = $tsym;
+    while my @row = $sth_sym.fetchrow_array {
+	$sym = @row[0];
+        %symbol{"$type:$ftype"} = $sym;
 	note "Found $sym\n";
     }
     return %symbol{"$type:$ftype"} if %symbol{"$type:$ftype"}.defined;
@@ -591,7 +591,7 @@ sub draw_areas(Str $zone, Str $table) {
 	my $ftype = @row[0];
 	my $shape = @row[1];
 	
-        my $symbol = get_symbol('area', $ftype);
+        my $symbol = get_symbol('area', $ftype.lc);
 
 	next unless $symbol;
 	++$object_count;
@@ -606,8 +606,8 @@ sub draw_treeden(Str $zone) {
   $sth.execute;
 
   while (my @row = $sth.fetchrow_array) {
-    my $ftype = @row[0];
-    my $density = @row[1];
+    my $ftype = @row[0].lc;
+    my $density = @row[1].lc;
     my $shape = @row[2];
 
     my $symbol = get_symbol('area', "{$ftype}_$density");
@@ -702,7 +702,7 @@ sub draw_lines(Str $zone, Str $table, Int $default_symbol = 0) {
 	if (defined $default_symbol and $default_symbol < 0) {
 	    $symbol = -$default_symbol;
 	} else {
-            $symbol = get_symbol('line', $ftype);
+            $symbol = get_symbol('line', $ftype.lc);
 	}
 	$symbol = $default_symbol if defined $default_symbol and ! $symbol;
 	next unless $symbol;
@@ -752,7 +752,7 @@ sub draw_lines_f(Str $zone, Str $table, Int $default_symbol = 0) {
 	if (defined $default_symbol and $default_symbol < 0) {
 	    $symbol = -$default_symbol;
 	} else {
-            $symbol = get_symbol('line', $ftype);
+            $symbol = get_symbol('line', $ftype.lc);
 	}
 	$symbol = $default_symbol if defined $default_symbol and ! $symbol;
 	next unless $symbol;
@@ -947,7 +947,7 @@ sub draw_roads(Str $zone) {
 
     note "Centre lines of roads...";
 
-    $sth = $dbh.prepare("SELECT ftype_code, st_astext(shape) as shape FROM tr_road WHERE pfi = ?");
+    $sth = $dbh.prepare("SELECT ftype_code, st_astext(geom) as shape FROM tr_road WHERE pfi = ?");
     for @dual -> $objectid {
 	$sth.execute($objectid);
 	
@@ -1040,7 +1040,7 @@ sub draw_points(Str $zone, Str $table) {
 	my $featurewidth = 0;
 	my $featuretype  = $ftype;
 
-        my $symbol = get_symbol('point', $ftype);
+        my $symbol = get_symbol('point', $ftype.lc);
 	
 	#next unless @display_feature[$featuretype]; ### TODO
 	next unless $symbol;
@@ -1091,7 +1091,7 @@ sub draw_roadpoints(Str $zone) {
         my $featurewidth = @row[4];
         my $featuretype  = $ftype;
 
-        my $symbol = get_symbol('point', $ftype);
+        my $symbol = get_symbol('point', $ftype.lc);
         
         #next unless @display_feature[$featuretype]; ### TODO
         next unless $symbol;
@@ -1850,7 +1850,7 @@ sub do_dependency(Str $dependency) {
 
 set_papersizes();
 
-for '/home/kevinp/.drawrc', '.drawrc' -> $cfgfile {
+for '/home/kevin/.drawrc', '.drawrc' -> $cfgfile {
   note "Handling config file $cfgfile";
   if my $opt = $cfgfile.IO.open {
     for $opt.lines -> $line {
