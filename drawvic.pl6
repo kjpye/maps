@@ -1,5 +1,7 @@
 #!/usr/bin/perl6
 
+use v6;
+
 use DBIish;
 BEGIN { @*INC.push: '.'; } # for testing
 use UTM;
@@ -338,7 +340,7 @@ sub read_points (Real $x, Real $y, Str $shape) {
       @($x).push: $px;
       @($y).push: $py;
     }
-    return @points.elems;
+    return @points.end;
   }
   note "Unknown shape in $shape";
 }
@@ -809,7 +811,7 @@ sub draw_polygon_outline_names(Str $zone, Str $table, Str $column, Real $size, R
         note "Locality $name $centrex $centrey $count $shape";
         my ($cx, $cy) = latlon2page($zone, $centrex, $centrey);
         my @text = $name.split: ' ';
-        my $yoffset = (@text.elems + 1)/2;
+        my $yoffset = (@text.end + 1)/2;
         for @text -> $text {
             put_outline ($text, $cx, $cy+$yoffset, $size, $colour, $thickness);
             $yoffset -= $size;
@@ -1850,7 +1852,7 @@ sub do_dependency(Str $dependency) {
 
 set_papersizes();
 
-for '/home/kevin/.drawrc', '.drawrc' -> $cfgfile {
+for %*ENV<HOME> ~ '/.drawrc', '.drawrc' -> $cfgfile {
   note "Handling config file $cfgfile";
   if my $opt = $cfgfile.IO.open {
     for $opt.lines -> $line {
@@ -2022,3 +2024,4 @@ unlink $tmpfile;
 say "showpage";
 
 note "$object_count objects, $point_count points\n";
+print_stats();
