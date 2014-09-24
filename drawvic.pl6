@@ -6,11 +6,14 @@ use UTM;
 
 ### Global symbol definitions
 
-my $TMP;
+my $TMP; # file handle for temporary output
 
-my $symbols = 'Symbols_GA';
+my $symbols = 'Symbols_GA'; # Which symbols set to use
 
-my $scale = 25000;
+my $scale = 25000; # map scale; defaults to 1:25000
+
+# positions of map corners
+
 my ($lllongitude, $lllatitude);
 my ($lrlongitude, $lrlatitude);
 my ($ullongitude, $ullatitude);
@@ -21,10 +24,10 @@ my ($uleasting, $ulnorthing);
 my ($ureasting, $urnorthing);
 my Str $zone;
 
-my @featuretype;
-my %featuretype;
-my @display_feature;
-my %nofeature;
+#my @featuretype;
+#my %featuretype;
+#my @display_feature;
+my %nofeature; # not really used
 my @properties;
 my %dependencies;
 
@@ -88,7 +91,7 @@ sub set_papersizes() {
 #note %papersizes;
 }
 
-my ($xoffset, $yoffset, $xmin, $ymin);
+my ($xoffset, $yoffset, $xmin, $ymin); # where the map actually goes on the page
 
 sub add_annotation(Real $long, Real $lat, Real $xoffset, Real $yoffset,Str $string) {
     my $annotation = {};
@@ -106,9 +109,9 @@ my ($leftmarginwidth, $lowermarginwidth, $rightmarginwidth, $uppermarginwidth)
 my ($imagewidth, $imageheight);
 my ($gridwidth, $graticulewidth);
 my ($gridheight, $graticuleheight);
-my $db = 'vicmap';
-my $grid_spacing = 10000;
-my $graticule_spacing = .25;
+my $db = 'vicmap'; # which database to access
+my $grid_spacing = 10000; # spacing betwen grid lines in metres
+my $graticule_spacing = .25; # spacing between graticule lines in degrees
 my (Bool $ongrid, Bool $ongraticule) = (False, False);
 my (Bool $bleedright, Bool $bleedtop) = (False, False);
 
@@ -287,6 +290,18 @@ note "Graticule spacing set to $graticule_spacing";
     note "Unknown option \"$arg\" ignored\n";
 }
 
+sub postscript_encode_font(Str $font) {
+  print qq:to 'EOF';
+    /{$font} findfont
+    dup length dict begin
+    \{ 1 index /FID ne \{def} \{pop pop} ifelse } forall
+    /Encoding ISOLatin1Encoding def
+    currentdict
+    end
+    /{$font}-Latin1 exch definefont pop
+    EOF
+}
+
 sub postscript_prefix() {
   print qq :to 'EOF';
 \%!PS-Adobe
@@ -297,56 +312,20 @@ EOF
 
   say "$paperheight 0 translate 90 rotate" if $orientation eq 'landscape';
 
-  print Q:to 'EOF';
-/Helvetica findfont
-dup length dict begin
-{ 1 index /FID ne {def} {pop pop} ifelse } forall
-/Encoding ISOLatin1Encoding def
-currentdict
-end
-/Helvetica-Latin1 exch definefont pop
+  postscript_encode_font('Helvetica');
+  postscript_encode_font('Helvetica-Narrow');
+  postscript_encode_font('Helvetica-Narrow-Oblique');
+  postscript_encode_font('Helvetica-Narrow-BoldOblique');
+  postscript_encode_font('Helvetica-BoldOblique');
+  postscript_encode_font('Helvetica');
 
-/Helvetica-Narrow findfont
-dup length dict begin
-{ 1 index /FID ne {def} {pop pop} ifelse } forall
-/Encoding ISOLatin1Encoding def
-currentdict
-end
-/Helvetica-Narrow-Latin1 exch definefont pop
-
-/Helvetica-Narrow-Oblique findfont
-dup length dict begin
-{ 1 index /FID ne {def} {pop pop} ifelse } forall
-/Encoding ISOLatin1Encoding def
-currentdict
-end
-/Helvetica-Narrow-Oblique-Latin1 exch definefont pop
-
-/Helvetica-Narrow-BoldOblique findfont
-dup length dict begin
-{ 1 index /FID ne {def} {pop pop} ifelse } forall
-/Encoding ISOLatin1Encoding def
-currentdict
-end
-/Helvetica-Narrow-BoldOblique-Latin1 exch definefont pop
-
-/Helvetica-BoldOblique findfont
-dup length dict begin
-{ 1 index /FID ne {def} {pop pop} ifelse } forall
-/Encoding ISOLatin1Encoding def
-currentdict
-end
-/Helvetica-BoldOblique-Latin1 exch definefont pop
-
-EOF
-
-    if ($lowermarginwidth > 20) {
-	print q :to 'EOF'
-/Helvetica-Narrow-Latin1 3 selectfont
-8 8 moveto
-(This product incorporates data which is Copyright\251 State of Victoria 2001-2014) show
-EOF
-    }
+  if ($lowermarginwidth > 20) {
+    print q :to 'EOF'
+      /Helvetica-Narrow-Latin1 3 selectfont
+      8 8 moveto
+      (This product incorporates data which is Copyright\251 State of Victoria 2001-2014) show
+    EOF
+  }
 }
 
 sub read_points (Real $x, Real $y, Str $shape) {
@@ -1063,7 +1042,7 @@ sub draw_points(Str $zone, Str $table) {
 
         my $symbol = get_symbol('point', $ftype);
 	
-	#next unless $display_feature[$featuretype]; ### TODO
+	#next unless @display_feature[$featuretype]; ### TODO
 	next unless $symbol;
 	++$object_count;
 	$position ~~ /\((\-?[\d\.]+)\s+(\-?[\d\.]+)\)/;
@@ -1872,7 +1851,7 @@ sub do_dependency(Str $dependency) {
 set_papersizes();
 
 for '/home/kevinp/.drawrc', '.drawrc' -> $cfgfile {
-note "Handling config file $cfgfile";
+  note "Handling config file $cfgfile";
   if my $opt = $cfgfile.IO.open {
     for $opt.lines -> $line {
       s/'#' .*//;
@@ -1919,80 +1898,67 @@ $imageheight
 # Work out where the lower left corner is
 
 if ($ongraticule) {
-    if (defined $lllongitude and defined $lllatitude) {
-	my $tzone;
-        if $zone.defined && $zone ne '' {
-	($tzone, $lleasting, $llnorthing)
+  fail "No location specified" unless $lllongitude.defined && $lllatitude.defined;
+  my $tzone;
+  if $zone.defined && $zone ne '' {
+    ($tzone, $lleasting, $llnorthing)
 	    = latlon_to_utm_force_zone('WGS-84', $zone, $lllatitude, $lllongitude);
-note "Calculated grid as $lleasting:$llnorthing from lat $lllatitude long $lllongitude zone $zone";
-        } else {
-	  ($zone, $lleasting, $llnorthing)
+    note "Calculated grid as $lleasting:$llnorthing from lat $lllatitude long $lllongitude zone $zone";
+  } else {
+    ($zone, $lleasting, $llnorthing)
 	    = latlon_to_utm('WGS-84', $lllatitude, $lllongitude);
-          note "Calculated grid as $lleasting:$llnorthing from lat $lllatitude long $lllongitude calculated zone $zone";
-      }
-    } else {
-	fail "No location specified\n";
-    }
-    if (!defined $graticulewidth) {
-	my ($tlat, $tlong, Nil)
+    note "Calculated grid as $lleasting:$llnorthing from lat $lllatitude long $lllongitude calculated zone $zone";
+  }
+  if (! $graticulewidth.defined) {
+    my ($tlat, $tlong, Nil)
 	    = utm_to_latlon('WGS-84', $zone, $lleasting+$imagewidth, $llnorthing);
-	$graticulewidth = $tlong - $lllongitude;
-note "Calculated graticule width as $tlong - $lllongitude ($lleasting $llnorthing $imagewidth) tlat = $tlat";
-    }
-    if (!defined $graticuleheight) {
-	my ($tlat, $tlong, Nil)
+    $graticulewidth = $tlong - $lllongitude;
+    note "Calculated graticule width as $tlong - $lllongitude ($lleasting $llnorthing $imagewidth) tlat = $tlat";
+  }
+  if (!defined $graticuleheight) {
+    my ($tlat, $tlong, Nil)
 	    = utm_to_latlon('WGS-84', $zone, $lleasting, $llnorthing+$imageheight);
-	$graticuleheight = $tlat - $lllatitude;
-    }
-    $lrlongitude = $urlongitude = $lllongitude + $graticulewidth;
-    $ullatitude = $urlatitude = $lllatitude + $graticuleheight;
-    $ullongitude = $lllongitude;
-    $lrlatitude = $lllatitude;
-note "$graticulewidth: $lrlongitude $ullatitude $ullongitude $lrlatitude";
-    (*, $lleasting, $llnorthing)
-	= latlon_to_utm_force_zone('WGS-84', $zone, $lllatitude, $lllongitude);
-    (*, $lreasting, $lrnorthing)
-	= latlon_to_utm_force_zone('WGS-84', $zone, $lrlatitude, $lrlongitude);
-    (*, $uleasting, $ulnorthing)
-	= latlon_to_utm_force_zone('WGS-84', $zone, $ullatitude, $ullongitude);
-    (*, $ureasting, $urnorthing)
-	= latlon_to_utm_force_zone('WGS-84', $zone, $urlatitude, $urlongitude);
+    $graticuleheight = $tlat - $lllatitude;
+  }
+  $lrlongitude = $urlongitude = $lllongitude + $graticulewidth;
+  $ullatitude = $urlatitude = $lllatitude + $graticuleheight;
+  $ullongitude = $lllongitude;
+  $lrlatitude = $lllatitude;
+  note "$graticulewidth: $lrlongitude $ullatitude $ullongitude $lrlatitude";
+  (*, $lleasting, $llnorthing) = latlon_to_utm_force_zone('WGS-84', $zone, $lllatitude, $lllongitude);
+  (*, $lreasting, $lrnorthing) = latlon_to_utm_force_zone('WGS-84', $zone, $lrlatitude, $lrlongitude);
+  (*, $uleasting, $ulnorthing) = latlon_to_utm_force_zone('WGS-84', $zone, $ullatitude, $ullongitude);
+  (*, $ureasting, $urnorthing) = latlon_to_utm_force_zone('WGS-84', $zone, $urlatitude, $urlongitude);
 } else { # on grid
-    if (!defined $lleasting or !defined $llnorthing or !defined $zone) {
-	note "No location specified\n";
-	exit 1;
-    }
-    if (!defined $gridwidth) {
-	$gridwidth = $imagewidth;
-    }
-    if (!defined $gridheight) {
-	$gridheight = $imageheight;
-    }
-    $ureasting = $lreasting = $lleasting + $gridwidth;
-    $uleasting = $lleasting;
-    $urnorthing = $ulnorthing = $llnorthing + $gridheight;
-    $lrnorthing = $llnorthing;
-    note "About to calculate bounding box (zone $zone)";
-    ($lllatitude, $lllongitude, Nil)
-	= utm_to_latlon('WGS-84', $zone, $lleasting, $llnorthing);
-    ($lrlatitude, $lrlongitude, Nil)
-	= utm_to_latlon('WGS-84', $zone, $lreasting, $lrnorthing);
-    ($ullatitude, $ullongitude, Nil)
-	= utm_to_latlon('WGS-84', $zone, $uleasting, $ulnorthing);
-    ($urlatitude, $urlongitude, Nil)
-	= utm_to_latlon('WGS-84', $zone, $ureasting, $urnorthing);
-    note "$lllatitude $lllongitude $urlatitude $urlongitude\n";
+  if (! $lleasting.defined or ! $llnorthing.defined or ! $zone.defined) {
+    fail "No location specified\n";
+  }
+  if (!defined $gridwidth) {
+    $gridwidth = $imagewidth;
+  }
+  if (!defined $gridheight) {
+    $gridheight = $imageheight;
+  }
+  $ureasting = $lreasting = $lleasting + $gridwidth;
+  $uleasting = $lleasting;
+  $urnorthing = $ulnorthing = $llnorthing + $gridheight;
+  $lrnorthing = $llnorthing;
+  note "About to calculate bounding box (zone $zone)";
+  ($lllatitude, $lllongitude, Nil) = utm_to_latlon('WGS-84', $zone, $lleasting, $llnorthing);
+  ($lrlatitude, $lrlongitude, Nil) = utm_to_latlon('WGS-84', $zone, $lreasting, $lrnorthing);
+  ($ullatitude, $ullongitude, Nil) = utm_to_latlon('WGS-84', $zone, $uleasting, $ulnorthing);
+  ($urlatitude, $urlongitude, Nil) = utm_to_latlon('WGS-84', $zone, $ureasting, $urnorthing);
+  note "$lllatitude $lllongitude $urlatitude $urlongitude\n";
 }
 
 if ($bleedright) {
-    my (Nil, $teast, $tnorth) = latlon_to_utm_force_zone('WGS-84', $zone, $urlatitude.Real, $lllongitude.Real);
-    my (Nil, $urlatitude, $urlongitude)  = utm_to_latlon('WGS-84', $zone, $teast+$imagewidth, $tnorth);
-
+  my (Nil, $teast, $tnorth) = latlon_to_utm_force_zone('WGS-84', $zone, $urlatitude.Real, $lllongitude.Real);
+  my (Nil, $urlatitude, $urlongitude)  = utm_to_latlon('WGS-84', $zone, $teast+$imagewidth, $tnorth);
 }
 
 if ($bleedtop) {
-    my (Nil, $teast, $tnorth) = latlon_to_utm_force_zone('WGS-84', $zone, $lllatitude.Real, $urlongitude.Real);
-    my (Nil, $urlatitude, $urlongitude)  = utm_to_latlon('WGS-84', $zone, $teast+$imagewidth, $tnorth);
+  my (Nil, $teast, $tnorth) = latlon_to_utm_force_zone('WGS-84', $zone, $lllatitude.Real, $urlongitude.Real);
+  my (Nil, $urlatitude, $urlongitude)  = utm_to_latlon('WGS-84', $zone, $teast+$imagewidth, $tnorth);
 }
 
 note qq:to 'EOF';
@@ -2015,43 +1981,34 @@ $maxx = $urlongitude + .001;
 $miny = $lllatitude - .001;
 $maxy = $urlatitude + .001;
 
-$xscale = 1000/$scale; # convert metres on the ground to mm on the map
-$yscale = $xscale;
+$yscale = $xscale = 1000/$scale; # convert metres on the ground to mm on the map
 
 my $passwd = 'xyz123';
 $dbh = DBIish.connect("Pg", user => 'ro', password => $passwd, dbname => $db);
 
 $sth_sym = $dbh.prepare('SELECT symbol_ga FROM vicmap_symbols WHERE type = ? AND ftype = ?');
 
-###############################################
-#                                             #
-#   Where we actually start to do some work   #
-#                                             #
-###############################################
-
 my ($leftzone, $rightzone);
 
 if ($ongraticule) {
-    ($leftzone, *, *)
-	= latlon_to_utm('WGS-84', $lllatitude, $lllongitude+.0000001);
-    ($rightzone, *, *)
-	= latlon_to_utm('WGS-84', $urlatitude, $urlongitude-.0000001);
+  ($leftzone, *, *)  = latlon_to_utm('WGS-84', $lllatitude, $lllongitude+.0000001);
+  ($rightzone, *, *) = latlon_to_utm('WGS-84', $urlatitude, $urlongitude-.0000001);
 } else {
-    $leftzone = $rightzone = $zone;
+  $leftzone = $rightzone = $zone;
 }
 
 if ($leftzone eq $rightzone) {
-    drawit($leftzone, $lllongitude, $lllatitude, $urlongitude, $urlatitude, True, True);
+  drawit($leftzone, $lllongitude, $lllatitude, $urlongitude, $urlatitude, True, True);
 } else {
-    my $boundary = $urlongitude.Int; # works for maps less than 1 degree wide -- FIX
-    drawit($leftzone, $lllongitude, $lllatitude, $boundary, $urlatitude, True, False);
-    drawit($rightzone, $boundary, $lllatitude, $urlongitude, $urlatitude, False, True);
+  my $boundary = $urlongitude.Int; # works for maps less than 1 degree wide -- FIX
+  drawit($leftzone, $lllongitude, $lllatitude, $boundary, $urlatitude, True, False);
+  drawit($rightzone, $boundary, $lllatitude, $urlongitude, $urlatitude, False, True);
 }
 
 put_userannotations();
 
 for keys %dependencies -> $dep {
-    do_dependency($dep);
+  do_dependency($dep);
 }
 
 $dbh.disconnect();
