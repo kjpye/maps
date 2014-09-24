@@ -1,0 +1,26 @@
+grid_labels (in margins)
+graticule_labels (in margins)
+tree_density
+hy_water_area_polygon (fill)
+hy_water_struct_area_polygon
+tr_air_infra_area_polygon
+hy_water_area_polygon (boundary)
+locality_polygon
+locality_names
+lga_polygon
+el_contour
+hy_water_struct_line
+hy_watercourse
+tr_road
+tr_rail
+properties
+el_ground_surface_point (spot_heights last)
+hy_water_point
+hy_water_struct_point
+tr_airport_infrastructure
+tr_rail_infrastructure
+tr_road_infrastructure
+graticule
+grid
+annotations
+userannotations

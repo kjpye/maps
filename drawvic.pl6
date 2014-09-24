@@ -4,6 +4,10 @@ use DBIish;
 BEGIN { @*INC.push: '.'; } # for testing
 use UTM;
 
+### Global symbol definitions
+
+my $TMP;
+
 my $symbols = 'Symbols_GA';
 
 my $scale = 25000;
@@ -22,8 +26,10 @@ my %featuretype;
 my @display_feature;
 my %nofeature;
 my @properties;
+my %dependencies;
 
 my %drawobjects;
+# Should read this from the database
 my %allobjects = map {$_ => 1}, <
                   el_contour
                   el_grnd_surface_point
@@ -49,28 +55,17 @@ my %allobjects = map {$_ => 1}, <
                   userannotations
                  >;
 
-%drawobjects = %allobjects.kv;
-#for %allobjects.keys -> $type {
-#    %drawobjects{$type} = 1; # default to drawing everything
-#}
+my %papersizes;
+my $papersize = 'a3';
+my ($paperwidth, $paperheight);
+my $orientation = 'landscape';
 
 my @annotations;
 
-sub add_annotation(Real $long, Real $lat, Real $xoffset, Real $yoffset,Str $string) {
-    my $annotation = {};
-    %($annotation)<long>    = $long;
-    %($annotation)<lat>     = $lat;
-    %($annotation)<xoffset> = $xoffset;
-    %($annotation)<yoffset> = $yoffset;
-    %($annotation)<string>  = $string;
-    @annotations.push: $annotation;
-    note "Adding annotation at $long,$lat: $string\n";
-}
-
-# Could add non-metric sizes to the hash here.
+sub set_papersizes() {
 # Keys are papersize, values are a string with
 # width and length in mm separated by commas.
-my %papersizes = (
+%papersizes = (
   'a'      => '216,   279',
   'b'      => '279,   432',
   'c'      => '432,   559',
@@ -90,11 +85,22 @@ my %papersizes = (
     $l = $w;
     $w = $l / sqrt(2);
   }
-note %papersizes;
+#note %papersizes;
+}
 
-my $papersize = 'a3';
-my ($paperwidth, $paperheight);
-my $orientation = 'landscape';
+my ($xoffset, $yoffset, $xmin, $ymin);
+
+sub add_annotation(Real $long, Real $lat, Real $xoffset, Real $yoffset,Str $string) {
+    my $annotation = {};
+    %($annotation)<long>    = $long;
+    %($annotation)<lat>     = $lat;
+    %($annotation)<xoffset> = $xoffset;
+    %($annotation)<yoffset> = $yoffset;
+    %($annotation)<string>  = $string;
+    @annotations.push: $annotation;
+    note "Adding annotation at $long,$lat: $string\n";
+}
+
 my ($leftmarginwidth, $lowermarginwidth, $rightmarginwidth, $uppermarginwidth)
     = (30, 25, 30, 25); # negative to bleed over page boundary
 my ($imagewidth, $imageheight);
@@ -281,150 +287,17 @@ note "Graticule spacing set to $graticule_spacing";
     note "Unknown option \"$arg\" ignored\n";
 }
 
-for '/home/kevinp/.drawrc', '.drawrc' -> $cfgfile {
-note "Handling config file $cfgfile";
-  if my $opt = $cfgfile.IO.open {
-    for $opt.lines -> $line {
-      s/'#' .*//;
-      s/^\s+//;
-      s/\s+$//;
-      next unless $_;
-      process_option($_);
-    }
-    $opt.close;
-  }
-}
-
-for @*ARGS -> $arg {
-    process_option($arg);
-}
-
-# Calculate various things which depend on the options
-
-if $ongrid && $ongraticule {
-    fail "Must use either grid coordinates or lat/lon; not a mixture";
-}
-
-# How much space do we have?
-
-if (! %papersizes{$papersize}.defined) {
-    fail "Unknown paper size $papersize";
-}
-
-note "Orientation is \"$orientation\"";
-given $orientation {
-  when 'portrait'
-    { ($paperwidth, $paperheight) = %papersizes{$papersize}.split(','); }
-  when 'landscape'
-    { ($paperheight, $paperwidth) = %papersizes{$papersize}.split(','); }
-  default
-    { fail "Unknown paper orientation $orientation\n"; }
-}
-note "Page width: $paperwidth, height $paperheight";
-$imagewidth
-    = ($paperwidth  - $leftmarginwidth  - $rightmarginwidth) * $scale/1000;
-$imageheight
-    = ($paperheight - $lowermarginwidth - $uppermarginwidth) * $scale/1000;
-
-# Work out where the lower left corner is
-
-if ($ongraticule) {
-    if (defined $lllongitude and defined $lllatitude) {
-	my $tzone;
-        if $zone.defined && $zone ne '' {
-	($tzone, $lleasting, $llnorthing)
-	    = latlon_to_utm_force_zone('WGS-84', $zone, $lllatitude, $lllongitude);
-note "Calculated grid as $lleasting:$llnorthing from lat $lllatitude long $lllongitude zone $zone";
-        } else {
-	  ($zone, $lleasting, $llnorthing)
-	    = latlon_to_utm('WGS-84', $lllatitude, $lllongitude);
-          note "Calculated grid as $lleasting:$llnorthing from lat $lllatitude long $lllongitude calculated zone $zone";
-      }
-    } else {
-	fail "No location specified\n";
-    }
-    if (!defined $graticulewidth) {
-	my ($tlat, $tlong, Nil)
-	    = utm_to_latlon('WGS-84', $zone, $lleasting+$imagewidth, $llnorthing);
-	$graticulewidth = $tlong - $lllongitude;
-note "Calculated graticule width as $tlong - $lllongitude ($lleasting $llnorthing $imagewidth) tlat = $tlat";
-    }
-    if (!defined $graticuleheight) {
-	my ($tlat, $tlong, Nil)
-	    = utm_to_latlon('WGS-84', $zone, $lleasting, $llnorthing+$imageheight);
-	$graticuleheight = $tlat - $lllatitude;
-    }
-    $lrlongitude = $urlongitude = $lllongitude + $graticulewidth;
-    $ullatitude = $urlatitude = $lllatitude + $graticuleheight;
-    $ullongitude = $lllongitude;
-    $lrlatitude = $lllatitude;
-note "$graticulewidth: $lrlongitude $ullatitude $ullongitude $lrlatitude";
-    (*, $lleasting, $llnorthing)
-	= latlon_to_utm_force_zone('WGS-84', $zone, $lllatitude, $lllongitude);
-    (*, $lreasting, $lrnorthing)
-	= latlon_to_utm_force_zone('WGS-84', $zone, $lrlatitude, $lrlongitude);
-    (*, $uleasting, $ulnorthing)
-	= latlon_to_utm_force_zone('WGS-84', $zone, $ullatitude, $ullongitude);
-    (*, $ureasting, $urnorthing)
-	= latlon_to_utm_force_zone('WGS-84', $zone, $urlatitude, $urlongitude);
-} else { # on grid
-    if (!defined $lleasting or !defined $llnorthing or !defined $zone) {
-	note "No location specified\n";
-	exit 1;
-    }
-    if (!defined $gridwidth) {
-	$gridwidth = $imagewidth;
-    }
-    if (!defined $gridheight) {
-	$gridheight = $imageheight;
-    }
-    $ureasting = $lreasting = $lleasting + $gridwidth;
-    $uleasting = $lleasting;
-    $urnorthing = $ulnorthing = $llnorthing + $gridheight;
-    $lrnorthing = $llnorthing;
-    note "About to calculate bounding box (zone $zone)";
-    ($lllatitude, $lllongitude, Nil)
-	= utm_to_latlon('WGS-84', $zone, $lleasting, $llnorthing);
-    ($lrlatitude, $lrlongitude, Nil)
-	= utm_to_latlon('WGS-84', $zone, $lreasting, $lrnorthing);
-    ($ullatitude, $ullongitude, Nil)
-	= utm_to_latlon('WGS-84', $zone, $uleasting, $ulnorthing);
-    ($urlatitude, $urlongitude, Nil)
-	= utm_to_latlon('WGS-84', $zone, $ureasting, $urnorthing);
-    note "$lllatitude $lllongitude $urlatitude $urlongitude\n";
-}
-
-if ($bleedright) {
-    my (Nil, $teast, $tnorth) = latlon_to_utm_force_zone('WGS-84', $zone, $urlatitude.Real, $lllongitude.Real);
-    my (Nil, $urlatitude, $urlongitude)  = utm_to_latlon('WGS-84', $zone, $teast+$imagewidth, $tnorth);
-
-}
-
-if ($bleedtop) {
-    my (Nil, $teast, $tnorth) = latlon_to_utm_force_zone('WGS-84', $zone, $lllatitude.Real, $urlongitude.Real);
-    my (Nil, $urlatitude, $urlongitude)  = utm_to_latlon('WGS-84', $zone, $teast+$imagewidth, $tnorth);
-}
-
-note qq:to 'EOF';
-Grid corners:
-    $uleasting $ulnorthing   $ureasting $urnorthing
-    $lleasting $llnorthing   $lreasting $lrnorthing
-EOF
-
-my $tmpfile = '/tmp/' ~ $*PID.Str;
-my $TMP = $tmpfile.IO.open(:a) or fail "Could not open /tmp/$*PID: $!";
-# FIX LATER unlink($tmpfile); # saves cleaning up later
-
-print qq :to 'EOF';
+sub postscript_prefix() {
+  print qq :to 'EOF';
 \%!PS-Adobe
 \% This product incorporates data which is Copyright State of Victoria 2001-2014
 $papersize
 72 25.4 div dup scale
 EOF
 
-say "$paperheight 0 translate 90 rotate" if $orientation eq 'landscape';
+  say "$paperheight 0 translate 90 rotate" if $orientation eq 'landscape';
 
-print Q:to 'EOF';
+  print Q:to 'EOF';
 /Helvetica findfont
 dup length dict begin
 { 1 index /FID ne {def} {pop pop} ifelse } forall
@@ -473,25 +346,8 @@ EOF
 8 8 moveto
 (This product incorporates data which is Copyright\251 State of Victoria 2001-2014) show
 EOF
+    }
 }
-
-my %dependencies;
-
-my ($xoffset, $yoffset, $xmin, $ymin);
-$xmin = $leftmarginwidth;
-$ymin = $lowermarginwidth;
-# The following four variables are used to do rough clipping during drawing
-my ($minx, $miny, $maxx, $maxy);
-$minx = $lllongitude - .001;
-$maxx = $urlongitude + .001;
-$miny = $lllatitude - .001;
-$maxy = $urlatitude + .001;
-
-my $xscale = 1000/$scale; # convert metres on the ground to mm on the map
-my $yscale = $xscale;
-
-my $passwd = 'xyz123';
-my $dbh = DBIish.connect("Pg", user => 'ro', password => $passwd, dbname => $db);
 
 sub read_points (Real $x, Real $y, Str $shape) {
   if $shape ~~ s/^POLYGON\(\(// {
@@ -510,6 +366,8 @@ sub read_points (Real $x, Real $y, Str $shape) {
 
 my $point_count = 0;
 my $object_count = 0;
+my $xscale;
+my $yscale;
     
 sub grid2page(Real $xin, Real $yin) {
     my $xout = $xin + $xoffset;
@@ -668,6 +526,8 @@ sub plot_previous_point(Str $zone) {
     }
 }
 
+my ($minx, $miny, $maxx, $maxy);
+
 sub add_point(Str $zone, Real $x, Real $y) {
     my $new_quadrant = 5;
 
@@ -721,9 +581,9 @@ sub put_line(Str $zone, Str $shape, Str $func, Real $featurewidth) {
     %dependencies{$func}++;
 }
 
-my $sth_sym = $dbh.prepare('SELECT symbol_ga FROM vicmap_symbols WHERE type = ? AND ftype = ?');
-
 my %symbol;
+my $dbh;
+my $sth_sym;
 
 sub get_symbol(Str $type, Str $ftype) {
     return %symbol{"$type:$ftype"} if %symbol{"$type:$ftype"}.defined;
@@ -1588,6 +1448,7 @@ sub label_graticule(Str $zone, Bool $left, Bool $right) {
 }
 
 sub draw_graticule(Str $zone) {
+    note "Drawing graticule...";
 # Now draw the lines of longitude and latitude:
 
     my $minlat = ($lllatitude/$graticule_spacing).Int * $graticule_spacing;
@@ -1696,7 +1557,7 @@ $TMP.print: "% draw graticule from $minlong, $minlat to $urlongitude, $urlatitud
     
 sub draw_grid(Str $zone) {
 # Finally draw the blue grid
-    
+    note "Displaying grid...";
     $TMP.say: "1 .1 0 .1 setcmykcolor\ngsave";
 
     $minnorthing = min($llnorthing, $lrnorthing);
@@ -1816,26 +1677,9 @@ sub put_userannotations {
     }
 }
 
-my ($xoff, $yoff);
+sub draw_margins(Bool $left, Bool $right) {
+    my ($xoff, $yoff, $slope);
 
-sub drawit(Str $zone, Real $d_lllong, Real $d_lllat, Real $d_urlong, Real $d_urlat, Bool $left, Bool $right) {
-    my ($tlllong, $turlong, $tlllat, $turlat)
-	= ($lllongitude, $urlongitude, $lllatitude, $urlatitude);
-    ($lllongitude, $urlongitude, $lllatitude, $urlatitude)
-	= ($d_lllong, $d_urlong, $d_lllat, $d_urlat);
-    note "drawit: $zone $lllongitude $lllatitude $urlongitude $urlatitude $left $right";
-    my $slope;
-
-my ($lllong, $lllat, $urlong, $urlat) = ($lllongitude - 0.01,
-					$lllatitude - 0.01,
-					$urlongitude + 0.01,
-					$urlatitude + 0.01);
-
-    $rect = "ST_GeometryFromText('POLYGON(($lllong $lllat, $urlong $lllat, $urlong $urlat, $lllong $urlat, $lllong $lllat))', 4283)";
-    #note $rect;
-
-# First draw everything in the margin
-    
     (*, $xoffset, $yoffset)
 	= latlon_to_utm_force_zone('WGS-84', $zone, $lllatitude, $lllongitude);
     
@@ -1877,8 +1721,12 @@ my ($lllong, $lllat, $urlong, $urlat) = ($lllongitude - 0.01,
     label_grid($zone, $left, $right)      if %drawobjects<grid>.defined;
     label_graticule($zone, $left, $right) if %drawobjects<graticule>.defined;
 
-# Now draw the bounding box, remembering the path which then becomes the clip path
+    return ($xoff, $yoff, $slope);
+}
+
+# Draw the bounding box, remembering the path which then becomes the clip path
     
+sub draw_bbox() {
     if ($ongraticule) {
 	my $long = $lllongitude;
 	my $lat = $lllatitude;
@@ -1930,6 +1778,56 @@ my ($lllong, $lllat, $urlong, $urlat) = ($lllongitude - 0.01,
         ($x, $y) = grid2page($uleasting, $ulnorthing);
         $TMP.print: "$x $y lineto\n";
     }
+}
+
+# Fetch and display all the objects
+    
+sub draw_objects(Real $xoff, Real $yoff, Real $slope) {
+    my $sth_draw = $dbh.prepare("SELECT featurename, drawtype, tablename, featurecolumn, defaultsymbol, displayorder FROM vicdisplayorder ORDER BY displayorder");
+    $sth_draw.execute;
+    while (my @row = $sth_draw.fetchrow_array) {
+     my ($feature, $draw, $table, $column, $default, $order) = @row;
+      #note "Drawing $feature: $draw $table $column";
+      if $order && %drawobjects{$feature}.defined {
+        given $draw {
+          when 'treeden'        { draw_treeden($zone); }
+          when 'area'           { draw_areas($zone, $table); }
+          when 'line'           { draw_lines($zone, $table, -$default); }
+          when 'line_f'         { draw_lines_f($zone, $table, -$default); }
+          when 'outline'        { draw_polygon_outline_names($zone, $table, $column, 8, 0.2, '1 0 .86 0'); }
+          when 'road'           { draw_roads($zone); }
+          when 'wline'          { draw_wlines($zone, $table); }
+          when 'property'       { draw_properties($zone); }
+          when 'point'          { draw_points($zone, $table); }
+          when 'spotheight'     { spot_heights($zone); }
+          when 'roadpoint'      { draw_roadpoints($zone); }
+          when 'graticule'      { draw_graticule($zone); }
+          when 'grid'           { draw_grid($zone); }
+          when 'annotation'     { draw_annotations($zone); }
+          when 'userannotation' { draw_userannotations($zone, $xoff, $yoff, $slope); }
+          default               { note "Unknown draw type $draw for feature $feature: objects ignored"; }
+        }
+      }
+    }
+}
+
+sub drawit(Str $zone, Real $d_lllong, Real $d_lllat, Real $d_urlong, Real $d_urlat, Bool $left, Bool $right) {
+    my ($tlllong, $turlong, $tlllat, $turlat)
+	= ($lllongitude, $urlongitude, $lllatitude, $urlatitude);
+    ($lllongitude, $urlongitude, $lllatitude, $urlatitude)
+	= ($d_lllong, $d_urlong, $d_lllat, $d_urlat);
+    note "drawit: $zone $lllongitude $lllatitude $urlongitude $urlatitude $left $right";
+
+my ($lllong, $lllat, $urlong, $urlat) = ($lllongitude - 0.01,
+					$lllatitude - 0.01,
+					$urlongitude + 0.01,
+					$urlatitude + 0.01);
+
+    $rect = "ST_GeometryFromText('POLYGON(($lllong $lllat, $urlong $lllat, $urlong $urlat, $lllong $urlat, $lllong $lllat))', 4283)";
+    #note $rect;
+
+    my ($xoff, $yoff, $slope) = draw_margins($left, $right);
+    draw_bbox();
 
     $TMP.print: "closepath\n";
     if (%drawobjects{'graticule'}) {
@@ -1938,111 +1836,11 @@ my ($lllong, $lllat, $urlong, $urlat) = ($lllongitude - 0.01,
     }
     $TMP.print: "clip newpath\n";
     
-# Fetch and display all the objects
-    
-    draw_treeden($zone) if %drawobjects<tree_density>.defined;
-    for <
-          hy_water_area_polygon
-          hy_water_struct_area_polygon
-          tr_air_infra_area_polygon
-        > -> $object_type {
-	if %drawobjects{$object_type.lc}.defined {
-	    draw_areas($zone, $object_type);
-	}
-    }
-    
-    #draw_lines($zone, 'Tracks', -1001)    if %drawobjects<tracks>.defined;
-    #draw_lines($zone, 'MineAreas')        if %drawobjects<mineareas>.defined;
-    #draw_lines($zone, 'Reserves', 65)     if %drawobjects<reserves>.defined;
-    #draw_lines($zone, 'Lakes', -114)      if %drawobjects<lakes>.defined;
-    draw_lines($zone, 'hy_water_area_polygon', -114)
-                                          if %drawobjects<hy_water_area_polygon>.defined;
-    #draw_lines($zone, 'Reservoirs', -114) if %drawobjects<reservoirs>.defined;
-    draw_lines_f($zone, 'locality_polygon', -65) if %drawobjects<locality_polygon>.defined;
-    draw_polygon_outline_names($zone, 'locality_polygon', 'locality', 8, 0.2, '1 0 .86 0') if %drawobjects<locality_name>.defined;
-    draw_lines_f($zone, 'lga_polygon', -62) if %drawobjects<lga_polygon>.defined;
-    
-my %line_has_width = (
-                      el_contour => 0,
-                      hy_water_struct_line => 0,
-                      hy_watercourse => 0,
-                      tr_rail => 0,
-                      tr_road => 0,
-                     );
-
-    for <
-          el_contour
-          hy_water_struct_line
-          hy_watercourse
-          tr_road
-          tr_rail
-        > -> $object_type {
-	if %drawobjects{lc $object_type}.defined {
-          if $object_type eq 'tr_road' {
-            draw_roads($zone);
-          } elsif $object_type eq 'OSMRoads' {
-            draw_osmroads($zone);
-	  } elsif %line_has_width{$object_type} {
-	    draw_wlines($zone, $object_type);
-	  }
-	  else {
-	    draw_lines($zone, $object_type);
-	  }
-        }
-    }
-   
-    draw_properties($zone) if %drawobjects<property>.defined;
-
-    for <
-          el_grnd_surface_point
-          hy_water_point
-          hy_water_struct_point
-          tr_airport_infrastructure
-          tr_rail_infrastructure
-          tr_road_infrastructure
-        > -> $object_type {
-	if %drawobjects{lc $object_type}.defined {
-          if ($object_type eq 'tr_road_infrastructure') {
-              draw_roadpoints($zone);
-          } elsif ($object_type eq 'el_grnd_surface_point') {
-              draw_points($zone, 'el_grnd_surface_point');
-              spot_heights($zone);
-          } else {
-              draw_points($zone, $object_type);
-          }
-	}
-    }
-
-    draw_graticule($zone) if defined %drawobjects{'graticule'};
-    draw_grid($zone) if defined %drawobjects{'grid'};
-#    draw_annotations($zone) if %drawobjects<annotations>.defined;
-
-    draw_userannotations($zone, $xoff, $yoff, $slope) if %drawobjects<userannotations>.defined;
+    draw_objects($xoff, $yoff, $slope);
 
     $TMP.say: "restore"; # undo the clip path
     ($lllongitude, $urlongitude, $lllatitude, $urlatitude) = ($tlllong, $turlong, $tlllat, $turlat);
 }
-
-my ($leftzone, $rightzone);
-
-if ($ongraticule) {
-    ($leftzone, *, *)
-	= latlon_to_utm('WGS-84', $lllatitude, $lllongitude+.0000001);
-    ($rightzone, *, *)
-	= latlon_to_utm('WGS-84', $urlatitude, $urlongitude-.0000001);
-} else {
-    $leftzone = $rightzone = $zone;
-}
-
-if ($leftzone eq $rightzone) {
-    drawit($leftzone, $lllongitude, $lllatitude, $urlongitude, $urlatitude, True, True);
-} else {
-    my $boundary = $urlongitude.Int; # works for maps less than 1 degree wide -- FIX
-    drawit($leftzone, $lllongitude, $lllatitude, $boundary, $urlatitude, True, False);
-    drawit($rightzone, $boundary, $lllatitude, $urlongitude, $urlatitude, False, True);
-}
-
-put_userannotations();
 
 # Print out the Postscript definitions needed by this map
 
@@ -2068,6 +1866,189 @@ sub do_dependency(Str $dependency) {
 	%done_deps{$dependency} = 1;
     }
 }
+
+# START RUNNING HERE -- everything is defined
+
+set_papersizes();
+
+for '/home/kevinp/.drawrc', '.drawrc' -> $cfgfile {
+note "Handling config file $cfgfile";
+  if my $opt = $cfgfile.IO.open {
+    for $opt.lines -> $line {
+      s/'#' .*//;
+      s/^\s+//;
+      s/\s+$//;
+      next unless $_;
+      process_option($_);
+    }
+    $opt.close;
+  }
+}
+
+for @*ARGS -> $arg {
+    process_option($arg);
+}
+
+# Calculate various things which depend on the options
+
+if $ongrid && $ongraticule {
+    fail "Must use either grid coordinates or lat/lon; not a mixture";
+}
+
+# How much space do we have?
+
+if (! %papersizes{$papersize}.defined) {
+    fail "Unknown paper size $papersize";
+}
+
+note "Orientation is \"$orientation\"";
+given $orientation {
+  when 'portrait'
+    { ($paperwidth, $paperheight) = %papersizes{$papersize}.split(','); }
+  when 'landscape'
+    { ($paperheight, $paperwidth) = %papersizes{$papersize}.split(','); }
+  default
+    { fail "Unknown paper orientation $orientation\n"; }
+}
+note "Page width: $paperwidth, height $paperheight";
+$imagewidth
+    = ($paperwidth  - $leftmarginwidth  - $rightmarginwidth) * $scale/1000;
+$imageheight
+    = ($paperheight - $lowermarginwidth - $uppermarginwidth) * $scale/1000;
+
+# Work out where the lower left corner is
+
+if ($ongraticule) {
+    if (defined $lllongitude and defined $lllatitude) {
+	my $tzone;
+        if $zone.defined && $zone ne '' {
+	($tzone, $lleasting, $llnorthing)
+	    = latlon_to_utm_force_zone('WGS-84', $zone, $lllatitude, $lllongitude);
+note "Calculated grid as $lleasting:$llnorthing from lat $lllatitude long $lllongitude zone $zone";
+        } else {
+	  ($zone, $lleasting, $llnorthing)
+	    = latlon_to_utm('WGS-84', $lllatitude, $lllongitude);
+          note "Calculated grid as $lleasting:$llnorthing from lat $lllatitude long $lllongitude calculated zone $zone";
+      }
+    } else {
+	fail "No location specified\n";
+    }
+    if (!defined $graticulewidth) {
+	my ($tlat, $tlong, Nil)
+	    = utm_to_latlon('WGS-84', $zone, $lleasting+$imagewidth, $llnorthing);
+	$graticulewidth = $tlong - $lllongitude;
+note "Calculated graticule width as $tlong - $lllongitude ($lleasting $llnorthing $imagewidth) tlat = $tlat";
+    }
+    if (!defined $graticuleheight) {
+	my ($tlat, $tlong, Nil)
+	    = utm_to_latlon('WGS-84', $zone, $lleasting, $llnorthing+$imageheight);
+	$graticuleheight = $tlat - $lllatitude;
+    }
+    $lrlongitude = $urlongitude = $lllongitude + $graticulewidth;
+    $ullatitude = $urlatitude = $lllatitude + $graticuleheight;
+    $ullongitude = $lllongitude;
+    $lrlatitude = $lllatitude;
+note "$graticulewidth: $lrlongitude $ullatitude $ullongitude $lrlatitude";
+    (*, $lleasting, $llnorthing)
+	= latlon_to_utm_force_zone('WGS-84', $zone, $lllatitude, $lllongitude);
+    (*, $lreasting, $lrnorthing)
+	= latlon_to_utm_force_zone('WGS-84', $zone, $lrlatitude, $lrlongitude);
+    (*, $uleasting, $ulnorthing)
+	= latlon_to_utm_force_zone('WGS-84', $zone, $ullatitude, $ullongitude);
+    (*, $ureasting, $urnorthing)
+	= latlon_to_utm_force_zone('WGS-84', $zone, $urlatitude, $urlongitude);
+} else { # on grid
+    if (!defined $lleasting or !defined $llnorthing or !defined $zone) {
+	note "No location specified\n";
+	exit 1;
+    }
+    if (!defined $gridwidth) {
+	$gridwidth = $imagewidth;
+    }
+    if (!defined $gridheight) {
+	$gridheight = $imageheight;
+    }
+    $ureasting = $lreasting = $lleasting + $gridwidth;
+    $uleasting = $lleasting;
+    $urnorthing = $ulnorthing = $llnorthing + $gridheight;
+    $lrnorthing = $llnorthing;
+    note "About to calculate bounding box (zone $zone)";
+    ($lllatitude, $lllongitude, Nil)
+	= utm_to_latlon('WGS-84', $zone, $lleasting, $llnorthing);
+    ($lrlatitude, $lrlongitude, Nil)
+	= utm_to_latlon('WGS-84', $zone, $lreasting, $lrnorthing);
+    ($ullatitude, $ullongitude, Nil)
+	= utm_to_latlon('WGS-84', $zone, $uleasting, $ulnorthing);
+    ($urlatitude, $urlongitude, Nil)
+	= utm_to_latlon('WGS-84', $zone, $ureasting, $urnorthing);
+    note "$lllatitude $lllongitude $urlatitude $urlongitude\n";
+}
+
+if ($bleedright) {
+    my (Nil, $teast, $tnorth) = latlon_to_utm_force_zone('WGS-84', $zone, $urlatitude.Real, $lllongitude.Real);
+    my (Nil, $urlatitude, $urlongitude)  = utm_to_latlon('WGS-84', $zone, $teast+$imagewidth, $tnorth);
+
+}
+
+if ($bleedtop) {
+    my (Nil, $teast, $tnorth) = latlon_to_utm_force_zone('WGS-84', $zone, $lllatitude.Real, $urlongitude.Real);
+    my (Nil, $urlatitude, $urlongitude)  = utm_to_latlon('WGS-84', $zone, $teast+$imagewidth, $tnorth);
+}
+
+note qq:to 'EOF';
+Grid corners:
+    $uleasting $ulnorthing   $ureasting $urnorthing
+    $lleasting $llnorthing   $lreasting $lrnorthing
+EOF
+
+my $tmpfile = '/tmp/' ~ $*PID.Str;
+$TMP = $tmpfile.IO.open(:a) or fail "Could not open /tmp/$*PID: $!";
+# FIX LATER unlink($tmpfile); # saves cleaning up later
+
+postscript_prefix();
+
+$xmin = $leftmarginwidth;
+$ymin = $lowermarginwidth;
+# The following four variables are used to do rough clipping during drawing
+$minx = $lllongitude - .001;
+$maxx = $urlongitude + .001;
+$miny = $lllatitude - .001;
+$maxy = $urlatitude + .001;
+
+$xscale = 1000/$scale; # convert metres on the ground to mm on the map
+$yscale = $xscale;
+
+my $passwd = 'xyz123';
+$dbh = DBIish.connect("Pg", user => 'ro', password => $passwd, dbname => $db);
+
+$sth_sym = $dbh.prepare('SELECT symbol_ga FROM vicmap_symbols WHERE type = ? AND ftype = ?');
+
+###############################################
+#                                             #
+#   Where we actually start to do some work   #
+#                                             #
+###############################################
+
+my ($leftzone, $rightzone);
+
+if ($ongraticule) {
+    ($leftzone, *, *)
+	= latlon_to_utm('WGS-84', $lllatitude, $lllongitude+.0000001);
+    ($rightzone, *, *)
+	= latlon_to_utm('WGS-84', $urlatitude, $urlongitude-.0000001);
+} else {
+    $leftzone = $rightzone = $zone;
+}
+
+if ($leftzone eq $rightzone) {
+    drawit($leftzone, $lllongitude, $lllatitude, $urlongitude, $urlatitude, True, True);
+} else {
+    my $boundary = $urlongitude.Int; # works for maps less than 1 degree wide -- FIX
+    drawit($leftzone, $lllongitude, $lllatitude, $boundary, $urlatitude, True, False);
+    drawit($rightzone, $boundary, $lllatitude, $urlongitude, $urlatitude, False, True);
+}
+
+put_userannotations();
 
 for keys %dependencies -> $dep {
     do_dependency($dep);
