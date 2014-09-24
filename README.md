@@ -6,11 +6,11 @@ maps from that data.
 
 ##Contents
 
-drawvic is a perl5 script to access a Postgresql database
+`drawvic` is a perl5 script to access a Postgresql database
 containing data available from data.vic.gov.au and generate
 a PostScript map of a particular area.
 
-drawvic.pl6 is a perl6 version of the same script (not yet
+`drawvic.pl6` is a perl6 version of the same script (not yet
 fully debugged).
 
 It's not perfect by any means, the main defect at the moment
@@ -20,87 +20,92 @@ which makes small scale maps rather crowded.
 
 ##Usage
 
-drawvic lat=dd.ddd long=ddd.ddd
+`drawvic lat=dd.ddd long=ddd.ddd`
 
 will produce PostScript on stdout (plus lots of progress information on stderr)
 which has the specified latitude and longitude at the bottom left hand corner.
 
+Each script will process ~/.drawrc and .drawrc as a list of options before
+parsing the command line options. Options specified later will override earlier
+options.
+
 Other options:
 
-papersize=a? -- Generate an A? sized map (default is A3)
+`papersize=a?` -- Generate an A? sized map (default is A3)
 
-orientation=portrait
-orientation=landscape -- default
+`orientation=portrait`
 
-bleedtop=1 -- bleed the map over the top margin (default is to stop the map short of the margin with longitude and easting information repeated above the map)
+`orientation=landscape` -- default
 
-bleedright=1 -- bleed the map over the right margin (default is to stop the map short of the margin with latitude and northing information repeated to the right of the map)
+`bleedtop=1` -- bleed the map over the top margin (default is to stop the map short of the margin with longitude and easting information repeated above the map)
 
-annotation="dd.ddd dd.ddd xoff yoff text" -- print the specified text in a box at location "dd.ddd dd.ddd" offset by xoff,yoff millimetres (default 10,10), with a line from the box to the specified location
+`bleedright=1` -- bleed the map over the right margin (default is to stop the map short of the margin with latitude and northing information repeated to the right of the map)
 
-leftmarginwidth=m.mm -- the width of the left margin in millimetres (default 30).
+`annotation="dd.ddd dd.ddd xoff yoff text"` -- print the specified text in a box at location "dd.ddd dd.ddd" offset by xoff,yoff millimetres (default 10,10), with a line from the box to the specified location
 
-rightmarginwidth=m.mm -- the width of the right margin in millimetres (default 30); ignored if bleedright is specified.
+`leftmarginwidth=m.mm` -- the width of the left margin in millimetres (default 30).
 
-lowermarginwidth=m.mm -- the height of the bottom margin in millimetres (default 25).
+`rightmarginwidth=m.mm` -- the width of the right margin in millimetres (default 30); ignored if bleedright is specified.
 
-bottommarginwidth=m.mm -- see lowermarginwidth
+`lowermarginwidth=m.mm` -- the height of the bottom margin in millimetres (default 25).
 
-uppermarginwidth=m.mm -- the height of the top margin in millimetres (default 25); ignored if bleedtop is specified.
+`bottommarginwidth=m.mm` -- see lowermarginwidth
 
-topmarginwidth=m.mm -- see uppermarginwidth
+`uppermarginwidth=m.mm` -- the height of the top margin in millimetres (default 25); ignored if bleedtop is specified.
 
-database=<db> -- The name of the Postgresql database to use (default "vicmap")
+`topmarginwidth=m.mm` -- see uppermarginwidth
 
-db=<db> -- see database
+`database=&lt;db&gt;` -- The name of the Postgresql database to use (default "vicmap")
 
-latitude=dd.ddd -- The latitude of the lower left corner of the map in decimal degrees. Negative is south of the equator.
+`db=&lt;db&gt;` -- see database
 
-lat=dd.ddd -- see latitude
+`latitude=dd.ddd` -- The latitude of the lower left corner of the map in decimal degrees. Negative is south of the equator.
 
-longitude=ddd.ddd -- The longitude of the lower left corner of the map in decimal degrees. Negative is west of Greenwich.
+`lat=dd.ddd` -- see latitude
 
-long=ddd.ddd -- see longitude
+`longitude=ddd.ddd` -- The longitude of the lower left corner of the map in decimal degrees. Negative is west of Greenwich.
 
-easting=mmmmmmm -- The easting of the lower left corner of the map in metres. zone must also be specified.
+`long=ddd.ddd` -- see longitude
 
-east=mmmmmmm -- see easting
+`easting=mmmmmmm` -- The easting of the lower left corner of the map in metres. zone must also be specified.
 
-northing=mmmmmmm -- The northing of the lower left corner of the map in metres. The zone must also be specified.
+`east=mmmmmmm` -- see easting
 
-north=mmmmmm -- see northing
+`northing=mmmmmmm` -- The northing of the lower left corner of the map in metres. The zone must also be specified.
 
-width=15m -- The width of the map in decimal degrees (or decimal minutes if "m" appended).
+`north=mmmmmm` -- see northing
 
-height=15m -- The height of the map in decimal degrees (or decimal minutes if "m" appended).
+`width=15m` -- The width of the map in decimal degrees (or decimal minutes if "m" appended).
 
-zone=55H -- The UTM zone of the map. Must be specified if eastings and northings are specified for the lower left corner, otherwise defaults to the zone of the lower left corner.
+`height=15m` -- The height of the map in decimal degrees (or decimal minutes if "m" appended).
 
-scale=30000 -- The scale of the map. (May be specified as 1:30000 also.) Defaults to 1:25000.
+`zone=55H` -- The UTM zone of the map. Must be specified if eastings and northings are specified for the lower left corner, otherwise defaults to the zone of the lower left corner.
 
-gridspacing=1000m -- The grid spacing on the map in metres (or km if "k" is appended). Defaults to 10km.
+`scale=30000` -- The scale of the map. (May be specified as 1:30000 also.) Defaults to 1:25000.
 
-grid=1000m -- see gridspacing
+`gridspacing=1000m` -- The grid spacing on the map in metres (or km if "k" is appended). Defaults to 10km.
 
-graticulespacing=2.5m -- The graticule spacing in decimal degrees (or decimal minutes if "m" appended). Defaults to 0.25.
+`grid=1000m` -- see gridspacing
 
-graticule=2.5m -- see graticulespacing
+`graticulespacing=2.5m` -- The graticule spacing in decimal degrees (or decimal minutes if "m" appended). Defaults to 0.25.
 
-display=all -- Display all possible objects (see list below). This is the default.
+`graticule=2.5m` -- see graticulespacing
 
-display=roads -- Display the road information. (Used after nodisplay=all.) See below for complete list of what can be displayed.
+`display=all` -- Display all possible objects (see list below). This is the default.
 
-nodisplay=all -- Don't display anything. Usually overridden by several display=??? options.
+`display=roads` -- Display the road information. (Used after nodisplay=all.) See below for complete list of what can be displayed.
 
-nodisplay=roads -- Don't display road information.
+`nodisplay=all` -- Don't display anything. Usually overridden by several display=??? options.
 
-nofeature=??? -- Don't display a featuretype.
+`nodisplay=roads` -- Don't display road information.
 
-symbols=Symbols_GA -- Which symbol set to use. Defaults to Symbols_GA which is probably the only symbol set which currently works.
+`nofeature=???` -- Don't display a featuretype.
 
-property=125342 -- Display the boundary of property number 125342. Determinig property number is left as an exercise for the reader.
+`symbols=Symbols_GA` -- Which symbol set to use. Defaults to Symbols_GA which is probably the only symbol set which currently works.
 
-file=include.cfg -- Process the specified file as options.
+`property=125342` -- Display the boundary of property number 125342. Determinig property number is left as an exercise for the reader.
+
+`file=include.cfg` -- Process the specified file as options.
 
 ##Getting the data to make it useful
 
