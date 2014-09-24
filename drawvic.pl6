@@ -126,7 +126,7 @@ sub process_option($arg is copy) {
                  <[, \s]>+ ( \-? <[\d .]>+ )
                  <[, \s]>+ (.*)
                / {
-	add_annotation($1, $2, $3, $4, $5);
+	add_annotation(+$0, +$1, +$2, +$3, ~$4);
 	return;
     }
 # ignore whitespace in all remaining options
@@ -1567,7 +1567,7 @@ sub draw_grid(Str $zone) {
     $TMP.print: "grestore\n";
 }
 
-sub format_dms(Real $lat, Str $pos, Str $neg) {
+sub format_dms(Real $lat is copy, Str $pos, Str $neg) {
     my $string = '';
     my $hemisphere = $lat >= 0 ?? $pos !! $neg;
     $lat = - $lat if $lat < 0;
@@ -1595,7 +1595,7 @@ sub format_long(Real $long) {
     return format_dms($long, 'E', 'W');
 }
 
-sub put_annotation(Str $zone, Real $pagex, Real $pagey, Real $long, Real $lat, Real $x1, Real $y1, Str $string) {
+sub put_annotation(Str $zone, Real $pagex, Real $pagey, Real $long, Real $lat, Real $x1, Real $y1, Str $string is copy) {
     my $longstr = format_long($long);
     my $latstr = format_lat($lat);
     $string ~~ s/\$LONG/$longstr/;
@@ -1623,8 +1623,8 @@ sub put_annotation(Str $zone, Real $pagex, Real $pagey, Real $long, Real $lat, R
 
 my @ann;
 
-sub draw_userannotations(Str $zone, Real $xoff, Real $yoff, Real $slope) {
-    $slope *= pi / 180;
+sub draw_userannotations(Str $zone, Real $xoff, Real $yoff, Real $slopedeg) {
+    my $slope = $slopedeg * pi / 180;
     my $c = cos($slope);
     my $s = sin($slope);
     #note "cos theta: $c, sin theta: $s";
