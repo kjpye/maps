@@ -1598,8 +1598,12 @@ sub format_long(Real $long) {
 sub put_annotation(Str $zone, Real $pagex, Real $pagey, Real $long, Real $lat, Real $x1, Real $y1, Str $string is copy) {
     my $longstr = format_long($long);
     my $latstr = format_lat($lat);
-    $string ~~ s/\$LONG/$longstr/;
-    $string ~~ s/\$LAT/$latstr/;
+note "longitude: $longstr, latitude: $latstr, annotation: $string";
+    $string.subst(/\$LONG/, $longstr);
+    $string.subst(/\$LAT/, $latstr);
+    $string ~~ s/\$LONG/{$longstr}/;
+    $string ~~ s/\$LAT/{$latstr}/;
+note $string;
     my @lines = $string.lines;
 
     my ($x2, $y2) = ($pagex, $pagey);

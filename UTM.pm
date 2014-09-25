@@ -4,8 +4,8 @@ use v6;
 
 class Geo::Coordinates::UTM;
 
-my $lat2lon_count;
-my $lon2lat_count;
+my $latlon2utm_count;
+my $utm2latlon_count;
 
 my $deg2rad =  pi / 180;
 my $rad2deg = 180 /  pi;
@@ -148,7 +148,7 @@ sub _latlon_zone_number(Real $latitude, Real $long2) {
 }
 
 sub _latlon_to_utm(Str $ellips, Str $zone is copy, Real $latitude, Real $long2) {
-$lat2lon_count++;
+$latlon2utm_count++;
     my ($name, $radius, $eccentricity) = ellipsoid_info $ellips
         or die "Ellipsoid value ($ellips) invalid.";
 
@@ -220,7 +220,7 @@ $lat2lon_count++;
 # (Latitude and Longitude in decimal degrees, UTM Zone e.g. 23S)
 
 sub utm_to_latlon(Str $ellips, Str $zone, Real $easting, Real $northing) is export {
-$lon2lat_count++;
+$utm2latlon_count++;
     my ($name, $radius, $eccentricity) = ellipsoid_info $ellips
         or die "Ellipsoid value ($ellips) invalid.";
        
@@ -398,7 +398,7 @@ sub mgrs_to_latlon(Str $ellips, Str $mgrs_string) is export {
 }
 
 sub print_stats() is export {
-  note "lat2lon: $lat2lon_count, lon2lat: $lon2lat_count";
+  note "latlon2utm: $latlon2utm_count, utm2latlon: $utm2latlon_count";
 }
 
 =begin finish

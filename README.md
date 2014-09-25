@@ -41,7 +41,7 @@ Other options:
 
 `bleedright=1` -- bleed the map over the right margin (default is to stop the map short of the margin with latitude and northing information repeated to the right of the map)
 
-`annotation="dd.ddd dd.ddd xoff yoff text"` -- print the specified text in a box at location "dd.ddd dd.ddd" offset by xoff,yoff millimetres (default 10,10), with a line from the box to the specified location
+`annotation="dd.ddd dd.ddd xoff yoff text"` -- print the specified text in a box at location "dd.ddd dd.ddd" offset by xoff,yoff millimetres (default 10,10), with a line from the box to the specified location. The strings "$LONG" and "$LAT" will be replaced by the latitude and longitude of the annotation.
 
 `leftmarginwidth=m.mm` -- the width of the left margin in millimetres (default 30).
 
