@@ -1609,7 +1609,7 @@ note $string;
     my ($x2, $y2) = ($pagex, $pagey);
     #note "put_annotation: $x1 $y1 $x2 $y2";
 # Calculate box height
-    my $height = @lines * 2 + 2;
+    my $height = @lines.end * 2 + 2;
 # Calculate box width
     $TMP.print: "gsave 0\n";
     $TMP.print: "/Helvetica-Narrow-Latin1 1.5 selectfont\n";
