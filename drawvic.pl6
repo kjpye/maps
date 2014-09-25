@@ -898,6 +898,7 @@ my %roadsymbols = (
   'road_8u'     => 254, # vehicular track
   'road_9u'     => 254, # vehicular track
   'road_10u'    => 254, # vehicular track
+  'road_11u'    => 254, # vehicular track
   'road_12u'    =>  22, # foot track
   'footbridge'  => 268, # foot bridge
   'foot_bridge' => 268, # foot bridge
@@ -1047,10 +1048,10 @@ sub draw_points(Str $zone, Str $table) {
 	#next unless @display_feature[$featuretype]; ### TODO
 	next unless $symbol;
 	++$object_count;
-	$position ~~ /\((\-?[\d\.]+)\s+(\-?[\d\.]+)\)/;
-	my ($x, $y) = latlon2page $zone, $1, $2;
+	$position ~~ / \( ( \-? <[\d\.]>+) \s+ ( \-? <[\d\.]>+ ) \) /;
+	my ($x, $y) = latlon2page $zone, +$0, +$1;
 	%dependencies{"point$symbol"}++;
-	$TMP.printf: "$orientation %.6g %.6g $featurewidth point$symbol\n", $x, $y;
+	$TMP.print: sprintf("$orientation %.6g %.6g $featurewidth point$symbol\n", $x, $y);
     }
 }
 
