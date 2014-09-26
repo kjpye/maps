@@ -3,7 +3,7 @@
 use v6;
 
 use DBIish;
-BEGIN { @*INC.push: '.'; } # for testing
+use lib '.'; # for testing
 use UTM;
 
 ### Global symbol definitions
