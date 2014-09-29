@@ -29,7 +29,6 @@ my Str $zone;
 #my @featuretype;
 #my %featuretype;
 #my @display_feature;
-my %nofeature; # not really used
 my @properties;
 my %dependencies;
 
@@ -258,14 +257,6 @@ note "Graticule spacing set to $graticule_spacing";
 	%drawobjects{$0.lc} = Nil;
 	return;
     }
-    if ($arg ~~ m/^nofeature '=' (\S+)$/)
-    {
-        my $ft = $0;
-        $ft ~~ s:g/_/ /;
-        %nofeature{$ft.lc} = 1;
-        #note "No feature: $ft\n";
-	return;
-    }
     if ($arg ~~ m/^symbols '=' (\S+)$/) {
 	$symbols = $0.lc;
         return;
@@ -335,14 +326,15 @@ sub read_points (Str $shape is copy) {
   my @ret;
   if $shape ~~ s/^POLYGON\(\(// {
     $shape ~~ s/\)\)$//;
-    my @points = $shape.split: ',';
-    for @points -> $point {
-      my ($px, $py) = $point.split: ' ';
-      #note "Adding point $px $py";
-      @ret.push: $px;
-      @ret.push: $py;
-    }
-    return @ret;
+#    my @points = $shape.split: ',';
+#    for @points -> $point {
+#      my ($px, $py) = $point.split: ' ';
+#      #note "Adding point $px $py";
+#      @ret.push: $px;
+#      @ret.push: $py;
+#    }
+#    return @ret;
+    return $shape.comb(/ <[+-]>? \d+ [ '.' \d+ ]/ );
   }
   note "Unknown shape in $shape";
 }
