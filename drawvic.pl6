@@ -321,19 +321,8 @@ EOF
   }
 }
 
-sub read_points (Str $shape is copy) {
-  my $count = 0;
-  my @ret;
-  if $shape ~~ s/^POLYGON\(\(// {
-    $shape ~~ s/\)\)$//;
-#    my @points = $shape.split: ',';
-#    for @points -> $point {
-#      my ($px, $py) = $point.split: ' ';
-#      #note "Adding point $px $py";
-#      @ret.push: $px;
-#      @ret.push: $py;
-#    }
-#    return @ret;
+sub read_points (Str $shape) {
+  if $shape ~~ /^POLYGON\(\(/ {
     return $shape.comb(/ <[+-]>? \d+ [ '.' \d+ ]/ );
   }
   note "Unknown shape in $shape";
@@ -345,19 +334,17 @@ my $xscale;
 my $yscale;
     
 sub grid2page(Real $xin, Real $yin) {
-    my $xout = $xin + $xoffset;
-    my $yout = $yin + $yoffset;
-    $xout *= $xscale;
-    $yout *= $yscale;
-    $xout += $xmin;
-    $yout += $ymin;
-    return ($xout, $yout);
+  return ( ($xin + $xoffset) * $xscale + $xmin,
+           ($yin + $yoffset) * $yscale + $ymin);
 }
 
 sub latlon2page(Str $zone, Real $xin, Real $yin) {
     ++$point_count;
     my ($tzone, $xout, $yout) = latlon_to_utm_force_zone('WGS-84', $zone, $yin, $xin);
-    return grid2page($xout, $yout);
+# inline grid2page for speed
+    #return grid2page($xout, $yout);
+  return ( ($xout + $xoffset) * $xscale + $xmin,
+           ($yout + $yoffset) * $yscale + $ymin);
 }
 
 sub sbsb(Int $s1, Int $b1, Str $s2, Str $b2) {
