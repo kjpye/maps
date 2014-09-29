@@ -33,7 +33,6 @@ my %nofeature; # not really used
 my @properties;
 my %dependencies;
 
-my %drawobjects;
 # Should read this from the database
 my %allobjects = map {$_ => 1}, <
                   el_contour
@@ -59,6 +58,7 @@ my %allobjects = map {$_ => 1}, <
                   grid
                   userannotations
                  >;
+my %drawobjects = %allobjects;
 
 my %papersizes;
 my $papersize = 'a3';
@@ -330,17 +330,19 @@ EOF
   }
 }
 
-sub read_points (Real $x, Real $y, Str $shape) {
+sub read_points (Str $shape is copy) {
+  my $count = 0;
+  my @ret;
   if $shape ~~ s/^POLYGON\(\(// {
     $shape ~~ s/\)\)$//;
     my @points = $shape.split: ',';
     for @points -> $point {
       my ($px, $py) = $point.split: ' ';
       #note "Adding point $px $py";
-      @($x).push: $px;
-      @($y).push: $py;
+      @ret.push: $px;
+      @ret.push: $py;
     }
-    return @points.end;
+    return @ret;
   }
   note "Unknown shape in $shape";
 }
@@ -534,7 +536,7 @@ sub add_point(Str $zone, Real $x, Real $y) {
     $quadrant = $new_quadrant;
 }
 
-sub put_line(Str $zone, Str $shape is copy, Str $func, Real $featurewidth) {
+sub put_line(Str $zone, Str $shape is copy, Str $func, $featurewidth = '') {
     $prev_x = Nil;
     $prev_y = Nil;
 
@@ -597,7 +599,7 @@ sub draw_areas(Str $zone, Str $table) {
 
 	next unless $symbol;
 	++$object_count;
-	put_line($zone, $shape, "area$symbol", 0.0);
+	put_line($zone, $shape, "area$symbol");
     }
 }
 
@@ -616,7 +618,7 @@ sub draw_treeden(Str $zone) {
 
     next unless $symbol;
     ++$object_count;
-    put_line($zone, $shape, "area$symbol", 0.0);
+    put_line($zone, $shape, "area$symbol");
   }
 }
 
@@ -711,7 +713,7 @@ sub draw_lines(Str $zone, Str $table, Int $default_symbol = 0) {
 	++$object_count;
 	if ($symbol == 57) { # Depression contour (index)
 	} elsif ($symbol ==  58) { # Depression contour (standard)
-	    put_line($zone, $shape, "line58A", 0.0);
+	    put_line($zone, $shape, "line58A", 0);
 	    follow_line($zone, $shape, 4, \&leftticks, .3, .15, '0 .59 1 .18');
 	} elsif ($symbol ==  31) { # Embankment
 # TODO
@@ -724,18 +726,18 @@ sub draw_lines(Str $zone, Str $table, Int $default_symbol = 0) {
 	    follow_line($zone, $shape, .5, \&powerline, .5, .2, '.79 .9 0 0');
 	    $TMP.say: ".79 .9 0 0 setcmykcolor .2 setlinewidth stroke";
 	} elsif ($symbol == 920) { # Cliff (WAC)
-	    put_line($zone, $shape, "line920A", 0.0);
+	    put_line($zone, $shape, "line920A", 0);
 	    follow_line($zone, $shape, 1, \&leftticks, .4, .15, '0 .59 1 .18');
 	} elsif ($symbol == 923) { # Cutting
 # TODO
 	} elsif ($symbol == 924) { # Cliff
-	    put_line($zone, $shape, "line924A", 0.0);
+	    put_line($zone, $shape, "line924A", 0);
 	    follow_line($zone, $shape, 1, \&leftticks, .4, .15, '0 0 0 1');
 	} elsif ($symbol == 929) { # Razorback
-	    put_line($zone, $shape, "line929A", 0.0);
+	    put_line($zone, $shape, "line929A", 0);
 	    follow_line($zone, $shape, 1, \&altticks, .4, .15, '0 0 0 1');
 	} else {
-	    put_line($zone, $shape, "line$symbol", 0.0);
+	    put_line($zone, $shape, "line$symbol", 0);
 	}
     }
 }
@@ -761,7 +763,7 @@ sub draw_lines_f(Str $zone, Str $table, Int $default_symbol = 0) {
 	++$object_count;
 	if ($symbol == 57) { # Depression contour (index)
 	} elsif ($symbol ==  58) { # Depression contour (standard)
-	    put_line($zone, $shape, "line58A", 0.0);
+	    put_line($zone, $shape, "line58A", 0);
 	    follow_line($zone, $shape, 4, \&leftticks, .3, .15, '0 .59 1 .18');
 	} elsif ($symbol ==  31) { # Embankment
 # TODO
@@ -774,24 +776,24 @@ sub draw_lines_f(Str $zone, Str $table, Int $default_symbol = 0) {
 	    follow_line($zone, $shape, .5, \&powerline, .5, .2, '.79 .9 0 0');
 	    $TMP.say: ".79 .9 0 0 setcmykcolor .2 setlinewidth stroke";
 	} elsif ($symbol == 920) { # Cliff (WAC)
-	    put_line($zone, $shape, "line920A", 0.0);
+	    put_line($zone, $shape, "line920A", 0);
 	    follow_line($zone, $shape, 1, \&leftticks, .4, .15, '0 .59 1 .18');
 	} elsif ($symbol == 923) { # Cutting
 # TODO
 	} elsif ($symbol == 924) { # Cliff
-	    put_line($zone, $shape, "line924A", 0.0);
+	    put_line($zone, $shape, "line924A", 0);
 	    follow_line($zone, $shape, 1, \&leftticks, .4, .15, '0 0 0 1');
 	} elsif ($symbol == 929) { # Razorback
-	    put_line($zone, $shape, "line929A", 0.0);
+	    put_line($zone, $shape, "line929A", 0);
 	    follow_line($zone, $shape, 1, \&altticks, .4, .15, '0 0 0 1');
 	} else {
-	    put_line($zone, $shape, "line$symbol", 0.0);
+	    put_line($zone, $shape, "line$symbol", 0);
 	}
     }
 }
 
 sub put_outline(Str $text, Real $x, Real $y, Real $size, Str $colour, Real $thickness) { 
-    $TMP.printf: "%f %f moveto (%s) /Helvetica findfont %f scalefont setfont stringwidth pop 2 div neg 0 rmoveto (%s) false charpath %s setcmykcolor %f setlinewidth stroke\n", $x, $y, $text, $size, $text, $colour, $thickness;
+    $TMP.print: sprintf "%f %f moveto (%s) /Helvetica findfont %f scalefont setfont stringwidth pop 2 div neg 0 rmoveto (%s) false charpath %s setcmykcolor %f setlinewidth stroke\n", $x, $y, $text, $size, $text, $colour, $thickness;
 }
 
 sub draw_polygon_outline_names(Str $zone, Str $table, Str $column, Real $size, Real $thickness, Str $colour) {
@@ -803,17 +805,15 @@ sub draw_polygon_outline_names(Str $zone, Str $table, Str $column, Real $size, R
     while ( my @row = $sth.fetchrow_array ) {
         my $name  = @row[0];
         my $shape = @row[1];
-        my @x;
-        my @y;
-        my $count = read_points(\@x, \@y, $shape);
-        my $centrex = (@x[0] + @x[2]) / 2;
-        my $centrey = (@y[0] + @y[2]) / 2;
-        note "Locality $name $centrex $centrey $count $shape";
+        my @x = read_points($shape);
+        my $centrex = (@x[0] + @x[4]) / 2;
+        my $centrey = (@x[1] + @x[5]) / 2;
+        note "Locality $name $centrex $centrey $shape";
         my ($cx, $cy) = latlon2page($zone, $centrex, $centrey);
         my @text = $name.split: ' ';
         my $yoffset = (@text.end + 1)/2;
         for @text -> $text {
-            put_outline ($text, $cx, $cy+$yoffset, $size, $colour, $thickness);
+            put_outline $text, $cx, $cy+$yoffset, $size, $colour, $thickness;
             $yoffset -= $size;
         }
         ++$object_count;
@@ -833,7 +833,7 @@ sub draw_properties(Str $zone) {
             
             my $symbol = 927;
             ++$object_count;
-            put_line($zone, $shape, "line$symbol", 0.0);
+            put_line($zone, $shape, "line$symbol", 0);
         }
     }
 }
@@ -1100,8 +1100,8 @@ sub draw_roadpoints(Str $zone) {
         next unless $symbol;
         ++$object_count;
         $position ~~ / \( (\-? <[\d.]>+) \s+ (\-? <[\d.]>+) \) /;
-        my ($x, $y) = latlon2page $zone, $1, $2;
-        %dependencies<point$symbol>++;
+        my ($x, $y) = latlon2page $zone, +$0, +$1;
+        %dependencies{"point$symbol"}++;
         if $featurewidth <= 0 {
 # Find the width of the adjoining roads
             my $adjcode = 12; # largest real class_code
@@ -1111,7 +1111,7 @@ sub draw_roadpoints(Str $zone) {
             }
             $featurewidth = @road_widths[$adjcode];
         }
-        $TMP.printf: "$orientation %.6g %.6g $featurewidth point$symbol\n", $x, $y;
+        $TMP.print: sprintf "$orientation %.6g %.6g $featurewidth point$symbol\n", $x, $y;
     }
 }
 
@@ -2029,4 +2029,3 @@ unlink $tmpfile;
 say "showpage";
 
 note "$object_count objects, $point_count points\n";
-print_stats();
