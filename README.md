@@ -39,7 +39,8 @@ How to populate the database.
   * Find a convenient directory and dwonload the zip files to that directory.
   * Unzip the data.
   * Work out where the .shp files have been put.
-  * For each shp file, run "shp2psql -a -D -s 4432 <shapefile>", except, the first time you use a particular table, use "-c" instead of "-a".
+  * Create a postgresql database: "createdb vicmap".
+  * For each shp file, run "shp2psql -a -D -s 4432 <shapefile> | psql vicmap", except, the first time you use a particular table, use "-c" instead of "-a".
 
 ##Usage
 
