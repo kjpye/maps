@@ -32,15 +32,17 @@ How to populate the database.
   * Select the buffer zone (i.e. how far outside the selected area you want data for), the format ("ESRI shapefile"), projection ("Geographicals on GDA-94") and delivery method
   * Click on "Apply to All".
   * Now click "Submit", and "Submit" again.
-  * When your order is ready, you will receive an email with the link to the data, which is valid for two weeks. When the servers are busy this might take up to an hour or two.
+  * When your order is ready, you will receive an email with the link to the data, which is valid for ten days. When the servers are busy this might take up to an hour or two.
 
 2. Unpack the data, and populate the database.
 
-  * Find a convenient directory and dwonload the zip files to that directory.
+  * Find a convenient directory and download the zip files to that directory.
   * Unzip the data.
   * Work out where the .shp files have been put.
   * Create a postgresql database: "createdb vicmap".
-  * For each shp file, run "shp2psql -a -D -s 4432 <shapefile> | psql vicmap", except, the first time you use a particular table, use "-c" instead of "-a".
+  * Ensure that postgis has been installed in that database.
+  * For each shp file (except for things like EXTRACT_POLYGON which simply contains the boundary of the data you have), run "shp2psql -a -D -s 4326 <shapefile> | psql vicmap", except, the first time you use a particular table, use "-c" instead of "-a".
+  * You will also need to populate the database with the postscript definitions of all the symbols (the symbols_ga table) and the mapping from Vicmap objects to those symbols (the vicmap.symbols table).
 
 ##Usage
 

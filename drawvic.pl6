@@ -1801,7 +1801,7 @@ my ($lllong, $lllat, $urlong, $urlat) = ($lllongitude - 0.01,
 					$urlongitude + 0.01,
 					$urlatitude + 0.01);
 
-    $rect = "ST_GeometryFromText('POLYGON(($lllong $lllat, $urlong $lllat, $urlong $urlat, $lllong $urlat, $lllong $lllat))', 4283)";
+    $rect = "ST_GeometryFromText('POLYGON(($lllong $lllat, $urlong $lllat, $urlong $urlat, $lllong $urlat, $lllong $lllat))', 4326)"; # 4283)";
     #note $rect;
 
     my ($xoff, $yoff, $slope) = draw_margins($left, $right);
