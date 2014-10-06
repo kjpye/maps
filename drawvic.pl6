@@ -3,8 +3,7 @@
 use v6;
 
 use DBIish;
-use lib '.'; # for testing
-use UTM;
+use Geo::Coordinates::UTM;
 
 ### Global symbol definitions
 
@@ -566,6 +565,7 @@ my $rect;
 
 sub draw_areas(Str $zone, Str $table) {
     note "$table areas...";
+    dbconnect();
     my $sth = $dbh.prepare("SELECT ftype_code, st_astext(geom) as shape FROM $table WHERE geom && $rect");
     
     $sth.execute();
@@ -584,6 +584,7 @@ sub draw_areas(Str $zone, Str $table) {
 
 sub draw_treeden(Str $zone) {
   note "tree_density areas...";
+  dbconnect();
   my $sth = $dbh.prepare("SELECT ftype_code, tree_den, st_astext(geom) as shape FROM tree_density where geom && $rect");
 
   $sth.execute;
@@ -673,6 +674,7 @@ sub follow_line(Str $zone, Str $shape, $spacing, $func, Real $width, Real $thick
 
 sub draw_lines(Str $zone, Str $table, Int $default_symbol = 0) {
     note "$table lines...";
+    dbconnect();
     my $sth = $dbh.prepare("SELECT ftype_code, st_astext(geom) as shape FROM $table WHERE geom && $rect");
     
     $sth.execute();
@@ -723,6 +725,7 @@ sub draw_lines(Str $zone, Str $table, Int $default_symbol = 0) {
 
 sub draw_lines_f(Str $zone, Str $table, Int $default_symbol = 0) {
     note "$table lines...";
+    dbconnect();
     my $sth = $dbh.prepare("SELECT ftype, st_astext(geom) as shape FROM $table WHERE geom && $rect");
     
     $sth.execute();
@@ -777,6 +780,7 @@ sub put_outline(Str $text, Real $x, Real $y, Real $size, Str $colour, Real $thic
 
 sub draw_polygon_outline_names(Str $zone, Str $table, Str $column, Real $size, Real $thickness, Str $colour) {
     note "$table outline names...";
+    dbconnect();
     my $sth = $dbh.prepare("SELECT $column, st_astext(st_envelope(geom)) as bbox FROM $table WHERE geom && $rect");
     
     $sth.execute();
@@ -801,6 +805,7 @@ sub draw_polygon_outline_names(Str $zone, Str $table, Str $column, Real $size, R
 
 sub draw_properties(Str $zone) {
     note "property lines...";
+    dbconnect();
     my $sth = $dbh.prepare("SELECT st_astext(geom) as shape FROM property_view WHERE pfi = ?");
     
     for @properties -> $property {
@@ -819,6 +824,7 @@ sub draw_properties(Str $zone) {
 
 sub draw_wlines(Str $zone, Str $table, Int $default_symbol) {
     note "$table lines...";
+    dbconnect();
     my $sth = $dbh.prepare("SELECT symbol, st_astext(shape) as shape, featurewidth FROM $table WHERE shape && $rect");
     
     $sth.execute();
@@ -901,6 +907,7 @@ sub draw_roads(Str $zone) {
     my $featurewidth;
 
     note "Roads...";
+    dbconnect();
     my $sth = $dbh.prepare("SELECT pfi, ftype_code, class_code, dir_code, road_seal, div_rd, st_astext(geom) as shape FROM tr_road WHERE geom && $rect");
     
     $sth.execute();
@@ -929,6 +936,7 @@ sub draw_roads(Str $zone) {
 
     note "Centre lines of roads...";
 
+    dbconnect();
     $sth = $dbh.prepare("SELECT ftype_code, st_astext(geom) as shape FROM tr_road WHERE pfi = ?");
     for @dual -> $objectid {
 	$sth.execute($objectid);
@@ -1008,6 +1016,7 @@ sub draw_osmroads(Str $zone) {
 
 sub draw_points(Str $zone, Str $table) {
     note "$table points...";
+    dbconnect();
     my $sth = $dbh.prepare("SELECT ftype_code, st_astext(geom) AS position, rotation
                             FROM $table
 			    WHERE geom && $rect
@@ -1036,6 +1045,7 @@ sub draw_points(Str $zone, Str $table) {
 
 sub spot_heights(Str $zone) {
     note "spot heights...";
+    dbconnect();
     my $sth = $dbh.prepare("SELECT ftype_code, st_astext(geom) AS position, altitude FROM el_grnd_surface_point WHERE geom && $rect");
     
     $TMP.say: "/Helvetica-Latin1 2 selectfont 0 0 0 1 setcmykcolor";
@@ -1060,6 +1070,7 @@ my @road_widths = (.9, .9, .9, .6, .6, .6, .4, .4, .4, .4, .2, .2, .2);
 
 sub draw_roadpoints(Str $zone) {
     note "tr_road_infrastructure points...";
+    dbconnect();
     my $sth = $dbh.prepare("SELECT ftype_code, st_astext(geom) as position, rotation, ufi, width FROM tr_road_infrastructure WHERE geom && $rect");
     my $sth2 = $dbh.prepare("SELECT ftype_code, class_code FROM tr_road WHERE from_ufi = ? OR to_ufi = ?");
     
@@ -1096,6 +1107,7 @@ sub draw_roadpoints(Str $zone) {
 
 sub draw_annotations(Str $zone) {
     note "Annotations...\n";
+    dbconnect();
     my $sth = $dbh.prepare("SELECT element, st_astext(shape) as shape FROM Annotations WHERE shape && $rect");
     
     $sth.execute();
@@ -1748,6 +1760,7 @@ sub draw_bbox() {
 # Fetch and display all the objects
     
 sub draw_objects(Real $xoff, Real $yoff, Real $slope) {
+    dbconnect();
     my $sth_draw = $dbh.prepare("SELECT featurename, drawtype, tablename, featurecolumn, defaultsymbol, displayorder FROM vicdisplayorder ORDER BY displayorder");
     $sth_draw.execute;
     while (my @row = $sth_draw.fetchrow_array) {
@@ -1815,6 +1828,7 @@ sub do_dependency(Str $dependency) {
     return if %done_deps{$dependency}.defined;
 
     note "Dependency: $dependency";    
+    dbconnect();
     my $sth = $dbh.prepare("SELECT dependencies, body FROM $symbols WHERE name = '$dependency'");
     
     $sth.execute();
@@ -1969,9 +1983,18 @@ $maxy = $urlatitude + .001;
 
 $yscale = $xscale = 1000/$scale; # convert metres on the ground to mm on the map
 
-my $passwd = 'xyz123';
-$dbh = DBIish.connect("Pg", user => 'ro', password => $passwd, dbname => $db);
+sub dbconnect() {
+  state $connected = 0;
+  if ! $connected {
+    my $passwd = 'xyz123';
+    $dbh= DBIish.connect("Pg", user => 'ro', password => $passwd, dbname => $db); # or die $DBIish::errstr;
+    note $dbh.WHAT;
+    note $dbh.^methods;
+    $connected = 1;
+  }
+}
 
+dbconnect();
 $sth_sym = $dbh.prepare('SELECT symbol_ga FROM vicmap_symbols WHERE type = ? AND ftype = ?');
 
 my ($leftzone, $rightzone);

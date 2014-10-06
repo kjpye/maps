@@ -18,6 +18,29 @@ is that there are essentially no annotations on the map, and
 all data is displayed no matter what scale you are generating,
 which makes small scale maps rather crowded.
 
+##Database
+
+How to populate the database.
+
+1. Download the needed data for the area of concern.
+
+* Go to https://service.land.vic.gov.au/SpatialDatamart and create an account for yourself. (This is not necessary, but useful.)
+* Got Search, and enter what you want in the "what" field. Useful things are "tr_road", tr_rail", "hy_water", "el_ground", "el_contour".
+* Select the databases you want. The useful databases (i.e. those which the scripts know how to handle) include tr_road, tr_road_infrastructure, tr_road_locality, hy_water_area_polygon, hy_water_point, hy_water_struct_area_polygon, hy_water_struct_line, hy_water_struct_point, hy_watercourse, tr_rail, tr_rail_infrastructure, el_contour.
+* Clock on "proceed to order".
+* Select the area you want the data for. ("Whole of State" could generate rather large files :-).) I usually use "Local Government Area" and wherever I'm interested in at the moment. (Note that the product of the number of datasets, and the number of areas must no more then 12.)
+* Select the buffer zone (i.e. how far outside the selected area you want data for), the format ("ESRI shapefile"), projection ("Geographicals on GDA-94") and delivery method
+* Click on "Apply to All".
+* Now click "Submit", and "Submit" again.
+* When your order is ready, you will receive an email with the link to the data, which is valid for two weeks. When the servers are busy this might take up to an hour or two.
+
+2. Unpack the data, and populate the database.
+
+* Find a convenient directory and dwonload the zip files to that directory.
+* Unzip the data.
+* Work out where the .shp files have been put.
+* For each shp file, run "shp2psql -a -D -s 4432 <shapefile>", except, the first time you use a particular table, use "-c" instead of "-a".
+
 ##Usage
 
 `drawvic lat=dd.ddd long=ddd.ddd`
