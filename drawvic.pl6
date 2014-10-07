@@ -3,8 +3,7 @@
 use v6;
 
 use DBIish;
-use lib '.'; # for testing
-use UTM;
+use Geo::Coordinates::UTM;
 
 ### Global symbol definitions
 
@@ -521,20 +520,16 @@ sub put_line(Str $zone, Str $shape is copy, Str $func, $featurewidth = '') {
 
 #note "put_line: $shape";
 #    $TMP.say: "% $zone $shape";
-    $shape ~~ s/^MULTILINESTRING\(\(//;
-    $shape ~~ s/\)\)$//;
+    #$shape ~~ s/^MULTILINESTRING\(\(//;
+    #$shape ~~ s/\)\)$//;
     my @segments = $shape.split: '\)\,?\s*\(';
     for @segments -> $segment {
 #note "segment: $segment";
 	$quadrant = -1;
 	$moveto = True;
-	my @points = $segment.split: ',';
-#note "$#points points";
-	for @points -> $point {
-	    #note "$point";
-	    #$TMP.say: "% $zone $point";
-	    $point ~~ / ( \-? <[\d\.]>+ ) \s+ ( \-? <[\d\.]>+ ) /;
-	    add_point($zone, +$0, +$1);
+        for $segment.comb: /\-?<[\d\.]>+/ -> $x, $y {
+#note "Found point $x $y";
+	  add_point($zone, +$x, +$y);
 	}
 	plot_previous_point($zone) if $quadrant != 5;
     }

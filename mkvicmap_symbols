@@ -1,0 +1,197 @@
+DROP TABLE vicmap_symbols;
+
+CREATE TABLE vicmap_symbols (
+  type      text,
+  ftype     text,
+  symbol_ga int default 0
+);
+
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('line',  'contour',                    56);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('line',  'contour_index',              55);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('line',  'contour_dep',                58);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('line',  'contour_dep_index',          57);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('area',  'watercourse_area_river',     10);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('area',  'wb_lake',                    10);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('area',  'pondage_sewerage',           23);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('area',  'wetland_swamp',             908);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('area',  'pondage_saltpan',            23);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('area',  'flat_sti',                   22);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('line',  'watercourse_area_river',     94);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('line',  'wb_lake',                    94);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('line',  'pondage_sewerage',          114);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('line',  'wetland_swamp',             114);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('line',  'pondage_saltpan',           114);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('line',  'flat_sti',                  114);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('point', 'spring',                      0);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('point', 'wb_dam',                     82);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('point', 'rapid',                       0);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('point', 'waterfall',                  89);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('area',  'tank_water',                  0);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('line',  'tank_water',                  0);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('line',  'launching_ramp',            755);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('line',  'wharf',                      70);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('line',  'pipe_water_uground',          0);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('line',  'dam_wall',                  925);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('line',  'dam_wall_road',              45);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('point', 'tank_water',                 86);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('point', 'watering_place',             82);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('point', 'well_water',                 82);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('line',  'watercourse_stream',        940);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('line',  'watercourse_channel_drain', 940);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('line',  'connector_stream',            0);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('line',  'connector_structure',         0);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('line',  'watercourse_channel',       940);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('line',  'connector_channel_drain',     0);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('line',  'watercourse_river',          92);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('line',  'connector_river',             0);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('line',  'connector_channel',           0);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('area',  'runway',                    706);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('line',  'runway',                      0);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('point', 'runway',                      0);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('line',  'rail_siding',                 0);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('line',  'railway',                   206);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('line',  'rail_dismantled',           209);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('line',  'rail_trail',                 22);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('line',  'rail_disused',              209);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('line',  'bridge_rail_du',            260);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('line',  'bridge_rail_o',             260);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('point', 'bridge_rail_dm',            260);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('point', 'bridge_rail_du',            260);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('point', 'rail_station',              222);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('point', 'bridge_rail_o',             260);
+#INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('line',  'road',                        0);
+#INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('line',  'ford',                       21);
+#INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('line',  'connector',                   0);
+#INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('line',  'bridge',                    260);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('line',  'tunnel',                    205);
+#INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('line',  'roundabout',               0);
+#INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('line',  'foot_bridge',                 0);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('line',  'tramway',                  1002);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('point', 'int_nosignal',                0);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('point', 'ford',                        0);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('point', 'roundabout',               1003);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('point', 'int_signal',               1004);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('point', 'road_end',                    0);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('point', 'level_crossing',              0);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('point', 'int_locality',                0);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('point', 'gate',                        26);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('point', 'bridge',                    260);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('point', 'tunnel',                      0);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('point', 'barrier',                  1002);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('point', 'int_attribute',               0);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('area',  'forest_medium',             200);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('area',  'forest_scattered',          201);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('area',  'forest_dense',                2);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('point', 'spot_height',                   52);
+
+CREATE TABLE vicmap_roadsymbols (
+  ftype     text,
+  class     int,
+  dir       text,
+  seal      int,
+  div       text,
+  symbol_ga int default 0
+);
+
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('bridge',       0, 'F', 1, 'DD', 260);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('bridge',       0, 'F', 1, 'ND', 260);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('bridge',       1, 'B', 1, 'DS', 260);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('bridge',       1, 'B', 1, 'ND', 260);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('bridge',       1, 'F', 1, 'ND', 260);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('bridge',       2, 'B', 1, 'ND', 260);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('bridge',       3, 'B', 1, 'ND', 260);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('bridge',       3, 'B', 1, 'U',  260);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('bridge',       3, 'B', 2, 'ND', 260);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('bridge',       4, 'B', 2, 'ND', 260);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('bridge',       4, 'B', 2, 'U',  260);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('bridge',       5, 'B', 2, 'ND', 260);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('bridge',       5, 'B', 2, 'U',  260);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('bridge',       5, 'B', 2, 'ND', 260);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('bridge',       5, 'B', 2, 'U',  260);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('bridge',       6, 'B', 2, 'ND', 260);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('bridge',       6, 'B', 2, 'U',  260);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('bridge',       7, 'B', 2, 'ND', 260);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('bridge',       7, 'B', 2, 'U',  260);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('connector',    0, 'F', 1, 'ND',   0);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('connector',    1, 'B', 1, 'ND',   0);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('connector',    2, 'B', 1, 'ND',   0);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('connector',    2, 'F', 1, 'ND',   0);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('connector',    2, 'F', 1, 'ND',   0);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('connector',    3, 'B', 1, 'ND',   0);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('connector',    5, 'B', 1, 'ND',   0);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('connector',    5, 'B', 1, 'U',    0);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('connector',    5, 'F', 1, 'ND',   0);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('foot_bridge', 11, 'B', 2, 'ND', 260);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('foot_bridge', 11, 'B', 3, 'ND', 260);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('foot_bridge', 12, 'B', 1, 'ND', 260);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('ford',         6, 'B', 2, 'ND',  21);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('ford',         6, 'B', 2, 'U',   21);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('ford',         7, 'B', 2, 'ND',  21);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('ford',         7, 'B', 2, 'U',   21);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('roundabout',   5, 'F', 1, 'U',    0);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('tunnel',       1, 'B', 1, 'ND', 205);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('tunnel',       5, 'B', 1, 'ND', 205);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('tunnel',       5, 'B', 2, 'ND', 205);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('tunnel',       6, 'B', 2, 'ND', 205);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('road',         0, 'B', 1, 'DD', 250);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('road',         0, 'B', 1, 'DS', 250);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('road',         0, 'B', 1, 'ND', 250);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('road',         0, 'B', 1, 'U',  250);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('road',         0, 'F', 1, 'DD', 250);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('road',         0, 'F', 1, 'DS', 250);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('road',         0, 'F', 1, 'ND', 250);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('road',         0, 'F', 1, 'U',  250);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('road',         1, 'B', 1, 'DS', 251);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('road',         1, 'B', 1, 'ND', 251);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('road',         1, 'F', 1, 'DD', 251);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('road',         1, 'F', 1, 'ND', 251);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('road',         2, 'B', 1, 'DS', 251);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('road',         2, 'B', 1, 'ND', 251);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('road',         2, 'B', 1, 'U',  251);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('road',         2, 'F', 1, 'DD', 251);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('road',         3, 'B', 1, 'DS', 256);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('road',         3, 'B', 1, 'ND', 256);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('road',         3, 'B', 1, 'U',  256);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('road',         3, 'B', 2, 'ND', 256);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('road',         3, 'B', 2, 'U',  256);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('road',         3, 'F', 1, 'ND', 256);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('road',         4, 'B', 1, 'DS', 256);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('road',         4, 'B', 1, 'ND', 256);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('road',         4, 'B', 1, 'U',  256);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('road',         4, 'B', 2, 'ND', 259);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('road',         4, 'B', 2, 'U',  259);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('road',         4, 'F', 1, 'DD', 256);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('road',         5, 'B', 1, 'DS', 256);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('road',         5, 'B', 1, 'ND', 256);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('road',         5, 'B', 1, 'U',  256);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('road',         5, 'B', 2, 'ND', 259);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('road',         5, 'B', 2, 'U',  259);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('road',         5, 'F', 1, 'DD', 256);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('road',         5, 'F', 1, 'ND', 256);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('road',         5, 'F', 1, 'U',  256);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('road',         5, 'F', 2, 'ND', 259);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('road',         6, 'B', 1, 'ND', 257);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('road',         6, 'B', 1, 'U',  257);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('road',         6, 'B', 2, 'DS', 253);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('road',         6, 'B', 2, 'ND', 253);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('road',         6, 'B', 2, 'U',  253);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('road',         6, 'F', 2, 'ND', 253);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('road',         7, 'B', 2, 'ND', 253);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('road',         7, 'B', 2, 'U',  253);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('road',         9, 'B', 3, 'ND', 253);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('road',        11, 'B', 1, 'ND', 254);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('road',        11, 'B', 2, 'ND', 254);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('road',        11, 'B', 2, 'U',  254);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('road',        11, 'B', 3, 'ND', 254);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('road',        11, 'B', 3, 'U',  254);
+INSERT INTO vicmap_roadsymbols (ftype, class, dir, seal, div, symbol_ga) VALUES ('road',        12, 'B', 1, 'ND',  22);
+#dual carriageway 250
+#principal sealed 251
+#under construction 252
+#principal unsealed 258 
+#secondary sealed 256
+#secondary unsealed 259
+#minor sealed 257
+#minor unsealed 253
+#vehicular track 254
+#foot track 22
