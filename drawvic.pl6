@@ -1,5 +1,6 @@
 #!/usr/bin/perl6
 
+# vi: syntax=on
 use v6;
 
 use DBIish;
@@ -650,7 +651,7 @@ sub follow_line(Str $zone, Str $shape, $spacing, $func, Real $width, Real $thick
 		my $length = sqrt($deltax * $deltax + $deltay * $deltay);
 		#note "follow_line from ($oldx, $oldy) to ($x, $y) diff ($deltax, $deltay) length $length start $counter";
 		if ($length >= $counter) {
-		    my $angle = atan2($deltay, $deltax) * 180 / pi;
+		    my $angle = atan2($deltay, $deltax) * 180 / π;
 		    loop (my $l = $counter;
 		         $l <= $length;
 		         $l += $spacing) {
@@ -1620,7 +1621,7 @@ note $string;
 my @ann;
 
 sub draw_userannotations(Str $zone, Real $xoff, Real $yoff, Real $slopedeg) {
-    my $slope = $slopedeg * pi / 180;
+    my $slope = $slopedeg * π / 180;
     my $c = cos($slope);
     my $s = sin($slope);
     #note "cos theta: $c, sin theta: $s";
@@ -2031,3 +2032,5 @@ unlink $tmpfile;
 say "showpage";
 
 note "$object_count objects, $point_count points\n";
+
+# vi: filetype=perl6:
