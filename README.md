@@ -42,7 +42,7 @@ How to populate the database.
   * Create a postgresql database: "createdb vicmap".
   * Ensure that postgis has been installed in that database.
   * For each shp file (except for things like EXTRACT_POLYGON which simply contains the boundary of the data you have), run "shp2psql -a -D -s 4326 <shapefile> | psql vicmap", except, the first time you use a particular table, use "-c" instead of "-a".
-  * You will also need to populate the database with the postscript definitions of all the symbols (the symbols_ga table) and the mapping from Vicmap objects to those symbols (the vicmap.symbols table).
+  * You will also need to populate the database with the postscript definitions of all the symbols (the symbols_ga table) and the mapping from Vicmap objects to those symbols (the vicmap.symbols table): "psql -d vicmap -f mkvicmap_symbols" and "psql -d vicmap -f mkymbols_ga". These will both give errors the first time they are run as the delete and then recreate tables.
 
 ##Usage
 
