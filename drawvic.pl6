@@ -561,41 +561,47 @@ sub get_symbol(Str $type, Str $ftype) {
 my $rect;
 
 sub draw_areas(Str $zone, Str $table) {
-    note "$table areas...";
-    dbconnect();
-    my $sth = $dbh.prepare("SELECT ftype_code, st_astext(geom) as shape FROM $table WHERE geom && $rect");
-    
-    $sth.execute();
+  note "$table areas...";
+  dbconnect();
+  my $sth = $dbh.prepare("SELECT ftype_code, st_astext(geom) as shape FROM $table WHERE geom && $rect");
+  
+  if $sth.execute {
     
     while ( my @row = $sth.fetchrow_array ) {
-	my $ftype = @row[0];
-	my $shape = @row[1];
-	
-        my $symbol = get_symbol('area', $ftype.lc);
-
-	next unless $symbol;
-	++$object_count;
-	put_line($zone, $shape, "area$symbol");
+      my $ftype = @row[0];
+      my $shape = @row[1];
+      
+      my $symbol = get_symbol('area', $ftype.lc);
+      
+      next unless $symbol;
+      ++$object_count;
+      put_line($zone, $shape, "area$symbol");
     }
+  } else {
+    note "$table not found";
+  }
 }
 
 sub draw_treeden(Str $zone) {
   note "tree_density areas...";
   dbconnect();
-  my $sth = $dbh.prepare("SELECT ftype_code, tree_den, st_astext(geom) as shape FROM tree_density where geom && $rect");
+  my $sth = $dbh.prepare("SELECT ftype_code, tree_den, st_astext(geom) as shape FROM tree_density where geom && $rect", RaiseError => 0);
 
-  $sth.execute;
-
-  while (my @row = $sth.fetchrow_array) {
-    my $ftype = @row[0].lc;
-    my $density = @row[1].lc;
-    my $shape = @row[2];
-
-    my $symbol = get_symbol('area', "{$ftype}_$density");
-
-    next unless $symbol;
-    ++$object_count;
-    put_line($zone, $shape, "area$symbol");
+  if $sth.execute {
+    
+    while (my @row = $sth.fetchrow_array) {
+      my $ftype = @row[0].lc;
+      my $density = @row[1].lc;
+      my $shape = @row[2];
+      
+      my $symbol = get_symbol('area', "{$ftype}_$density");
+      
+      next unless $symbol;
+      ++$object_count;
+      put_line($zone, $shape, "area$symbol");
+    }
+  } else {
+    note "Table tree_density not found";
   }
 }
 
@@ -670,105 +676,111 @@ sub follow_line(Str $zone, Str $shape, $spacing, $func, Real $width, Real $thick
 }
 
 sub draw_lines(Str $zone, Str $table, Int $default_symbol = 0) {
-    note "$table lines...";
-    dbconnect();
-    my $sth = $dbh.prepare("SELECT ftype_code, st_astext(geom) as shape FROM $table WHERE geom && $rect");
-    
-    $sth.execute();
+  note "$table lines...";
+  dbconnect();
+  my $sth = $dbh.prepare("SELECT ftype_code, st_astext(geom) as shape FROM $table WHERE geom && $rect");
+  
+  if $sth.execute {
     
     while ( my @row = $sth.fetchrow_array ) {
-	my $ftype = @row[0];
-	my $shape = @row[1];
-	
-	my $symbol = 0;
-	if (defined $default_symbol and $default_symbol < 0) {
-	    $symbol = -$default_symbol;
-	} else {
-            $symbol = get_symbol('line', $ftype.lc);
-	}
-	$symbol = $default_symbol if defined $default_symbol and ! $symbol;
-	next unless $symbol;
-	++$object_count;
-	if ($symbol == 57) { # Depression contour (index)
-	} elsif ($symbol ==  58) { # Depression contour (standard)
-	    put_line($zone, $shape, "line58A", 0);
-	    follow_line($zone, $shape, 4, \&leftticks, .3, .15, '0 .59 1 .18');
-	} elsif ($symbol ==  31) { # Embankment
-# TODO
-	} elsif ($symbol == 542) { # Powerline
-	    $powerlinestart = 1;
-	    follow_line($zone, $shape, .5, \&powerline, .5, .2, '1 .73 0 0');
-	    $TMP.say: "1 .73 0 0 setcmykcolor .2 setlinewidth stroke";
-	} elsif ($symbol == 543) { # Powerline (WAC)
-	    $powerlinestart = 1;
-	    follow_line($zone, $shape, .5, \&powerline, .5, .2, '.79 .9 0 0');
-	    $TMP.say: ".79 .9 0 0 setcmykcolor .2 setlinewidth stroke";
-	} elsif ($symbol == 920) { # Cliff (WAC)
-	    put_line($zone, $shape, "line920A", 0);
-	    follow_line($zone, $shape, 1, \&leftticks, .4, .15, '0 .59 1 .18');
-	} elsif ($symbol == 923) { # Cutting
-# TODO
-	} elsif ($symbol == 924) { # Cliff
-	    put_line($zone, $shape, "line924A", 0);
-	    follow_line($zone, $shape, 1, \&leftticks, .4, .15, '0 0 0 1');
-	} elsif ($symbol == 929) { # Razorback
-	    put_line($zone, $shape, "line929A", 0);
-	    follow_line($zone, $shape, 1, \&altticks, .4, .15, '0 0 0 1');
-	} else {
-	    put_line($zone, $shape, "line$symbol", 0);
-	}
+      my $ftype = @row[0];
+      my $shape = @row[1];
+      
+      my $symbol = 0;
+      if (defined $default_symbol and $default_symbol < 0) {
+	$symbol = -$default_symbol;
+      } else {
+	$symbol = get_symbol('line', $ftype.lc);
+      }
+      $symbol = $default_symbol if defined $default_symbol and ! $symbol;
+      next unless $symbol;
+      ++$object_count;
+      if ($symbol == 57) { # Depression contour (index)
+      } elsif ($symbol ==  58) { # Depression contour (standard)
+	put_line($zone, $shape, "line58A", 0);
+	follow_line($zone, $shape, 4, \&leftticks, .3, .15, '0 .59 1 .18');
+      } elsif ($symbol ==  31) { # Embankment
+	# TODO
+      } elsif ($symbol == 542) { # Powerline
+	$powerlinestart = 1;
+	follow_line($zone, $shape, .5, \&powerline, .5, .2, '1 .73 0 0');
+	$TMP.say: "1 .73 0 0 setcmykcolor .2 setlinewidth stroke";
+      } elsif ($symbol == 543) { # Powerline (WAC)
+	$powerlinestart = 1;
+	follow_line($zone, $shape, .5, \&powerline, .5, .2, '.79 .9 0 0');
+	$TMP.say: ".79 .9 0 0 setcmykcolor .2 setlinewidth stroke";
+      } elsif ($symbol == 920) { # Cliff (WAC)
+	put_line($zone, $shape, "line920A", 0);
+	follow_line($zone, $shape, 1, \&leftticks, .4, .15, '0 .59 1 .18');
+      } elsif ($symbol == 923) { # Cutting
+	# TODO
+      } elsif ($symbol == 924) { # Cliff
+	put_line($zone, $shape, "line924A", 0);
+	follow_line($zone, $shape, 1, \&leftticks, .4, .15, '0 0 0 1');
+      } elsif ($symbol == 929) { # Razorback
+	put_line($zone, $shape, "line929A", 0);
+	follow_line($zone, $shape, 1, \&altticks, .4, .15, '0 0 0 1');
+      } else {
+	put_line($zone, $shape, "line$symbol", 0);
+      }
     }
+  } else {
+    note "Table $table not found";
+  }
 }
 
 sub draw_lines_f(Str $zone, Str $table, Int $default_symbol = 0) {
-    note "$table lines...";
-    dbconnect();
-    my $sth = $dbh.prepare("SELECT ftype, st_astext(geom) as shape FROM $table WHERE geom && $rect");
-    
-    $sth.execute();
+  note "$table lines...";
+  dbconnect();
+  my $sth = $dbh.prepare("SELECT ftype, st_astext(geom) as shape FROM $table WHERE geom && $rect");
+  
+  if $sth.execute {
     
     while ( my @row = $sth.fetchrow_array ) {
-	my $ftype = @row[0];
-	my $shape = @row[1];
-	
-	my $symbol = 0;
-	if (defined $default_symbol and $default_symbol < 0) {
-	    $symbol = -$default_symbol;
-	} else {
-            $symbol = get_symbol('line', $ftype.lc);
-	}
-	$symbol = $default_symbol if defined $default_symbol and ! $symbol;
-	next unless $symbol;
-	++$object_count;
-	if ($symbol == 57) { # Depression contour (index)
-	} elsif ($symbol ==  58) { # Depression contour (standard)
-	    put_line($zone, $shape, "line58A", 0);
-	    follow_line($zone, $shape, 4, \&leftticks, .3, .15, '0 .59 1 .18');
-	} elsif ($symbol ==  31) { # Embankment
-# TODO
-	} elsif ($symbol == 542) { # Powerline
-	    $powerlinestart = 1;
-	    follow_line($zone, $shape, .5, \&powerline, .5, .2, '1 .73 0 0');
-	    $TMP.say: "1 .73 0 0 setcmykcolor .2 setlinewidth stroke";
-	} elsif ($symbol == 543) { # Powerline (WAC)
-	    $powerlinestart = 1;
-	    follow_line($zone, $shape, .5, \&powerline, .5, .2, '.79 .9 0 0');
-	    $TMP.say: ".79 .9 0 0 setcmykcolor .2 setlinewidth stroke";
-	} elsif ($symbol == 920) { # Cliff (WAC)
-	    put_line($zone, $shape, "line920A", 0);
-	    follow_line($zone, $shape, 1, \&leftticks, .4, .15, '0 .59 1 .18');
-	} elsif ($symbol == 923) { # Cutting
-# TODO
-	} elsif ($symbol == 924) { # Cliff
-	    put_line($zone, $shape, "line924A", 0);
-	    follow_line($zone, $shape, 1, \&leftticks, .4, .15, '0 0 0 1');
-	} elsif ($symbol == 929) { # Razorback
-	    put_line($zone, $shape, "line929A", 0);
-	    follow_line($zone, $shape, 1, \&altticks, .4, .15, '0 0 0 1');
-	} else {
-	    put_line($zone, $shape, "line$symbol", 0);
-	}
+      my $ftype = @row[0];
+      my $shape = @row[1];
+      
+      my $symbol = 0;
+      if (defined $default_symbol and $default_symbol < 0) {
+	$symbol = -$default_symbol;
+      } else {
+	$symbol = get_symbol('line', $ftype.lc);
+      }
+      $symbol = $default_symbol if defined $default_symbol and ! $symbol;
+      next unless $symbol;
+      ++$object_count;
+      if ($symbol == 57) { # Depression contour (index)
+      } elsif ($symbol ==  58) { # Depression contour (standard)
+	put_line($zone, $shape, "line58A", 0);
+	follow_line($zone, $shape, 4, \&leftticks, .3, .15, '0 .59 1 .18');
+      } elsif ($symbol ==  31) { # Embankment
+	# TODO
+      } elsif ($symbol == 542) { # Powerline
+	$powerlinestart = 1;
+	follow_line($zone, $shape, .5, \&powerline, .5, .2, '1 .73 0 0');
+	$TMP.say: "1 .73 0 0 setcmykcolor .2 setlinewidth stroke";
+      } elsif ($symbol == 543) { # Powerline (WAC)
+	$powerlinestart = 1;
+	follow_line($zone, $shape, .5, \&powerline, .5, .2, '.79 .9 0 0');
+	$TMP.say: ".79 .9 0 0 setcmykcolor .2 setlinewidth stroke";
+      } elsif ($symbol == 920) { # Cliff (WAC)
+	put_line($zone, $shape, "line920A", 0);
+	follow_line($zone, $shape, 1, \&leftticks, .4, .15, '0 .59 1 .18');
+      } elsif ($symbol == 923) { # Cutting
+	# TODO
+      } elsif ($symbol == 924) { # Cliff
+	put_line($zone, $shape, "line924A", 0);
+	follow_line($zone, $shape, 1, \&leftticks, .4, .15, '0 0 0 1');
+      } elsif ($symbol == 929) { # Razorback
+	put_line($zone, $shape, "line929A", 0);
+	follow_line($zone, $shape, 1, \&altticks, .4, .15, '0 0 0 1');
+      } else {
+	put_line($zone, $shape, "line$symbol", 0);
+      }
     }
+  } else {
+    note "Table $table not found";
+  }
 }
 
 sub put_outline(Str $text, Real $x, Real $y, Real $size, Str $colour, Real $thickness) { 
@@ -776,28 +788,31 @@ sub put_outline(Str $text, Real $x, Real $y, Real $size, Str $colour, Real $thic
 }
 
 sub draw_polygon_outline_names(Str $zone, Str $table, Str $column, Real $size, Real $thickness, Str $colour) {
-    note "$table outline names...";
-    dbconnect();
-    my $sth = $dbh.prepare("SELECT $column, st_astext(st_envelope(geom)) as bbox FROM $table WHERE geom && $rect");
-    
-    $sth.execute();
+  note "$table outline names...";
+  dbconnect();
+  my $sth = $dbh.prepare("SELECT $column, st_astext(st_envelope(geom)) as bbox FROM $table WHERE geom && $rect");
+  
+  if $sth.execute {
     
     while ( my @row = $sth.fetchrow_array ) {
-        my $name  = @row[0];
-        my $shape = @row[1];
-        my @x = read_points($shape);
-        my $centrex = (@x[0] + @x[4]) / 2;
-        my $centrey = (@x[1] + @x[5]) / 2;
-        note "Locality $name $centrex $centrey $shape";
-        my ($cx, $cy) = latlon2page($zone, $centrex, $centrey);
-        my @text = $name.split: ' ';
-        my $yoffset = (@text.end + 1)/2;
-        for @text -> $text {
-            put_outline $text, $cx, $cy+$yoffset, $size, $colour, $thickness;
-            $yoffset -= $size;
-        }
+      my $name  = @row[0];
+      my $shape = @row[1];
+      my @x = read_points($shape);
+      my $centrex = (@x[0] + @x[4]) / 2;
+      my $centrey = (@x[1] + @x[5]) / 2;
+      note "Locality $name $centrex $centrey $shape";
+      my ($cx, $cy) = latlon2page($zone, $centrex, $centrey);
+      my @text = $name.split: ' ';
+      my $yoffset = (@text.end + 1)/2;
+      for @text -> $text {
+			  put_outline $text, $cx, $cy+$yoffset, $size, $colour, $thickness;
+			  $yoffset -= $size;
+			 }
         ++$object_count;
     }
+  } else {
+    note "Table $table not found";
+  }
 }
 
 sub draw_properties(Str $zone) {
@@ -1071,16 +1086,16 @@ sub draw_roadpoints(Str $zone) {
     my $sth = $dbh.prepare("SELECT ftype_code, st_astext(geom) as position, rotation, ufi, width FROM tr_road_infrastructure WHERE geom && $rect");
     my $sth2 = $dbh.prepare("SELECT ftype_code, class_code FROM tr_road WHERE from_ufi = ? OR to_ufi = ?");
     
-    $sth.execute();
-    
-    while ( my @row = $sth.fetchrow_array ) {
+    if $sth.execute {
+      
+      while ( my @row = $sth.fetchrow_array ) {
         my $ftype        = @row[0];
         my $position     = @row[1];
         my $orientation  = 90 - @row[2] || 0;
         my $ufi          = @row[3];
         my $featurewidth = @row[4];
         my $featuretype  = $ftype;
-
+	
         my $symbol = get_symbol('point', $ftype.lc);
         
         #next unless @display_feature[$featuretype]; ### TODO
@@ -1090,15 +1105,18 @@ sub draw_roadpoints(Str $zone) {
         my ($x, $y) = latlon2page $zone, +$0, +$1;
         %dependencies{"point$symbol"}++;
         if $featurewidth <= 0 {
-# Find the width of the adjoining roads
-            my $adjcode = 12; # largest real class_code
-            $sth2.execute($ufi, $ufi);
-            while (my ($t, $c) = $sth2.fetchrow_array()) {
-                $adjcode = $c if $c < $adjcode;
-            }
-            $featurewidth = @road_widths[$adjcode];
+	  # Find the width of the adjoining roads
+	  my $adjcode = 12; # largest real class_code
+	  $sth2.execute($ufi, $ufi);
+	  while (my @row = $sth2.fetchrow_array()) {
+	    $adjcode = @row[1] if @row[1] < $adjcode;
+	  }
+	  $featurewidth = @road_widths[$adjcode];
         }
-        $TMP.print: sprintf "$orientation %.6g %.6g $featurewidth point$symbol\n", $x, $y;
+	  $TMP.print: sprintf "$orientation %.6g %.6g $featurewidth point$symbol\n", $x, $y;
+      }
+    } else {
+      note "Table tr_road_infrastructure does not exist";
     }
 }
 
@@ -1984,9 +2002,7 @@ sub dbconnect() {
   state $connected = 0;
   if ! $connected {
     my $passwd = 'xyz123';
-    $dbh= DBIish.connect("Pg", user => 'ro', password => $passwd, dbname => $db); # or die $DBIish::errstr;
-    note $dbh.WHAT;
-    note $dbh.^methods;
+    $dbh= DBIish.connect("Pg", user => 'ro', password => $passwd, dbname => $db, RaiseError => 0); # or die $DBIish::errstr;
     $connected = 1;
   }
 }
