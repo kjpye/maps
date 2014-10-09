@@ -1,4 +1,3 @@
 .drawrc
-.pdf
-x.ps
-x.pdf
+*.pdf
+*.ps
