@@ -1,0 +1,15 @@
+#!/usr/bin/perl6
+
+use Text::CSV;
+
+my @lines = Text::CSV.parse-file('tmp/ToiletmapExport_141001_090000.csv', :output('hashes'));
+
+#use CSV::Parser;
+
+#my $input = open('tmp/ToiletmapExport_141001_090000.csv');
+#my $csv = CSV::Parser.new(:file_handle($input));
+#say $csv.get_line;
+#while $csv.get_line -> %fields {
+#  say %fields<0>, "\t", %fields<38>, "\t", %fields<39>;
+#}
+# "ToiletID","URL","Name","Address1","Town","State","Postcode","AddressNote","Male","Female","Unisex","FacilityType","ToiletType","AccessLimited","PaymentRequired","KeyRequired","AccessNote","Parking","ParkingNote","AccessibleMale","AccessibleFemale","AccessibleUnisex","AccessibleNote","MLAK","ParkingAccessible","AccessibleParkingNote","IsOpen","OpeningHoursSchedule","OpeningHoursNote","BabyChange","Showers","DrinkingWater","SharpsDisposal","SanitaryDisposal","IconURL","IconAltText","Notes","Status","Latitude","Longitude"
