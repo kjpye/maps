@@ -1,15 +1,148 @@
 #!/usr/bin/perl6
 
 use Text::CSV;
+use DBIish;
 
-my @lines = Text::CSV.parse-file('tmp/ToiletmapExport_141001_090000.csv', :output('hashes'));
+shell 'psql -d vicmap -c "drop table publictoilets"';
 
-#use CSV::Parser;
+shell Q:to 'EOF';
+psql -d vicmap -c "
+create table publictoilets (
+  ToiletID int,
+  URL text,
+  Name text,
+  Address1 text,
+  Town text,
+  State text,
+  Postcode text,
+  AddressNote text,
+  Male boolean,
+  Female boolean,
+  Unisex boolean,
+  FacilityType text,
+  ToiletType text,
+  AccessLimited boolean,
+  PaymentRequired boolean,
+  KeyRequired boolean,
+  AccessNote text,
+  Parking boolean,
+  ParkingNote text,
+  AccessibleMale boolean,
+  AccessibleFemale boolean,
+  AccessibleUnisex boolean,
+  AccessibleNote text,
+  MLAK boolean,
+  ParkingAccessible boolean,
+  AccessibleParkingNote text,
+  IsOpen text,
+  OpeningHoursSchedule text,
+  OpeningHoursNote text,
+  BabyChange boolean,
+  Showers boolean,
+  DrinkingWater boolean,
+  SharpsDisposal boolean,
+  SanitaryDisposal boolean,
+  IconURL text,
+  IconAltText text,
+  Notes text,
+  Status text,
+  Latitude float,
+  Longitude float
+);
+grant select, insert on publictoilets to ro;
+"
+EOF
 
-#my $input = open('tmp/ToiletmapExport_141001_090000.csv');
-#my $csv = CSV::Parser.new(:file_handle($input));
-#say $csv.get_line;
-#while $csv.get_line -> %fields {
-#  say %fields<0>, "\t", %fields<38>, "\t", %fields<39>;
-#}
-# "ToiletID","URL","Name","Address1","Town","State","Postcode","AddressNote","Male","Female","Unisex","FacilityType","ToiletType","AccessLimited","PaymentRequired","KeyRequired","AccessNote","Parking","ParkingNote","AccessibleMale","AccessibleFemale","AccessibleUnisex","AccessibleNote","MLAK","ParkingAccessible","AccessibleParkingNote","IsOpen","OpeningHoursSchedule","OpeningHoursNote","BabyChange","Showers","DrinkingWater","SharpsDisposal","SanitaryDisposal","IconURL","IconAltText","Notes","Status","Latitude","Longitude"
+my $db = 'vicmap';
+my $passwd = 'xyz123';
+
+my $dbh = DBIish.connect("Pg", user => 'ro', password => $passwd, dbname => $db, RaiseError => 0);
+my $sth = $dbh.prepare('INSERT INTO publictoilets (
+  ToiletID,
+  URL,
+  Name,
+  Address1,
+  Town,
+  State,
+  Postcode,
+  AddressNote,
+  Male,
+  Female,
+  Unisex,
+  FacilityType,
+  ToiletType,
+  AccessLimited,
+  PaymentRequired,
+  KeyRequired,
+  AccessNote,
+  Parking,
+  ParkingNote,
+  AccessibleMale,
+  AccessibleFemale,
+  AccessibleUnisex,
+  AccessibleNote,
+  MLAK,
+  ParkingAccessible,
+  AccessibleParkingNote,
+  IsOpen,
+  OpeningHoursSchedule,
+  OpeningHoursNote,
+  BabyChange,
+  Showers,
+  DrinkingWater,
+  SharpsDisposal,
+  SanitaryDisposal,
+  IconURL,
+  IconAltText,
+  Notes,
+  Status,
+  Latitude,
+  Longitude
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+
+for Text::CSV.parse-file('ToiletmapExport_141001_090000.csv', :output('hashes')) -> %line {
+  my @values = %line<
+                     ToiletID
+                     URL
+                     Name
+                     Address1
+                     Town
+                     State
+                     Postcode
+                     AddressNote
+                     Male
+                     Female
+                     Unisex
+                     FacilityType
+                     ToiletType
+                     AccessLimited
+                     PaymentRequired
+                     KeyRequired
+                     AccessNote
+                     Parking
+                     ParkingNote
+                     AccessibleMale
+                     AccessibleFemale
+                     AccessibleUnisex
+                     AccessibleNote
+                     MLAK
+                     ParkingAccessible
+                     AccessibleParkingNote
+                     IsOpen
+                     OpeningHoursSchedule
+                     OpeningHoursNote
+                     BabyChange
+                     Showers
+                     DrinkingWater
+                     SharpsDisposal
+                     SanitaryDisposal
+                     IconURL
+                     IconAltText
+                     Notes
+                     Status
+                     Latitude
+                     Longitude
+                    >;
+  $sth.execute(@values);
+}
+
