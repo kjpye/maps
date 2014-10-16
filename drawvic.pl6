@@ -24,7 +24,7 @@ my ($lleasting, $llnorthing);
 my ($lreasting, $lrnorthing);
 my ($uleasting, $ulnorthing);
 my ($ureasting, $urnorthing);
-my Str $zone;
+my Str $zone; # global variable, but we pass it around everywhere anyway!
 
 #my @featuretype;
 #my %featuretype;
@@ -67,16 +67,16 @@ my $orientation = 'landscape';
 my @annotations;
 
 sub set_papersizes() {
-# Keys are papersize, values are a string with
-# width and length in mm separated by commas.
-%papersizes = (
-  'a'      => '216,   279',
-  'b'      => '279,   432',
-  'c'      => '432,   559',
-  'd'      => '559,   864',
-  'e'      => '864,   1118',
-  'letter' => '215.9, 279.4',
-);
+  # Keys are papersize, values are a string with
+  # width and length in mm separated by commas.
+  %papersizes = (
+    'a'      => '216,   279',
+    'b'      => '279,   432',
+    'c'      => '432,   559',
+    'd'      => '559,   864',
+    'e'      => '864,   1118',
+    'letter' => '215.9, 279.4',
+  );
 
 # Calculate metric A and B paper sizes
   my $sqsq2 = sqrt(sqrt(2));
@@ -89,7 +89,6 @@ sub set_papersizes() {
     $l = $w;
     $w = $l / sqrt(2);
   }
-#note %papersizes;
 }
 
 my ($xoffset, $yoffset, $xmin, $ymin); # where the map actually goes on the page
@@ -111,8 +110,8 @@ my ($imagewidth, $imageheight);
 my ($gridwidth, $graticulewidth);
 my ($gridheight, $graticuleheight);
 my $db = 'vicmap'; # which database to access
-my $grid_spacing = 10000; # spacing betwen grid lines in metres
-my $graticule_spacing = .25; # spacing between graticule lines in degrees
+my $grid_spacing = 1000; # spacing betwen grid lines in metres
+my $graticule_spacing = 1.0/60; # spacing between graticule lines in degrees
 my (Bool $ongrid, Bool $ongraticule) = (False, False);
 my (Bool $bleedright, Bool $bleedtop) = (False, False);
 
@@ -195,7 +194,6 @@ sub process_option($arg is copy) {
 	    $gridwidth = $0;
             $gridwidth *= 1000 if $1.lc eq 'k';
 	    $ongrid = True;
-	    #note "Grid width: $gridwidth\n";
 	} else {
 	    $graticulewidth = $0;
 	    $ongraticule = True;
@@ -206,7 +204,6 @@ sub process_option($arg is copy) {
 	if ($2.lc eq 'm') {
 	    $gridheight = $0;
             $gridheight *= 1000 if $1.lc eq 'k';
-	    #note "Grid height: $gridheight\n";
 	    $ongrid = True;
 	} else {
 	    $graticuleheight = $0;
@@ -228,14 +225,11 @@ sub process_option($arg is copy) {
     if ($arg ~~ m/ ^ grid[spacing]? \= (\d+) (k?) m?$/) {
 	$grid_spacing = $0;
 	$grid_spacing *= 1000 if $1.defined && $1.lc eq 'k';
-note "grid spacing: $grid_spacing ($0 \"$1\")";
 	return;
     }
     if $arg ~~ m/^ graticule[spacing]? \= (\d+) (<[dDmM]>?) $/ {
-note "Set graticule spacing -- $0 \"$1\"";
 	$graticule_spacing = $0;
 	$graticule_spacing /= 60 unless $1.lc eq 'd';
-note "Graticule spacing set to $graticule_spacing";
 	return;
     }
     if ($arg ~~ m:i/^display '=' all$/) {
@@ -266,7 +260,6 @@ note "Graticule spacing set to $graticule_spacing";
        return;
     }
     if ($arg ~~ m/^file '=' (.*)/) {
-	#note "Including file $0\n";
         my $includefile = $0;
         my $INC = $includefile.IO.open(:r) and {
 	    for $INC.lines -> $line {
@@ -349,39 +342,39 @@ sub latlon2page(Str $zone, Real $xin, Real $yin) {
 
 sub sbsb(Int $s1, Int $b1, Str $s2, Str $b2) {
     $TMP.print: qq:to 'EOF';
-/Helvetica-Latin1 4 selectfont
-($b2) stringwidth pop ($b1) stringwidth pop add
-/Helvetica-Latin1 2 selectfont
-($s1) stringwidth pop ($s2) stringwidth pop add add
-2 div neg 0 moveto
-($s1) show
-/Helvetica-Latin1 4 selectfont ($b1) show
-/Helvetica-Latin1 2 selectfont ($s2) show
-/Helvetica-Latin1 4 selectfont ($b2) show
+      /Helvetica-Latin1 4 selectfont
+      ($b2) stringwidth pop ($b1) stringwidth pop add
+      /Helvetica-Latin1 2 selectfont
+      ($s1) stringwidth pop ($s2) stringwidth pop add add
+      2 div neg 0 moveto
+      ($s1) show
+      /Helvetica-Latin1 4 selectfont ($b1) show
+      /Helvetica-Latin1 2 selectfont ($s2) show
+      /Helvetica-Latin1 4 selectfont ($b2) show
 EOF
 }
 
 sub lsbsb(Int $s1, Int $b1, Str $s2, Str $b2) {
     $TMP.print: qq:to 'EOF';
-0 0 moveto
-/Helvetica-Latin1 2 selectfont ($s1) show
-/Helvetica-Latin1 4 selectfont ($b1) show
-/Helvetica-Latin1 2 selectfont ($s2) show
-/Helvetica-Latin1 4 selectfont ($b2) show
+      0 0 moveto
+      /Helvetica-Latin1 2 selectfont ($s1) show
+      /Helvetica-Latin1 4 selectfont ($b1) show
+      /Helvetica-Latin1 2 selectfont ($s2) show
+      /Helvetica-Latin1 4 selectfont ($b2) show
 EOF
 }
 
 sub rsbsb(Int $s1, Int $b1, Str $s2, Str $b2) {
     $TMP.print: qq:to 'EOF';
-/Helvetica-Latin1 4 selectfont
-($b2) stringwidth pop ($b1) stringwidth pop add
-/Helvetica-Latin1 2 selectfont
-($s1) stringwidth pop ($s2) stringwidth pop add add
-neg 0 moveto
-($s1) show
-/Helvetica-Latin1 4 selectfont ($b1) show
-/Helvetica-Latin1 2 selectfont ($s2) show
-/Helvetica-Latin1 4 selectfont ($b2) show
+      /Helvetica-Latin1 4 selectfont
+      ($b2) stringwidth pop ($b1) stringwidth pop add
+      /Helvetica-Latin1 2 selectfont
+      ($s1) stringwidth pop ($s2) stringwidth pop add add
+      neg 0 moveto
+      ($s1) show
+      /Helvetica-Latin1 4 selectfont ($b1) show
+      /Helvetica-Latin1 2 selectfont ($s2) show
+      /Helvetica-Latin1 4 selectfont ($b2) show
 EOF
 }
 
@@ -436,11 +429,10 @@ sub ann_double(Buf $element) {
 
 sub ann_colour($element) {
     my ($cyan, $magenta, $yellow, $black) = $element.unpack('CCCC');
-    #note "Colour: $cyan $magenta $yellow $black\n";
-    $cyan /= 100;
+    $cyan    /= 100;
     $magenta /= 100;
-    $yellow /= 100;
-    $black /= 100;
+    $yellow  /= 100;
+    $black   /= 100;
     return ($cyan, $magenta, $yellow, $black);
 }
 
@@ -457,7 +449,7 @@ sub latlon2string($val is copy, $dirs, $full is copy) {
     my $int = $val.Int;
     my $frac = $val - $int;
     my $string = '';
-    $string = "$int\\260 " if $full;
+    $string = "$int\\260 " if $full; # Assumes Latin1, not UTF8
     $frac = ($frac*60).Int;
     $string ~= sprintf "%02d'", $frac;
     $string ~= " $dir" if $full;
@@ -481,7 +473,6 @@ sub plot_point(Str $Zone, Real $x, Real $y, Bool $moveto) {
 my $prev_moveto;
 sub plot_previous_point(Str $zone) {
     if $prev_x.defined and $prev_y.defined && !$prev_moveto {
-#	$TMP.say: "%plot_previous_point $zone $prev_x $prev_y $prev_moveto";
 	plot_point($zone, $prev_x, $prev_y, $prev_moveto);
 	$prev_x = (Real);
 	$prev_y = (Real);
@@ -500,7 +491,6 @@ sub add_point(Str $zone, Real $x, Real $y) {
     $new_quadrant += 3 if $y < $miny;
     $new_quadrant -= 3 if $y > $maxy;
     
-#    $TMP.say: "%add_point: $zone $x $y";
     if ($quadrant == 5 || $quadrant != $new_quadrant) {
 	plot_previous_point($zone) if $quadrant != 5;
 	plot_point($zone, $x, $y, $moveto);
@@ -519,17 +509,11 @@ sub put_line(Str $zone, Str $shape is copy, Str $func, $featurewidth = '') {
     $prev_x = Nil;
     $prev_y = Nil;
 
-#note "put_line: $shape";
-#    $TMP.say: "% $zone $shape";
-    #$shape ~~ s/^MULTILINESTRING\(\(//;
-    #$shape ~~ s/\)\)$//;
     my @segments = $shape.split: '\)\,?\s*\(';
     for @segments -> $segment {
-#note "segment: $segment";
 	$quadrant = -1;
 	$moveto = True;
-        for $segment.comb: /\-?<[\d\.]>+/ -> $x, $y {
-#note "Found point $x $y";
+        for $segment.comb: /\-?<[\d\.]>+/ -> $x, $y { # just extract the numbers and ignore anything else
 	  add_point($zone, +$x, +$y);
 	}
 	plot_previous_point($zone) if $quadrant != 5;
@@ -539,11 +523,11 @@ sub put_line(Str $zone, Str $shape is copy, Str $func, $featurewidth = '') {
     %dependencies{$func}++;
 }
 
-my %symbol;
 my $dbh;
 my $sth_sym;
 
 sub get_symbol(Str $type, Str $ftype) {
+    state %symbol;
     return %symbol{"$type:$ftype"} if %symbol{"$type:$ftype"}.defined;
     note "Looking for $ftype\($type)";
     $sth_sym.execute($type, $ftype);
@@ -551,7 +535,7 @@ sub get_symbol(Str $type, Str $ftype) {
     while my @row = $sth_sym.fetchrow_array {
 	$sym = @row[0];
         %symbol{"$type:$ftype"} = $sym;
-	note "Found $sym\n";
+	note "Found $sym";
     }
     return %symbol{"$type:$ftype"} if %symbol{"$type:$ftype"}.defined;
     note "Unknown $type symbol $ftype";
@@ -562,12 +546,11 @@ my $rect;
 
 sub draw_areas(Str $zone, Str $table) {
   note "$table areas...";
-  dbconnect();
   my $sth = $dbh.prepare("SELECT ftype_code, st_astext(geom) as shape FROM $table WHERE geom && $rect");
   
   if $sth.execute {
     
-    while ( my @row = $sth.fetchrow_array ) {
+    while my @row = $sth.fetchrow_array {
       my $ftype = @row[0];
       my $shape = @row[1];
       
@@ -584,12 +567,11 @@ sub draw_areas(Str $zone, Str $table) {
 
 sub draw_treeden(Str $zone) {
   note "tree_density areas...";
-  dbconnect();
   my $sth = $dbh.prepare("SELECT ftype_code, tree_den, st_astext(geom) as shape FROM tree_density where geom && $rect", RaiseError => 0);
 
   if $sth.execute {
     
-    while (my @row = $sth.fetchrow_array) {
+    while my @row = $sth.fetchrow_array {
       my $ftype = @row[0].lc;
       my $density = @row[1].lc;
       my $shape = @row[2];
@@ -610,53 +592,46 @@ my $powerdirection = 1;
 my $tickdirection = 0;
 
 sub powerline(Real $x, Real $y, Real $angle, Real $width, Real $thick, Str $colour) {
-#   $TMP.say: " % powerline: at $x, $y angle $angle";
     if ($powerlinestart) {
 	$powerlinestart = 0;
 	$powerdirection = 1;
-	$TMP.print: "$x $y moveto\n";
+	$TMP.say: "$x $y moveto";
     } else {
-        $angle *= 3.14159265 / 180;
+        $angle *= pi / 180;
 	my $nx = $x - $thick / 2 * sin($angle) * $powerdirection;
 	my $ny = $y + $thick / 2 * cos($angle) * $powerdirection;
-	$TMP.print: "$nx $ny lineto\n";
+	$TMP.say: "$nx $ny lineto";
 	$powerdirection = $powerdirection > 0 ?? -1 !! 1;
     }
 }
 
 sub leftticks(Real $x, Real $y, Real $angle, Real $width, Real $thick, Str $colour) {
-#   note "lefttick: at $x, $y angle $angle";
-    $TMP.print: "gsave $x $y translate $angle rotate $colour setcmykcolor $thick setlinewidth 0 0 moveto 0 $width lineto stroke grestore\n";
+    $TMP.say: "gsave $x $y translate $angle rotate $colour setcmykcolor $thick setlinewidth 0 0 moveto 0 $width lineto stroke grestore";
 }
 
-sub altticks(Real $x, Real $y, Real $angle, Real $width, Real $thick, Str $colour) {
+sub altticks(Real $x, Real $y, Real $angle, Real $width is rw, Real $thick, Str $colour) {
     $width *= -1 if $tickdirection;
-    $TMP.print: "gsave $x $y translate $angle rotate $colour setcmykcolor $thick setlinewidth 0 0 moveto 0 $width lineto stroke grestore\n";
-    $tickdirection = $tickdirection ?? 0 !! 1;
+    $TMP.say: "gsave $x $y translate $angle rotate $colour setcmykcolor $thick setlinewidth 0 0 moveto 0 $width lineto stroke grestore";
+    $tickdirection = ! $tickdirection;
 }
 
 sub follow_line(Str $zone, Str $shape, $spacing, $func, Real $width, Real $thick, Str $colour) {
     my ($oldx, $oldy);
     my $counter = $spacing / 2;
 
-    $shape ~~ s/^MULTILINESTRING\(\(//;
-    $shape ~~ s/\)\)$//;
     my @segments = $shape.split: '\)\,\s*\(';
     for @segments -> $segment {
-	my @points = $segment.split: '\,\s*';
-	for @points -> $point	{
-	    $point ~~ /(\-?[\d\.]+)\s+(\-?[\d\.]+)/;
-	    my ($x, $y) = latlon2page $zone, $1, $2;
+	for $segment.comb(/(\-?<[\d.]>+)/) -> $lx, $ly {
+	    my ($x, $y) = latlon2page $zone, $lx, $ly;
 	    if ($oldx.defined) {
 		my $deltax = $x - $oldx;
 		my $deltay = $y - $oldy;
 		my $length = sqrt($deltax * $deltax + $deltay * $deltay);
-		#note "follow_line from ($oldx, $oldy) to ($x, $y) diff ($deltax, $deltay) length $length start $counter";
 		if ($length >= $counter) {
 		    my $angle = atan2($deltay, $deltax) * 180 / π;
-		    loop (my $l = $counter;
-		         $l <= $length;
-		         $l += $spacing) {
+		    loop (my $l  = $counter;
+                             $l <= $length;
+                             $l += $spacing) {
 			my $frac = $l / $length;
 			my $tx = $oldx + $deltax * $frac;
 			my $ty = $oldy + $deltay * $frac;
@@ -672,13 +647,11 @@ sub follow_line(Str $zone, Str $shape, $spacing, $func, Real $width, Real $thick
 	    $oldy = $y;
 	}
     }
-#    $TMP.say: "$featurewidth $func";
 }
 
-sub draw_lines(Str $zone, Str $table, Int $default_symbol = 0) {
+sub draw_lines(Str $zone, Str $table, Str $typecolumn, Int $default_symbol = 0) {
   note "$table lines...";
-  dbconnect();
-  my $sth = $dbh.prepare("SELECT ftype_code, st_astext(geom) as shape FROM $table WHERE geom && $rect");
+  my $sth = $dbh.prepare("SELECT $typecolumn, st_astext(geom) as shape FROM $table WHERE geom && $rect");
   
   if $sth.execute {
     
@@ -695,87 +668,39 @@ sub draw_lines(Str $zone, Str $table, Int $default_symbol = 0) {
       $symbol = $default_symbol if defined $default_symbol and ! $symbol;
       next unless $symbol;
       ++$object_count;
-      if ($symbol == 57) { # Depression contour (index)
-      } elsif ($symbol ==  58) { # Depression contour (standard)
-	put_line($zone, $shape, "line58A", 0);
-	follow_line($zone, $shape, 4, \&leftticks, .3, .15, '0 .59 1 .18');
-      } elsif ($symbol ==  31) { # Embankment
-	# TODO
-      } elsif ($symbol == 542) { # Powerline
-	$powerlinestart = 1;
-	follow_line($zone, $shape, .5, \&powerline, .5, .2, '1 .73 0 0');
-	$TMP.say: "1 .73 0 0 setcmykcolor .2 setlinewidth stroke";
-      } elsif ($symbol == 543) { # Powerline (WAC)
-	$powerlinestart = 1;
-	follow_line($zone, $shape, .5, \&powerline, .5, .2, '.79 .9 0 0');
-	$TMP.say: ".79 .9 0 0 setcmykcolor .2 setlinewidth stroke";
-      } elsif ($symbol == 920) { # Cliff (WAC)
-	put_line($zone, $shape, "line920A", 0);
-	follow_line($zone, $shape, 1, \&leftticks, .4, .15, '0 .59 1 .18');
-      } elsif ($symbol == 923) { # Cutting
-	# TODO
-      } elsif ($symbol == 924) { # Cliff
-	put_line($zone, $shape, "line924A", 0);
-	follow_line($zone, $shape, 1, \&leftticks, .4, .15, '0 0 0 1');
-      } elsif ($symbol == 929) { # Razorback
-	put_line($zone, $shape, "line929A", 0);
-	follow_line($zone, $shape, 1, \&altticks, .4, .15, '0 0 0 1');
-      } else {
-	put_line($zone, $shape, "line$symbol", 0);
-      }
-    }
-  } else {
-    note "Table $table not found";
-  }
-}
-
-sub draw_lines_f(Str $zone, Str $table, Int $default_symbol = 0) {
-  note "$table lines...";
-  dbconnect();
-  my $sth = $dbh.prepare("SELECT ftype, st_astext(geom) as shape FROM $table WHERE geom && $rect");
-  
-  if $sth.execute {
-    
-    while ( my @row = $sth.fetchrow_array ) {
-      my $ftype = @row[0];
-      my $shape = @row[1];
-      
-      my $symbol = 0;
-      if (defined $default_symbol and $default_symbol < 0) {
-	$symbol = -$default_symbol;
-      } else {
-	$symbol = get_symbol('line', $ftype.lc);
-      }
-      $symbol = $default_symbol if defined $default_symbol and ! $symbol;
-      next unless $symbol;
-      ++$object_count;
-      if ($symbol == 57) { # Depression contour (index)
-      } elsif ($symbol ==  58) { # Depression contour (standard)
-	put_line($zone, $shape, "line58A", 0);
-	follow_line($zone, $shape, 4, \&leftticks, .3, .15, '0 .59 1 .18');
-      } elsif ($symbol ==  31) { # Embankment
-	# TODO
-      } elsif ($symbol == 542) { # Powerline
-	$powerlinestart = 1;
-	follow_line($zone, $shape, .5, \&powerline, .5, .2, '1 .73 0 0');
-	$TMP.say: "1 .73 0 0 setcmykcolor .2 setlinewidth stroke";
-      } elsif ($symbol == 543) { # Powerline (WAC)
-	$powerlinestart = 1;
-	follow_line($zone, $shape, .5, \&powerline, .5, .2, '.79 .9 0 0');
-	$TMP.say: ".79 .9 0 0 setcmykcolor .2 setlinewidth stroke";
-      } elsif ($symbol == 920) { # Cliff (WAC)
-	put_line($zone, $shape, "line920A", 0);
-	follow_line($zone, $shape, 1, \&leftticks, .4, .15, '0 .59 1 .18');
-      } elsif ($symbol == 923) { # Cutting
-	# TODO
-      } elsif ($symbol == 924) { # Cliff
-	put_line($zone, $shape, "line924A", 0);
-	follow_line($zone, $shape, 1, \&leftticks, .4, .15, '0 0 0 1');
-      } elsif ($symbol == 929) { # Razorback
-	put_line($zone, $shape, "line929A", 0);
-	follow_line($zone, $shape, 1, \&altticks, .4, .15, '0 0 0 1');
-      } else {
-	put_line($zone, $shape, "line$symbol", 0);
+      given $symbol {
+        when  57 {} # Depression contour (index)
+        when  58 { # Depression contour (standard)
+          put_line($zone, $shape, "line58A", 0);
+	  follow_line($zone, $shape, 4, \&leftticks, .3, .15, '0 .59 1 .18');
+        }
+	when  31 {} # Embankment
+        when 542 { # Powerline
+          $powerlinestart = 1;
+          follow_line($zone, $shape, .5, \&powerline, .5, .2, '1 .73 0 0');
+          $TMP.say: "1 .73 0 0 setcmykcolor .2 setlinewidth stroke";
+        }
+	when 543 { # Powerline (WAC)
+          $powerlinestart = 1;
+          follow_line($zone, $shape, .5, \&powerline, .5, .2, '.79 .9 0 0');
+          $TMP.say: ".79 .9 0 0 setcmykcolor .2 setlinewidth stroke";
+        }
+	when 920 { # Cliff (WAC)
+          put_line($zone, $shape, "line920A", 0);
+          follow_line($zone, $shape, 1, \&leftticks, .4, .15, '0 .59 1 .18');
+        }
+	when 923 {} # Cutting
+        when 924 { # Cliff
+          put_line($zone, $shape, "line924A", 0);
+          follow_line($zone, $shape, 1, \&leftticks, .4, .15, '0 0 0 1');
+        }
+	when 929 { # Razorback
+          put_line($zone, $shape, "line929A", 0);
+          follow_line($zone, $shape, 1, \&altticks, .4, .15, '0 0 0 1');
+        }
+	default {
+          put_line($zone, $shape, "line$symbol", 0);
+        }
       }
     }
   } else {
@@ -789,7 +714,6 @@ sub put_outline(Str $text, Real $x, Real $y, Real $size, Str $colour, Real $thic
 
 sub draw_polygon_outline_names(Str $zone, Str $table, Str $column, Real $size, Real $thickness, Str $colour) {
   note "$table outline names...";
-  dbconnect();
   my $sth = $dbh.prepare("SELECT $column, st_astext(st_envelope(geom)) as bbox FROM $table WHERE geom && $rect");
   
   if $sth.execute {
@@ -800,7 +724,7 @@ sub draw_polygon_outline_names(Str $zone, Str $table, Str $column, Real $size, R
       my @x = read_points($shape);
       my $centrex = (@x[0] + @x[4]) / 2;
       my $centrey = (@x[1] + @x[5]) / 2;
-      note "Locality $name $centrex $centrey $shape";
+#      note "Locality $name $centrex $centrey $shape";
       my ($cx, $cy) = latlon2page($zone, $centrex, $centrey);
       my @text = $name.split: ' ';
       my $yoffset = (@text.end + 1)/2;
@@ -817,7 +741,6 @@ sub draw_polygon_outline_names(Str $zone, Str $table, Str $column, Real $size, R
 
 sub draw_properties(Str $zone) {
     note "property lines...";
-    dbconnect();
     my $sth = $dbh.prepare("SELECT st_astext(geom) as shape FROM property_view WHERE pfi = ?");
     
     for @properties -> $property {
@@ -825,48 +748,44 @@ sub draw_properties(Str $zone) {
     
         while ( my @row = $sth.fetchrow_array ) {
             my $shape = @row[0];
-            note "Property $property -- $shape";
-            
-            my $symbol = 927;
             ++$object_count;
-            put_line($zone, $shape, "line$symbol", 0);
+            put_line($zone, $shape, 'line927', 0);
         }
     }
 }
 
-sub draw_wlines(Str $zone, Str $table, Int $default_symbol) {
-    note "$table lines...";
-    dbconnect();
-    my $sth = $dbh.prepare("SELECT symbol, st_astext(shape) as shape, featurewidth FROM $table WHERE shape && $rect");
-    
-    $sth.execute();
-    
-    while ( my @row = $sth.fetchrow_array ) {
-	my $symbol = @row[0];
-	my $shape = @row[1];
-	my Real $featurewidth = @row[3];
-	$featurewidth = 0 unless defined $featurewidth && $featurewidth;
-	
-	if (defined $default_symbol and $default_symbol < 0) {
-	    $symbol = -$default_symbol;
-	}
-	$symbol = $default_symbol if defined $default_symbol and ! $symbol;
-	next unless $symbol;
-	++$object_count;
-	if ($symbol == 57) { # Depression contour (index)
-	} elsif ($symbol == 58) { # Depression contour (standard)
-	} elsif ($symbol == 31) { # Embankment
-	} elsif ($symbol == 542) { # Powerline
-	} elsif ($symbol == 543) { # Powerline (WAC)
-	} elsif ($symbol == 920) { # Cliff (WAC)
-	} elsif ($symbol == 923) { # Cutting
-	} elsif ($symbol == 924) { # Cliff
-	} elsif ($symbol == 929) { # Razorback
-	} else {
-	    put_line($zone, $shape, "line$symbol", $featurewidth);
-	}
-    }
-}
+#sub draw_wlines(Str $zone, Str $table, Int $default_symbol) {
+#    note "$table lines...";
+#    my $sth = $dbh.prepare("SELECT symbol, st_astext(shape) as shape, featurewidth FROM $table WHERE shape && $rect");
+#    
+#    $sth.execute();
+#    
+#    while ( my @row = $sth.fetchrow_array ) {
+#	my $symbol = @row[0];
+#	my $shape = @row[1];
+#	my Real $featurewidth = @row[3];
+#	$featurewidth = 0 unless defined $featurewidth && $featurewidth;
+#	
+#	if (defined $default_symbol and $default_symbol < 0) {
+#	    $symbol = -$default_symbol;
+#	}
+#	$symbol = $default_symbol if defined $default_symbol and ! $symbol;
+#	next unless $symbol;
+#	++$object_count;
+#	if ($symbol == 57) { # Depression contour (index)
+#	} elsif ($symbol == 58) { # Depression contour (standard)
+#	} elsif ($symbol == 31) { # Embankment
+#	} elsif ($symbol == 542) { # Powerline
+#	} elsif ($symbol == 543) { # Powerline (WAC)
+#	} elsif ($symbol == 920) { # Cliff (WAC)
+#	} elsif ($symbol == 923) { # Cutting
+#	} elsif ($symbol == 924) { # Cliff
+#	} elsif ($symbol == 929) { # Razorback
+#	} else {
+#	    put_line($zone, $shape, "line$symbol", $featurewidth);
+#	}
+#    }
+#}
 
 # This shouldn't be here, but in a database somewhere
 
@@ -919,7 +838,6 @@ sub draw_roads(Str $zone) {
     my $featurewidth;
 
     note "Roads...";
-    dbconnect();
     my $sth = $dbh.prepare("SELECT pfi, ftype_code, class_code, dir_code, road_seal, div_rd, st_astext(geom) as shape FROM tr_road WHERE geom && $rect");
     
     $sth.execute();
@@ -948,7 +866,6 @@ sub draw_roads(Str $zone) {
 
     note "Centre lines of roads...";
 
-    dbconnect();
     $sth = $dbh.prepare("SELECT ftype_code, st_astext(geom) as shape FROM tr_road WHERE pfi = ?");
     for @dual -> $objectid {
 	$sth.execute($objectid);
@@ -1028,7 +945,6 @@ sub draw_osmroads(Str $zone) {
 
 sub draw_points(Str $zone, Str $table) {
     note "$table points...";
-    dbconnect();
     my $sth = $dbh.prepare("SELECT ftype_code, st_astext(geom) AS position, rotation
                             FROM $table
 			    WHERE geom && $rect
@@ -1055,9 +971,8 @@ sub draw_points(Str $zone, Str $table) {
     }
 }
 
-sub spot_heights(Str $zone) {
+sub draw_spot_heights(Str $zone) {
     note "spot heights...";
-    dbconnect();
     my $sth = $dbh.prepare("SELECT ftype_code, st_astext(geom) AS position, altitude FROM el_grnd_surface_point WHERE geom && $rect");
     
     $TMP.say: "/Helvetica-Latin1 2 selectfont 0 0 0 1 setcmykcolor";
@@ -1082,7 +997,6 @@ my @road_widths = (.9, .9, .9, .6, .6, .6, .4, .4, .4, .4, .2, .2, .2);
 
 sub draw_roadpoints(Str $zone) {
     note "tr_road_infrastructure points...";
-    dbconnect();
     my $sth = $dbh.prepare("SELECT ftype_code, st_astext(geom) as position, rotation, ufi, width FROM tr_road_infrastructure WHERE geom && $rect");
     my $sth2 = $dbh.prepare("SELECT ftype_code, class_code FROM tr_road WHERE from_ufi = ? OR to_ufi = ?");
     
@@ -1120,148 +1034,149 @@ sub draw_roadpoints(Str $zone) {
     }
 }
 
-sub draw_annotations(Str $zone) {
-    note "Annotations...\n";
-    dbconnect();
-    my $sth = $dbh.prepare("SELECT element, st_astext(shape) as shape FROM Annotations WHERE shape && $rect");
-    
-    $sth.execute();
-    
-    while ( my @row = $sth.fetchrow_array ) {
-	++$object_count;
-	my $element = @row[0];
-	my $shape = @row[1];
-	my ($string2, $string3, $font);
-	my ($x1, $y1, $x2, $y2);
-	my $unknown1;
-	my $justn = 0;
-	my ($rotangle, $xdiff, $ydiff);
-	
-	#{my $el = $element; while ($el) {$TMP.printf: "%02.2x ", ord(substr($el, 0, 1)); substr($el, 0, 1) = ''; } $TMP.print: "\n";}
-	substr($element, 0, 54) = ''; # first 54 bytes are invariant
-	($string2, $element) = get_ann_string($element);
-	#note "draw_annotation: $string2\n";
-	$unknown1 = substr($element, 0, 1); # What is this?
-	substr($element, 0, 22) = ''; # 21 invariant bytes
-	$unknown1 = substr($element, 0, 1);
-	substr($element, 0, 16) = ''; # 15 invariant bytes
-	$unknown1 = ann_short(substr($element, 0, 2)); substr($element, 0, 2) = '';
-	$unknown1 = ann_short(substr($element, 0, 2)); substr($element, 0, 2) = '';
-	my ($cyan, $magenta, $yellow, $black) = ann_colour(substr($element, 0, 4));
-	#note "colour: $cyan $magenta $yellow $black\n";
-	substr($element, 0, 6) = ''; # 2 invariant bytes
-	$unknown1 = ann_int(substr($element, 0, 4)); substr($element, 0, 4) = '';
-	substr($element, 0, 21) = '' if ($unknown1 == 0);
-	$unknown1 = ann_int(substr($element, 0, 4)); substr($element, 0, 4) = '';
-	$justn = ann_int(substr($element, 0, 4));
-	substr($element, 0, 6) = ''; # 2 invariant bytes
-	$rotangle = ann_double(substr($element, 0, 8)); substr($element, 0, 8) = '';
-	$xdiff = ann_double(substr($element, 0, 8)); substr($element, 0, 8) = '';
-	$ydiff = ann_double(substr($element, 0, 8)); substr($element, 0, 8) = '';
-        substr($element, 0, 110) = ''; # invariant bytes
-	$unknown1 = ann_short(substr($element, 0, 2)); substr($element, 0, 2) = '';
-	substr($element, 0, 61) = '';
-	($string3, $element) = get_ann_string($element);
-	substr($element, 0, 6) = ''; # invariant
-	#note "Second copy of string: $string3\n";
-	my $pointsize = ord(substr($element, 0, 1)); substr($element, 0, 1) = '';
-	$pointsize = $pointsize / 4 * 25.4 / 72;
-	#note "Point size: $pointsize\n";
-	substr($element, 0, 48) = ''; # invariant
-	$unknown1 = ann_byte(substr($element, 0, 1)); substr($element, 0, 1) = '';
-	$unknown1 = ann_short(substr($element, 0, 2)); substr($element, 0, 2) = '';
-	$pointsize = ann_int(substr($element, 0, 4)); substr($element, 0, 4) = '';
-	$pointsize = $pointsize / 10000 * 25.4 / 72;
-	($font, $element) = get_ann_astring($element);
-	#note "Font: $font\n";
-	substr($element, 0, 18) = ''; # invariant
-	$unknown1 = ann_byte(substr($element, 0, 1)); substr($element, 0, 1) = '';
-	#$TMP.print: "unknown1: $unknown1\n"; ###
-	if ($unknown1 == 16) {
-	    substr($element, 0, 17) = ''; # invariant
-	    $unknown1 = ann_short(substr($element, 0, 2)); substr($element, 0, 2) = '';
-	    substr($element, 0, 6) = '';
-	    $x1 = ann_double(substr($element, 0, 8)); substr($element, 0, 8) = '';
-	    $y1 = ann_double(substr($element, 0, 8)); substr($element, 0, 8) = '';
-	    $x2 = ann_double(substr($element, 0, 8)); substr($element, 0, 8) = '';
-	    $y2 = ann_double(substr($element, 0, 8)); substr($element, 0, 8) = '';
-	    #$TMP.print: "16: $x1 $y1 $x2 $y2\n"; ###
-	    substr($element, 0, 4) = '';
-	    my $count = ann_int(substr($element, 0, 4)); substr($element, 0, 4) = '';
-	    substr($element, 0, 4) = ''; # invariant
-	    #$TMP.print: "count: $count\n"; ###
-	    if ($count) {
-		my @coords = ();
-		while ($count--) {
-		    my $x = ann_double(substr($element, 0, 8)); substr($element, 0, 8) = '';
-		    my $y = ann_double(substr($element, 0, 8)); substr($element, 0, 8) = '';
-		    push @coords, [$x, $y];
-		}
-		($x1, $y1) = @(@coords[0]);
-		($x2, $y2) = @(@coords[1]);
-		if (%drawobjects{'annotation_position'}) {
-		    my ($tx, $ty) = latlon2page($zone, $x1, $y1);
-		    $TMP.print: "%%%%%%%\n$tx $ty moveto\n";
-		    for @coords -> $posn {
-			my ($x, $y) = @$posn;
-			($tx, $ty) = latlon2page($zone, $x, $y);
-			$TMP.print: "$tx $ty lineto\n";
-		    }
-		    $TMP.print: "1 1 0 0 setcmykcolor 0.5 setlinewidth stroke\n";
-		}
-		$xdiff = 0;
-		$ydiff = 0;
-		$justn = 0;
-	    }
-	} elsif ($unknown1 == 65) {
-	    substr($element, 0, 17) = ''; # invariant
-	    $unknown1 = ann_short(substr($element, 0, 2));
-	    substr($element, 0, 8) = ''; # 6 invariant bytes
-	    $x1 = ann_double(substr($element, 0, 8)); substr($element, 0, 8) = '';
-	    $y1 = ann_double(substr($element, 0, 8)); substr($element, 0, 8) = '';
-	    #note "65: $x1 $y1\n";
-	    if (%drawobjects{'annotation_position'}) {
-		my ($tx, $ty) = latlon2page $zone, $x1, $y1;
-		$TMP.print: "$tx $ty moveto 1 0 rlineto 1 1 0 0 setcmykcolor 0.5 setlinewidth stroke %%%%%\n";
-	    }
-	    $xdiff = $ydiff = 0;
-	} else {
-	    note "Unknown annotation value $unknown1, ignoring\n";
-	}
-	substr($element, 0, 18) = '';
-	(Nil, $element) = ann_lastring($element);
-	substr($element, 0, 41) = ''; # $element should now be empty!
-	
-	# finished parsing; now print something
-	
-	# Check for valid location -- sometimes we gat lat/lon with NaN values!
-	if ($x1 == $x1 and $y1 == $y1) {
-	    $font = ($font eq 'Zurich Cn BT') ?? 'Helvetica-Narrow-Latin1' !! 'Helvetica-Latin1';
-	    $TMP.printf: "/$font %.4g selectfont\n", $pointsize;
-	    
-	    my $annotation = $string2;
-	    ($x1, $y1) = latlon2page $zone, $x1, $y1;
-	    my $angle;
-	    if (defined $y2) {
-		($x2, $y2) = latlon2page $zone, $x2, $y2;
-		$angle = atan2($y2 - $y1, $x2 - $x1) * 180 / 3.1415926535;
-	    } else {
-		$angle = 0;
-	    }
-            # $angle = $rotangle if $rotangle;
-	    $annotation ~~ s:g/\\/\\\\/;
-	    $annotation ~~ s:g/\(/\\\(/;
-	    $annotation ~~ s:g/\)/\\\)/;
-	    $TMP.printf: "gsave %.6g %.6g translate %.6g rotate 0 0 moveto %.4g %.4g %.4g %.4g setcmykcolor ", $x1+$xdiff, $y1+$ydiff, $angle, $cyan, $magenta, $yellow, $black;
-	    if ($justn == 2) {
-		$TMP.print: "($annotation) stringwidth pop neg 0 rmoveto ";
-	    } elsif ($justn == 1) {
-		$TMP.print: "($annotation) stringwidth pop 2 div neg 0 rmoveto ";
-	    }
-	    $TMP.printf: "($annotation) show grestore\n";
-	}
-    }
-}
+#sub draw_annotations(Str $zone) {
+#    note "Annotations...\n";
+#    my $sth = $dbh.prepare("SELECT element, st_astext(shape) as shape FROM Annotations WHERE shape && $rect");
+#    
+#    $sth.execute();
+#    
+#    while ( my @row = $sth.fetchrow_array ) {
+#	++$object_count;
+#	my $element = @row[0];
+#	my $shape = @row[1];
+#	my ($string2, $string3, $font);
+#	my ($x1, $y1, $x2, $y2);
+#	my $unknown1;
+#	my $justn = 0;
+#	my ($rotangle, $xdiff, $ydiff);
+#	
+#
+# The following horrendous code is an attempt to extract data from the undocumented annotations in the Australian 1:250000 series maps
+#	#{my $el = $element; while ($el) {$TMP.printf: "%02.2x ", ord(substr($el, 0, 1)); substr($el, 0, 1) = ''; } $TMP.print: "\n";}
+#	substr($element, 0, 54) = ''; # first 54 bytes are invariant
+#	($string2, $element) = get_ann_string($element);
+#	#note "draw_annotation: $string2\n";
+#	$unknown1 = substr($element, 0, 1); # What is this?
+#	substr($element, 0, 22) = ''; # 21 invariant bytes
+#	$unknown1 = substr($element, 0, 1);
+#	substr($element, 0, 16) = ''; # 15 invariant bytes
+#	$unknown1 = ann_short(substr($element, 0, 2)); substr($element, 0, 2) = '';
+#	$unknown1 = ann_short(substr($element, 0, 2)); substr($element, 0, 2) = '';
+#	my ($cyan, $magenta, $yellow, $black) = ann_colour(substr($element, 0, 4));
+#	#note "colour: $cyan $magenta $yellow $black\n";
+#	substr($element, 0, 6) = ''; # 2 invariant bytes
+#	$unknown1 = ann_int(substr($element, 0, 4)); substr($element, 0, 4) = '';
+#	substr($element, 0, 21) = '' if ($unknown1 == 0);
+#	$unknown1 = ann_int(substr($element, 0, 4)); substr($element, 0, 4) = '';
+#	$justn = ann_int(substr($element, 0, 4));
+#	substr($element, 0, 6) = ''; # 2 invariant bytes
+#	$rotangle = ann_double(substr($element, 0, 8)); substr($element, 0, 8) = '';
+#	$xdiff = ann_double(substr($element, 0, 8)); substr($element, 0, 8) = '';
+#	$ydiff = ann_double(substr($element, 0, 8)); substr($element, 0, 8) = '';
+#        substr($element, 0, 110) = ''; # invariant bytes
+#	$unknown1 = ann_short(substr($element, 0, 2)); substr($element, 0, 2) = '';
+#	substr($element, 0, 61) = '';
+#	($string3, $element) = get_ann_string($element);
+#	substr($element, 0, 6) = ''; # invariant
+#	#note "Second copy of string: $string3\n";
+#	my $pointsize = ord(substr($element, 0, 1)); substr($element, 0, 1) = '';
+#	$pointsize = $pointsize / 4 * 25.4 / 72;
+#	#note "Point size: $pointsize\n";
+#	substr($element, 0, 48) = ''; # invariant
+#	$unknown1 = ann_byte(substr($element, 0, 1)); substr($element, 0, 1) = '';
+#	$unknown1 = ann_short(substr($element, 0, 2)); substr($element, 0, 2) = '';
+#	$pointsize = ann_int(substr($element, 0, 4)); substr($element, 0, 4) = '';
+#	$pointsize = $pointsize / 10000 * 25.4 / 72;
+#	($font, $element) = get_ann_astring($element);
+#	#note "Font: $font\n";
+#	substr($element, 0, 18) = ''; # invariant
+#	$unknown1 = ann_byte(substr($element, 0, 1)); substr($element, 0, 1) = '';
+#	#$TMP.print: "unknown1: $unknown1\n"; ###
+#	if ($unknown1 == 16) {
+#	    substr($element, 0, 17) = ''; # invariant
+#	    $unknown1 = ann_short(substr($element, 0, 2)); substr($element, 0, 2) = '';
+#	    substr($element, 0, 6) = '';
+#	    $x1 = ann_double(substr($element, 0, 8)); substr($element, 0, 8) = '';
+#	    $y1 = ann_double(substr($element, 0, 8)); substr($element, 0, 8) = '';
+#	    $x2 = ann_double(substr($element, 0, 8)); substr($element, 0, 8) = '';
+#	    $y2 = ann_double(substr($element, 0, 8)); substr($element, 0, 8) = '';
+#	    #$TMP.print: "16: $x1 $y1 $x2 $y2\n"; ###
+#	    substr($element, 0, 4) = '';
+#	    my $count = ann_int(substr($element, 0, 4)); substr($element, 0, 4) = '';
+#	    substr($element, 0, 4) = ''; # invariant
+#	    #$TMP.print: "count: $count\n"; ###
+#	    if ($count) {
+#		my @coords = ();
+#		while ($count--) {
+#		    my $x = ann_double(substr($element, 0, 8)); substr($element, 0, 8) = '';
+#		    my $y = ann_double(substr($element, 0, 8)); substr($element, 0, 8) = '';
+#		    push @coords, [$x, $y];
+#		}
+#		($x1, $y1) = @(@coords[0]);
+#		($x2, $y2) = @(@coords[1]);
+#		if (%drawobjects{'annotation_position'}) {
+#		    my ($tx, $ty) = latlon2page($zone, $x1, $y1);
+#		    $TMP.print: "%%%%%%%\n$tx $ty moveto\n";
+#		    for @coords -> $posn {
+#			my ($x, $y) = @$posn;
+#			($tx, $ty) = latlon2page($zone, $x, $y);
+#			$TMP.print: "$tx $ty lineto\n";
+#		    }
+#		    $TMP.print: "1 1 0 0 setcmykcolor 0.5 setlinewidth stroke\n";
+#		}
+#		$xdiff = 0;
+#		$ydiff = 0;
+#		$justn = 0;
+#	    }
+#	} elsif ($unknown1 == 65) {
+#	    substr($element, 0, 17) = ''; # invariant
+#	    $unknown1 = ann_short(substr($element, 0, 2));
+#	    substr($element, 0, 8) = ''; # 6 invariant bytes
+#	    $x1 = ann_double(substr($element, 0, 8)); substr($element, 0, 8) = '';
+#	    $y1 = ann_double(substr($element, 0, 8)); substr($element, 0, 8) = '';
+#	    #note "65: $x1 $y1\n";
+#	    if (%drawobjects{'annotation_position'}) {
+#		my ($tx, $ty) = latlon2page $zone, $x1, $y1;
+#		$TMP.print: "$tx $ty moveto 1 0 rlineto 1 1 0 0 setcmykcolor 0.5 setlinewidth stroke %%%%%\n";
+#	    }
+#	    $xdiff = $ydiff = 0;
+#	} else {
+#	    note "Unknown annotation value $unknown1, ignoring\n";
+#	}
+#	substr($element, 0, 18) = '';
+#	(Nil, $element) = ann_lastring($element);
+#	substr($element, 0, 41) = ''; # $element should now be empty!
+#	
+#	# finished parsing; now print something
+#	
+#	# Check for valid location -- sometimes we gat lat/lon with NaN values!
+#	if ($x1 == $x1 and $y1 == $y1) {
+#	    $font = ($font eq 'Zurich Cn BT') ?? 'Helvetica-Narrow-Latin1' !! 'Helvetica-Latin1';
+#	    $TMP.printf: "/$font %.4g selectfont\n", $pointsize;
+#	    
+#	    my $annotation = $string2;
+#	    ($x1, $y1) = latlon2page $zone, $x1, $y1;
+#	    my $angle;
+#	    if (defined $y2) {
+#		($x2, $y2) = latlon2page $zone, $x2, $y2;
+#		$angle = atan2($y2 - $y1, $x2 - $x1) * 180 / 3.1415926535;
+#	    } else {
+#		$angle = 0;
+#	    }
+#            # $angle = $rotangle if $rotangle;
+#	    $annotation ~~ s:g/\\/\\\\/;
+#	    $annotation ~~ s:g/\(/\\\(/;
+#	    $annotation ~~ s:g/\)/\\\)/;
+#	    $TMP.printf: "gsave %.6g %.6g translate %.6g rotate 0 0 moveto %.4g %.4g %.4g %.4g setcmykcolor ", $x1+$xdiff, $y1+$ydiff, $angle, $cyan, $magenta, $yellow, $black;
+#	    if ($justn == 2) {
+#		$TMP.print: "($annotation) stringwidth pop neg 0 rmoveto ";
+#	    } elsif ($justn == 1) {
+#		$TMP.print: "($annotation) stringwidth pop 2 div neg 0 rmoveto ";
+#	    }
+#	    $TMP.printf: "($annotation) show grestore\n";
+#	}
+#    }
+#}
 
 my ($starteasting, $mineasting, $maxeasting, $startnorthing, $minnorthing, $maxnorthing);
 
@@ -1775,7 +1690,6 @@ sub draw_bbox() {
 # Fetch and display all the objects
     
 sub draw_objects(Real $xoff, Real $yoff, Real $slope) {
-    dbconnect();
     my $sth_draw = $dbh.prepare("SELECT featurename, drawtype, tablename, featurecolumn, defaultsymbol, displayorder FROM vicdisplayorder ORDER BY displayorder");
     $sth_draw.execute;
     while (my @row = $sth_draw.fetchrow_array) {
@@ -1783,21 +1697,21 @@ sub draw_objects(Real $xoff, Real $yoff, Real $slope) {
       #note "Drawing $feature: $draw $table $column";
       if $order && %drawobjects{$feature}.defined {
         given $draw {
-          when 'treeden'        { draw_treeden($zone); }
-          when 'area'           { draw_areas($zone, $table); }
-          when 'line'           { draw_lines($zone, $table, -$default); }
-          when 'line_f'         { draw_lines_f($zone, $table, -$default); }
+          when 'treeden'        { draw_treeden\             ($zone                                      ); }
+          when 'area'           { draw_areas\               ($zone, $table                              ); }
+          when 'line'           { draw_lines\               ($zone, $table, 'ftype_code', -$default,    ); }
+          when 'line_f'         { draw_lines\               ($zone, $table, 'ftype',      -$default,    ); }
           when 'outline'        { draw_polygon_outline_names($zone, $table, $column, 8, 0.2, '1 0 .86 0'); }
-          when 'road'           { draw_roads($zone); }
-          when 'wline'          { draw_wlines($zone, $table); }
-          when 'property'       { draw_properties($zone); }
-          when 'point'          { draw_points($zone, $table); }
-          when 'spotheight'     { spot_heights($zone); }
-          when 'roadpoint'      { draw_roadpoints($zone); }
-          when 'graticule'      { draw_graticule($zone); }
-          when 'grid'           { draw_grid($zone); }
-          when 'annotation'     { draw_annotations($zone); }
-          when 'userannotation' { draw_userannotations($zone, $xoff, $yoff, $slope); }
+          when 'road'           { draw_roads\               ($zone                                      ); }
+#         when 'wline'          { draw_wlines\              ($zone, $table                              ); }
+          when 'property'       { draw_properties\          ($zone                                      ); }
+          when 'point'          { draw_points\              ($zone, $table                              ); }
+          when 'spotheight'     { draw_spot_heights\        ($zone                                      ); }
+          when 'roadpoint'      { draw_roadpoints\          ($zone                                      ); }
+          when 'graticule'      { draw_graticule\           ($zone                                      ); }
+          when 'grid'           { draw_grid\                ($zone                                      ); }
+#         when 'annotation'     { draw_annotations\         ($zone                                      ); }
+          when 'userannotation' { draw_userannotations\     ($zone, $xoff, $yoff, $slope                ); }
           default               { note "Unknown draw type $draw for feature $feature: objects ignored"; }
         }
       }
@@ -1811,27 +1725,24 @@ sub drawit(Str $zone, Real $d_lllong, Real $d_lllat, Real $d_urlong, Real $d_url
 	= ($d_lllong, $d_urlong, $d_lllat, $d_urlat);
     note "drawit: $zone $lllongitude $lllatitude $urlongitude $urlatitude $left $right";
 
-my ($lllong, $lllat, $urlong, $urlat) = ($lllongitude - 0.01,
-					$lllatitude - 0.01,
-					$urlongitude + 0.01,
-					$urlatitude + 0.01);
+    my ($lllong, $lllat, $urlong, $urlat) = ($lllongitude - 0.01,
+    					     $lllatitude - 0.01,
+        				     $urlongitude + 0.01,
+					     $urlatitude + 0.01
+				            );
 
     $rect = "ST_GeometryFromText('POLYGON(($lllong $lllat, $urlong $lllat, $urlong $urlat, $lllong $urlat, $lllong $lllat))', 4326)"; # 4283)";
-    #note $rect;
 
     my ($xoff, $yoff, $slope) = draw_margins($left, $right);
     draw_bbox();
 
-    $TMP.print: "closepath\n";
-    if (%drawobjects{'graticule'}) {
-	$TMP.print:
-	    ".1 setlinewidth 0 0 0 1 setcmykcolor gsave stroke grestore\n";
-    }
-    $TMP.print: "clip newpath\n";
+    $TMP.say: 'closepath';
+    $TMP.say: '.1 setlinewidth 0 0 0 1 setcmykcolor gsave stroke grestore' if %drawobjects<graticule>;
+    $TMP.say: 'clip newpath';
     
     draw_objects($xoff, $yoff, $slope);
 
-    $TMP.say: "restore"; # undo the clip path
+    $TMP.say: 'restore'; # undo the clip path
     ($lllongitude, $urlongitude, $lllatitude, $urlatitude) = ($tlllong, $turlong, $tlllat, $turlat);
 }
 
@@ -1839,21 +1750,26 @@ my ($lllong, $lllat, $urlong, $urlat) = ($lllongitude - 0.01,
 
 my %done_deps = ();
 
-sub do_dependency(Str $dependency) {
+sub do_dependencies() {
+  my $sth = $dbh.prepare("SELECT dependencies, body FROM $symbols WHERE name = ?");
+  for keys %dependencies -> $dep {
+    do_dependency($sth, $dep);
+  }
+}
+
+sub do_dependency($sth is copy, Str $dependency) {
     return if %done_deps{$dependency}.defined;
 
     note "Dependency: $dependency";    
-    dbconnect();
-    my $sth = $dbh.prepare("SELECT dependencies, body FROM $symbols WHERE name = '$dependency'");
     
-    $sth.execute();
+    $sth.execute($dependency);
     while ( my @row = $sth.fetchrow_array ) {
 	my $deps = @row[0];
 	my $body = @row[1];
 	if ($deps) {
 	    my @deps = $deps.words;
 	    for @deps -> $dep {
-		do_dependency($dep) unless %done_deps{$dep}.defined;
+		do_dependency($sth, $dep) unless %done_deps{$dep}.defined;
 	    }
 	}
 	print $body;
@@ -1885,15 +1801,8 @@ for @*ARGS -> $arg {
 
 # Calculate various things which depend on the options
 
-if $ongrid && $ongraticule {
-    fail "Must use either grid coordinates or lat/lon; not a mixture";
-}
-
-# How much space do we have?
-
-if (! %papersizes{$papersize}.defined) {
-    fail "Unknown paper size $papersize";
-}
+fail 'Must use either grid coordinates or lat/lon; not a mixture' if $ongrid && $ongraticule;
+fail "Unknown paper size $papersize" unless %papersizes{$papersize}.defined;
 
 note "Orientation is \"$orientation\"";
 given $orientation {
@@ -1905,10 +1814,8 @@ given $orientation {
     { fail "Unknown paper orientation $orientation\n"; }
 }
 note "Page width: $paperwidth, height $paperheight";
-$imagewidth
-    = ($paperwidth  - $leftmarginwidth  - $rightmarginwidth) * $scale/1000;
-$imageheight
-    = ($paperheight - $lowermarginwidth - $uppermarginwidth) * $scale/1000;
+$imagewidth  = ($paperwidth  - $leftmarginwidth  - $rightmarginwidth) * $scale/1000;
+$imageheight = ($paperheight - $lowermarginwidth - $uppermarginwidth) * $scale/1000;
 
 # Work out where the lower left corner is
 
@@ -1998,22 +1905,16 @@ $maxy = $urlatitude + .001;
 
 $yscale = $xscale = 1000/$scale; # convert metres on the ground to mm on the map
 
-sub dbconnect() {
-  state $connected = 0;
-  if ! $connected {
-    my $passwd = 'xyz123';
-    $dbh= DBIish.connect("Pg", user => 'ro', password => $passwd, dbname => $db, RaiseError => 0); # or die $DBIish::errstr;
-    $connected = 1;
-  }
-}
+# Connect to database
+my $passwd = 'xyz123';
+$dbh= DBIish.connect("Pg", user => 'ro', password => $passwd, dbname => $db, RaiseError => 0); # or die $DBIish::errstr;
 
-dbconnect();
 $sth_sym = $dbh.prepare('SELECT symbol_ga FROM vicmap_symbols WHERE type = ? AND ftype = ?');
 
 my ($leftzone, $rightzone);
 
 if ($ongraticule) {
-  ($leftzone, *, *)  = latlon_to_utm('WGS-84', $lllatitude, $lllongitude+.0000001);
+  ($leftzone,  *, *) = latlon_to_utm('WGS-84', $lllatitude, $lllongitude+.0000001);
   ($rightzone, *, *) = latlon_to_utm('WGS-84', $urlatitude, $urlongitude-.0000001);
 } else {
   $leftzone = $rightzone = $zone;
@@ -2023,15 +1924,13 @@ if ($leftzone eq $rightzone) {
   drawit($leftzone, $lllongitude, $lllatitude, $urlongitude, $urlatitude, True, True);
 } else {
   my $boundary = $urlongitude.Int; # works for maps less than 1 degree wide -- FIX
-  drawit($leftzone, $lllongitude, $lllatitude, $boundary, $urlatitude, True, False);
+  drawit($leftzone,  $lllongitude, $lllatitude, $boundary, $urlatitude, True, False);
   drawit($rightzone, $boundary, $lllatitude, $urlongitude, $urlatitude, False, True);
 }
 
 put_userannotations();
 
-for keys %dependencies -> $dep {
-  do_dependency($dep);
-}
+do_dependencies();
 
 $dbh.disconnect();
 
