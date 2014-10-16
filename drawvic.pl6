@@ -901,47 +901,47 @@ my %osmroads2ga = (
     'cycleway'      => 22,
     );
 
-sub draw_osmroads(Str $zone) {
-    my @dual;
-    my $featurewidth;
-
-    note "OSMRoads...\n";
-    my $osmdbh = DBIish.connect("dbi:Pg:dbname=osm", "", "", {AutoCommit => 0});
-    my $sth = $osmdbh.prepare("SELECT objectid, type, st_astext(shape) as shape FROM HighwayWays WHERE shape && $rect");
-    
-    $sth.execute();
-    
-    while ( my @row = $sth.fetchrow_array ) {
-	my $objectid = @row[0];
-	my $type = @row[1];
-	my $shape = @row[2];
-	my $symbol = %osmroads2ga{$type};
-	if ($symbol.defined) {
-	    $featurewidth = 0 unless $featurewidth.defined && $featurewidth;
-	    
-	    next unless $symbol;
-	    @dual.push: $objectid if $symbol == 250;
-	    ++$object_count;
-	    put_line($zone, $shape, "line$symbol", $featurewidth);
-	} else {
-	    note "Unknown road type $type";
-	}
-    }
-
-# Now go back and draw the yellow centre line on dual carriageways
-
-    $sth = $osmdbh.prepare("SELECT shape FROM HighwayWays WHERE objectid = ?");
-    for @dual -> $objectid {
-	$sth.execute($objectid);
-	
-	while (my @row = $sth.fetchrow_array) {
-	    my $shape = @row[0];
-	    
-	    put_line($zone, $shape, 'line250A', $featurewidth);
-	}
-    }
-    $osmdbh.disconnect();
-}
+#sub draw_osmroads(Str $zone) {
+#    my @dual;
+#    my $featurewidth;
+#
+#    note "OSMRoads...\n";
+#    my $osmdbh = DBIish.connect("dbi:Pg:dbname=osm", "", "", {AutoCommit => 0});
+#    my $sth = $osmdbh.prepare("SELECT objectid, type, st_astext(shape) as shape FROM HighwayWays WHERE shape && $rect");
+#    
+#    $sth.execute();
+#    
+#    while ( my @row = $sth.fetchrow_array ) {
+#	my $objectid = @row[0];
+#	my $type = @row[1];
+#	my $shape = @row[2];
+#	my $symbol = %osmroads2ga{$type};
+#	if ($symbol.defined) {
+#	    $featurewidth = 0 unless $featurewidth.defined && $featurewidth;
+#	    
+#	    next unless $symbol;
+#	    @dual.push: $objectid if $symbol == 250;
+#	    ++$object_count;
+#	    put_line($zone, $shape, "line$symbol", $featurewidth);
+#	} else {
+#	    note "Unknown road type $type";
+#	}
+#    }
+#
+## Now go back and draw the yellow centre line on dual carriageways
+#
+#    $sth = $osmdbh.prepare("SELECT shape FROM HighwayWays WHERE objectid = ?");
+#    for @dual -> $objectid {
+#	$sth.execute($objectid);
+#	
+#	while (my @row = $sth.fetchrow_array) {
+#	    my $shape = @row[0];
+#	    
+#	    put_line($zone, $shape, 'line250A', $featurewidth);
+#	}
+#    }
+#    $osmdbh.disconnect();
+#}
 
 sub draw_points(Str $zone, Str $table) {
     note "$table points...";
@@ -1520,12 +1520,12 @@ sub format_long(Real $long) {
 sub put_annotation(Str $zone, Real $pagex, Real $pagey, Real $long, Real $lat, Real $x1, Real $y1, Str $string is copy) {
     my $longstr = format_long($long);
     my $latstr = format_lat($lat);
-note "longitude: $longstr, latitude: $latstr, annotation: $string";
+#note "longitude: $longstr, latitude: $latstr, annotation: $string";
     $string.subst(/\$LONG/, $longstr);
     $string.subst(/\$LAT/, $latstr);
     $string ~~ s/\$LONG/{$longstr}/;
     $string ~~ s/\$LAT/{$latstr}/;
-note $string;
+#note $string;
     my @lines = $string.lines;
 
     my ($x2, $y2) = ($pagex, $pagey);
@@ -1718,7 +1718,8 @@ sub draw_objects(Real $xoff, Real $yoff, Real $slope) {
     }
 }
 
-sub drawit(Str $zone, Real $d_lllong, Real $d_lllat, Real $d_urlong, Real $d_urlat, Bool $left, Bool $right) {
+sub drawit(Str $drawzone, Real $d_lllong, Real $d_lllat, Real $d_urlong, Real $d_urlat, Bool $left, Bool $right) {
+    $zone = $drawzone;
     my ($tlllong, $turlong, $tlllat, $turlat)
 	= ($lllongitude, $urlongitude, $lllatitude, $urlatitude);
     ($lllongitude, $urlongitude, $lllatitude, $urlatitude)
