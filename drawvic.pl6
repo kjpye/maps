@@ -117,7 +117,7 @@ my (Bool $bleedright, Bool $bleedtop) = (False, False);
 
 sub process_option($arg is copy) {
     note "Processing option $arg";
-    if $arg ~~ / ^ annotation \=
+    if $arg ~~ m:i/ ^ annotation \=
                  ( \-? <[\d .]>+ )
                  <[, \s]>+ ( \-? <[\d .]>+ )
                  <[, \s]>+ ( \-? <[\d .]>+ )
@@ -129,50 +129,50 @@ sub process_option($arg is copy) {
     }
 # ignore whitespace in all remaining options
     $arg ~~ s:g/\s+//;
-    if $arg ~~ / ^ papersize '=' (.*) / {
+    if $arg ~~ m:i/ ^ papersize '=' (.*) / {
 	$papersize = $0;
 	return;
     }
-    if $arg ~~ / orientation '=' (.*) / {
+    if $arg ~~ m:i/ orientation '=' (.*) / {
 	$orientation = $0;
 	return;
     }
-    if $arg ~~ / bleedright '=' (.*) / {
+    if $arg ~~ m:i/ bleedright '=' (.*) / {
 	$bleedright = ?$0;
 	$rightmarginwidth = -20;
 	return;
     }
-    if ($arg ~~ / bleedtop '=' (.*)/) {
+    if ($arg ~~ m:i/ bleedtop '=' (.*)/) {
 	$bleedtop = ?$0;
 	$uppermarginwidth = -10;
 	return;
     }
-    if ($arg ~~ /^leftmarginwidth '=' (d+[\.\d+]?)$/) {
+    if ($arg ~~ m:i/^leftmarginwidth '=' (d+[\.\d+]?)$/) {
         $leftmarginwidth = $0;
         return;
     }
-    if ($arg ~~ /^rightmarginwidth '=' (d+[\.\d+]?)$/) {
+    if ($arg ~~ m:i/^rightmarginwidth '=' (d+[\.\d+]?)$/) {
         $rightmarginwidth = $0;
         return;
     }
-    if ($arg ~~ /^(lower|bottom)marginwidth '=' (d+[\.\d+]?)$/) {
+    if ($arg ~~ m:i/^(lower|bottom)marginwidth '=' (d+[\.\d+]?)$/) {
         $lowermarginwidth = $2;
         return;
     }
-    if ($arg ~~ /^(upper|top)marginwidth '=' (d+[\.\d+]?)$/) {
+    if ($arg ~~ m:i/^(upper|top)marginwidth '=' (d+[\.\d+]?)$/) {
         $uppermarginwidth = $2;
         return;
     }
-    if ($arg ~~/d[ata]?b[ase]? '=' (.*)/) {
+    if ($arg ~~ m:i/d[ata]?b[ase]? '=' (.*)/) {
 	$db = $0;
 	return;
     }
-    if $arg ~~ m/^ lat[itude]? '=' ( \-? <[\d\.]>+ ) $ / {
+    if $arg ~~ m:i/^ lat[itude]? '=' ( \-? <[\d\.]>+ ) $ / {
 	$lllatitude = +$0;
 	$ongraticule = True;
 	return;
     }
-    if $arg ~~ m/^ long[itude]? '=' ( \-? <[\d\.]>+ ) $ / {
+    if $arg ~~ m:i/^ long[itude]? '=' ( \-? <[\d\.]>+ ) $ / {
 	$lllongitude = +$0;
 	$ongraticule = True;
 	return;
@@ -189,7 +189,7 @@ sub process_option($arg is copy) {
 	$ongrid = True;
         return;
     }
-    if ($arg ~~ /^width '=' (\d+[\.\d+]?)([kK])?([dDmM]?)$/) {
+    if ($arg ~~ m:i/^width '=' (\d+[\.\d+]?)([kK])?([dDmM]?)$/) {
 	if ($2.lc eq 'm') {
 	    $gridwidth = $0;
             $gridwidth *= 1000 if $1.lc eq 'k';
@@ -200,7 +200,7 @@ sub process_option($arg is copy) {
 	}
         return;
     }
-    if ($arg ~~ /^height '=' (\d+[\.\d+]?)([kK])?([dDmM]?)$/) {
+    if ($arg ~~ m:i/^height '=' (\d+[\.\d+]?)([kK])?([dDmM]?)$/) {
 	if ($2.lc eq 'm') {
 	    $gridheight = $0;
             $gridheight *= 1000 if $1.lc eq 'k';
@@ -222,12 +222,12 @@ sub process_option($arg is copy) {
 	$scale *= 1000000 if $1.lc eq 'm';
 	return;
     }
-    if ($arg ~~ m/ ^ grid[spacing]? \= (\d+) (k?) m?$/) {
+    if ($arg ~~ m:i/ ^ grid[spacing]? \= (\d+) (k?) m?$/) {
 	$grid_spacing = $0;
 	$grid_spacing *= 1000 if $1.defined && $1.lc eq 'k';
 	return;
     }
-    if $arg ~~ m/^ graticule[spacing]? \= (\d+) (<[dDmM]>?) $/ {
+    if $arg ~~ m:i/^ graticule[spacing]? \= (\d+) (<[dDmM]>?) $/ {
 	$graticule_spacing = $0;
 	$graticule_spacing /= 60 unless $1.lc eq 'd';
 	return;
@@ -239,7 +239,7 @@ sub process_option($arg is copy) {
 	}
 	return;
     }
-    if ($arg ~~ m/^display '=' (\S+)$/) {
+    if ($arg ~~ m:i/^display '=' (\S+)$/) {
 	%drawobjects{$0.lc} = 1;
 	return;
     }
@@ -247,19 +247,19 @@ sub process_option($arg is copy) {
 	%drawobjects = ();
 	return;
     }
-    if ($arg ~~ m/^nodisplay '=' (\S+)$/) {
+    if ($arg ~~ m:i/^nodisplay '=' (\S+)$/) {
 	%drawobjects{$0.lc} = Nil;
 	return;
     }
-    if ($arg ~~ m/^symbols '=' (\S+)$/) {
+    if ($arg ~~ m:i/^symbols '=' (\S+)$/) {
 	$symbols = $0.lc;
         return;
     }
-    if $arg ~~ m/^property \= (<[\d,]>+) / {
+    if $arg ~~ m:i/^property \= (<[\d,]>+) / {
        @properties.push: $0.split(',');
        return;
     }
-    if ($arg ~~ m/^file '=' (.*)/) {
+    if ($arg ~~ m:i/^file '=' (.*)/) {
         my $includefile = $0;
         my $INC = $includefile.IO.open(:r) and {
 	    for $INC.lines -> $line {
@@ -331,7 +331,7 @@ sub grid2page(Real $xin, Real $yin) {
            ($yin + $yoffset) * $yscale + $ymin);
 }
 
-sub latlon2page(Str $zone, Real $xin, Real $yin) {
+sub latlon2page(Real $xin, Real $yin) {
     ++$point_count;
     my ($tzone, $xout, $yout) = latlon_to_utm_force_zone('WGS-84', $zone, $yin, $xin);
 # inline grid2page for speed
@@ -465,15 +465,15 @@ my Int $quadrant = -1;
 my Real $prev_x;
 my Real $prev_y;
 
-sub plot_point(Str $Zone, Real $x, Real $y, Bool $moveto) {
-    my ($x1, $y1) = latlon2page $zone, $x, $y;
+sub plot_point(Real $x, Real $y, Bool $moveto) {
+    my ($x1, $y1) = latlon2page $x, $y;
     $TMP.print: sprintf "%.5g %.5g %s\n", $x1, $y1, $moveto ?? 'moveto' !! 'lineto';
 }
 
 my $prev_moveto;
-sub plot_previous_point(Str $zone) {
+sub plot_previous_point() {
     if $prev_x.defined and $prev_y.defined && !$prev_moveto {
-	plot_point($zone, $prev_x, $prev_y, $prev_moveto);
+	plot_point($prev_x, $prev_y, $prev_moveto);
 	$prev_x = (Real);
 	$prev_y = (Real);
     }
@@ -481,7 +481,7 @@ sub plot_previous_point(Str $zone) {
 
 my ($minx, $miny, $maxx, $maxy);
 
-sub add_point(Str $zone, Real $x, Real $y) {
+sub add_point(Real $x, Real $y) {
     my $new_quadrant = 5;
 
     return unless $x.defined and $y.defined;
@@ -492,8 +492,8 @@ sub add_point(Str $zone, Real $x, Real $y) {
     $new_quadrant -= 3 if $y > $maxy;
     
     if ($quadrant == 5 || $quadrant != $new_quadrant) {
-	plot_previous_point($zone) if $quadrant != 5;
-	plot_point($zone, $x, $y, $moveto);
+	plot_previous_point() if $quadrant != 5;
+	plot_point($x, $y, $moveto);
 	$prev_x = Nil;
 	$prev_y = Nil;
 	$moveto = False;
@@ -505,7 +505,7 @@ sub add_point(Str $zone, Real $x, Real $y) {
     $quadrant = $new_quadrant;
 }
 
-sub put_line(Str $zone, Str $shape is copy, Str $func, $featurewidth = '') {
+sub put_line(Str $shape is copy, Str $func, $featurewidth = '') {
     $prev_x = Nil;
     $prev_y = Nil;
 
@@ -514,11 +514,11 @@ sub put_line(Str $zone, Str $shape is copy, Str $func, $featurewidth = '') {
 	$quadrant = -1;
 	$moveto = True;
         for $segment.comb: /\-?<[\d\.]>+/ -> $x, $y { # just extract the numbers and ignore anything else
-	  add_point($zone, +$x, +$y);
+	  add_point(+$x, +$y);
 	}
-	plot_previous_point($zone) if $quadrant != 5;
+	plot_previous_point() if $quadrant != 5;
     }
-    plot_previous_point($zone) if $quadrant != 5;
+    plot_previous_point() if $quadrant != 5;
     $TMP.say: "$featurewidth $func";
     %dependencies{$func}++;
 }
@@ -544,7 +544,7 @@ sub get_symbol(Str $type, Str $ftype) {
 
 my $rect;
 
-sub draw_areas(Str $zone, Str $table) {
+sub draw_areas(Str $table) {
   note "$table areas...";
   my $sth = $dbh.prepare("SELECT ftype_code, st_astext(geom) as shape FROM $table WHERE geom && $rect");
   
@@ -558,14 +558,14 @@ sub draw_areas(Str $zone, Str $table) {
       
       next unless $symbol;
       ++$object_count;
-      put_line($zone, $shape, "area$symbol");
+      put_line($shape, "area$symbol");
     }
   } else {
     note "$table not found";
   }
 }
 
-sub draw_treeden(Str $zone) {
+sub draw_treeden() {
   note "tree_density areas...";
   my $sth = $dbh.prepare("SELECT ftype_code, tree_den, st_astext(geom) as shape FROM tree_density where geom && $rect", RaiseError => 0);
 
@@ -580,7 +580,7 @@ sub draw_treeden(Str $zone) {
       
       next unless $symbol;
       ++$object_count;
-      put_line($zone, $shape, "area$symbol");
+      put_line($shape, "area$symbol");
     }
   } else {
     note "Table tree_density not found";
@@ -615,14 +615,14 @@ sub altticks(Real $x, Real $y, Real $angle, Real $width is rw, Real $thick, Str 
     $tickdirection = ! $tickdirection;
 }
 
-sub follow_line(Str $zone, Str $shape, $spacing, $func, Real $width, Real $thick, Str $colour) {
+sub follow_line(Str $shape, $spacing, $func, Real $width, Real $thick, Str $colour) {
     my ($oldx, $oldy);
     my $counter = $spacing / 2;
 
     my @segments = $shape.split: '\)\,\s*\(';
     for @segments -> $segment {
 	for $segment.comb(/(\-?<[\d.]>+)/) -> $lx, $ly {
-	    my ($x, $y) = latlon2page $zone, $lx, $ly;
+	    my ($x, $y) = latlon2page $lx, $ly;
 	    if ($oldx.defined) {
 		my $deltax = $x - $oldx;
 		my $deltay = $y - $oldy;
@@ -649,7 +649,7 @@ sub follow_line(Str $zone, Str $shape, $spacing, $func, Real $width, Real $thick
     }
 }
 
-sub draw_lines(Str $zone, Str $table, Str $typecolumn, Int $default_symbol = 0) {
+sub draw_lines(Str $table, Str $typecolumn, Int $default_symbol = 0) {
   note "$table lines...";
   my $sth = $dbh.prepare("SELECT $typecolumn, st_astext(geom) as shape FROM $table WHERE geom && $rect");
   
@@ -660,46 +660,46 @@ sub draw_lines(Str $zone, Str $table, Str $typecolumn, Int $default_symbol = 0) 
       my $shape = @row[1];
       
       my $symbol = 0;
-      if (defined $default_symbol and $default_symbol < 0) {
+      if ($default_symbol.defined and $default_symbol < 0) {
 	$symbol = -$default_symbol;
       } else {
 	$symbol = get_symbol('line', $ftype.lc);
       }
-      $symbol = $default_symbol if defined $default_symbol and ! $symbol;
+      $symbol = $default_symbol if $default_symbol.defined and ! $symbol;
       next unless $symbol;
       ++$object_count;
       given $symbol {
         when  57 {} # Depression contour (index)
         when  58 { # Depression contour (standard)
-          put_line($zone, $shape, "line58A", 0);
-	  follow_line($zone, $shape, 4, \&leftticks, .3, .15, '0 .59 1 .18');
+          put_line($shape, "line58A", 0);
+	  follow_line($shape, 4, \&leftticks, .3, .15, '0 .59 1 .18');
         }
 	when  31 {} # Embankment
         when 542 { # Powerline
           $powerlinestart = 1;
-          follow_line($zone, $shape, .5, \&powerline, .5, .2, '1 .73 0 0');
+          follow_line($shape, .5, \&powerline, .5, .2, '1 .73 0 0');
           $TMP.say: "1 .73 0 0 setcmykcolor .2 setlinewidth stroke";
         }
 	when 543 { # Powerline (WAC)
           $powerlinestart = 1;
-          follow_line($zone, $shape, .5, \&powerline, .5, .2, '.79 .9 0 0');
+          follow_line($shape, .5, \&powerline, .5, .2, '.79 .9 0 0');
           $TMP.say: ".79 .9 0 0 setcmykcolor .2 setlinewidth stroke";
         }
 	when 920 { # Cliff (WAC)
-          put_line($zone, $shape, "line920A", 0);
-          follow_line($zone, $shape, 1, \&leftticks, .4, .15, '0 .59 1 .18');
+          put_line($shape, "line920A", 0);
+          follow_line($shape, 1, \&leftticks, .4, .15, '0 .59 1 .18');
         }
 	when 923 {} # Cutting
         when 924 { # Cliff
-          put_line($zone, $shape, "line924A", 0);
-          follow_line($zone, $shape, 1, \&leftticks, .4, .15, '0 0 0 1');
+          put_line($shape, "line924A", 0);
+          follow_line($shape, 1, \&leftticks, .4, .15, '0 0 0 1');
         }
 	when 929 { # Razorback
-          put_line($zone, $shape, "line929A", 0);
-          follow_line($zone, $shape, 1, \&altticks, .4, .15, '0 0 0 1');
+          put_line($shape, "line929A", 0);
+          follow_line($shape, 1, \&altticks, .4, .15, '0 0 0 1');
         }
 	default {
-          put_line($zone, $shape, "line$symbol", 0);
+          put_line($shape, "line$symbol", 0);
         }
       }
     }
@@ -712,7 +712,7 @@ sub put_outline(Str $text, Real $x, Real $y, Real $size, Str $colour, Real $thic
     $TMP.print: sprintf "%f %f moveto (%s) /Helvetica findfont %f scalefont setfont stringwidth pop 2 div neg 0 rmoveto (%s) false charpath %s setcmykcolor %f setlinewidth stroke\n", $x, $y, $text, $size, $text, $colour, $thickness;
 }
 
-sub draw_polygon_outline_names(Str $zone, Str $table, Str $column, Real $size, Real $thickness, Str $colour) {
+sub draw_polygon_outline_names(Str $table, Str $column, Real $size, Real $thickness, Str $colour) {
   note "$table outline names...";
   my $sth = $dbh.prepare("SELECT $column, st_astext(st_envelope(geom)) as bbox FROM $table WHERE geom && $rect");
   
@@ -725,7 +725,7 @@ sub draw_polygon_outline_names(Str $zone, Str $table, Str $column, Real $size, R
       my $centrex = (@x[0] + @x[4]) / 2;
       my $centrey = (@x[1] + @x[5]) / 2;
 #      note "Locality $name $centrex $centrey $shape";
-      my ($cx, $cy) = latlon2page($zone, $centrex, $centrey);
+      my ($cx, $cy) = latlon2page($centrex, $centrey);
       my @text = $name.split: ' ';
       my $yoffset = (@text.end + 1)/2;
       for @text -> $text {
@@ -739,7 +739,7 @@ sub draw_polygon_outline_names(Str $zone, Str $table, Str $column, Real $size, R
   }
 }
 
-sub draw_properties(Str $zone) {
+sub draw_properties() {
     note "property lines...";
     my $sth = $dbh.prepare("SELECT st_astext(geom) as shape FROM property_view WHERE pfi = ?");
     
@@ -749,12 +749,12 @@ sub draw_properties(Str $zone) {
         while ( my @row = $sth.fetchrow_array ) {
             my $shape = @row[0];
             ++$object_count;
-            put_line($zone, $shape, 'line927', 0);
+            put_line($shape, 'line927', 0);
         }
     }
 }
 
-#sub draw_wlines(Str $zone, Str $table, Int $default_symbol) {
+#sub draw_wlines(Str $table, Int $default_symbol) {
 #    note "$table lines...";
 #    my $sth = $dbh.prepare("SELECT symbol, st_astext(shape) as shape, featurewidth FROM $table WHERE shape && $rect");
 #    
@@ -764,12 +764,12 @@ sub draw_properties(Str $zone) {
 #	my $symbol = @row[0];
 #	my $shape = @row[1];
 #	my Real $featurewidth = @row[3];
-#	$featurewidth = 0 unless defined $featurewidth && $featurewidth;
+#	$featurewidth = 0 unless $featurewidth.defined && $featurewidth;
 #	
-#	if (defined $default_symbol and $default_symbol < 0) {
+#	if ($default_symbol.defined and $default_symbol < 0) {
 #	    $symbol = -$default_symbol;
 #	}
-#	$symbol = $default_symbol if defined $default_symbol and ! $symbol;
+#	$symbol = $default_symbol if $default_symbol.defined and ! $symbol;
 #	next unless $symbol;
 #	++$object_count;
 #	if ($symbol == 57) { # Depression contour (index)
@@ -782,7 +782,7 @@ sub draw_properties(Str $zone) {
 #	} elsif ($symbol == 924) { # Cliff
 #	} elsif ($symbol == 929) { # Razorback
 #	} else {
-#	    put_line($zone, $shape, "line$symbol", $featurewidth);
+#	    put_line($shape, "line$symbol", $featurewidth);
 #	}
 #    }
 #}
@@ -833,7 +833,7 @@ my %roadsymbols = (
   'roundabout'  => 256,
 );
 
-sub draw_roads(Str $zone) {
+sub draw_roads() {
     my @dual;
     my $featurewidth;
 
@@ -859,7 +859,7 @@ sub draw_roads(Str $zone) {
 	next unless $symbol;
 	@dual.push: $objectid if $symbol == 250;
 	++$object_count;
-	put_line($zone, $shape, "line$symbol", $featurewidth);
+	put_line($shape, "line$symbol", $featurewidth);
     }
 
 # Now go back and draw the yellow centre line on dual carriageways
@@ -875,7 +875,7 @@ sub draw_roads(Str $zone) {
 	    my $shape = @row[1];
 	    $featurewidth = 0.6;
 	    
-	    put_line($zone, $shape, 'line250A', $featurewidth);
+	    put_line($shape, 'line250A', $featurewidth);
 	}
     }
 }
@@ -901,7 +901,7 @@ my %osmroads2ga = (
     'cycleway'      => 22,
     );
 
-#sub draw_osmroads(Str $zone) {
+#sub draw_osmroads() {
 #    my @dual;
 #    my $featurewidth;
 #
@@ -922,7 +922,7 @@ my %osmroads2ga = (
 #	    next unless $symbol;
 #	    @dual.push: $objectid if $symbol == 250;
 #	    ++$object_count;
-#	    put_line($zone, $shape, "line$symbol", $featurewidth);
+#	    put_line($shape, "line$symbol", $featurewidth);
 #	} else {
 #	    note "Unknown road type $type";
 #	}
@@ -937,13 +937,13 @@ my %osmroads2ga = (
 #	while (my @row = $sth.fetchrow_array) {
 #	    my $shape = @row[0];
 #	    
-#	    put_line($zone, $shape, 'line250A', $featurewidth);
+#	    put_line($shape, 'line250A', $featurewidth);
 #	}
 #    }
 #    $osmdbh.disconnect();
 #}
 
-sub draw_points(Str $zone, Str $table) {
+sub draw_points(Str $table) {
     note "$table points...";
     my $sth = $dbh.prepare("SELECT ftype_code, st_astext(geom) AS position, rotation
                             FROM $table
@@ -965,13 +965,13 @@ sub draw_points(Str $zone, Str $table) {
 	next unless $symbol;
 	++$object_count;
 	$position ~~ / \( ( \-? <[\d\.]>+) \s+ ( \-? <[\d\.]>+ ) \) /;
-	my ($x, $y) = latlon2page $zone, +$0, +$1;
+	my ($x, $y) = latlon2page +$0, +$1;
 	%dependencies{"point$symbol"}++;
 	$TMP.print: sprintf("$orientation %.6g %.6g $featurewidth point$symbol\n", $x, $y);
     }
 }
 
-sub draw_spot_heights(Str $zone) {
+sub draw_spot_heights() {
     note "spot heights...";
     my $sth = $dbh.prepare("SELECT ftype_code, st_astext(geom) AS position, altitude FROM el_grnd_surface_point WHERE geom && $rect");
     
@@ -988,14 +988,14 @@ sub draw_spot_heights(Str $zone) {
         next unless $featuretype eq 'spot_height';
         
         $position ~~ / \( (\-?<[\d.]>+) \s+ (\-?<[\d.]>+) \) /;
-        my ($x, $y) = latlon2page $zone, $1, $2;
+        my ($x, $y) = latlon2page $1, $2;
         $TMP.printf: "%.6g %.6g moveto ($altitude) show newpath\n", $x+0.5, $y-0.5;
     }
 }
 
 my @road_widths = (.9, .9, .9, .6, .6, .6, .4, .4, .4, .4, .2, .2, .2);
 
-sub draw_roadpoints(Str $zone) {
+sub draw_roadpoints() {
     note "tr_road_infrastructure points...";
     my $sth = $dbh.prepare("SELECT ftype_code, st_astext(geom) as position, rotation, ufi, width FROM tr_road_infrastructure WHERE geom && $rect");
     my $sth2 = $dbh.prepare("SELECT ftype_code, class_code FROM tr_road WHERE from_ufi = ? OR to_ufi = ?");
@@ -1016,7 +1016,7 @@ sub draw_roadpoints(Str $zone) {
         next unless $symbol;
         ++$object_count;
         $position ~~ / \( (\-? <[\d.]>+) \s+ (\-? <[\d.]>+) \) /;
-        my ($x, $y) = latlon2page $zone, +$0, +$1;
+        my ($x, $y) = latlon2page +$0, +$1;
         %dependencies{"point$symbol"}++;
         if $featurewidth <= 0 {
 	  # Find the width of the adjoining roads
@@ -1034,7 +1034,7 @@ sub draw_roadpoints(Str $zone) {
     }
 }
 
-#sub draw_annotations(Str $zone) {
+#sub draw_annotations() {
 #    note "Annotations...\n";
 #    my $sth = $dbh.prepare("SELECT element, st_astext(shape) as shape FROM Annotations WHERE shape && $rect");
 #    
@@ -1115,11 +1115,11 @@ sub draw_roadpoints(Str $zone) {
 #		($x1, $y1) = @(@coords[0]);
 #		($x2, $y2) = @(@coords[1]);
 #		if (%drawobjects{'annotation_position'}) {
-#		    my ($tx, $ty) = latlon2page($zone, $x1, $y1);
+#		    my ($tx, $ty) = latlon2page($x1, $y1);
 #		    $TMP.print: "%%%%%%%\n$tx $ty moveto\n";
 #		    for @coords -> $posn {
 #			my ($x, $y) = @$posn;
-#			($tx, $ty) = latlon2page($zone, $x, $y);
+#			($tx, $ty) = latlon2page($x, $y);
 #			$TMP.print: "$tx $ty lineto\n";
 #		    }
 #		    $TMP.print: "1 1 0 0 setcmykcolor 0.5 setlinewidth stroke\n";
@@ -1136,7 +1136,7 @@ sub draw_roadpoints(Str $zone) {
 #	    $y1 = ann_double(substr($element, 0, 8)); substr($element, 0, 8) = '';
 #	    #note "65: $x1 $y1\n";
 #	    if (%drawobjects{'annotation_position'}) {
-#		my ($tx, $ty) = latlon2page $zone, $x1, $y1;
+#		my ($tx, $ty) = latlon2page $x1, $y1;
 #		$TMP.print: "$tx $ty moveto 1 0 rlineto 1 1 0 0 setcmykcolor 0.5 setlinewidth stroke %%%%%\n";
 #	    }
 #	    $xdiff = $ydiff = 0;
@@ -1155,10 +1155,10 @@ sub draw_roadpoints(Str $zone) {
 #	    $TMP.printf: "/$font %.4g selectfont\n", $pointsize;
 #	    
 #	    my $annotation = $string2;
-#	    ($x1, $y1) = latlon2page $zone, $x1, $y1;
+#	    ($x1, $y1) = latlon2page $x1, $y1;
 #	    my $angle;
-#	    if (defined $y2) {
-#		($x2, $y2) = latlon2page $zone, $x2, $y2;
+#	    if ($y2.defined) {
+#		($x2, $y2) = latlon2page $x2, $y2;
 #		$angle = atan2($y2 - $y1, $x2 - $x1) * 180 / 3.1415926535;
 #	    } else {
 #		$angle = 0;
@@ -1180,17 +1180,17 @@ sub draw_roadpoints(Str $zone) {
 
 my ($starteasting, $mineasting, $maxeasting, $startnorthing, $minnorthing, $maxnorthing);
 
-sub label_grid(Str $zone, Bool $left, Bool $right) {
+sub label_grid(Bool $left, Bool $right) {
     my ($x, $y1, $y2);
     my ($lat, $long, $z);
     my $easting;
 # Label grid lines
 # Eastings below and above
     ($lat, $long, $z) = utm_to_latlon('WGS-84', $zone, $starteasting, $minnorthing);
-    ($x, $y1) = latlon2page($zone, $long, $lllatitude);
+    ($x, $y1) = latlon2page($long, $lllatitude);
     $y1 -= 4;
     ($lat, $long, $z) = utm_to_latlon('WGS-84', $zone, $starteasting, $maxnorthing);
-    ($x, $y2) = latlon2page($zone, $long, $urlatitude);
+    ($x, $y2) = latlon2page($long, $urlatitude);
     $y2 += 1;
     $TMP.print: "gsave $x $y1 translate ";
     my $a = $starteasting / $grid_spacing;
@@ -1205,11 +1205,11 @@ sub label_grid(Str $zone, Bool $left, Bool $right) {
     
     while ($easting <= $maxeasting) {
 	($lat, $long, $z) = utm_to_latlon('WGS-84', $zone, $easting, $minnorthing);
-	($x, $y1) = latlon2page($zone, $long, $lllatitude);
+	($x, $y1) = latlon2page($long, $lllatitude);
 #	($x, $y1) = grid2page($easting, $minnorthing);
 	$y1 -= 4;
 	($lat, $long, $z) = utm_to_latlon('WGS-84', $zone, $easting, $maxnorthing);
-	($x, $y2) = latlon2page($zone, $long, $urlatitude);
+	($x, $y2) = latlon2page($long, $urlatitude);
 #	($x, $y2) = grid2page($easting, $maxnorthing);
 	$y2 += 1;
 	$TMP.print: "gsave $x $y1 translate\n";
@@ -1227,7 +1227,7 @@ sub label_grid(Str $zone, Bool $left, Bool $right) {
 # Northings
     if ($left) {
 	my ($lat, $long, $z) = utm_to_latlon('WGS-84', $zone, $mineasting, $startnorthing);
-	my ($x, $y) = latlon2page($zone, $lllongitude, $lat);
+	my ($x, $y) = latlon2page($lllongitude, $lat);
 #	my ($x, $y) = grid2page($mineasting, $startnorthing);
 	$x -= 1;
 	my $a = $startnorthing / $grid_spacing;
@@ -1240,7 +1240,7 @@ sub label_grid(Str $zone, Bool $left, Bool $right) {
 	
 	while ($northing <= $maxnorthing) {
 	    ($lat, $long, $z) = utm_to_latlon('WGS-84', $zone, $mineasting, $northing);
-	    ($x, $y) = latlon2page($zone, $lllongitude, $lat);
+	    ($x, $y) = latlon2page($lllongitude, $lat);
 #	    ($x, $y) = grid2page($mineasting, $northing);
 	    $x -= 1;
 	    $y -= 2;
@@ -1255,7 +1255,7 @@ sub label_grid(Str $zone, Bool $left, Bool $right) {
     }	
     if ($right) {
 	my ($lat, $long, $z) = utm_to_latlon('WGS-84', $zone, $maxeasting, $startnorthing);
-	my ($x, $y) = latlon2page($zone, $urlongitude, $lat);
+	my ($x, $y) = latlon2page($urlongitude, $lat);
 #	my ($x, $y) = grid2page($maxeasting, $startnorthing);
 	$x += 4;
 	my $a = $startnorthing / $grid_spacing;
@@ -1268,7 +1268,7 @@ sub label_grid(Str $zone, Bool $left, Bool $right) {
 	
 	while ($northing <= $maxnorthing) {
 	    ($lat, $long, $z) = utm_to_latlon('WGS-84', $zone, $maxeasting, $northing);
-	    ($x, $y) = latlon2page($zone, $urlongitude, $lat);
+	    ($x, $y) = latlon2page($urlongitude, $lat);
 #	    ($x, $y) = grid2page($maxeasting, $northing);
 	    $x += 1;
 	    $y -= 2;
@@ -1283,7 +1283,7 @@ sub label_grid(Str $zone, Bool $left, Bool $right) {
     }
 }
 
-sub label_graticule(Str $zone, Bool $left, Bool $right) {    
+sub label_graticule(Bool $left, Bool $right) {    
 # Now label the lines of longitude and latitude:
     
     $TMP.print: "0 0 0 1 setcmykcolor /Helvetica-Latin1 4 selectfont\n";
@@ -1300,11 +1300,11 @@ sub label_graticule(Str $zone, Bool $left, Bool $right) {
     my $first = 1;
     while ($long < $urlongitude + .0001) {
 	my $lat = $lllatitude;
-	my ($x, $y) = latlon2page $zone, $long, $lllatitude;
+	my ($x, $y) = latlon2page $long, $lllatitude;
 	$y -= 10;
 	my $string = latlon2string($long, "EW", $first);
 	$TMP.print: "$x $y moveto ($string) dup stringwidth pop 2 div neg 0 rmoveto show\n" unless ($first && ! $left);
-	($x, $y) = latlon2page $zone, $long, $urlatitude;
+	($x, $y) = latlon2page $long, $urlatitude;
 	$y += 7;
 	$TMP.print: "$x $y moveto ($string) dup stringwidth pop 2 div neg 0 rmoveto show\n" unless ($first && !$left);
 	$long += $graticule_spacing;
@@ -1320,7 +1320,7 @@ sub label_graticule(Str $zone, Bool $left, Bool $right) {
 	while ($lat < $urlatitude + .0001) {
 	    $TMP.print: "% Latitude $lat\n";
 	    my $long = $lllongitude;
-	    my ($x, $y) = latlon2page $zone, $long, $lat;
+	    my ($x, $y) = latlon2page $long, $lat;
 	    $x -= 7;
 	    $y -= 2;
 	    my $string = latlon2string $lat, "NS", $first;
@@ -1340,7 +1340,7 @@ sub label_graticule(Str $zone, Bool $left, Bool $right) {
 	    $TMP.print: "% Latitude $lat\n";
 	    my $long = $lllongitude;
 	    my $string = latlon2string $lat, "NS", $first;
-	    my ($x, $y) = latlon2page $zone, $urlongitude, $lat;
+	    my ($x, $y) = latlon2page $urlongitude, $lat;
 	    $x += 7;
 	    $y -= 2;
 	    $TMP.print: "$x $y moveto ($string) show\n";
@@ -1350,7 +1350,7 @@ sub label_graticule(Str $zone, Bool $left, Bool $right) {
     }
 }
 
-sub draw_graticule(Str $zone) {
+sub draw_graticule() {
     note "Drawing graticule...";
 # Now draw the lines of longitude and latitude:
 
@@ -1366,13 +1366,13 @@ sub draw_graticule(Str $zone) {
 $TMP.print: "% draw graticule from $minlong, $minlat to $urlongitude, $urlatitude\n";
     while ($long < $urlongitude + .0001) {
 	my $lat = $lllatitude;
-	my ($x, $y) = latlon2page $zone, $long, $lat;
+	my ($x, $y) = latlon2page $long, $lat;
 	$TMP.print: "% Longitude $long\n";
 	$TMP.print: ".1 setlinewidth 0 0 0 1 setcmykcolor\n";
 	$TMP.print: "$x $y moveto\n";
 	$lat += 1.0/60.0;
 	while ($lat <= $urlatitude + .0001) {
-	    ($x, $y) = latlon2page $zone, $long, $lat;
+	    ($x, $y) = latlon2page $long, $lat;
 	    $TMP.print: "$x $y lineto\n";
 	    $lat += 1.0/60.0;
 	}
@@ -1386,9 +1386,9 @@ $TMP.print: "% draw graticule from $minlong, $minlat to $urlongitude, $urlatitud
     
     while ($long < $urlongitude + .0001) {
 	my $lat = (($lllatitude*60).Int)/60;;
-	my ($x, $y) = latlon2page $zone, $long, $lat;
+	my ($x, $y) = latlon2page $long, $lat;
 	while ($lat <= $urlatitude + .0001) {
-	    ($x, $y) = latlon2page $zone, $long, $lat;
+	    ($x, $y) = latlon2page $long, $lat;
 	    $TMP.print: "$x $y moveto -.5 0 rlineto 1 0 rlineto stroke\n";
 	    $lat += 1.0/60.0;
 	}
@@ -1400,9 +1400,9 @@ $TMP.print: "% draw graticule from $minlong, $minlat to $urlongitude, $urlatitud
     
     while ($long < $urlongitude + .0001) {
 	my $lat = (($lllatitude*12).Int)/12;;
-	my ($x, $y) = latlon2page $zone, $long, $lat;
+	my ($x, $y) = latlon2page $long, $lat;
 	while ($lat <= $urlatitude + .0001) {
-	    ($x, $y) = latlon2page $zone, $long, $lat;
+	    ($x, $y) = latlon2page $long, $lat;
 	    $TMP.print: "$x $y moveto -1 0 rlineto 2 0 rlineto stroke\n";
 	    $lat += 5.0/60.0;
 	}
@@ -1416,12 +1416,12 @@ $TMP.print: "% draw graticule from $minlong, $minlat to $urlongitude, $urlatitud
     
     while ($lat < $urlatitude + .0001) {
 	my $long = $lllongitude;
-	my ($x, $y) = latlon2page $zone, $long, $lat;
+	my ($x, $y) = latlon2page $long, $lat;
 	$TMP.print: "% Latitude $lat\n";
 	$TMP.print: "$x $y moveto\n";
 	$long += 1.0/60.0;
 	while ($long <= $urlongitude + .1) {
-	    ($x, $y) = latlon2page $zone, $long, $lat;
+	    ($x, $y) = latlon2page $long, $lat;
 	    $TMP.print: "$x $y lineto % $zone $long $lat\n";
 	    $long += 1.0/60.0;
 	}
@@ -1436,7 +1436,7 @@ $TMP.print: "% draw graticule from $minlong, $minlat to $urlongitude, $urlatitud
     while ($lat < $urlatitude + .0001) {
 	my $long = ($lllongitude*60).Int/60;;
 	while ($long <= $urlongitude + .0001) {
-	    my ($x, $y) = latlon2page $zone, $long, $lat;
+	    my ($x, $y) = latlon2page $long, $lat;
 	    $TMP.print: "$x $y moveto 0 -.5 rlineto 0 1 rlineto stroke\n";
 	    $long += 1.0/60.0;
 	}
@@ -1449,7 +1449,7 @@ $TMP.print: "% draw graticule from $minlong, $minlat to $urlongitude, $urlatitud
     while ($lat < $urlatitude + .0001) {
 	my $long = ($lllongitude*12).Int/12;;
 	while ($long <= $urlongitude + .0001) {
-	    my ($x, $y) = latlon2page $zone, $long, $lat;
+	    my ($x, $y) = latlon2page $long, $lat;
 	    $TMP.print: "$x $y moveto 0 -1 rlineto 0 2 rlineto stroke\n";
 	    $long += 5.0/60.0;
 	}
@@ -1458,7 +1458,7 @@ $TMP.print: "% draw graticule from $minlong, $minlat to $urlongitude, $urlatitud
     }
 }
     
-sub draw_grid(Str $zone) {
+sub draw_grid() {
 # Finally draw the blue grid
     note "Displaying grid...";
     $TMP.say: "1 .1 0 .1 setcmykcolor\ngsave";
@@ -1517,7 +1517,7 @@ sub format_long(Real $long) {
     return format_dms($long, 'E', 'W');
 }
 
-sub put_annotation(Str $zone, Real $pagex, Real $pagey, Real $long, Real $lat, Real $x1, Real $y1, Str $string is copy) {
+sub put_annotation(Real $pagex, Real $pagey, Real $long, Real $lat, Real $x1, Real $y1, Str $string is copy) {
     my $longstr = format_long($long);
     my $latstr = format_lat($lat);
 #note "longitude: $longstr, latitude: $latstr, annotation: $string";
@@ -1549,7 +1549,7 @@ sub put_annotation(Str $zone, Real $pagex, Real $pagey, Real $long, Real $lat, R
 
 my @ann;
 
-sub draw_userannotations(Str $zone, Real $xoff, Real $yoff, Real $slopedeg) {
+sub draw_userannotations(Real $xoff, Real $yoff, Real $slopedeg) {
     my $slope = $slopedeg * π / 180;
     my $c = cos($slope);
     my $s = sin($slope);
@@ -1560,7 +1560,7 @@ sub draw_userannotations(Str $zone, Real $xoff, Real $yoff, Real $slopedeg) {
         next if %($ann)<long> > $urlongitude;
         next if %($ann)<lat>  < $lllatitude;
         next if %($ann)<lat>  > $urlatitude;
-        my ($x, $y) = latlon2page $zone, %($ann)<long>, %($ann)<lat>;
+        my ($x, $y) = latlon2page %($ann)<long>, %($ann)<lat>;
         my ($x1, $y1) = ($x * $c + $y * $s + $xoff * (1 - $c) - $yoff * $s,
 			 -$x * $s + $y * $c + $xoff * $s + $yoff * (1-$c));
 	#note "($x, $y) -> ($x1, $y1)";
@@ -1572,8 +1572,7 @@ sub draw_userannotations(Str $zone, Real $xoff, Real $yoff, Real $slopedeg) {
 
 sub put_userannotations {
     for @ann -> $ann {
-	put_annotation($zone,
-		       %($ann)<pagex>,
+	put_annotation(%($ann)<pagex>,
 	               %($ann)<pagey>,
 		       %($ann)<long>,
                        %($ann)<lat>,
@@ -1605,8 +1604,8 @@ sub draw_margins(Bool $left, Bool $right) {
 	= (($mineasting+($grid_spacing-1))/$grid_spacing).Int * $grid_spacing;
     if ($ongraticule) {
 	if ($left) { # Calculate slope and position of right hand side
-	    my ($x1, $y1) = latlon2page($zone, $urlongitude, $lllatitude);
-	    my ($x2, $y2) = latlon2page($zone, $urlongitude, $urlatitude);
+	    my ($x1, $y1) = latlon2page($urlongitude, $lllatitude);
+	    my ($x2, $y2) = latlon2page($urlongitude, $urlatitude);
 	    $slope = atan2($y2-$y1, $x2-$x1) * 180 / 3.141596353 - 90;
 	    #note
             #   "Right hand edge from ($x1, $y1) to ($x2, $y2, slope $slope";
@@ -1615,8 +1614,8 @@ sub draw_margins(Bool $left, Bool $right) {
 	    $xoff = $x1;
 	    $yoff = $y1;
 	} else { # Calculate slope and position of left hand side
-	    my ($x3, $y3) = latlon2page($zone, $lllongitude, $lllatitude);
-	    my ($x4, $y4) = latlon2page($zone, $lllongitude, $urlatitude);
+	    my ($x3, $y3) = latlon2page($lllongitude, $lllatitude);
+	    my ($x4, $y4) = latlon2page($lllongitude, $urlatitude);
 	    $slope = atan2($y4-$y3, $x4-$x3) * 180 / 3.141596353 - 90;
 	    #note
 	    #   "Left hand edge from ($x3, $y3) to ($x4, $y4), slope $slope";
@@ -1625,8 +1624,8 @@ sub draw_margins(Bool $left, Bool $right) {
 	}
     }
     
-    label_grid($zone, $left, $right)      if %drawobjects<grid>.defined;
-    label_graticule($zone, $left, $right) if %drawobjects<graticule>.defined;
+    label_grid($left, $right)      if %drawobjects<grid>.defined;
+    label_graticule($left, $right) if %drawobjects<graticule>.defined;
 
     return ($xoff, $yoff, $slope);
 }
@@ -1637,41 +1636,41 @@ sub draw_bbox() {
     if ($ongraticule) {
 	my $long = $lllongitude;
 	my $lat = $lllatitude;
-	my ($x, $y) = latlon2page($zone, $long, $lat);
+	my ($x, $y) = latlon2page($long, $lat);
 	$TMP.say: "$x $y moveto";
 	$long += 1/60;
 	while $long < $urlongitude {
-	    ($x, $y) = latlon2page($zone, $long, $lat);
+	    ($x, $y) = latlon2page($long, $lat);
 	    $TMP.say: "$x $y lineto";
 	    $long += 1/60;
 	}
 	$long = $urlongitude;
-	($x, $y) = latlon2page($zone, $long, $lat);
+	($x, $y) = latlon2page($long, $lat);
 	$TMP.say: "$x $y lineto"; ### moveto???
 	
 	$lat += 1/60;
 	while ($lat <= $urlatitude) {
-	    ($x, $y) = latlon2page($zone, $long, $lat);
+	    ($x, $y) = latlon2page($long, $lat);
 	    $TMP.print: "$x $y lineto\n";
 	    $lat += 1/60;
 	}
 	$lat = $urlatitude;
-	($x, $y) = latlon2page($zone, $long, $lat);
+	($x, $y) = latlon2page($long, $lat);
 	$TMP.print: "$x $y lineto\n";
 	
 	$long -= 1/60;
 	while ($long > $lllongitude) {
-	    ($x, $y) = latlon2page($zone, $long, $lat);
+	    ($x, $y) = latlon2page($long, $lat);
 	    $TMP.print: "$x $y lineto\n";
 	    $long -= 1/60;
 	}
 	$long = $lllongitude;
-	($x, $y) = latlon2page($zone, $long, $lat);
+	($x, $y) = latlon2page($long, $lat);
 	$TMP.print: "$x $y lineto\n";
 	
 	$lat -= 1/60;
 	while ($lat > $lllatitude) {
-	    ($x, $y) = latlon2page($zone, $long, $lat);
+	    ($x, $y) = latlon2page($long, $lat);
 	    $TMP.print: "$x $y lineto\n";
 	    $lat -= 1/60;
 	}
@@ -1697,21 +1696,21 @@ sub draw_objects(Real $xoff, Real $yoff, Real $slope) {
       #note "Drawing $feature: $draw $table $column";
       if $order && %drawobjects{$feature}.defined {
         given $draw {
-          when 'treeden'        { draw_treeden\             ($zone                                      ); }
-          when 'area'           { draw_areas\               ($zone, $table                              ); }
-          when 'line'           { draw_lines\               ($zone, $table, 'ftype_code', -$default,    ); }
-          when 'line_f'         { draw_lines\               ($zone, $table, 'ftype',      -$default,    ); }
-          when 'outline'        { draw_polygon_outline_names($zone, $table, $column, 8, 0.2, '1 0 .86 0'); }
-          when 'road'           { draw_roads\               ($zone                                      ); }
-#         when 'wline'          { draw_wlines\              ($zone, $table                              ); }
-          when 'property'       { draw_properties\          ($zone                                      ); }
-          when 'point'          { draw_points\              ($zone, $table                              ); }
-          when 'spotheight'     { draw_spot_heights\        ($zone                                      ); }
-          when 'roadpoint'      { draw_roadpoints\          ($zone                                      ); }
-          when 'graticule'      { draw_graticule\           ($zone                                      ); }
-          when 'grid'           { draw_grid\                ($zone                                      ); }
-#         when 'annotation'     { draw_annotations\         ($zone                                      ); }
-          when 'userannotation' { draw_userannotations\     ($zone, $xoff, $yoff, $slope                ); }
+          when 'treeden'        { draw_treeden\             (                                    ); }
+          when 'area'           { draw_areas\               ($table                              ); }
+          when 'line'           { draw_lines\               ($table, 'ftype_code', -$default,    ); }
+          when 'line_f'         { draw_lines\               ($table, 'ftype',      -$default,    ); }
+          when 'outline'        { draw_polygon_outline_names($table, $column, 8, 0.2, '1 0 .86 0'); }
+          when 'road'           { draw_roads\               (                                    ); }
+#         when 'wline'          { draw_wlines\              ($table                              ); }
+          when 'property'       { draw_properties\          (                                    ); }
+          when 'point'          { draw_points\              ($table                              ); }
+          when 'spotheight'     { draw_spot_heights\        (                                    ); }
+          when 'roadpoint'      { draw_roadpoints\          (                                    ); }
+          when 'graticule'      { draw_graticule\           (                                    ); }
+          when 'grid'           { draw_grid\                (                                    ); }
+#         when 'annotation'     { draw_annotations\         (                                    ); }
+          when 'userannotation' { draw_userannotations\     ($xoff, $yoff, $slope                ); }
           default               { note "Unknown draw type $draw for feature $feature: objects ignored"; }
         }
       }
@@ -1822,9 +1821,8 @@ $imageheight = ($paperheight - $lowermarginwidth - $uppermarginwidth) * $scale/1
 
 if ($ongraticule) {
   fail "No location specified" unless $lllongitude.defined && $lllatitude.defined;
-  my $tzone;
   if $zone.defined && $zone ne '' {
-    ($tzone, $lleasting, $llnorthing)
+    (*, $lleasting, $llnorthing)
 	    = latlon_to_utm_force_zone('WGS-84', $zone, $lllatitude, $lllongitude);
     note "Calculated grid as $lleasting:$llnorthing from lat $lllatitude long $lllongitude zone $zone";
   } else {
@@ -1838,7 +1836,7 @@ if ($ongraticule) {
     $graticulewidth = $tlong - $lllongitude;
     note "Calculated graticule width as $tlong - $lllongitude ($lleasting $llnorthing $imagewidth) tlat = $tlat";
   }
-  if (!defined $graticuleheight) {
+  if (! $graticuleheight.defined) {
     my ($tlat, $tlong, Nil)
 	    = utm_to_latlon('WGS-84', $zone, $lleasting, $llnorthing+$imageheight);
     $graticuleheight = $tlat - $lllatitude;
@@ -1856,10 +1854,10 @@ if ($ongraticule) {
   if (! $lleasting.defined or ! $llnorthing.defined or ! $zone.defined) {
     fail "No location specified\n";
   }
-  if (!defined $gridwidth) {
+  if (! $gridwidth.defined) {
     $gridwidth = $imagewidth;
   }
-  if (!defined $gridheight) {
+  if (! $gridheight.defined) {
     $gridheight = $imageheight;
   }
   $ureasting = $lreasting = $lleasting + $gridwidth;
