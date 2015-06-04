@@ -24,7 +24,7 @@ my ($lleasting, $llnorthing);
 my ($lreasting, $lrnorthing);
 my ($uleasting, $ulnorthing);
 my ($ureasting, $urnorthing);
-my Str $zone; # global variable, but we pass it around everywhere anyway!
+my Str $zone;
 
 #my @featuretype;
 #my %featuretype;
@@ -333,7 +333,7 @@ sub grid2page(Real $xin, Real $yin) {
 
 sub latlon2page(Real $xin, Real $yin) {
     ++$point_count;
-    my ($tzone, $xout, $yout) = latlon_to_utm_force_zone('WGS-84', $zone, $yin, $xin);
+    my ($tzone, $xout, $yout) = latlon_to_utm('WGS-84', :$zone, $yin, $xin);
 # inline grid2page for speed
     #return grid2page($xout, $yout);
   return ( ($xout + $xoffset) * $xscale + $xmin,
@@ -532,8 +532,11 @@ sub get_symbol(Str $type, Str $ftype) {
     note "Looking for $ftype\($type)";
     $sth_sym.execute($type, $ftype);
     my $sym = 0;
-    while my @row = $sth_sym.fetchrow_array {
-	$sym = @row[0];
+    loop {
+        my @row = $sth_sym.fetchrow_array;
+	last unless @row[0].defined;
+	$sym = @row[0].Int;
+	next unless $sym;
         %symbol{"$type:$ftype"} = $sym;
 	note "Found $sym";
     }
@@ -550,11 +553,13 @@ sub draw_areas(Str $table) {
   
   if $sth.execute {
     
-    while my @row = $sth.fetchrow_array {
+    loop {
+      my @row = $sth.fetchrow_array;
+      last unless @row[0].defined;
       my $ftype = @row[0];
       my $shape = @row[1];
       
-      my $symbol = get_symbol('area', $ftype.lc);
+      my $symbol = get_symbol('area', $ftype.Str);
       
       next unless $symbol;
       ++$object_count;
@@ -571,12 +576,16 @@ sub draw_treeden() {
 
   if $sth.execute {
     
-    while my @row = $sth.fetchrow_array {
-      my $ftype = @row[0].lc;
-      my $density = @row[1].lc;
+    loop {
+      my @row = $sth.fetchrow_array;
+      last unless @row[0].defined;
+
+      my $ftype = @row[0];
+      my $density = @row[1];
       my $shape = @row[2];
+#note "tree_den: ftype $ftype, density $density";
       
-      my $symbol = get_symbol('area', "{$ftype}_$density");
+      my $symbol = get_symbol('area', "{$ftype}_$density".lc);
       
       next unless $symbol;
       ++$object_count;
@@ -622,7 +631,7 @@ sub follow_line(Str $shape, $spacing, $func, Real $width, Real $thick, Str $colo
     my @segments = $shape.split: '\)\,\s*\(';
     for @segments -> $segment {
 	for $segment.comb(/(\-?<[\d.]>+)/) -> $lx, $ly {
-	    my ($x, $y) = latlon2page $lx, $ly;
+	    my ($x, $y) = latlon2page $lx.Num, $ly.Num;
 	    if ($oldx.defined) {
 		my $deltax = $x - $oldx;
 		my $deltay = $y - $oldy;
@@ -655,7 +664,10 @@ sub draw_lines(Str $table, Str $typecolumn, Int $default_symbol = 0) {
   
   if $sth.execute {
     
-    while ( my @row = $sth.fetchrow_array ) {
+    loop {
+      my @row = $sth.fetchrow_array;
+      last unless @row[0].defined;
+      
       my $ftype = @row[0];
       my $shape = @row[1];
       
@@ -663,7 +675,7 @@ sub draw_lines(Str $table, Str $typecolumn, Int $default_symbol = 0) {
       if ($default_symbol.defined and $default_symbol < 0) {
 	$symbol = -$default_symbol;
       } else {
-	$symbol = get_symbol('line', $ftype.lc);
+	$symbol = get_symbol('line', $ftype);
       }
       $symbol = $default_symbol if $default_symbol.defined and ! $symbol;
       next unless $symbol;
@@ -672,34 +684,34 @@ sub draw_lines(Str $table, Str $typecolumn, Int $default_symbol = 0) {
         when  57 {} # Depression contour (index)
         when  58 { # Depression contour (standard)
           put_line($shape, "line58A", 0);
-	  follow_line($shape, 4, \&leftticks, .3, .15, '0 .59 1 .18');
+	  follow_line($shape, 4, &leftticks, .3, .15, '0 .59 1 .18');
         }
 	when  31 {} # Embankment
         when 542 { # Powerline
           $powerlinestart = 1;
-          follow_line($shape, .5, \&powerline, .5, .2, '1 .73 0 0');
+          follow_line($shape, .5, &powerline, .5, .2, '1 .73 0 0');
           $TMP.say: "1 .73 0 0 setcmykcolor .2 setlinewidth stroke";
         }
 	when 543 { # Powerline (WAC)
           $powerlinestart = 1;
-          follow_line($shape, .5, \&powerline, .5, .2, '.79 .9 0 0');
+          follow_line($shape, .5, &powerline, .5, .2, '.79 .9 0 0');
           $TMP.say: ".79 .9 0 0 setcmykcolor .2 setlinewidth stroke";
         }
 	when 920 { # Cliff (WAC)
           put_line($shape, "line920A", 0);
-          follow_line($shape, 1, \&leftticks, .4, .15, '0 .59 1 .18');
+          follow_line($shape, 1, &leftticks, .4, .15, '0 .59 1 .18');
         }
 	when 923 {} # Cutting
         when 924 { # Cliff
           put_line($shape, "line924A", 0);
-          follow_line($shape, 1, \&leftticks, .4, .15, '0 0 0 1');
+          follow_line($shape, 1, &leftticks, .4, .15, '0 0 0 1');
         }
 	when 929 { # Razorback
           put_line($shape, "line929A", 0);
-          follow_line($shape, 1, \&altticks, .4, .15, '0 0 0 1');
+          follow_line($shape, 1, &altticks, .4, .15, '0 0 0 1');
         }
 	default {
-          put_line($shape, "line$symbol", 0);
+          put_line($shape.Str, "line$symbol", 0);
         }
       }
     }
@@ -718,9 +730,12 @@ sub draw_polygon_outline_names(Str $table, Str $column, Real $size, Real $thickn
   
   if $sth.execute {
     
-    while ( my @row = $sth.fetchrow_array ) {
-      my $name  = @row[0];
-      my $shape = @row[1];
+    loop {
+      my @row = $sth.fetchrow_array;
+      last unless @row[0].defined;
+
+      my $name  = @row[0].Str;
+      my $shape = @row[1].Str;
       my @x = read_points($shape);
       my $centrex = (@x[0] + @x[4]) / 2;
       my $centrey = (@x[1] + @x[5]) / 2;
@@ -746,7 +761,10 @@ sub draw_properties() {
     for @properties -> $property {
         $sth.execute($property);
     
-        while ( my @row = $sth.fetchrow_array ) {
+        loop {
+            my @row = $sth.fetchrow_array;
+	    last unless @row[0].defined;
+	    
             my $shape = @row[0];
             ++$object_count;
             put_line($shape, 'line927', 0);
@@ -842,7 +860,10 @@ sub draw_roads() {
     
     $sth.execute();
     
-    while ( my @row = $sth.fetchrow_array ) {
+    loop {
+        my @row = $sth.fetchrow_array;
+	last unless @row[0].defined;
+
 	my $objectid     = @row[0];
 	my $ftype_code   = @row[1];
 	my $featurewidth = 0.9;
@@ -870,7 +891,10 @@ sub draw_roads() {
     for @dual -> $objectid {
 	$sth.execute($objectid);
 	
-	while ( my @row = $sth.fetchrow_array ) {
+	loop {
+	    my @row = $sth.fetchrow_array;
+	    last unless @row[0].defined;
+	    
 	    my $symbol = @row[0];
 	    my $shape = @row[1];
 	    $featurewidth = 0.6;
@@ -952,14 +976,17 @@ sub draw_points(Str $table) {
     
     $sth.execute();
     
-    while ( my @row = $sth.fetchrow_array ) {
+    loop {
+        my @row = $sth.fetchrow_array;
+	last unless @row[0].defined;
+	
 	my $ftype        = @row[0];
 	my $position     = @row[1];
 	my $orientation  = 90 - @row[2] || 0;
 	my $featurewidth = 0;
 	my $featuretype  = $ftype;
 
-        my $symbol = get_symbol('point', $ftype.lc);
+        my $symbol = get_symbol('point', $ftype);
 	
 	#next unless @display_feature[$featuretype]; ### TODO
 	next unless $symbol;
@@ -979,7 +1006,10 @@ sub draw_spot_heights() {
 
     $sth.execute();
     
-    while ( my @row = $sth.fetchrow_array ) {
+    loop {
+        my @row = $sth.fetchrow_array;
+	last unless @row[0].defined;
+	
         my $ftype    = @row[0];
         my $position = @row[1];
         my $altitude = @row[2] || 0;
@@ -1002,7 +1032,10 @@ sub draw_roadpoints() {
     
     if $sth.execute {
       
-      while ( my @row = $sth.fetchrow_array ) {
+      loop {
+        my @row = $sth.fetchrow_array;
+	last unless @row[0].defined;
+
         my $ftype        = @row[0];
         my $position     = @row[1];
         my $orientation  = 90 - @row[2] || 0;
@@ -1010,7 +1043,7 @@ sub draw_roadpoints() {
         my $featurewidth = @row[4];
         my $featuretype  = $ftype;
 	
-        my $symbol = get_symbol('point', $ftype.lc);
+        my $symbol = get_symbol('point', $ftype);
         
         #next unless @display_feature[$featuretype]; ### TODO
         next unless $symbol;
@@ -1022,7 +1055,9 @@ sub draw_roadpoints() {
 	  # Find the width of the adjoining roads
 	  my $adjcode = 12; # largest real class_code
 	  $sth2.execute($ufi, $ufi);
-	  while (my @row = $sth2.fetchrow_array()) {
+	  loop {
+	    my @row = $sth2.fetchrow_array();
+	    last unless @row[0].defined;
 	    $adjcode = @row[1] if @row[1] < $adjcode;
 	  }
 	  $featurewidth = @road_widths[$adjcode];
@@ -1587,7 +1622,7 @@ sub draw_margins(Bool $left, Bool $right) {
     my ($xoff, $yoff, $slope);
 
     (*, $xoffset, $yoffset)
-	= latlon_to_utm_force_zone('WGS-84', $zone, $lllatitude, $lllongitude);
+	= latlon_to_utm('WGS-84', :$zone, $lllatitude, $lllongitude);
     
     $xoffset = -$xoffset;
     $yoffset = -$yoffset;
@@ -1691,14 +1726,22 @@ sub draw_bbox() {
 sub draw_objects(Real $xoff, Real $yoff, Real $slope) {
     my $sth_draw = $dbh.prepare("SELECT featurename, drawtype, tablename, featurecolumn, defaultsymbol, displayorder FROM vicdisplayorder ORDER BY displayorder");
     $sth_draw.execute;
-    while (my @row = $sth_draw.fetchrow_array) {
-     my ($feature, $draw, $table, $column, $default, $order) = @row;
+    loop {
+      my @row = $sth_draw.fetchrow_array;
+      last unless @row[0].defined;
+
+      my $feature = @row[0].Str;
+      my $draw    = @row[1];
+      my $table   = @row[2].Str;
+      my $column  = @row[3].Str;
+      my $default = @row[4].Int;
+      my $order   = @row[5].Str;
       #note "Drawing $feature: $draw $table $column";
       if $order && %drawobjects{$feature}.defined {
         given $draw {
           when 'treeden'        { draw_treeden\             (                                    ); }
           when 'area'           { draw_areas\               ($table                              ); }
-          when 'line'           { draw_lines\               ($table, 'ftype_code', -$default,    ); }
+          when 'line'           { draw_lines\               ($table, 'ftype_code', -$default     ); }
           when 'line_f'         { draw_lines\               ($table, 'ftype',      -$default,    ); }
           when 'outline'        { draw_polygon_outline_names($table, $column, 8, 0.2, '1 0 .86 0'); }
           when 'road'           { draw_roads\               (                                    ); }
@@ -1763,7 +1806,10 @@ sub do_dependency($sth is copy, Str $dependency) {
     note "Dependency: $dependency";    
     
     $sth.execute($dependency);
-    while ( my @row = $sth.fetchrow_array ) {
+    loop {
+        my @row = $sth.fetchrow_array;
+	last unless @row[0].defined;
+	
 	my $deps = @row[0];
 	my $body = @row[1];
 	if ($deps) {
@@ -1823,7 +1869,7 @@ if ($ongraticule) {
   fail "No location specified" unless $lllongitude.defined && $lllatitude.defined;
   if $zone.defined && $zone ne '' {
     (*, $lleasting, $llnorthing)
-	    = latlon_to_utm_force_zone('WGS-84', $zone, $lllatitude, $lllongitude);
+	    = latlon_to_utm('WGS-84', :$zone, $lllatitude, $lllongitude);
     note "Calculated grid as $lleasting:$llnorthing from lat $lllatitude long $lllongitude zone $zone";
   } else {
     ($zone, $lleasting, $llnorthing)
@@ -1846,10 +1892,10 @@ if ($ongraticule) {
   $ullongitude = $lllongitude;
   $lrlatitude = $lllatitude;
   note "$graticulewidth: $lrlongitude $ullatitude $ullongitude $lrlatitude";
-  (*, $lleasting, $llnorthing) = latlon_to_utm_force_zone('WGS-84', $zone, $lllatitude, $lllongitude);
-  (*, $lreasting, $lrnorthing) = latlon_to_utm_force_zone('WGS-84', $zone, $lrlatitude, $lrlongitude);
-  (*, $uleasting, $ulnorthing) = latlon_to_utm_force_zone('WGS-84', $zone, $ullatitude, $ullongitude);
-  (*, $ureasting, $urnorthing) = latlon_to_utm_force_zone('WGS-84', $zone, $urlatitude, $urlongitude);
+  (*, $lleasting, $llnorthing) = latlon_to_utm('WGS-84', :$zone, $lllatitude, $lllongitude);
+  (*, $lreasting, $lrnorthing) = latlon_to_utm('WGS-84', :$zone, $lrlatitude, $lrlongitude);
+  (*, $uleasting, $ulnorthing) = latlon_to_utm('WGS-84', :$zone, $ullatitude, $ullongitude);
+  (*, $ureasting, $urnorthing) = latlon_to_utm('WGS-84', :$zone, $urlatitude, $urlongitude);
 } else { # on grid
   if (! $lleasting.defined or ! $llnorthing.defined or ! $zone.defined) {
     fail "No location specified\n";
@@ -1873,12 +1919,12 @@ if ($ongraticule) {
 }
 
 if ($bleedright) {
-  my (Nil, $teast, $tnorth) = latlon_to_utm_force_zone('WGS-84', $zone, $urlatitude.Real, $lllongitude.Real);
+  my (Nil, $teast, $tnorth) = latlon_to_utm('WGS-84', :$zone, $urlatitude.Real, $lllongitude.Real);
   my (Nil, $urlatitude, $urlongitude)  = utm_to_latlon('WGS-84', $zone, $teast+$imagewidth, $tnorth);
 }
 
 if ($bleedtop) {
-  my (Nil, $teast, $tnorth) = latlon_to_utm_force_zone('WGS-84', $zone, $lllatitude.Real, $urlongitude.Real);
+  my (Nil, $teast, $tnorth) = latlon_to_utm('WGS-84', :$zone, $lllatitude.Real, $urlongitude.Real);
   my (Nil, $urlatitude, $urlongitude)  = utm_to_latlon('WGS-84', $zone, $teast+$imagewidth, $tnorth);
 }
 
@@ -1899,48 +1945,3 @@ $ymin = $lowermarginwidth;
 # The following four variables are used to do rough clipping during drawing
 $minx = $lllongitude - .001;
 $maxx = $urlongitude + .001;
-$miny = $lllatitude - .001;
-$maxy = $urlatitude + .001;
-
-$yscale = $xscale = 1000/$scale; # convert metres on the ground to mm on the map
-
-# Connect to database
-my $passwd = 'xyz123';
-$dbh= DBIish.connect("Pg", user => 'ro', password => $passwd, dbname => $db, RaiseError => 0); # or die $DBIish::errstr;
-
-$sth_sym = $dbh.prepare('SELECT symbol_ga FROM vicmap_symbols WHERE type = ? AND ftype = ?');
-
-my ($leftzone, $rightzone);
-
-if ($ongraticule) {
-  ($leftzone,  *, *) = latlon_to_utm('WGS-84', $lllatitude, $lllongitude+.0000001);
-  ($rightzone, *, *) = latlon_to_utm('WGS-84', $urlatitude, $urlongitude-.0000001);
-} else {
-  $leftzone = $rightzone = $zone;
-}
-
-if ($leftzone eq $rightzone) {
-  drawit($leftzone, $lllongitude, $lllatitude, $urlongitude, $urlatitude, True, True);
-} else {
-  my $boundary = $urlongitude.Int; # works for maps less than 1 degree wide -- FIX
-  drawit($leftzone,  $lllongitude, $lllatitude, $boundary, $urlatitude, True, False);
-  drawit($rightzone, $boundary, $lllatitude, $urlongitude, $urlatitude, False, True);
-}
-
-put_userannotations();
-
-do_dependencies();
-
-$dbh.disconnect();
-
-$TMP.seek(0, 0) or fail "Could not seek in TMP file: $!";
-$TMP = $tmpfile.IO.open(:r);
-.say for $TMP.lines;
-$TMP.close;
-unlink $tmpfile;
-
-say "showpage";
-
-note "$object_count objects, $point_count points\n";
-
-# vi: filetype=perl6:
