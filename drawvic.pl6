@@ -1945,3 +1945,50 @@ $ymin = $lowermarginwidth;
 # The following four variables are used to do rough clipping during drawing
 $minx = $lllongitude - .001;
 $maxx = $urlongitude + .001;
+$miny = $lllatitude - .001;
+$maxy = $urlatitude + .001;
+
+$yscale = $xscale = 1000/$scale; # convert metres on the ground to mm on the map
+
+# Connect to database
+my $passwd = 'xyz123';
+#$dbh = DBIish.connect("Pg", user => 'ro', password => $passwd, dbname => $db, RaiseError => 0); # or die $DBIish::errstr;
+$dbh = DBIish.connect("Pg", dbname => $db, RaiseError => 0); # or die $DBIish::errstr;
+
+$sth_sym = $dbh.prepare('SELECT symbol_ga FROM vicmap_symbols WHERE type = ? AND ftype = ?');
+
+my ($leftzone, $rightzone);
+
+if ($ongraticule) {
+  ($leftzone,  *, *) = latlon_to_utm('WGS-84', $lllatitude, $lllongitude+.0000001);
+  ($rightzone, *, *) = latlon_to_utm('WGS-84', $urlatitude, $urlongitude-.0000001);
+} else {
+  $leftzone = $rightzone = $zone;
+}
+
+if ($leftzone eq $rightzone) {
+  drawit($leftzone, $lllongitude, $lllatitude, $urlongitude, $urlatitude, True, True);
+} else {
+  my $boundary = $urlongitude.Int; # works for maps less than 1 degree wide -- FIX
+  drawit($leftzone,  $lllongitude, $lllatitude, $boundary, $urlatitude, True, False);
+  drawit($rightzone, $boundary, $lllatitude, $urlongitude, $urlatitude, False, True);
+}
+
+put_userannotations();
+
+do_dependencies();
+
+$dbh.disconnect();
+
+$TMP.seek(0, 0) or fail "Could not seek in TMP file: $!";
+$TMP = $tmpfile.IO.open(:r);
+.say for $TMP.lines;
+$TMP.close;
+unlink $tmpfile;
+
+say "showpage";
+
+note "$object_count objects, $point_count points\n";
+
+# vi: filetype=perl6:
+#!/usr/bin/perl6
