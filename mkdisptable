@@ -1,5 +1,5 @@
-drop table vicdisplayorder;
-create table vicdisplayorder (
+drop table displayorder;
+create table displayorder (
   featurename text,
   drawtype text,
   tablename text,
@@ -7,35 +7,35 @@ create table vicdisplayorder (
   defaultsymbol int default 0,
   displayorder int default 0
 );
-grant select on vicdisplayorder to ro;
+grant select on displayorder to ro;
 
-insert into vicdisplayorder (featurename, drawtype, tablename, featurecolumn, displayorder) values ('tree_density', 'treeden', 'tree_density', '', 100);
-insert into vicdisplayorder (featurename, drawtype, tablename, featurecolumn, displayorder) values ('hy_water_area_polygon', 'area', 'hy_water_area_polygon', '', 110);
-insert into vicdisplayorder (featurename, drawtype, tablename, featurecolumn, displayorder) values ('hy_water_struct_area_polygon', 'area', 'hy_water_struct_area_polygon', '', 120);
-insert into vicdisplayorder (featurename, drawtype, tablename, featurecolumn, displayorder) values ('tr_air_infra_area_polygon', 'area', 'tr_air_infra_area_polygon', '', 130);
-insert into vicdisplayorder(featurename, drawtype, tablename, featurecolumn, displayorder) values ('tracks', 'line', 'tracks', '', 0);
-insert into vicdisplayorder(featurename, drawtype, tablename, featurecolumn, displayorder) values ('mineareas', 'line', 'mineareas', '', 0);
-insert into vicdisplayorder(featurename, drawtype, tablename, featurecolumn, displayorder) values ('reserves', 'line', 'reserves', '', 0);
-insert into vicdisplayorder(featurename, drawtype, tablename, featurecolumn, displayorder) values ('lakes', 'line', 'lakes', '', 0);
-insert into vicdisplayorder (featurename, drawtype, tablename, featurecolumn, defaultsymbol, displayorder) values ('hy_water_area_polygon', 'line', 'hy_water_area_polygon', '', 114, 200);
-insert into vicdisplayorder (featurename, drawtype, tablename, featurecolumn, defaultsymbol, displayorder) values ('reservoirs', 'line', 'reservoirs', '', 114, 0);
-insert into vicdisplayorder (featurename, drawtype, tablename, featurecolumn, defaultsymbol, displayorder) values ('locality_polygon', 'line_f', 'locality_polygon', '', 65, 210);
-insert into vicdisplayorder (featurename, drawtype, tablename, featurecolumn, displayorder) values ('locality_name', 'outline', 'locality_name', '', 211);
-insert into vicdisplayorder (featurename, drawtype, tablename, featurecolumn, defaultsymbol, displayorder) values ('lga_polygon', 'line_f', 'lga_polygon', '', 62, 220);
-insert into vicdisplayorder (featurename, drawtype, tablename, featurecolumn, displayorder) values ('el_contour', 'line', 'el_contour', '', 230);
-insert into vicdisplayorder (featurename, drawtype, tablename, featurecolumn, displayorder) values ('hy_water_struct_line', 'line', 'hy_water_struct_line', '', 240);
-insert into vicdisplayorder (featurename, drawtype, tablename, featurecolumn, displayorder) values ('hy_watercourse', 'line', 'hy_watercourse', '', 250);
-insert into vicdisplayorder (featurename, drawtype, tablename, featurecolumn, displayorder) values ('tr_road', 'road', 'tr_road', '', 260);
-insert into vicdisplayorder (featurename, drawtype, tablename, featurecolumn, displayorder) values ('tr_rail', 'line', 'tr_rail', '', 260);
-insert into vicdisplayorder (featurename, drawtype, tablename, featurecolumn, displayorder) values ('properties', 'property', 'properties', '', 270);
-insert into vicdisplayorder (featurename, drawtype, tablename, featurecolumn, displayorder) values ('el_ground_surface_point', 'point', 'el_ground_surface_points', '', 280);
-insert into vicdisplayorder (featurename, drawtype, tablename, featurecolumn, displayorder) values ('el_ground_surface_point', 'spotheight', 'el_ground_surface_points', '', 281);
-insert into vicdisplayorder (featurename, drawtype, tablename, featurecolumn, displayorder) values ('hy_water_point', 'point', 'hy_water_point', '', 290);
-insert into vicdisplayorder (featurename, drawtype, tablename, featurecolumn, displayorder) values ('hy_water_struct_point', 'point', 'hy_water_struct_point', '', 300);
-insert into vicdisplayorder (featurename, drawtype, tablename, featurecolumn, displayorder) values ('tr_airport_infrastructure', 'point', 'tr_airport_infrastructure', '', 310);
-insert into vicdisplayorder (featurename, drawtype, tablename, featurecolumn, displayorder) values ('tr_rail_infrastructure', 'point', 'tr_rail_infrastructure', '', 320);
-insert into vicdisplayorder (featurename, drawtype, tablename, featurecolumn, displayorder) values ('tr_road_infrastructure', 'roadpoint', 'tr_road_infrastructure', '', 330);
-insert into vicdisplayorder (featurename, drawtype, tablename, featurecolumn, displayorder) values ('graticule', 'graticule', 'graticule', '', 340);
-insert into vicdisplayorder (featurename, drawtype, tablename, featurecolumn, displayorder) values ('grid', 'grid', 'grid', '', 350);
-insert into vicdisplayorder (featurename, drawtype, tablename, featurecolumn, displayorder) values ('annotation', 'annotation', 'annotation', '', 400);
-insert into vicdisplayorder (featurename, drawtype, tablename, featurecolumn, displayorder) values ('userannotation', 'userannotation', 'userannotation', '', 410);
+insert into displayorder (featurename, drawtype, tablename, featurecolumn, displayorder) values ('tree_density', 'treeden', 'tree_density', '', 100);
+insert into displayorder (featurename, drawtype, tablename, featurecolumn, displayorder) values ('hy_water_area_polygon', 'area', 'hy_water_area_polygon', '', 110);
+insert into displayorder (featurename, drawtype, tablename, featurecolumn, displayorder) values ('hy_water_struct_area_polygon', 'area', 'hy_water_struct_area_polygon', '', 120);
+insert into displayorder (featurename, drawtype, tablename, featurecolumn, displayorder) values ('tr_air_infra_area_polygon', 'area', 'tr_air_infra_area_polygon', '', 130);
+insert into displayorder(featurename, drawtype, tablename, featurecolumn, displayorder) values ('tracks', 'line', 'tracks', '', 0);
+insert into displayorder(featurename, drawtype, tablename, featurecolumn, displayorder) values ('mineareas', 'line', 'mineareas', '', 0);
+insert into displayorder(featurename, drawtype, tablename, featurecolumn, displayorder) values ('reserves', 'line', 'reserves', '', 0);
+insert into displayorder(featurename, drawtype, tablename, featurecolumn, displayorder) values ('lakes', 'line', 'lakes', '', 0);
+insert into displayorder (featurename, drawtype, tablename, featurecolumn, defaultsymbol, displayorder) values ('hy_water_area_polygon', 'line', 'hy_water_area_polygon', '', 114, 200);
+insert into displayorder (featurename, drawtype, tablename, featurecolumn, defaultsymbol, displayorder) values ('reservoirs', 'line', 'reservoirs', '', 114, 0);
+insert into displayorder (featurename, drawtype, tablename, featurecolumn, defaultsymbol, displayorder) values ('locality_polygon', 'line_f', 'locality_polygon', '', 65, 210);
+insert into displayorder (featurename, drawtype, tablename, featurecolumn, displayorder) values ('locality_name', 'outline', 'locality_name', '', 211);
+insert into displayorder (featurename, drawtype, tablename, featurecolumn, defaultsymbol, displayorder) values ('lga_polygon', 'line_f', 'lga_polygon', '', 62, 220);
+insert into displayorder (featurename, drawtype, tablename, featurecolumn, displayorder) values ('el_contour', 'line', 'el_contour', '', 230);
+insert into displayorder (featurename, drawtype, tablename, featurecolumn, displayorder) values ('hy_water_struct_line', 'line', 'hy_water_struct_line', '', 240);
+insert into displayorder (featurename, drawtype, tablename, featurecolumn, displayorder) values ('hy_watercourse', 'line', 'hy_watercourse', '', 250);
+insert into displayorder (featurename, drawtype, tablename, featurecolumn, displayorder) values ('tr_road', 'road', 'tr_road', '', 260);
+insert into displayorder (featurename, drawtype, tablename, featurecolumn, displayorder) values ('tr_rail', 'line', 'tr_rail', '', 260);
+insert into displayorder (featurename, drawtype, tablename, featurecolumn, displayorder) values ('properties', 'property', 'properties', '', 270);
+insert into displayorder (featurename, drawtype, tablename, featurecolumn, displayorder) values ('el_ground_surface_point', 'point', 'el_ground_surface_points', '', 280);
+insert into displayorder (featurename, drawtype, tablename, featurecolumn, displayorder) values ('el_ground_surface_point', 'spotheight', 'el_ground_surface_points', '', 281);
+insert into displayorder (featurename, drawtype, tablename, featurecolumn, displayorder) values ('hy_water_point', 'point', 'hy_water_point', '', 290);
+insert into displayorder (featurename, drawtype, tablename, featurecolumn, displayorder) values ('hy_water_struct_point', 'point', 'hy_water_struct_point', '', 300);
+insert into displayorder (featurename, drawtype, tablename, featurecolumn, displayorder) values ('tr_airport_infrastructure', 'point', 'tr_airport_infrastructure', '', 310);
+insert into displayorder (featurename, drawtype, tablename, featurecolumn, displayorder) values ('tr_rail_infrastructure', 'point', 'tr_rail_infrastructure', '', 320);
+insert into displayorder (featurename, drawtype, tablename, featurecolumn, displayorder) values ('tr_road_infrastructure', 'roadpoint', 'tr_road_infrastructure', '', 330);
+insert into displayorder (featurename, drawtype, tablename, featurecolumn, displayorder) values ('graticule', 'graticule', 'graticule', '', 340);
+insert into displayorder (featurename, drawtype, tablename, featurecolumn, displayorder) values ('grid', 'grid', 'grid', '', 350);
+insert into displayorder (featurename, drawtype, tablename, featurecolumn, displayorder) values ('annotation', 'annotation', 'annotation', '', 400);
+insert into displayorder (featurename, drawtype, tablename, featurecolumn, displayorder) values ('userannotation', 'userannotation', 'userannotation', '', 410);
