@@ -593,7 +593,8 @@ sub follow_line(Str $shape, $spacing, $func, Real $width, Real $thick, Str $colo
 sub draw_lines(Str $table, Str $typecolumn, Int $default_symbol = 0) {
   note "$table lines...";
   my $geomcol = %defaults{'linegeometry'};
-  my $sth = $dbh.prepare("SELECT $typecolumn, st_astext($geomcol) as shape FROM $table WHERE $geomcol && $rect");
+note "draw_lines: geomcol is $geomcol";
+  my $sth = $dbh.prepare("SELECT $geomcol, st_astext($geomcol) as shape FROM $table WHERE $geomcol && $rect");
   
   if $sth.execute {
     
@@ -763,7 +764,7 @@ sub draw_properties() {
 
 sub draw_ga_wlines(Str $table) {
     note "$table lines...";
-    my $sth = $dbh.prepare("SELECT symbol, st_astext(shape) as shape, featurewidth FROM $table WHERE shape && $rect");
+   my $sth = $dbh.prepare("SELECT symbol, st_astext(shape) as shape, featurewidth FROM $table WHERE shape && $rect");
     
     $sth.execute();
     
@@ -876,7 +877,8 @@ sub draw_roads() {
     note "Roads...";
     my $geomcol = %defaults{'linegeometry'};
 #    my $sth = $dbh.prepare("SELECT pfi, ftype_code, class_code, dir_code, road_seal, div_rd, st_astext($geomcol) as shape FROM tr_road WHERE $geomcol && $rect");
-    my $sth = $dbh.prepare("SELECT ga_pid, ftype_code, class_code, dir_code, road_seal, div_rd, st_astext($geomcol) as shape FROM roads WHERE $geomcol && $rect");
+#    my $sth = $dbh.prepare("SELECT ga_pid, ftype_code, class_code, dir_code, road_seal, div_rd, st_astext($geomcol) as shape FROM roads WHERE $geomcol && $rect");
+    my $sth = $dbh.prepare("SELECT ga_pid, ftype_code, class_code, dir_code, road_seal, div_rd, $geomcol as shape FROM roads WHERE $geomcol && $rect");
     
     $sth.execute();
     
@@ -1032,7 +1034,7 @@ sub draw_points(Str $table, Str $column) {
   #my $sth = $dbh.prepare("SELECT $column, st_astext($geomcol) AS position, rotation
   my $sth = $dbh.prepare("SELECT $column, $geomcol AS position, rotation
                             FROM $table
-			    WHERE %defaults{'pointgeometry'} && $rect
+			    WHERE {%defaults{'pointgeometry'}} && $rect
 			   ");
     
     $sth.execute();
@@ -1153,6 +1155,7 @@ sub draw_roadpoints() {
     }
 }
 
+
 class Annotation {
   has $!length;
   has @!bytes;
@@ -1165,25 +1168,26 @@ class Annotation {
 	       'A' => 10, 'B' => 11, 'C' => 12, 'D' => 13, 'E' => 14, 'F' => 15
               );
 
-  method start($annotation is copy) {
+  use experimental :pack;
+
+  method start($annotation) {
 #note $annotation;
     $!index = 0;
-    my @hex = $annotation.split('');
-    @hex.shift;             # skip initial empty element
-    @hex.pop;               # remove final empty element
-    @hex.shift; @hex.shift; # skip \x
-    for @hex -> $h, $l {
-      my $byte = (%tobin{$h} +< 4) +| %tobin{$l};
-#note "$h $l -> $byte";
-#$*OUT.print: "$byte ";
-      @!bytes.push: $byte;
+    $!length = $annotation.elems;
+    for ^$!length -> $i {
+      @!bytes.push($annotation.subbuf($i, 1).unpack('C'));
     }
-    $!length = @!bytes.elems;
   }
 
   method skip(Int $skip) {
 #note "skipping $skip bytes";
     $!index += $skip;
+  }
+
+  method byte {
+    fail('annotation out of range') if $!index >= $!length;
+#note "about to read byte number $!index (@!bytes[$!index])";
+    @!bytes[$!index++];
   }
 
   method getbytes(Int $count) {
@@ -1224,24 +1228,22 @@ class Annotation {
     self.getbytes($length);
   }
 
-  method byte {
-    fail('annotation out of range') if $!index >= $!length;
-#note "about to read byte number $!index (@!bytes[$!index])";
-    @!bytes[$!index++];
-  }
-
   method short {
-    my $short = self.byte;
-    $short |= self.byte +<  8;
+     $!index += 2;
+     nativecast((int32), Blob.new(@!bytes[$!index-2 ..^ $!index]));
+#    my $short = self.byte;
+#    $short |= self.byte +<  8;
   }
 
   method int {
-    my $long = self.byte;
-    $long +|= (self.byte +<  8);
-    $long +|= (self.byte +< 16);
-    $long +|= (self.byte +< 24);
+     $!index += 4;
+     nativecast((int32), Blob.new(@!bytes[$!index-4 ..^ $!index]));
+#    my $long = self.byte;
+#    $long +|= (self.byte +<  8);
+#    $long +|= (self.byte +< 16);
+#    $long +|= (self.byte +< 24);
 #note "int: $long";
-    $long;
+#    $long;
   }
 
   method double {
@@ -1257,7 +1259,8 @@ sub draw_annotations() {
     
     $sth.execute();
     
-    while ( my @row = $sth.fetchrow_array ) {
+    for $sth.allrows -> @row {
+#    while ( my @row = $sth.fetchrow_array ) {
 	++$object_count;
 	my $element = @row[0];
 	my $shape = @row[1];
@@ -1838,8 +1841,10 @@ sub draw_margins(Bool $left, Bool $right) {
 	    $slope = atan2($y4-$y3, $x4-$x3) * 180 / 3.141596353 - 90;
 	    #note
 	    #   "Left hand edge from ($x3, $y3) to ($x4, $y4), slope $slope";
-	    $TMP.printf:
-		"$xoff $yoff translate %f rotate $xmin neg $ymin neg translate\n", -$slope;
+	    $xoff = $x3;
+	    $yoff = $y4;
+	    $TMP.print:
+		sprintf "$xoff $yoff translate %f rotate $xmin neg $ymin neg translate\n", -$slope;
 	}
     }
     
@@ -2141,8 +2146,8 @@ $yscale = $xscale = 1000/$scale; # convert metres on the ground to mm on the map
 # Connect to database
 my $passwd = 'xyz123';
 #$dbh = DBIish.connect("Pg", user => 'ro', password => $passwd, dbname => $db, RaiseError => 0); # or die $DBIish::errstr;
-$dbh = DBIish.connect("Pg", dbname => $db, RaiseError => 0); # or die $DBIish::errstr;
-$dbh = DBIish.connect("Pg", dbname => $db, RaiseError => 0); # or die $DBIish::errstr;
+note "Connecting to database $db";
+$dbh = DBIish.connect("Pg", dbname => $db, RaiseError => False); # or die $DBIish::errstr;
 
 my $sth_def = $dbh.prepare('SELECT name, value FROM defaults');
 $sth_def.execute();
@@ -2150,6 +2155,7 @@ while (my @row = $sth_def.fetchrow_array()) {
   my ($name, $value) = @row;
   %defaults{$name} = $value;
 }
+note "Defaults are {%defaults}";
 $copyright = %defaults<copyright>;
 
 postscript_prefix();
@@ -2184,7 +2190,7 @@ for @displays -> $arg {
     }
 }
 
-$sth_sym = $dbh.prepare("SELECT symbol_ga FROM %defaults{'symbols'} WHERE type = ? AND ftype = ?");
+$sth_sym = $dbh.prepare("SELECT symbol_ga FROM {%defaults{'symbols'}} WHERE type = ? AND ftype = ?");
 
 my ($leftzone, $rightzone);
 
@@ -2207,7 +2213,7 @@ put_userannotations();
 
 do_dependencies();
 
-$dbh.disconnect();
+$dbh.dispose();
 
 #$TMP.seek(0, SeekFromBeginning) or fail "Could not seek in TMP file: $!";
 $TMP = $tmpfile.IO.open(:r);

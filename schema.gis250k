@@ -1,0 +1,2274 @@
+CREATE SEQUENCE object_id;
+
+CREATE TABLE Maps (
+	name text,
+	number text UNIQUE,
+	bbox box
+);
+CREATE INDEX Maps_bbox_index on Maps using gist (bbox);
+
+insert into maps (name, number, bbox) values ('Abminga', 'SG5310', '((133.5, -27), (135, -26))');
+insert into maps (name, number, bbox) values ('Adavale', 'SG5505', '((144, -26), (145.5, -25))');
+insert into maps (name, number, bbox) values ('Adelaide SP', 'SI5409', '((138, -35), (139.5, -34))');
+insert into maps (name, number, bbox) values ('Ajana', 'SG5013', '((114, -28), (115.5, -27))');
+insert into maps (name, number, bbox) values ('Alberga', 'SG5309', '((132, -27), (133.5, -26))');
+insert into maps (name, number, bbox) values ('Alcoota', 'SF5310', '((133.5, -23), (135, -22))');
+insert into maps (name, number, bbox) values ('Alice Springs', 'SF5314', '((133.5, -24), (135, -23))');
+insert into maps (name, number, bbox) values ('Alligator River', 'SD5301', '((132, -13), (133.5, -12))');
+insert into maps (name, number, bbox) values ('Alroy', 'SE5315', '((135,  -20), (136.5, -19))');
+insert into maps (name, number, bbox) values ('Ana Branch', 'SI5407', '((141, -34), (142.5, -33))');
+insert into maps (name, number, bbox) values ('Andamooka', 'SH5312', '((136.5, -31), (138, -30))');
+insert into maps (name, number, bbox) values ('Angledool', 'SH5507', '((147, -30), (148.5, -29))');
+insert into maps (name, number, bbox) values ('Anketell', 'SF5102', '((121.5, -21), (123, -20))');
+insert into maps (name, number, bbox) values ('Armidale SP', 'SH5610', '((151.5, -31), (153, -30))');
+insert into maps (name, number, bbox) values ('Ashton', 'SD5213', '((126, -15), (127.5, -15))');
+insert into maps (name, number, bbox) values ('Atherton', 'SE5505', '((144, -18), (145.5, -17))');
+insert into maps (name, number, bbox) values ('Augathella', 'SG5506', '((145.5, -26), (147, -25))');
+insert into maps (name, number, bbox) values ('Auvergne', 'SD5215', '((129, -15), (130.5, -15))');
+insert into maps (name, number, bbox) values ('Avon Downs', 'SF5304', '((136.5, -21), (138, -20))');
+insert into maps (name, number, bbox) values ('Ayr', 'SE5515', '((147, -20), (148.5, -19))');
+insert into maps (name, number, bbox) values ('Bairnsdale SP', 'SJ5507', '((147, -38), (148.5, -37))');
+insert into maps (name, number, bbox) values ('Balfour Downs', 'SF5109', '((120, -23), (121.5, -22))');
+insert into maps (name, number, bbox) values ('Balladonia', 'SI5103', '((123, -33), (124.5, -32))');
+insert into maps (name, number, bbox) values ('Ballarat', 'SJ5408', '((142.5, -38), (144, -37))');
+insert into maps (name, number, bbox) values ('Balranald', 'SI5412', '((142.5, -35), (144, -34))');
+insert into maps (name, number, bbox) values ('Baralaba', 'SG5504', '((148.5, -25), (150, -24))');
+insert into maps (name, number, bbox) values ('Barker', 'SI5413', '((138, -36), (139.5, -35))');
+insert into maps (name, number, bbox) values ('Barlee', 'SH5008', '((118.5, -30), (120, -29))');
+insert into maps (name, number, bbox) values ('Barnato', 'SH5513', '((144, -32), (145.5, -31))');
+insert into maps (name, number, bbox) values ('Barrolka', 'SG5411', '((141, -27), (142.5, -26))');
+insert into maps (name, number, bbox) values ('Barrow Creek', 'SF5306', '((133.5, -22), (135, -21))');
+insert into maps (name, number, bbox) values ('Barton', 'SH5309', '((132, -31), (133.5, -30))');
+insert into maps (name, number, bbox) values ('Bathurst', 'SI5508', '((148.5, -34), (150, -33))');
+insert into maps (name, number, bbox) values ('Bauhinia Downs', 'SE5303', '((135,  -17), (136.5, -15))');
+insert into maps (name, number, bbox) values ('Bedourie', 'SG5401', '((138, -25), (139.5, -24))');
+insert into maps (name, number, bbox) values ('Beetaloo', 'SE5306', '((133.5, -18), (135, -17))');
+insert into maps (name, number, bbox) values ('Bega', 'SJ5504', '((148.5, -37), (150, -36))');
+insert into maps (name, number, bbox) values ('Belele', 'SG5011', '((117, -27), (118.5, -26))');
+insert into maps (name, number, bbox) values ('Bencubbin', 'SH5011', '((117, -31), (118.5, -30))');
+insert into maps (name, number, bbox) values ('Bendigo', 'SJ5501', '((144, -37), (145.5, -36))');
+insert into maps (name, number, bbox) values ('Bentley', 'SG5205', '((126, -26), (127.5, -25))');
+insert into maps (name, number, bbox) values ('Betoota', 'SG5406', '((139.5, -26), (141, -25))');
+insert into maps (name, number, bbox) values ('Billa Kalina', 'SH5307', '((135,  -30), (136.5, -29))');
+insert into maps (name, number, bbox) values ('Billiluna', 'SE5214', '((127.5, -20), (129, -19))');
+insert into maps (name, number, bbox) values ('Birdsville', 'SG5405', '((138, -26), (139.5, -25))');
+insert into maps (name, number, bbox) values ('Birksgate', 'SG5215', '((129, -28), (130.5, -27))');
+insert into maps (name, number, bbox) values ('Birrindudu', 'SE5211', '((129, -19), (130.5, -18))');
+insert into maps (name, number, bbox) values ('Blackall', 'SG5501', '((144, -25), (145.5, -24))');
+insert into maps (name, number, bbox) values ('Bloods Range', 'SG5203', '((129, -25), (130.5, -24))');
+insert into maps (name, number, bbox) values ('Blue Mud Bay', 'SD5307', '((135,  -14), (136.5, -13))');
+insert into maps (name, number, bbox) values ('Boigu', 'SC5407', '((141, -10), (142.5, -9))');
+insert into maps (name, number, bbox) values ('Bonney Well', 'SF5302', '((133.5, -21), (135, -20))');
+insert into maps (name, number, bbox) values ('Booligal', 'SI5505', '((144, -34), (145.5, -33))');
+insert into maps (name, number, bbox) values ('Boorabbin', 'SH5113', '((120, -32), (121.5, -31))');
+insert into maps (name, number, bbox) values ('Boulia', 'SF5410', '((139.5, -23), (141, -22))');
+insert into maps (name, number, bbox) values ('Bourke', 'SH5510', '((145.5, -31), (147, -30))');
+insert into maps (name, number, bbox) values ('Bowen', 'SF5503', '((147, -21), (148.5, -20))');
+insert into maps (name, number, bbox) values ('Bremer Bay', 'SI5012', '((118.5, -35), (120, -34))');
+insert into maps (name, number, bbox) values ('Brighton Downs', 'SF5415', '((141, -24), (142.5, -23))');
+insert into maps (name, number, bbox) values ('Brisbane SP', 'SG5615', '((153, -28), (154.5, -27))');
+insert into maps (name, number, bbox) values ('Broken Hill', 'SH5415', '((141, -32), (142.5, -31))');
+insert into maps (name, number, bbox) values ('Broome', 'SE5106', '((121.5, -18), (123, -17))');
+insert into maps (name, number, bbox) values ('Browne', 'SG5108', '((124.5, -26), (126, -25))');
+insert into maps (name, number, bbox) values ('Brunette Downs', 'SE5311', '((135,  -19), (136.5, -18))');
+insert into maps (name, number, bbox) values ('Buchanan', 'SF5506', '((145.5, -22), (147, -21))');
+insert into maps (name, number, bbox) values ('Bullen', 'SG5101', '((120, -25), (121.5, -24))');
+insert into maps (name, number, bbox) values ('Bulloo', 'SH5404', '((142.5, -29), (144, -28))');
+insert into maps (name, number, bbox) values ('Bundaberg', 'SG5602', '((151.5, -25), (153, -24))');
+insert into maps (name, number, bbox) values ('Burketown', 'SE5406', '((139.5, -18), (141, -17))');
+insert into maps (name, number, bbox) values ('Burra', 'SI5405', '((138, -34), (139.5, -33))');
+insert into maps (name, number, bbox) values ('Busselton SP', 'SI5005', '((114, -34), (115.5, -33))');
+insert into maps (name, number, bbox) values ('Byro', 'SG5010', '((115.5, -27), (117, -26))');
+insert into maps (name, number, bbox) values ('Cairns', 'SE5502', '((145.5, -17), (147, -15))');
+insert into maps (name, number, bbox) values ('Callabonna', 'SH5406', '((139.5, -30), (141, -29))');
+insert into maps (name, number, bbox) values ('Calvert Hills', 'SE5308', '((136.5, -18), (138, -17))');
+insert into maps (name, number, bbox) values ('Cambridge Gulf', 'SD5214', '((127.5, -15), (129, -15))');
+insert into maps (name, number, bbox) values ('Camden Sound SP', 'SD5115', '((123, -15), (124.5, -15))');
+insert into maps (name, number, bbox) values ('Camooweal', 'SE5413', '((138, -20), (139.5, -19))');
+insert into maps (name, number, bbox) values ('Canberra', 'SI5516', '((148.5, -36), (150, -35))');
+insert into maps (name, number, bbox) values ('Canterbury', 'SG5407', '((141, -26), (142.5, -25))');
+insert into maps (name, number, bbox) values ('Cape Melville', 'SD5509', '((144, -15), (145.5, -14))');
+insert into maps (name, number, bbox) values ('Cape Scott SP', 'SD5207', '((129, -14), (130.5, -13))');
+insert into maps (name, number, bbox) values ('Cape Weymouth', 'SD5404', '((142.5, -13), (144, -12))');
+insert into maps (name, number, bbox) values ('Cape York', 'SC5412', '((142.5, -11), (144, -10))');
+insert into maps (name, number, bbox) values ('Cargelligo', 'SI5506', '((145.5, -34), (147, -33))');
+insert into maps (name, number, bbox) values ('Carnarvon SP', 'SG4904', '((112.5, -25), (114, -24))');
+insert into maps (name, number, bbox) values ('Charleville', 'SG5510', '((145.5, -27), (147, -26))');
+insert into maps (name, number, bbox) values ('Charnley', 'SE5104', '((124.5, -17), (126, -15))');
+insert into maps (name, number, bbox) values ('Charters Towers', 'SF5502', '((145.5, -21), (147, -20))');
+insert into maps (name, number, bbox) values ('Childara', 'SH5314', '((133.5, -32), (135, -31))');
+insert into maps (name, number, bbox) values ('Chinchilla', 'SG5609', '((150, -27), (151.5, -26))');
+insert into maps (name, number, bbox) values ('Chowilla', 'SI5406', '((139.5, -34), (141, -33))');
+insert into maps (name, number, bbox) values ('Cirrigin', 'SI5003', '((117, -33), (118.5, -32))');
+insert into maps (name, number, bbox) values ('Clarke River', 'SE5513', '((144, -20), (145.5, -19))');
+insert into maps (name, number, bbox) values ('Clermont', 'SF5511', '((147, -23), (148.5, -22))');
+insert into maps (name, number, bbox) values ('Cloncurry', 'SF5402', '((139.5, -21), (141, -20))');
+insert into maps (name, number, bbox) values ('Cobar', 'SH5514', '((145.5, -32), (147, -31))');
+insert into maps (name, number, bbox) values ('Cobb', 'SG5201', '((126, -25), (127.5, -24))');
+insert into maps (name, number, bbox) values ('Cobham Lake', 'SH5411', '((141, -31), (142.5, -30))');
+insert into maps (name, number, bbox) values ('Cobourg Peninsula SP', 'SC5313', '((132, -12), (133.5, -11))');
+insert into maps (name, number, bbox) values ('Coen', 'SD5408', '((142.5, -14), (144, -13))');
+insert into maps (name, number, bbox) values ('Colac', 'SJ5412', '((142.5, -39), (144, -38))');
+insert into maps (name, number, bbox) values ('Collie', 'SI5006', '((115.5, -34), (117, -33))');
+insert into maps (name, number, bbox) values ('Collier', 'SG5004', '((118.5, -25), (120, -24))');
+insert into maps (name, number, bbox) values ('Connemara', 'SG5403', '((141, -25), (142.5, -24))');
+insert into maps (name, number, bbox) values ('Coober Pedy', 'SH5306', '((133.5, -30), (135, -29))');
+insert into maps (name, number, bbox) values ('Cook', 'SH5211', '((129, -31), (130.5, -30))');
+insert into maps (name, number, bbox) values ('Cooktown', 'SD5513', '((144, -15), (145.5, -15))');
+insert into maps (name, number, bbox) values ('Coompana', 'SH5215', '((129, -32), (130.5, -31))');
+insert into maps (name, number, bbox) values ('Cooper', 'SG5210', '((127.5, -27), (129, -26))');
+insert into maps (name, number, bbox) values ('Cootamundra', 'SI5511', '((147, -35), (148.5, -34))');
+insert into maps (name, number, bbox) values ('Copley', 'SH5409', '((138, -31), (139.5, -30))');
+insert into maps (name, number, bbox) values ('Cordillo', 'SG5410', '((139.5, -27), (141, -26))');
+insert into maps (name, number, bbox) values ('Cornish', 'SF5201', '((126, -21), (127.5, -20))');
+insert into maps (name, number, bbox) values ('Crossland', 'SE5116', '((124.5, -20), (126, -19))');
+insert into maps (name, number, bbox) values ('Croydon', 'SE5411', '((141, -19), (142.5, -18))');
+insert into maps (name, number, bbox) values ('Cue', 'SG5015', '((117, -28), (118.5, -27))');
+insert into maps (name, number, bbox) values ('Culver', 'SI5104', '((124.5, -33), (126, -32))');
+insert into maps (name, number, bbox) values ('Cundeelee', 'SH5111', '((123, -31), (124.5, -30))');
+insert into maps (name, number, bbox) values ('Cunnamulla', 'SH5502', '((145.5, -29), (147, -28))');
+insert into maps (name, number, bbox) values ('Curdimurka', 'SH5308', '((136.5, -30), (138, -29))');
+insert into maps (name, number, bbox) values ('Curnamona', 'SH5414', '((139.5, -32), (141, -31))');
+insert into maps (name, number, bbox) values ('Dalby', 'SG5613', '((150, -28), (151.5, -27))');
+insert into maps (name, number, bbox) values ('Dalhousie', 'SG5311', '((135,  -27), (136.5, -26))');
+insert into maps (name, number, bbox) values ('Daly Waters', 'SE5301', '((132, -17), (133.5, -15))');
+insert into maps (name, number, bbox) values ('Dampier SP', 'SF5002', '((115.5, -21), (117, -20))');
+insert into maps (name, number, bbox) values ('Daru', 'SC5408', '((142.5, -10), (144, -9))');
+insert into maps (name, number, bbox) values ('Darwin', 'SD5204', '((130.5, -13), (132, -12))');
+insert into maps (name, number, bbox) values ('Delamere', 'SD5216', '((130.5, -15), (132, -15))');
+insert into maps (name, number, bbox) values ('Deniliquin', 'SI5513', '((144, -36), (145.5, -35))');
+insert into maps (name, number, bbox) values ('Derby', 'SE5107', '((123, -18), (124.5, -17))');
+insert into maps (name, number, bbox) values ('Dirranbandi', 'SH5503', '((147, -29), (148.5, -28))');
+insert into maps (name, number, bbox) values ('Dixon Range', 'SE5206', '((127.5, -18), (129, -17))');
+insert into maps (name, number, bbox) values ('Dobbyn', 'SE5414', '((139.5, -20), (141, -19))');
+insert into maps (name, number, bbox) values ('Dongara', 'SH5005', '((114, -30), (115.5, -29))');
+insert into maps (name, number, bbox) values ('Donors Hill', 'SE5410', '((139.5, -19), (141, -18))');
+insert into maps (name, number, bbox) values ('Drysdale', 'SD5209', '((126, -15), (127.5, -14))');
+insert into maps (name, number, bbox) values ('Duaringa', 'SF5516', '((148.5, -24), (150, -23))');
+insert into maps (name, number, bbox) values ('Dubbo', 'SI5504', '((148.5, -33), (150, -32))');
+insert into maps (name, number, bbox) values ('Duchess', 'SF5406', '((139.5, -22), (141, -21))');
+insert into maps (name, number, bbox) values ('Duketon', 'SG5114', '((121.5, -28), (123, -27))');
+insert into maps (name, number, bbox) values ('Dumbleyung', 'SI5007', '((117, -34), (118.5, -33))');
+insert into maps (name, number, bbox) values ('Dummer', 'SF5104', '((124.5, -21), (126, -20))');
+insert into maps (name, number, bbox) values ('Durham Downs', 'SG5415', '((141, -28), (142.5, -27))');
+insert into maps (name, number, bbox) values ('Ebagoola', 'SD5412', '((142.5, -15), (144, -14))');
+insert into maps (name, number, bbox) values ('Eddystone', 'SG5507', '((147, -26), (148.5, -25))');
+insert into maps (name, number, bbox) values ('Edjudina', 'SH5106', '((121.5, -30), (123, -29))');
+insert into maps (name, number, bbox) values ('Edmund', 'SF5014', '((115.5, -24), (117, -23))');
+insert into maps (name, number, bbox) values ('Einasleigh', 'SE5509', '((144, -19), (145.5, -18))');
+insert into maps (name, number, bbox) values ('Elkedra', 'SF5307', '((135,  -22), (136.5, -21))');
+insert into maps (name, number, bbox) values ('Elliston', 'SI5306', '((133.5, -34), (135, -33))');
+insert into maps (name, number, bbox) values ('Emerald', 'SF5515', '((147, -24), (148.5, -23))');
+insert into maps (name, number, bbox) values ('Enngonia', 'SH5506', '((145.5, -30), (147, -29))');
+insert into maps (name, number, bbox) values ('Eromanga', 'SG5412', '((142.5, -27), (144, -26))');
+insert into maps (name, number, bbox) values ('Esperance SP', 'SI5106', '((121.5, -34), (123, -33))');
+insert into maps (name, number, bbox) values ('Eucla SP', 'SH5214', '((127.5, -32), (129, -31))');
+insert into maps (name, number, bbox) values ('Eulo', 'SH5501', '((144, -29), (145.5, -28))');
+insert into maps (name, number, bbox) values ('Everard', 'SG5313', '((132, -28), (133.5, -27))');
+insert into maps (name, number, bbox) values ('Fergusson River', 'SD5212', '((130.5, -15), (132, -14))');
+insert into maps (name, number, bbox) values ('Finke', 'SG5306', '((133.5, -26), (135, -25))');
+insert into maps (name, number, bbox) values ('Forbes', 'SI5507', '((147, -34), (148.5, -33))');
+insert into maps (name, number, bbox) values ('Forrest', 'SH5210', '((127.5, -31), (129, -30))');
+insert into maps (name, number, bbox) values ('Fowler', 'SH5313', '((132, -32), (133.5, -31))');
+insert into maps (name, number, bbox) values ('Fraser Island SP', 'SG5603', '((153, -25), (154.5, -24))');
+insert into maps (name, number, bbox) values ('Frew River', 'SF5303', '((135,  -21), (136.5, -20))');
+insert into maps (name, number, bbox) values ('Frome', 'SH5410', '((139.5, -31), (141, -30))');
+insert into maps (name, number, bbox) values ('Gairdner', 'SH5315', '((135,  -32), (136.5, -31))');
+insert into maps (name, number, bbox) values ('Galbraith', 'SE5403', '((141, -17), (142.5, -15))');
+insert into maps (name, number, bbox) values ('Galilee', 'SF5510', '((145.5, -23), (147, -22))');
+insert into maps (name, number, bbox) values ('Galiwinku SP', 'SD5303', '((135,  -13), (136.5, -12))');
+insert into maps (name, number, bbox) values ('Gason', 'SG5413', '((138, -28), (139.5, -27))');
+insert into maps (name, number, bbox) values ('Georgetown', 'SE5412', '((142.5, -19), (144, -18))');
+insert into maps (name, number, bbox) values ('Geraldton SP', 'SH5001', '((114, -29), (115.5, -28))');
+insert into maps (name, number, bbox) values ('Gilberton', 'SE5416', '((142.5, -20), (144, -19))');
+insert into maps (name, number, bbox) values ('Giles', 'SH5301', '((132, -29), (133.5, -28))');
+insert into maps (name, number, bbox) values ('Gilgandra', 'SH5516', '((148.5, -32), (150, -31))');
+insert into maps (name, number, bbox) values ('Glenburgh', 'SG5006', '((115.5, -26), (117, -25))');
+insert into maps (name, number, bbox) values ('Glengarry', 'SG5012', '((118.5, -27), (120, -26))');
+insert into maps (name, number, bbox) values ('Glenormiston', 'SF5409', '((138, -23), (139.5, -22))');
+insert into maps (name, number, bbox) values ('Goondiwindi', 'SH5601', '((150, -29), (151.5, -28))');
+insert into maps (name, number, bbox) values ('Gordon Downs', 'SE5210', '((127.5, -19), (129, -18))');
+insert into maps (name, number, bbox) values ('Goulburn', 'SI5512', '((148.5, -35), (150, -34))');
+insert into maps (name, number, bbox) values ('Gove Peninsula SP', 'SD5304', '((136.5, -13), (138, -12))');
+insert into maps (name, number, bbox) values ('Grafton', 'SH5606', '((151.5, -30), (153, -29))');
+insert into maps (name, number, bbox) values ('Green Swamp Well', 'SE5313', '((132, -20), (133.5, -19))');
+insert into maps (name, number, bbox) values ('Groote Eylandt SP', 'SD5308', '((136.5, -14), (138, -13))');
+insert into maps (name, number, bbox) values ('Gunanya', 'SF5114', '((121.5, -24), (123, -23))');
+insert into maps (name, number, bbox) values ('Gympie', 'SG5610', '((151.5, -27), (153, -26))');
+insert into maps (name, number, bbox) values ('Hale River', 'SG5303', '((135,  -25), (136.5, -24))');
+insert into maps (name, number, bbox) values ('Hamilton SP', 'SJ5407', '((141, -38), (142.5, -37))');
+insert into maps (name, number, bbox) values ('Hann River', 'SD5416', '((142.5, -15), (144, -15))');
+insert into maps (name, number, bbox) values ('Hastings', 'SH5614', '((151.5, -32), (153, -31))');
+insert into maps (name, number, bbox) values ('Hay', 'SI5509', '((144, -35), (145.5, -34))');
+insert into maps (name, number, bbox) values ('Hay River', 'SF5316', '((136.5, -24), (138, -23))');
+insert into maps (name, number, bbox) values ('Helen Springs', 'SE5310', '((133.5, -19), (135, -18))');
+insert into maps (name, number, bbox) values ('Helena', 'SF5205', '((126, -22), (127.5, -21))');
+insert into maps (name, number, bbox) values ('Henbury', 'SG5301', '((132, -25), (133.5, -24))');
+insert into maps (name, number, bbox) values ('Herbert', 'SG5107', '((123, -26), (124.5, -25))');
+insert into maps (name, number, bbox) values ('Hermannsburg', 'SF5313', '((132, -24), (133.5, -23))');
+insert into maps (name, number, bbox) values ('Heron Island', 'SF5614', '((151.5, -24), (153, -23))');
+insert into maps (name, number, bbox) values ('Highland Rocks', 'SF5207', '((129, -22), (130.5, -21))');
+insert into maps (name, number, bbox) values ('Hill River', 'SH5009', '((114, -31), (115.5, -30))');
+insert into maps (name, number, bbox) values ('Hodgson Downs', 'SD5314', '((133.5, -15), (135, -15))');
+insert into maps (name, number, bbox) values ('Holroyd SP', 'SD5411', '((141, -15), (142.5, -14))');
+insert into maps (name, number, bbox) values ('Homeboin', 'SG5515', '((147, -28), (148.5, -27))');
+insert into maps (name, number, bbox) values ('Horsham', 'SJ5403', '((141, -37), (142.5, -36))');
+insert into maps (name, number, bbox) values ('Huckitta', 'SF5311', '((135,  -23), (136.5, -22))');
+insert into maps (name, number, bbox) values ('Hughenden', 'SF5501', '((144, -21), (145.5, -20))');
+insert into maps (name, number, bbox) values ('Hyden', 'SI5004', '((118.5, -33), (120, -32))');
+insert into maps (name, number, bbox) values ('Illogwa Creek', 'SF5315', '((135,  -24), (136.5, -23))');
+insert into maps (name, number, bbox) values ('Ingham', 'SE5510', '((145.5, -19), (147, -18))');
+insert into maps (name, number, bbox) values ('Innaminka', 'SG5414', '((139.5, -28), (141, -27))');
+insert into maps (name, number, bbox) values ('Innisfail', 'SE5506', '((145.5, -18), (147, -17))');
+insert into maps (name, number, bbox) values ('Inverell', 'SH5605', '((150, -30), (151.5, -29))');
+insert into maps (name, number, bbox) values ('Ipswich', 'SG5614', '((151.5, -28), (153, -27))');
+insert into maps (name, number, bbox) values ('Ivanhoe', 'SI5501', '((144, -33), (145.5, -32))');
+insert into maps (name, number, bbox) values ('Jackson', 'SH5012', '((118.5, -31), (120, -30))');
+insert into maps (name, number, bbox) values ('Jardine River', 'SC5415', '((141, -12), (142.5, -11))');
+insert into maps (name, number, bbox) values ('Jericho', 'SF5514', '((145.5, -24), (147, -23))');
+insert into maps (name, number, bbox) values ('Jerilderie', 'SI5514', '((145.5, -36), (147, -35))');
+insert into maps (name, number, bbox) values ('Joanna Spring', 'SF5103', '((123, -21), (124.5, -20))');
+insert into maps (name, number, bbox) values ('Jubilee', 'SH5205', '((126, -30), (127.5, -29))');
+insert into maps (name, number, bbox) values ('Julia Creek', 'SF5403', '((141, -21), (142.5, -20))');
+insert into maps (name, number, bbox) values ('Jundah', 'SG5404', '((142.5, -25), (144, -24))');
+insert into maps (name, number, bbox) values ('Kalgoorlie', 'SH5109', '((120, -31), (121.5, -30))');
+insert into maps (name, number, bbox) values ('Kangaroo Island SP', 'SI5316', '((136.5, -36), (138, -35))');
+insert into maps (name, number, bbox) values ('Katherine', 'SD5309', '((132, -15), (133.5, -14))');
+insert into maps (name, number, bbox) values ('Kellerberrin', 'SH5015', '((117, -32), (118.5, -31))');
+insert into maps (name, number, bbox) values ('Kennedy Range', 'SG5001', '((114, -25), (115.5, -24))');
+insert into maps (name, number, bbox) values ('Kimba', 'SI5307', '((135,  -34), (136.5, -33))');
+insert into maps (name, number, bbox) values ('Kingoonya', 'SH5311', '((135,  -31), (136.5, -30))');
+insert into maps (name, number, bbox) values ('Kingston', 'SG5110', '((121.5, -27), (123, -26))');
+insert into maps (name, number, bbox) values ('Kirkalocka', 'SH5003', '((117, -29), (118.5, -28))');
+insert into maps (name, number, bbox) values ('Kopperamanna', 'SH5401', '((138, -29), (139.5, -28))');
+insert into maps (name, number, bbox) values ('Kulgera', 'SG5305', '((132, -26), (133.5, -25))');
+insert into maps (name, number, bbox) values ('Kurnapli', 'SH5110', '((121.5, -31), (123, -30))');
+insert into maps (name, number, bbox) values ('Lagrange', 'SE5110', '((121.5, -19), (123, -18))');
+insert into maps (name, number, bbox) values ('Lake Amadeus', 'SG5204', '((130.5, -25), (132, -24))');
+insert into maps (name, number, bbox) values ('Lake Eyre', 'SH5304', '((136.5, -29), (138, -28))');
+insert into maps (name, number, bbox) values ('Lake Johnston', 'SI5101', '((120, -33), (121.5, -32))');
+insert into maps (name, number, bbox) values ('Lake Mackay', 'SF5211', '((129, -23), (130.5, -22))');
+insert into maps (name, number, bbox) values ('Lander River', 'SF5301', '((132, -21), (133.5, -20))');
+insert into maps (name, number, bbox) values ('Lansdowne', 'SE5205', '((126, -18), (127.5, -17))');
+insert into maps (name, number, bbox) values ('Larrimah', 'SD5313', '((132, -15), (133.5, -15))');
+insert into maps (name, number, bbox) values ('Laverton', 'SH5102', '((121.5, -29), (123, -28))');
+insert into maps (name, number, bbox) values ('Lawn Hill', 'SE5409', '((138, -19), (139.5, -18))');
+insert into maps (name, number, bbox) values ('Lennard River', 'SE5108', '((124.5, -18), (126, -17))');
+insert into maps (name, number, bbox) values ('Lennis', 'SG5213', '((126, -28), (127.5, -27))');
+insert into maps (name, number, bbox) values ('Leonora', 'SH5101', '((120, -29), (121.5, -28))');
+insert into maps (name, number, bbox) values ('Limbunya', 'SE5207', '((129, -18), (130.5, -17))');
+insert into maps (name, number, bbox) values ('Lincoln SP', 'SI5311', '((135,  -35), (136.5, -34))');
+insert into maps (name, number, bbox) values ('Lindsay', 'SG5216', '((130.5, -28), (132, -27))');
+insert into maps (name, number, bbox) values ('Lismore SP', 'SH5607', '((153, -30), (154.5, -29))');
+insert into maps (name, number, bbox) values ('Lissadell', 'SE5202', '((127.5, -17), (129, -15))');
+insert into maps (name, number, bbox) values ('Londonderry', 'SD5205', '((126, -14), (127.5, -13))');
+insert into maps (name, number, bbox) values ('Longreach', 'SF5513', '((144, -24), (145.5, -23))');
+insert into maps (name, number, bbox) values ('Loongana', 'SH5209', '((126, -31), (127.5, -30))');
+insert into maps (name, number, bbox) values ('Louth', 'SH5509', '((144, -31), (145.5, -30))');
+insert into maps (name, number, bbox) values ('Lucas', 'SF5202', '((127.5, -21), (129, -20))');
+insert into maps (name, number, bbox) values ('Macdonald', 'SF5214', '((127.5, -24), (129, -23))');
+insert into maps (name, number, bbox) values ('Machattie', 'SG5402', '((139.5, -25), (141, -24))');
+insert into maps (name, number, bbox) values ('Mackay', 'SF5508', '((148.5, -22), (150, -21))');
+insert into maps (name, number, bbox) values ('Mackunda', 'SF5411', '((141, -23), (142.5, -22))');
+insert into maps (name, number, bbox) values ('Madley', 'SG5103', '((123, -25), (124.5, -24))');
+insert into maps (name, number, bbox) values ('Madura SP', 'SH5213', '((126, -32), (127.5, -31))');
+insert into maps (name, number, bbox) values ('Maer', 'SC5505', '((144, -10), (145.5, -9))');
+insert into maps (name, number, bbox) values ('Malcolm SP', 'SI5107', '((123, -34), (124.5, -33))');
+insert into maps (name, number, bbox) values ('Mallacoota', 'SJ5508', '((148.5, -38), (150, -37))');
+insert into maps (name, number, bbox) values ('Manara', 'SI5404', '((142.5, -33), (144, -32))');
+insert into maps (name, number, bbox) values ('Mandorah', 'SE5113', '((120, -20), (121.5, -19))');
+insert into maps (name, number, bbox) values ('Maneroo', 'SF5416', '((142.5, -24), (144, -23))');
+insert into maps (name, number, bbox) values ('Manila', 'SH5609', '((150, -31), (151.5, -30))');
+insert into maps (name, number, bbox) values ('Mann', 'SG5211', '((129, -27), (130.5, -26))');
+insert into maps (name, number, bbox) values ('Manuka', 'SF5408', '((142.5, -22), (144, -21))');
+insert into maps (name, number, bbox) values ('Marble Bar', 'SF5008', '((118.5, -22), (120, -21))');
+insert into maps (name, number, bbox) values ('Marree', 'SH5405', '((138, -30), (139.5, -29))');
+insert into maps (name, number, bbox) values ('Maryborough', 'SG5606', '((151.5, -26), (153, -25))');
+insert into maps (name, number, bbox) values ('Mason', 'SH5206', '((127.5, -30), (129, -29))');
+insert into maps (name, number, bbox) values ('Maurice', 'SH5208', '((130.5, -30), (132, -29))');
+insert into maps (name, number, bbox) values ('McDills', 'SG5307', '((135,  -26), (136.5, -25))');
+insert into maps (name, number, bbox) values ('Mckinlay', 'SF5407', '((141, -22), (142.5, -21))');
+insert into maps (name, number, bbox) values ('McLarty Hills', 'SE5115', '((123, -20), (124.5, -19))');
+insert into maps (name, number, bbox) values ('Medusa Banks', 'SD5210', '((127.5, -15), (129, -14))');
+insert into maps (name, number, bbox) values ('Melbourne', 'SJ5505', '((144, -38), (145.5, -37))');
+insert into maps (name, number, bbox) values ('Menindee', 'SI5403', '((141, -33), (142.5, -32))');
+insert into maps (name, number, bbox) values ('Menzies', 'SH5105', '((120, -30), (121.5, -29))');
+insert into maps (name, number, bbox) values ('Mildura', 'SI5411', '((141, -35), (142.5, -34))');
+insert into maps (name, number, bbox) values ('Milingimbi SP', 'SD5302', '((133.5, -13), (135, -12))');
+insert into maps (name, number, bbox) values ('Millungera', 'SE5415', '((141, -20), (142.5, -19))');
+insert into maps (name, number, bbox) values ('Milparinka', 'SH5407', '((141, -30), (142.5, -29))');
+insert into maps (name, number, bbox) values ('Minigwal', 'SH5107', '((123, -30), (124.5, -29))');
+insert into maps (name, number, bbox) values ('Minilya SP', 'SF4916', '((112.5, -24), (114, -23))');
+insert into maps (name, number, bbox) values ('Mitchell', 'SG5511', '((147, -27), (148.5, -26))');
+insert into maps (name, number, bbox) values ('Monkey Mia SP', 'SG4916', '((112.5, -28), (114, -27))');
+insert into maps (name, number, bbox) values ('Montague Sound SP', 'SD5112', '((124.5, -15), (126, -14))');
+insert into maps (name, number, bbox) values ('Monto', 'SG5601', '((150, -25), (151.5, -24))');
+insert into maps (name, number, bbox) values ('Moora', 'SH5010', '((115.5, -31), (117, -30))');
+insert into maps (name, number, bbox) values ('Moree', 'SH5508', '((148.5, -30), (150, -29))');
+insert into maps (name, number, bbox) values ('Mornington Island SP', 'SE5401', '((138, -17), (139.5, -15))');
+insert into maps (name, number, bbox) values ('Morris', 'SF5116', '((124.5, -24), (126, -23))');
+insert into maps (name, number, bbox) values ('Mossman', 'SE5501', '((144, -17), (145.5, -15))');
+insert into maps (name, number, bbox) values ('Mouhnt Egerton', 'SG5003', '((117, -25), (118.5, -24))');
+insert into maps (name, number, bbox) values ('Moun t Bruce', 'SF5011', '((117, -23), (118.5, -22))');
+insert into maps (name, number, bbox) values ('Mount Anderson', 'SE5111', '((123, -19), (124.5, -18))');
+insert into maps (name, number, bbox) values ('Mount Bannerman', 'SE5213', '((126, -20), (127.5, -19))');
+insert into maps (name, number, bbox) values ('Mount Barker SP', 'SI5011', '((117, -35), (118.5, -34))');
+insert into maps (name, number, bbox) values ('Mount Coolon', 'SF5507', '((147, -22), (148.5, -21))');
+insert into maps (name, number, bbox) values ('Mount Doreen', 'SF5212', '((130.5, -23), (132, -22))');
+insert into maps (name, number, bbox) values ('Mount Drummond', 'SE5312', '((136.5, -19), (138, -18))');
+insert into maps (name, number, bbox) values ('Mount Elizabeth', 'SE5201', '((126, -17), (127.5, -15))');
+insert into maps (name, number, bbox) values ('Mount Evelyn', 'SD5305', '((132, -14), (133.5, -13))');
+insert into maps (name, number, bbox) values ('Mount Liebig', 'SF5216', '((130.5, -24), (132, -23))');
+insert into maps (name, number, bbox) values ('Mount Marumba', 'SD5306', '((133.5, -14), (135, -13))');
+insert into maps (name, number, bbox) values ('Mount Peake', 'SF5305', '((132, -22), (133.5, -21))');
+insert into maps (name, number, bbox) values ('Mount Phillips', 'SG5002', '((115.5, -25), (117, -24))');
+insert into maps (name, number, bbox) values ('Mount Ramsay', 'SE5209', '((126, -19), (127.5, -18))');
+insert into maps (name, number, bbox) values ('Mount Rennie', 'SF5215', '((129, -24), (130.5, -23))');
+insert into maps (name, number, bbox) values ('Mount Solitaire', 'SF5204', '((130.5, -21), (132, -20))');
+insert into maps (name, number, bbox) values ('Mount Theo', 'SF5208', '((130.5, -22), (132, -21))');
+insert into maps (name, number, bbox) values ('Mount Whelan', 'SF5413', '((138, -24), (139.5, -23))');
+insert into maps (name, number, bbox) values ('Mount Young', 'SD5315', '((135,  -15), (136.5, -15))');
+insert into maps (name, number, bbox) values ('Mt Isa', 'SF5401', '((138, -21), (139.5, -20))');
+insert into maps (name, number, bbox) values ('Mundubbera', 'SG5605', '((150, -26), (151.5, -25))');
+insert into maps (name, number, bbox) values ('Munro', 'SE5114', '((121.5, -20), (123, -19))');
+insert into maps (name, number, bbox) values ('Murgoo', 'SG5014', '((115.5, -28), (117, -27))');
+insert into maps (name, number, bbox) values ('Murloocoppie', 'SH5302', '((133.5, -29), (135, -28))');
+insert into maps (name, number, bbox) values ('Muttaburra', 'SF5509', '((144, -23), (145.5, -22))');
+insert into maps (name, number, bbox) values ('Nabberu', 'SG5105', '((120, -26), (121.5, -25))');
+insert into maps (name, number, bbox) values ('Napperby', 'SF5309', '((132, -23), (133.5, -22))');
+insert into maps (name, number, bbox) values ('Naracoorte', 'SJ5402', '((139.5, -37), (141, -36))');
+insert into maps (name, number, bbox) values ('Naretha', 'SH5116', '((124.5, -32), (126, -31))');
+insert into maps (name, number, bbox) values ('Narrabri', 'SH5512', '((148.5, -31), (150, -30))');
+insert into maps (name, number, bbox) values ('Narrandera', 'SI5510', '((145.5, -35), (147, -34))');
+insert into maps (name, number, bbox) values ('Narromine', 'SI5503', '((147, -33), (148.5, -32))');
+insert into maps (name, number, bbox) values ('Neale', 'SH5104', '((124.5, -29), (126, -28))');
+insert into maps (name, number, bbox) values ('Newcastle', 'SI5602', '((151.5, -33), (153, -32))');
+insert into maps (name, number, bbox) values ('Newcastle Waters', 'SE5305', '((132, -18), (133.5, -17))');
+insert into maps (name, number, bbox) values ('Newdegate', 'SI5008', '((118.5, -34), (120, -33))');
+insert into maps (name, number, bbox) values ('Newman', 'SF5016', '((118.5, -24), (120, -23))');
+insert into maps (name, number, bbox) values ('Ninghan', 'SH5007', '((117, -30), (118.5, -29))');
+insert into maps (name, number, bbox) values ('Noolyeana', 'SG5316', '((136.5, -28), (138, -27))');
+insert into maps (name, number, bbox) values ('Noonkanbah', 'SE5112', '((124.5, -19), (126, -18))');
+insert into maps (name, number, bbox) values ('Noorina', 'SH5203', '((129, -29), (130.5, -28))');
+insert into maps (name, number, bbox) values ('Normanton', 'SE5407', '((141, -18), (142.5, -17))');
+insert into maps (name, number, bbox) values ('Norseman', 'SI5102', '((121.5, -33), (123, -32))');
+insert into maps (name, number, bbox) values ('Nullagine', 'SF5105', '((120, -22), (121.5, -21))');
+insert into maps (name, number, bbox) values ('Nullarbor', 'SH5216', '((130.5, -32), (132, -31))');
+insert into maps (name, number, bbox) values ('Nuyts', 'SI5301', '((132, -33), (133.5, -32))');
+insert into maps (name, number, bbox) values ('Nymagee', 'SI5502', '((145.5, -33), (147, -32))');
+insert into maps (name, number, bbox) values ('Nyngan', 'SH5515', '((147, -32), (148.5, -31))');
+insert into maps (name, number, bbox) values ('Olary', 'SI5402', '((139.5, -33), (141, -32))');
+insert into maps (name, number, bbox) values ('Onslow', 'SF5005', '((114, -22), (115.5, -21))');
+insert into maps (name, number, bbox) values ('Oodnadatta', 'SG5315', '((135,  -28), (136.5, -27))');
+insert into maps (name, number, bbox) values ('Ooldea', 'SH5212', '((130.5, -31), (132, -30))');
+insert into maps (name, number, bbox) values ('Orford Bay', 'SC5416', '((142.5, -12), (144, -11))');
+insert into maps (name, number, bbox) values ('Orroroo', 'SI5401', '((138, -33), (139.5, -32))');
+insert into maps (name, number, bbox) values ('Ouyen', 'SI5415', '((141, -36), (142.5, -35))');
+insert into maps (name, number, bbox) values ('Pandie Pandie', 'SG5409', '((138, -27), (139.5, -26))');
+insert into maps (name, number, bbox) values ('Parachilna', 'SH5413', '((138, -32), (139.5, -31))');
+insert into maps (name, number, bbox) values ('Paterson Range', 'SF5106', '((121.5, -22), (123, -21))');
+insert into maps (name, number, bbox) values ('Peak Hill', 'SG5008', '((118.5, -26), (120, -25))');
+insert into maps (name, number, bbox) values ('Pender', 'SE5102', '((121.5, -17), (123, -15))');
+insert into maps (name, number, bbox) values ('Penola SP', 'SJ5406', '((139.5, -38), (141, -37))');
+insert into maps (name, number, bbox) values ('Percival', 'SF5108', '((124.5, -22), (126, -21))');
+insert into maps (name, number, bbox) values ('Percy Isles', 'SF5605', '((150, -22), (151.5, -21))');
+insert into maps (name, number, bbox) values ('Perenjori', 'SH5006', '((115.5, -30), (117, -29))');
+insert into maps (name, number, bbox) values ('Permberton SP', 'SI5010', '((115.5, -35), (117, -34))');
+insert into maps (name, number, bbox) values ('Perth SP', 'SH5014', '((115.5, -32), (117, -31))');
+insert into maps (name, number, bbox) values ('Petermann Ranges', 'SG5207', '((129, -26), (130.5, -25))');
+insert into maps (name, number, bbox) values ('Pine Creek', 'SD5208', '((130.5, -14), (132, -13))');
+insert into maps (name, number, bbox) values ('Pinjarra', 'SI5002', '((115.5, -33), (117, -32))');
+insert into maps (name, number, bbox) values ('Pinnaroo', 'SI5414', '((139.5, -36), (141, -35))');
+insert into maps (name, number, bbox) values ('Plumridge', 'SH5108', '((124.5, -30), (126, -29))');
+insert into maps (name, number, bbox) values ('Poolowanna', 'SG5312', '((136.5, -27), (138, -26))');
+insert into maps (name, number, bbox) values ('Pooncarie', 'SI5408', '((142.5, -34), (144, -33))');
+insert into maps (name, number, bbox) values ('Port Augusta', 'SI5304', '((136.5, -33), (138, -32))');
+insert into maps (name, number, bbox) values ('Port Clinton', 'SF5609', '((150, -23), (151.5, -22))');
+insert into maps (name, number, bbox) values ('Port Hedland SP', 'SF5004', '((118.5, -21), (120, -20))');
+insert into maps (name, number, bbox) values ('Port Keyts', 'SD5211', '((129, -15), (130.5, -14))');
+insert into maps (name, number, bbox) values ('Port Phillip SP', 'SJ5509', '((144, -39), (145.5, -38))');
+insert into maps (name, number, bbox) values ('Prince Regent', 'SD5116', '((124.5, -15), (126, -15))');
+insert into maps (name, number, bbox) values ('Proserpine', 'SF5504', '((148.5, -21), (150, -20))');
+insert into maps (name, number, bbox) values ('Pyramid', 'SF5007', '((117, -22), (118.5, -21))');
+insert into maps (name, number, bbox) values ('Quilpie', 'SG5509', '((144, -27), (145.5, -26))');
+insert into maps (name, number, bbox) values ('Ranken', 'SE5316', '((136.5, -20), (138, -19))');
+insert into maps (name, number, bbox) values ('Rason', 'SH5103', '((123, -29), (124.5, -28))');
+insert into maps (name, number, bbox) values ('Ravensthorpe', 'SI5105', '((120, -34), (121.5, -33))');
+insert into maps (name, number, bbox) values ('Rawlinson', 'SG5202', '((127.5, -25), (129, -24))');
+insert into maps (name, number, bbox) values ('Red River', 'SE5408', '((142.5, -18), (144, -17))');
+insert into maps (name, number, bbox) values ('Renmark', 'SI5410', '((139.5, -35), (141, -34))');
+insert into maps (name, number, bbox) values ('Richmond', 'SF5404', '((142.5, -21), (144, -20))');
+insert into maps (name, number, bbox) values ('Robert', 'SG5111', '((123, -27), (124.5, -26))');
+insert into maps (name, number, bbox) values ('Robertson', 'SF5113', '((120, -24), (121.5, -23))');
+insert into maps (name, number, bbox) values ('Robinson Ranges', 'SG5007', '((117, -26), (118.5, -25))');
+insert into maps (name, number, bbox) values ('Robinson River SP', 'SE5304', '((136.5, -17), (138, -15))');
+insert into maps (name, number, bbox) values ('Rockhampton', 'SF5613', '((150, -24), (151.5, -23))');
+insert into maps (name, number, bbox) values ('Rodinga', 'SG5302', '((133.5, -25), (135, -24))');
+insert into maps (name, number, bbox) values ('Roebourne', 'SF5003', '((117, -21), (118.5, -20))');
+insert into maps (name, number, bbox) values ('Roma', 'SG5512', '((148.5, -27), (150, -26))');
+insert into maps (name, number, bbox) values ('Roper River', 'SD5311', '((135,  -15), (136.5, -14))');
+insert into maps (name, number, bbox) values ('Roy Hill', 'SF5012', '((118.5, -23), (120, -22))');
+insert into maps (name, number, bbox) values ('Rudall', 'SF5110', '((121.5, -23), (123, -22))');
+insert into maps (name, number, bbox) values ('Runton', 'SF5115', '((123, -24), (124.5, -23))');
+insert into maps (name, number, bbox) values ('Rutland Plains', 'SD5415', '((141, -15), (142.5, -15))');
+insert into maps (name, number, bbox) values ('Ryan', 'SF5213', '((126, -24), (127.5, -23))');
+insert into maps (name, number, bbox) values ('Sahara', 'SF5107', '((123, -22), (124.5, -21))');
+insert into maps (name, number, bbox) values ('Sandover River', 'SF5308', '((136.5, -22), (138, -21))');
+insert into maps (name, number, bbox) values ('Sandstone', 'SG5016', '((118.5, -28), (120, -27))');
+insert into maps (name, number, bbox) values ('Scott', 'SG5206', '((127.5, -26), (129, -25))');
+insert into maps (name, number, bbox) values ('Seemore', 'SH5112', '((124.5, -31), (126, -30))');
+insert into maps (name, number, bbox) values ('Simpson Desert North', 'SG5304', '((136.5, -25), (138, -24))');
+insert into maps (name, number, bbox) values ('Simpson Desert South', 'SG5308', '((136.5, -26), (138, -25))');
+insert into maps (name, number, bbox) values ('Singleton', 'SI5601', '((150, -33), (151.5, -32))');
+insert into maps (name, number, bbox) values ('Sir Samuel', 'SG5113', '((120, -28), (121.5, -27))');
+insert into maps (name, number, bbox) values ('South Lake Woods', 'SE5309', '((132, -19), (133.5, -18))');
+insert into maps (name, number, bbox) values ('Southern Cross', 'SH5016', '((118.5, -32), (120, -31))');
+insert into maps (name, number, bbox) values ('Springsure', 'SG5503', '((147, -25), (148.5, -24))');
+insert into maps (name, number, bbox) values ('Springvale', 'SF5414', '((139.5, -24), (141, -23))');
+insert into maps (name, number, bbox) values ('St Arnaud', 'SJ5404', '((142.5, -37), (144, -36))');
+insert into maps (name, number, bbox) values ('St George', 'SH5504', '((148.5, -29), (150, -28))');
+insert into maps (name, number, bbox) values ('St Lawrence', 'SF5512', '((148.5, -23), (150, -22))');
+insert into maps (name, number, bbox) values ('Stanley', 'SG5106', '((121.5, -26), (123, -25))');
+insert into maps (name, number, bbox) values ('Stansmore', 'SF5206', '((127.5, -22), (129, -21))');
+insert into maps (name, number, bbox) values ('Streaky Bay', 'SI5302', '((133.5, -33), (135, -32))');
+insert into maps (name, number, bbox) values ('Strzelecki', 'SH5402', '((139.5, -29), (141, -28))');
+insert into maps (name, number, bbox) values ('Surat', 'SG5516', '((148.5, -28), (150, -27))');
+insert into maps (name, number, bbox) values ('Swan Hill', 'SI5416', '((142.5, -36), (144, -35))');
+insert into maps (name, number, bbox) values ('Sydney SP', 'SI5605', '((150, -34), (151.5, -33))');
+insert into maps (name, number, bbox) values ('Tabletop', 'SF5111', '((123, -23), (124.5, -22))');
+insert into maps (name, number, bbox) values ('Talbot', 'SG5209', '((126, -27), (127.5, -26))');
+insert into maps (name, number, bbox) values ('Tallangatta', 'SJ5503', '((147, -37), (148.5, -36))');
+insert into maps (name, number, bbox) values ('Tallaringa', 'SH5305', '((132, -30), (133.5, -29))');
+insert into maps (name, number, bbox) values ('Tambo', 'SG5502', '((145.5, -25), (147, -24))');
+insert into maps (name, number, bbox) values ('Tamworth', 'SH5613', '((150, -32), (151.5, -31))');
+insert into maps (name, number, bbox) values ('Tanami', 'SE5215', '((129, -20), (130.5, -19))');
+insert into maps (name, number, bbox) values ('Tanami East', 'SE5216', '((130.5, -20), (132, -19))');
+insert into maps (name, number, bbox) values ('Tangorin', 'SF5505', '((144, -22), (145.5, -21))');
+insert into maps (name, number, bbox) values ('Tanumbirini', 'SE5302', '((133.5, -17), (135, -15))');
+insert into maps (name, number, bbox) values ('Tarcoola', 'SH5310', '((133.5, -31), (135, -30))');
+insert into maps (name, number, bbox) values ('Taroom', 'SG5508', '((148.5, -26), (150, -25))');
+insert into maps (name, number, bbox) values ('Tasmania North East', 'SK5503', '((147, -41), (148.5, -40))');
+insert into maps (name, number, bbox) values ('Tasmania North West', 'SK5502', '((145.5, -41), (147, -40))');
+insert into maps (name, number, bbox) values ('Tasmania South East', 'SK5507', '((147, -42), (148.5, -41))');
+insert into maps (name, number, bbox) values ('Tasmania South West', 'SK5506', '((145.5, -42), (147, -41))');
+insert into maps (name, number, bbox) values ('Tennant Creek', 'SE5314', '((133.5, -20), (135, -19))');
+insert into maps (name, number, bbox) values ('Thargominda', 'SG5416', '((142.5, -28), (144, -27))');
+insert into maps (name, number, bbox) values ('The Granites', 'SF5203', '((129, -21), (130.5, -20))');
+insert into maps (name, number, bbox) values ('Throssell', 'SG5115', '((123, -28), (124.5, -27))');
+insert into maps (name, number, bbox) values ('Thursday Island', 'SC5411', '((141, -11), (142.5, -10))');
+insert into maps (name, number, bbox) values ('Tickalara', 'SH5403', '((141, -29), (142.5, -28))');
+insert into maps (name, number, bbox) values ('Tiwi Islands SP', 'SC5216', '((130.5, -12), (132, -11))');
+insert into maps (name, number, bbox) values ('Tobermorey', 'SF5312', '((136.5, -23), (138, -22))');
+insert into maps (name, number, bbox) values ('Toompine', 'SG5513', '((144, -28), (145.5, -27))');
+insert into maps (name, number, bbox) values ('Torrens', 'SH5316', '((136.5, -32), (138, -31))');
+insert into maps (name, number, bbox) values ('Townsville', 'SE5514', '((145.5, -20), (147, -19))');
+insert into maps (name, number, bbox) values ('Trainor', 'SG5102', '((121.5, -25), (123, -24))');
+insert into maps (name, number, bbox) values ('Turee Creek', 'SF5015', '((117, -24), (118.5, -23))');
+insert into maps (name, number, bbox) values ('Uluru/Ayers Rock', 'SG5208', '((130.5, -26), (132, -25))');
+insert into maps (name, number, bbox) values ('Ural', 'SF5112', '((124.5, -23), (126, -22))');
+insert into maps (name, number, bbox) values ('Urandangi', 'SF5405', '((138, -22), (139.5, -21))');
+insert into maps (name, number, bbox) values ('Urapunga', 'SD5310', '((133.5, -15), (135, -14))');
+insert into maps (name, number, bbox) values ('Urisino', 'SH5408', '((142.5, -30), (144, -29))');
+insert into maps (name, number, bbox) values ('Vernon', 'SH5201', '((126, -29), (127.5, -28))');
+insert into maps (name, number, bbox) values ('Victoria River Downs', 'SE5204', '((130.5, -17), (132, -15))');
+insert into maps (name, number, bbox) values ('Wagga Wagga', 'SI5515', '((147, -36), (148.5, -35))');
+insert into maps (name, number, bbox) values ('Waigen', 'SG5214', '((127.5, -28), (129, -27))');
+insert into maps (name, number, bbox) values ('Walgett', 'SH5511', '((147, -31), (148.5, -30))');
+insert into maps (name, number, bbox) values ('Walhallow', 'SE5307', '((135,  -18), (136.5, -17))');
+insert into maps (name, number, bbox) values ('Walsh', 'SE5404', '((142.5, -17), (144, -15))');
+insert into maps (name, number, bbox) values ('Wangaratta', 'SJ5502', '((145.5, -37), (147, -36))');
+insert into maps (name, number, bbox) values ('Wanna', 'SH5202', '((127.5, -29), (129, -28))');
+insert into maps (name, number, bbox) values ('Warbuton', 'SJ5506', '((145.5, -38), (147, -37))');
+insert into maps (name, number, bbox) values ('Warragul SP', 'SJ5510', '((145.5, -39), (147, -38))');
+insert into maps (name, number, bbox) values ('Warri', 'SG5104', '((124.5, -25), (126, -24))');
+insert into maps (name, number, bbox) values ('Warrina', 'SH5303', '((135,  -29), (136.5, -28))');
+insert into maps (name, number, bbox) values ('Warwick', 'SH5602', '((151.5, -29), (153, -28))');
+insert into maps (name, number, bbox) values ('Waterloo', 'SE5203', '((129, -17), (130.5, -15))');
+insert into maps (name, number, bbox) values ('Wave Hill', 'SE5208', '((130.5, -18), (132, -17))');
+insert into maps (name, number, bbox) values ('Webb', 'SF5210', '((127.5, -23), (129, -22))');
+insert into maps (name, number, bbox) values ('Weipa SP', 'SD5403', '((141, -13), (142.5, -12))');
+insert into maps (name, number, bbox) values ('Wells', 'SH5204', '((130.5, -29), (132, -28))');
+insert into maps (name, number, bbox) values ('Wessel Islands SP', 'SC5316', '((136.5, -12), (138, -11))');
+insert into maps (name, number, bbox) values ('Westmoreland', 'SE5405', '((138, -18), (139.5, -17))');
+insert into maps (name, number, bbox) values ('Westwood', 'SG5116', '((124.5, -28), (126, -27))');
+insert into maps (name, number, bbox) values ('White Cliffs', 'SH5412', '((142.5, -31), (144, -30))');
+insert into maps (name, number, bbox) values ('Whyalla', 'SI5308', '((136.5, -34), (138, -33))');
+insert into maps (name, number, bbox) values ('Widgiemooltha', 'SH5114', '((121.5, -32), (123, -31))');
+insert into maps (name, number, bbox) values ('Wilcannia', 'SH5416', '((142.5, -32), (144, -31))');
+insert into maps (name, number, bbox) values ('Wilson', 'SF5209', '((126, -23), (127.5, -22))');
+insert into maps (name, number, bbox) values ('Wiluna', 'SG5109', '((120, -27), (121.5, -26))');
+insert into maps (name, number, bbox) values ('Windorah', 'SG5408', '((142.5, -26), (144, -25))');
+insert into maps (name, number, bbox) values ('Winnecke Creek', 'SE5212', '((130.5, -19), (132, -18))');
+insert into maps (name, number, bbox) values ('Winning Pool', 'SF5013', '((114, -24), (115.5, -23))');
+insert into maps (name, number, bbox) values ('Wintinna', 'SG5314', '((133.5, -28), (135, -27))');
+insert into maps (name, number, bbox) values ('Winton', 'SF5412', '((142.5, -23), (144, -22))');
+insert into maps (name, number, bbox) values ('Wollongong SP', 'SI5609', '((150, -35), (151.5, -34))');
+insert into maps (name, number, bbox) values ('Woodroffe', 'SG5212', '((130.5, -27), (132, -26))');
+insert into maps (name, number, bbox) values ('Wooramel', 'SG5005', '((114, -26), (115.5, -25))');
+insert into maps (name, number, bbox) values ('Wyandra', 'SG5514', '((145.5, -28), (147, -27))');
+insert into maps (name, number, bbox) values ('Wyloo', 'SF5010', '((115.5, -23), (117, -22))');
+insert into maps (name, number, bbox) values ('Wyola', 'SH5207', '((129, -30), (130.5, -29))');
+insert into maps (name, number, bbox) values ('Yalgoo', 'SH5002', '((115.5, -29), (117, -28))');
+insert into maps (name, number, bbox) values ('Yampi', 'SE5103', '((123, -17), (124.5, -15))');
+insert into maps (name, number, bbox) values ('Yanrey SP', 'SF5009', '((114, -23), (115.5, -22))');
+insert into maps (name, number, bbox) values ('Yantabulla', 'SH5505', '((144, -30), (145.5, -29))');
+insert into maps (name, number, bbox) values ('Yardea', 'SI5303', '((135,  -33), (136.5, -32))');
+insert into maps (name, number, bbox) values ('Yaringa', 'SG5009', '((114, -27), (115.5, -26))');
+insert into maps (name, number, bbox) values ('Yarraloola', 'SF5006', '((115.5, -22), (117, -21))');
+insert into maps (name, number, bbox) values ('Yarrie', 'SF5101', '((120, -21), (121.5, -20))');
+insert into maps (name, number, bbox) values ('Yorke Peninsula SP', 'SI5312', '((136.5, -35), (138, -34))');
+insert into maps (name, number, bbox) values ('Youanmi', 'SH5004', '((118.5, -29), (120, -28))');
+insert into maps (name, number, bbox) values ('Yowalga', 'SG5112', '((124.5, -27), (126, -26))');
+insert into maps (name, number, bbox) values ('Zanthus', 'SH5115', '((123, -32), (124.5, -31))');
+
+CREATE TABLE FeatureType (
+	type serial PRIMARY KEY,
+	name text UNIQUE
+);
+
+CREATE TABLE Source (
+	source serial PRIMARY KEY,
+	name text UNIQUE
+);
+
+INSERT INTO Source (name) VALUES ('GEOSCIENCE AUSTRALIA');
+INSERT INTO Source (name) VALUES ('Kevin Pye');
+
+CREATE TABLE Hierarchy (
+	hierarchy serial PRIMARY KEY,
+	description text
+);
+
+INSERT INTO Hierarchy (description) VALUES ('Major');
+INSERT INTO Hierarchy (description) VALUES ('Minor');
+
+CREATE TABLE Perennial (
+	perennial serial PRIMARY KEY,
+	description text
+);
+
+INSERT INTO Perennial (description) VALUES ('Perennial');
+INSERT INTO Perennial (description) VALUES ('Non-perennial');
+
+CREATE TABLE State (
+	state serial PRIMARY KEY,
+	name text
+);
+
+INSERT INTO State (name) VALUES ('SA');
+
+CREATE TABLE AerialCableways (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	name text,
+	featrel date NOT NULL,
+	attrrel date NOT NULL,
+	planacc smallint NOT NULL,
+	source int NOT NULL REFERENCES Source,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	symbol smallint NOT NULL,
+	textnote text,
+	shape_length float NOT NULL
+);
+SELECT AddGeometryColumn('', 'aerialcableways', 'shape', 4326, 'MULTILINESTRING', 2);
+CREATE INDEX AerialCableways_index on AerialCableways using gist (shape);
+
+CREATE TABLE AircraftFacilityPoints (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	type int NOT NULL,
+	name text,
+	featrel date NOT NULL,
+	attrrel date NOT NULL,
+	planacc smallint NOT NULL,
+	source int NOT NULL REFERENCES Source,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	symbol smallint NOT NULL,
+	featurewidth float default 0,
+	orientation smallint default 0
+);
+SELECT AddGeometryColumn('', 'aircraftfacilitypoints', 'position', 4326, 'POINT', 2);
+CREATE INDEX AircraftFacilityPoints_index on AircraftFacilityPoints using gist (position);
+
+CREATE TABLE Annotations (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featureid int,
+	zorder int,
+	annotationclassid int,
+	element bytea,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	mapnumber text,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	shape_length float NOT NULL,
+	shape_area float NOT NULL
+);
+SELECT AddGeometryColumn('', 'annotations', 'shape', 4326, 'MULTILINESTRING', 2);
+CREATE INDEX Annotations_index on Annotations using gist (shape);
+
+CREATE TABLE BarrierPoints (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	type int,
+	featrel date NOT NULL,
+	attrrel date NOT NULL,
+	planacc smallint NOT NULL,
+	source int NOT NULL REFERENCES Source,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	symbol smallint NOT NULL,
+	featurewidth float default 0,
+	orientation smallint default 0,
+	textnote text
+);
+SELECT AddGeometryColumn('', 'barrierpoints', 'position', 4326, 'POINT', 2);
+CREATE INDEX BarrierPoints_index on BarrierPoints using gist (position);
+
+CREATE TABLE BenchMarks (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	elevation float,
+	code text,
+	featrel date NOT NULL,
+	attrrel date NOT NULL,
+	planacc smallint NOT NULL,
+	source int NOT NULL REFERENCES Source,
+	elevacc smallint,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	symbol smallint NOT NULL,
+	featurewidth float default 0,
+	orientation smallint default 0,
+	textnote text
+);
+SELECT AddGeometryColumn('', 'benchmarks', 'position', 4326, 'POINT', 2);
+CREATE INDEX Benchmarks_index on Benchmarks using gist (position);
+
+create table Bores (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	name text,
+	featrel date NOT NULL,
+	attrrel date NOT NULL,
+	planacc smallint NOT NULL,
+	source int NOT NULL REFERENCES Source,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	symbol smallint NOT NULL,
+	featurewidth float default 0,
+	orientation smallint DEFAULT 0,
+	textnote text
+);
+SELECT AddGeometryColumn('', 'bores', 'position', 4326, 'POINT', 2);
+CREATE INDEX Bores_index on Bores using gist (position);
+
+CREATE TABLE BuildingAreas (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	name text,
+	class text NOT NULL,
+	featrel date NOT NULL,
+	attrrel date NOT NULL,
+	planacc smallint NOT NULL,
+	source int NOT NULL REFERENCES Source,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	symbol smallint NOT NULL,
+	textnote text,
+	shape_length float NOT NULL,
+	shape_area float NOT NULL
+);
+SELECT AddGeometryColumn('', 'buildingareas', 'shape', 4326, 'MULTILINESTRING', 2);
+CREATE INDEX BuildingAreas_index on BuildingAreas using gist (shape);
+
+CREATE TABLE BuildingPoints (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	name text,
+	class text NOT NULL,
+	featrel date NOT NULL,
+	attrrel date NOT NULL,
+	planacc smallint NOT NULL,
+	source int NOT NULL REFERENCES Source,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	symbol smallint NOT NULL,
+	featurewidth float default 0,
+	orientation smallint default 0,
+	textnote text
+);
+SELECT AddGeometryColumn('', 'buildingpoints', 'position', 4326, 'POINT', 2);
+CREATE INDEX BuildingPoints_index on BuildingPoints using gist (position);
+
+CREATE TABLE BuiltUpAreas (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	name text,
+	featrel date NOT NULL,
+	attrrel date NOT NULL,
+	planacc smallint NOT NULL,
+	source int NOT NULL REFERENCES Source,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	symbol smallint NOT NULL,
+	shape_length float NOT NULL,
+	shape_area float NOT NULL
+);
+SELECT AddGeometryColumn('', 'builtupareas', 'shape', 4326, 'MULTILINESTRING', 2);
+CREATE INDEX BuiltupAreas_index on BuiltupAreas using gist (shape);
+
+CREATE TABLE CanalAreas (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	name text,
+	featrel date NOT NULL,
+	attrrel date NOT NULL,
+	planacc smallint NOT NULL,
+	source int NOT NULL REFERENCES Source,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	symbol smallint NOT NULL,
+	textnote text,
+	shape_length float NOT NULL,
+	shape_area float NOT NULL
+);
+SELECT AddGeometryColumn('', 'canalareas', 'shape', 4326, 'MULTILINESTRING', 2);
+CREATE INDEX CanalAreas_index on CanalAreas using gist (shape);
+
+CREATE TABLE CanalLines (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	name text,
+	featrel date NOT NULL,
+	attrrel date NOT NULL,
+	planacc smallint NOT NULL,
+	source int NOT NULL REFERENCES Source,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	symbol smallint NOT NULL,
+	textnote text,
+	shape_length float NOT NULL
+);
+SELECT AddGeometryColumn('', 'canallines', 'shape', 4326, 'MULTILINESTRING', 2);
+CREATE INDEX CanalLines_index on CanalLines using gist (shape);
+
+CREATE TABLE CartographicLines (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	type int,
+	mapnumber text,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	symbol smallint NOT NULL,
+	textnote text,
+	shape_length float NOT NULL
+);
+SELECT AddGeometryColumn('', 'cartographiclines', 'shape', 4326, 'MULTILINESTRING', 2);
+CREATE INDEX CartographicLines_index on CartographicLines using gist (shape);
+
+CREATE TABLE CartographicPoints (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	type int NOT NULL,
+	mapnumber text,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	symbol int NOT NULL,
+	featurewidth float default 0,
+	orientation smallint default 0,
+	textnote text
+);
+SELECT AddGeometryColumn('', 'cartographicpoints', 'position', 4326, 'POINT', 2);
+CREATE INDEX CartographicPoints_index on CartographicPoints using gist (position);
+
+CREATE TABLE Caves (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	name text,
+	featrel date NOT NULL,
+	attrrel date NOT NULL,
+	planacc smallint NOT NULL,
+	source int NOT NULL REFERENCES Source,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	symbol smallint NOT NULL,
+	featurewidth float default 0,
+	orientation smallint default 0,
+	textnote text
+);
+SELECT AddGeometryColumn('', 'caves', 'position', 4326, 'POINT', 2);
+CREATE INDEX Caves_index on Caves using gist (position);
+
+CREATE TABLE CemeteryAreas (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	name text,
+	featrel date NOT NULL,
+	attrrel date NOT NULL,
+	planacc smallint NOT NULL,
+	source int NOT NULL REFERENCES Source,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	symbol smallint NOT NULL,
+	textnote text,
+	shape_length float NOT NULL,
+	shape_area float NOT NULL
+);
+SELECT AddGeometryColumn('', 'cemeteryareas', 'shape', 4326, 'MULTILINESTRING', 2);
+CREATE INDEX CemeteryAreas_index on CemeteryAreas using gist (shape);
+
+CREATE TABLE CemeteryPoints (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	name text,
+	featrel date NOT NULL,
+	attrrel date NOT NULL,
+	planacc smallint NOT NULL,
+	source int NOT NULL REFERENCES Source,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	symbol smallint NOT NULL,
+	featurewidth float default 0,
+	orientation smallint default 0,
+	textnote text
+);
+SELECT AddGeometryColumn('', 'cemeterypoints', 'position', 4326, 'POINT', 2);
+CREATE INDEX CemeteryPoints_index on CemeteryPoints using gist (position);
+
+CREATE TABLE ClearedLines (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	featrel date NOT NULL,
+	attrrel date NOT NULL,
+	planacc smallint NOT NULL,
+	source int NOT NULL REFERENCES Source,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	symbol smallint NOT NULL,
+	textnote text,
+	shape_length float NOT NULL
+);
+SELECT AddGeometryColumn('', 'clearedlines', 'shape', 4326, 'MULTILINESTRING', 2);
+CREATE INDEX ClearedLines_index on ClearedLines using gist (shape);
+
+CREATE TABLE Contours (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	type int NOT NULL,
+	elevation float,
+	featrel date NOT NULL,
+	attrrel date NOT NULL,
+	planacc smallint NOT NULL,
+	elevacc smallint NOT NULL,
+	source int NOT NULL REFERENCES Source,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	symbol smallint NOT NULL,
+	shape_length float NOT NULL
+);
+SELECT AddGeometryColumn('', 'contours', 'shape', 4326, 'MULTILINESTRING', 2);
+CREATE INDEX Contours_index on Contours using gist (shape);
+
+CREATE TABLE Conveyors (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	featrel date NOT NULL,
+	attrrel date NOT NULL,
+	planacc smallint NOT NULL,
+	source int NOT NULL REFERENCES Source,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	symbol smallint NOT NULL,
+	textnote text,
+	shape_length float NOT NULL
+);
+SELECT AddGeometryColumn('', 'conveyors', 'shape', 4326, 'MULTILINESTRING', 2);
+CREATE INDEX Conveyors_index on Conveyors using gist (shape);
+
+CREATE TABLE Craters (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	name text,
+	featrel date NOT NULL,
+	attrrel date NOT NULL,
+	planacc smallint NOT NULL,
+	source int NOT NULL REFERENCES Source,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	symbol smallint NOT NULL,
+	textnote text,
+	shape_length float NOT NULL,
+	shape_area float NOT NULL
+);
+SELECT AddGeometryColumn('', 'craters', 'shape', 4326, 'MULTILINESTRING', 2);
+CREATE INDEX Craters_index on Craters using gist (shape);
+
+CREATE TABLE CultivatedAreas (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	type int NOT NULL,
+	featrel date NOT NULL,
+	attrrel date NOT NULL,
+	planacc smallint NOT NULL,
+	source int NOT NULL REFERENCES Source,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	symbol smallint NOT NULL,
+	textnote text,
+	shape_length float NOT NULL,
+	shape_area float NOT NULL
+);
+SELECT AddGeometryColumn('', 'cultivatedareas', 'shape', 4326, 'MULTILINESTRING', 2);
+CREATE INDEX CultivatedArea_index on CultivatedAreas using gist (shape);
+
+CREATE TABLE DamWalls (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	name text,
+	featrel date NOT NULL,
+	attrrel date NOT NULL,
+	planacc smallint NOT NULL,
+	source int NOT NULL REFERENCES Source,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	symbol smallint NOT NULL,
+	featurewidth float default 0,
+	textnote text,
+	shape_length float NOT NULL
+);
+SELECT AddGeometryColumn('', 'damwalls', 'shape', 4326, 'MULTILINESTRING', 2);
+CREATE INDEX Damwalls_index on Damwalls using gist (shape);
+
+CREATE TABLE DeformationAreas (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	type int NOT NULL,
+	name text,
+	featrel date NOT NULL,
+	attrrel date NOT NULL,
+	planacc smallint NOT NULL,
+	source int NOT NULL REFERENCES Source,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	symbol smallint NOT NULL,
+	textnote text,
+	shape_length float NOT NULL,
+	shape_area float NOT NULL
+);
+SELECT AddGeometryColumn('', 'deformationareas', 'shape', 4326, 'MULTILINESTRING', 2);
+CREATE INDEX DeformationAreas_index on DeformationAreas using gist (shape);
+
+CREATE TABLE Discontinuities (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	type int NOT NULL,
+	featrel date NOT NULL,
+	attrrel date NOT NULL,
+	planacc smallint NOT NULL,
+	source int NOT NULL REFERENCES Source,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	symbol smallint NOT NULL,
+	textnote text,
+	shape_length float NOT NULL
+);
+SELECT AddGeometryColumn('', 'discontinuities', 'shape', 4326, 'MULTILINESTRING', 2);
+CREATE INDEX Discontinuities_index on Discontinuities using gist (shape);
+
+CREATE TABLE Fences (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	featrel date NOT NULL,
+	attrrel date NOT NULL,
+	planacc smallint NOT NULL,
+	source int NOT NULL REFERENCES Source,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	symbol smallint NOT NULL,
+	textnote text,
+	shape_length float NOT NULL
+);
+SELECT AddGeometryColumn('', 'fences', 'shape', 4326, 'MULTILINESTRING', 2);
+CREATE INDEX Fences_index on Fences using gist (shape);
+
+CREATE TABLE FerryRouteLines (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	name text,
+	featrel date NOT NULL,
+	attrrel date NOT NULL,
+	planacc smallint NOT NULL,
+	source int NOT NULL REFERENCES Source,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	symbol smallint NOT NULL,
+	textnote text,
+	shape_length float NOT NULL
+);
+SELECT AddGeometryColumn('', 'ferryroutelines', 'shape', 4326, 'MULTILINESTRING', 2);
+CREATE INDEX FerryRouteLines_index on FerryRouteLines using gist (shape);
+
+CREATE TABLE Flats (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	type int NOT NULL,
+	name text,
+	featrel date NOT NULL,
+	attrrel date NOT NULL,
+	planacc smallint NOT NULL,
+	source int NOT NULL REFERENCES Source,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	symbol smallint NOT NULL,
+	textnote text,
+	shape_length float NOT NULL,
+	shape_area float NOT NULL
+);
+SELECT AddGeometryColumn('', 'flats', 'shape', 4326, 'MULTILINESTRING', 2);
+CREATE INDEX Flats_index on Flats using gist (shape);
+
+CREATE TABLE FootTracks (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	name text,
+	featrel date NOT NULL,
+	attrrel date NOT NULL,
+	planacc smallint NOT NULL,
+	source int NOT NULL REFERENCES Source,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	symbol smallint NOT NULL,
+	textnote text,
+	shape_length float NOT NULL
+);
+SELECT AddGeometryColumn('', 'foottracks', 'shape', 4326, 'MULTILINESTRING', 2);
+CREATE INDEX FootTracks_index on FootTracks using gist (shape);
+
+CREATE TABLE ForeshoreFlats (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	featrel date NOT NULL,
+	attrrel date NOT NULL,
+	planacc smallint NOT NULL,
+	source int NOT NULL REFERENCES Source,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	symbol smallint NOT NULL,
+	shape_length float NOT NULL,
+	shape_area float NOT NULL
+);
+SELECT AddGeometryColumn('', 'foreshoreflats', 'shape', 4326, 'MULTILINESTRING', 2);
+CREATE INDEX ForeshoreFlats_index on ForeshoreFlats using gist (shape);
+
+CREATE TABLE FrameworkBoundaries (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	type int NOT NULL,
+	featrel date NOT NULL,
+	attrrel date NOT NULL,
+	planacc smallint NOT NULL,
+	source int NOT NULL REFERENCES Source,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	symbol smallint NOT NULL,
+	shape_length float NOT NULL
+);
+SELECT AddGeometryColumn('', 'frameworkboundaries', 'shape', 4326, 'MULTILINESTRING', 2);
+CREATE INDEX FrameworkBoundaries_index on FrameworkBoundaries using gist (shape);
+
+CREATE TABLE GraticuleAnnotations (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featureid int,
+	zorder int,
+	annotationclassid int,
+	element bytea NOT NULL,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	mapnumber text,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	shape_length float NOT NULL,
+	shape_area float NOT NULL
+);
+SELECT AddGeometryColumn('', 'graticuleannotations', 'shape', 4326, 'MULTILINESTRING', 2);
+CREATE INDEX GraticuleAnnotations_index on GraticuleAnnotations using gist (shape);
+
+CREATE TABLE Graticules (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	mapnumber text,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	symbol smallint NOT NULL,
+	shape_length float NOT NULL
+);
+SELECT AddGeometryColumn('', 'graticules', 'shape', 4326, 'MULTILINESTRING', 2);
+CREATE INDEX Graticules_index on Graticules using gist (shape);
+
+CREATE TABLE GridAnnotations (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featureid int,
+	zorder int,
+	annotationclassid int,
+	element bytea NOT NULL,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	mapnumber text,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	shape_length float NOT NULL,
+	shape_area float NOT NULL
+);
+SELECT AddGeometryColumn('', 'gridannotations', 'shape', 4326, 'MULTILINESTRING', 2);
+CREATE INDEX GridAnnotations_index on GridAnnotations using gist (shape);
+
+CREATE TABLE Grids (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	mapnumber text,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	symbol smallint NOT NULL,
+	shape_length float NOT NULL
+);
+SELECT AddGeometryColumn('', 'grids', 'shape', 4326, 'MULTILINESTRING', 2);
+CREATE INDEX Grids_index on Grids using gist (shape);
+
+CREATE TABLE Homesteads (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	name text,
+	featrel date NOT NULL,
+	attrrel date NOT NULL,
+	planacc smallint NOT NULL,
+	source int NOT NULL REFERENCES Source,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	symbol smallint NOT NULL,
+	featurewidth float default 0,
+	orientation smallint default 0,
+	textnote text
+);
+SELECT AddGeometryColumn('', 'homesteads', 'position', 4326, 'POINT', 2);
+CREATE INDEX Homesteads_index on Homesteads using gist (position);
+
+CREATE TABLE HorizontalControlPoints (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	name text,
+	elevation float,
+	code text,
+	orderofacc text,
+	featrel date NOT NULL,
+	attrrel date NOT NULL,
+	planacc smallint NOT NULL,
+	elevacc smallint NOT NULL,
+	source int NOT NULL REFERENCES Source,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	symbol smallint NOT NULL,
+	featurewidth float default 0,
+	orientation smallint DEFAULT 0,
+	textnote text
+);
+SELECT AddGeometryColumn('', 'horizontalcontrolpoints', 'position', 4326, 'POINT', 2);
+CREATE INDEX HorizontalControlPoints_index on HorizontalControlPoints using gist (position);
+
+CREATE TABLE Islands (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	name text,
+	state int REFERENCES State,
+	featrel date NOT NULL,
+	attrrel date NOT NULL,
+	planacc smallint NOT NULL,
+	source int NOT NULL REFERENCES Source,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	symbol smallint NOT NULL,
+	shape_length float NOT NULL,
+	shape_area float NOT NULL
+);
+SELECT AddGeometryColumn('', 'islands', 'shape', 4326, 'MULTILINESTRING', 2);
+CREATE INDEX Islands_index on Islands using gist (shape);
+
+CREATE TABLE Lakes (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	name text,
+	perennial int REFERENCES Perennial,
+	featrel date NOT NULL,
+	attrrel date NOT NULL,
+	planacc smallint NOT NULL,
+	source int NOT NULL REFERENCES Source,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	symbol smallint NOT NULL,
+	textnote text,
+	shape_length float NOT NULL,
+	shape_area float NOT NULL
+);
+SELECT AddGeometryColumn('', 'lakes', 'shape', 4326, 'MULTILINESTRING', 2);
+CREATE INDEX Lakes_index on Lakes using gist (shape);
+
+CREATE TABLE LargeAreaFeatures (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	name text,
+	featrel date NOT NULL,
+	attrrel date NOT NULL,
+	planacc smallint NOT NULL,
+	source int NOT NULL REFERENCES Source,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	symbol smallint NOT NULL,
+	shape_length float NOT NULL,
+	shape_area float NOT NULL
+);
+SELECT AddGeometryColumn('', 'largeareafeatures', 'shape', 4326, 'MULTILINESTRING', 2);
+CREATE INDEX LargeAreaFeatures_index on LargeAreaFeatures using gist (shape);
+
+CREATE TABLE Locations (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	type int NOT NULL,
+	name text,
+	featrel date NOT NULL,
+	attrrel date NOT NULL,
+	planacc smallint NOT NULL,
+	source int NOT NULL REFERENCES Source,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	symbol smallint NOT NULL,
+	featurewidth float default 0,
+	orientation smallint default 0,
+	textnote text
+);
+SELECT AddGeometryColumn('', 'locations', 'position', 4326, 'POINT', 2);
+CREATE INDEX Locations_index on Locations using gist (position);
+
+CREATE TABLE Locks (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	name text,
+	featrel date NOT NULL,
+	attrrel date NOT NULL,
+	planacc smallint NOT NULL,
+	source int NOT NULL REFERENCES Source,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	symbol smallint NOT NULL,
+	featurewidth float default 0,
+	orientation smallint default 0,
+	textnote text
+);
+SELECT AddGeometryColumn('', 'locks', 'position', 4326, 'POINT', 2);
+CREATE INDEX Locks_index on Locks using gist (position);
+
+CREATE TABLE Mainlands (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	state int references State,
+	featrel date NOT NULL,
+	attrrel date NOT NULL,
+	planacc smallint NOT NULL,
+	source int NOT NULL REFERENCES Source,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	symbol smallint NOT NULL,
+	shape_length float NOT NULL,
+	shape_area float NOT NULL
+);
+SELECT AddGeometryColumn('', 'mainlands', 'shape', 4326, 'MULTILINESTRING', 2);
+CREATE INDEX Mainlands_index on Mainlands using gist (shape);
+
+CREATE TABLE MarineHazardAreas (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	type int NOT NULL,
+	name text,
+	relation text,
+	featrel date NOT NULL,
+	attrrel date NOT NULL,
+	planacc smallint NOT NULL,
+	source int NOT NULL REFERENCES Source,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	symbol smallint NOT NULL,
+	textnote text,
+	shape_length float NOT NULL,
+	shape_area float NOT NULL
+);
+SELECT AddGeometryColumn('', 'marinehazardareas', 'shape', 4326, 'MULTILINESTRING', 2);
+CREATE INDEX MarineHazardAreas_index on MarineHazardAreas using gist (shape);
+
+CREATE TABLE MarineHazardPoints (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	type int NOT NULL,
+	name text,
+	relation text,
+	featrel date NOT NULL,
+	attrrel date NOT NULL,
+	planacc smallint NOT NULL,
+	source int NOT NULL REFERENCES Source,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	symbol smallint NOT NULL,
+	featurewidth float default 0,
+	orientation smallint default 0,
+	textnote text
+);
+SELECT AddGeometryColumn('', 'marinehazardpoints', 'position', 4326, 'POINT', 2);
+CREATE INDEX MarineHazardPoints_index on MarineHazardPoints using gist (position);
+
+CREATE TABLE MarineInfrastructureLines (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	type int NOT NULL,
+	name text,
+	featrel date NOT NULL,
+	attrrel date NOT NULL,
+	planacc smallint NOT NULL,
+	source int NOT NULL REFERENCES Source,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	symbol smallint NOT NULL,
+	textnote text,
+	shape_length float NOT NULL
+);
+SELECT AddGeometryColumn('', 'marineinfrastructurelines', 'shape', 4326, 'MULTILINESTRING', 2);
+CREATE INDEX MarineInfrastructureLines_index on MarineInfrastructureLines using gist (shape);
+
+CREATE TABLE MarineInfrastructurePoints (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	type int NOT NULL,
+	name text,
+	featrel date NOT NULL,
+	attrrel date NOT NULL,
+	planacc smallint NOT NULL,
+	source int NOT NULL REFERENCES Source,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	symbol smallint NOT NULL,
+	featurewidth float default 0,
+	orientation smallint default 0,
+	textnote text
+);
+SELECT AddGeometryColumn('', 'marineinfrastructurepoints', 'position', 4326, 'POINT', 2);
+CREATE INDEX MarineInfrastructurePoints_index on MarineInfrastructurePoints using gist (position);
+
+CREATE TABLE MineAreas (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	name text,
+	featrel date NOT NULL,
+	attrrel date NOT NULL,
+	planacc smallint NOT NULL,
+	source int NOT NULL REFERENCES Source,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	symbol smallint NOT NULL,
+	textnote text,
+	shape_length float NOT NULL,
+	shape_area float NOT NULL
+);
+SELECT AddGeometryColumn('', 'mineareas', 'shape', 4326, 'MULTILINESTRING', 2);
+CREATE INDEX MineAreas_index on MineAreas using gist (shape);
+
+CREATE TABLE MinePoints (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	name text,
+	featrel date NOT NULL,
+	attrrel date NOT NULL,
+	planacc smallint NOT NULL,
+	source int NOT NULL REFERENCES Source,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	symbol smallint NOT NULL,
+	featurewidth float default 0,
+	orientation smallint default 0,
+	textnote text
+);
+SELECT AddGeometryColumn('', 'minepoints', 'position', 4326, 'POINT', 2);
+CREATE INDEX MinePoints_index on MinePoints using gist (position);
+
+CREATE TABLE NativeVegetationAreas (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	type int NOT NULL,
+	featrel date NOT NULL,
+	attrrel date NOT NULL,
+	planacc smallint NOT NULL,
+	source int NOT NULL REFERENCES Source,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	symbol smallint NOT NULL,
+	textnote text,
+	shape_length float NOT NULL,
+	shape_area float NOT NULL
+);
+SELECT AddGeometryColumn('', 'nativevegetationareas', 'shape', 4326, 'MULTILINESTRING', 2);
+CREATE INDEX NativeVegetationAreas_index on NativeVegetationAreas using gist (shape);
+
+CREATE TABLE PetroleumWells (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	featrel date NOT NULL,
+	attrrel date NOT NULL,
+	planacc smallint NOT NULL,
+	source int NOT NULL REFERENCES Source,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	symbol smallint NOT NULL,
+	featurewidth float default 0,
+	orientation smallint default 0,
+	textnote text
+);
+SELECT AddGeometryColumn('', 'petroleumwells', 'position', 4326, 'POINT', 2);
+CREATE INDEX PetroleumWells_index on PetroleumWells using gist (position);
+
+CREATE TABLE Pinnacles (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	name text,
+	featrel date NOT NULL,
+	attrrel date NOT NULL,
+	planacc smallint NOT NULL,
+	source int NOT NULL REFERENCES Source,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	symbol smallint NOT NULL,
+	featurewidth float default 0,
+	orientation smallint default 0,
+	textnote text
+);
+SELECT AddGeometryColumn('', 'pinnacles', 'position', 4326, 'POINT', 2);
+CREATE INDEX Pinnacles_index on Pinnacles using gist (position);
+
+CREATE TABLE Pipelines (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	name text,
+	product text,
+	relation text,
+	featrel date NOT NULL,
+	attrrel date NOT NULL,
+	planacc smallint NOT NULL,
+	source int NOT NULL REFERENCES Source,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	symbol smallint NOT NULL,
+	textnote text,
+	shape_length float NOT NULL
+);
+SELECT AddGeometryColumn('', 'pipelines', 'shape', 4326, 'MULTILINESTRING', 2);
+CREATE INDEX Pipelines_index on Pipelines using gist (shape);
+
+CREATE TABLE PlaceNames (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	type int NOT NULL,
+	name text,
+	featrel date NOT NULL,
+	attrrel date NOT NULL,
+	planacc smallint NOT NULL,
+	source int NOT NULL REFERENCES Source,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	symbol smallint NOT NULL,
+	featurewidth float default 0,
+	orientation smallint default 0,
+	textnote text
+);
+SELECT AddGeometryColumn('', 'placenames', 'position', 4326, 'POINT', 2);
+CREATE INDEX PlaceNames_index on PlaceNames using gist (position);
+
+CREATE TABLE PondageAreas (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	type int NOT NULL,
+	featrel date NOT NULL,
+	attrrel date NOT NULL,
+	planacc smallint NOT NULL,
+	source int NOT NULL REFERENCES Source,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	symbol smallint NOT NULL,
+	textnote text,
+	shape_length float NOT NULL,
+	shape_area float NOT NULL
+);
+SELECT AddGeometryColumn('', 'pondageareas', 'shape', 4326, 'MULTILINESTRING', 2);
+CREATE INDEX PondageAreas_index on PondageAreas using gist (shape);
+
+CREATE TABLE PopulatedPlaces (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	name text,
+	featrel date NOT NULL,
+	attrrel date NOT NULL,
+	planacc smallint NOT NULL,
+	source int NOT NULL REFERENCES Source,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	symbol smallint NOT NULL,
+	featurewidth float default 0,
+	orientation smallint default 0,
+	textnote text
+);
+SELECT AddGeometryColumn('', 'populatedplaces', 'position', 4326, 'POINT', 2);
+CREATE INDEX PopulatedPlaces_index on PopulatedPlaces using gist (position);
+
+CREATE TABLE Powerlines (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	featrel date NOT NULL,
+	attrrel date NOT NULL,
+	planacc smallint NOT NULL,
+	source int NOT NULL REFERENCES Source,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	symbol smallint NOT NULL,
+	textnote text,
+	shape_length float NOT NULL
+);
+SELECT AddGeometryColumn('', 'powerlines', 'shape', 4326, 'MULTILINESTRING', 2);
+CREATE INDEX Powerlines_index on Powerlines using gist (shape);
+
+CREATE TABLE ProhibitedAreas (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	name text,
+	authority text,
+	featrel date NOT NULL,
+	attrrel date NOT NULL,
+	planacc smallint NOT NULL,
+	source int NOT NULL REFERENCES Source,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	symbol smallint NOT NULL,
+	shape_length float NOT NULL,
+	shape_area float NOT NULL
+);
+SELECT AddGeometryColumn('', 'prohibitedareas', 'shape', 4326, 'MULTILINESTRING', 2);
+CREATE INDEX ProhibitedAreas_index on ProhibitedAreas using gist (shape);
+
+CREATE TABLE RailwayBridgePoints (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	name text,
+	featrel date NOT NULL,
+	attrrel date NOT NULL,
+	planacc smallint NOT NULL,
+	source int NOT NULL REFERENCES Source,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	symbol smallint NOT NULL,
+	featurewidth float default 0,
+	orientation smallint default 0,
+	textnote text
+);
+SELECT AddGeometryColumn('', 'railwaybridgepoints', 'position', 4326, 'POINT', 2);
+CREATE INDEX RailwayBridgePoints_index on RailwayBridgePoints using gist (position);
+
+CREATE TABLE RailwayCrossingLines (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	type int NOT NULL,
+	name text,
+	featrel date NOT NULL,
+	attrrel date NOT NULL,
+	planacc smallint NOT NULL,
+	source int NOT NULL REFERENCES Source,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	symbol smallint NOT NULL,
+	featurewidth float default 0,
+	textnote text,
+	shape_length float NOT NULL
+);
+SELECT AddGeometryColumn('', 'railwaycrossinglines', 'shape', 4326, 'MULTILINESTRING', 2);
+CREATE INDEX RailwayCrossingLines_index on RailwayCrossingLines using gist (shape);
+
+CREATE TABLE Railways (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	name text,
+	gauge text,
+	status text,
+	tracks text,
+	featrel date NOT NULL,
+	attrrel date NOT NULL,
+	planacc smallint NOT NULL,
+	source int NOT NULL REFERENCES Source,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	symbol smallint NOT NULL,
+	textnote text,
+	shape_length float NOT NULL
+);
+SELECT AddGeometryColumn('', 'railways', 'shape', 4326, 'MULTILINESTRING', 2);
+CREATE INDEX Railways_index on Railways using gist (shape);
+
+CREATE TABLE RailwayStopPoints (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	type int NOT NULL,
+	name text,
+	featrel date NOT NULL,
+	attrrel date NOT NULL,
+	planacc smallint NOT NULL,
+	source int NOT NULL REFERENCES Source,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	symbol smallint NOT NULL,
+	featurewidth float default 0,
+	orientation smallint default 0,
+	textnote text
+);
+SELECT AddGeometryColumn('', 'railwaystoppoints', 'position', 4326, 'POINT', 2);
+CREATE INDEX RailwayStopPoints_index on RailwayStopPoints using gist (position);
+
+CREATE TABLE RailwayTunnelLines (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	featrel date NOT NULL,
+	attrrel date NOT NULL,
+	planacc smallint NOT NULL,
+	source int NOT NULL REFERENCES Source,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	symbol smallint NOT NULL,
+	featurewidth float default 0,
+	textnote text,
+	shape_length float NOT NULL
+);
+SELECT AddGeometryColumn('', 'railwaytunnellines', 'shape', 4326, 'MULTILINESTRING', 2);
+CREATE INDEX RailwayTunnelLines_index on RailwayTunnelLines using gist (shape);
+
+CREATE TABLE RailwayTunnelPoints (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	featrel date NOT NULL,
+	attrrel date NOT NULL,
+	planacc smallint NOT NULL,
+	source int NOT NULL REFERENCES Source,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	symbol smallint NOT NULL,
+	featurewidth float default 0,
+	orientation smallint default 0,
+	textnote text
+);
+SELECT AddGeometryColumn('', 'railwaytunnelpoints', 'position', 4326, 'POINT', 2);
+CREATE INDEX RailwayTunnelPoints_index on RailwayTunnelPoints using gist (position);
+
+CREATE TABLE RapidAreas (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	featrel date NOT NULL,
+	attrrel date NOT NULL,
+	planacc smallint NOT NULL,
+	source int NOT NULL REFERENCES Source,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	symbol smallint NOT NULL,
+	textnote text,
+	shape_length float NOT NULL,
+	shape_area float NOT NULL
+);
+SELECT AddGeometryColumn('', 'rapidareas', 'shape', 4326, 'MULTILINESTRING', 2);
+CREATE INDEX RapidAreas_index on RapidAreas using gist (shape);
+
+CREATE TABLE RapidLines (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+
+	featuretype int NOT NULL REFERENCES FeatureType,
+	featrel date NOT NULL,
+	attrrel date NOT NULL,
+	planacc smallint NOT NULL,
+	source int NOT NULL REFERENCES Source,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	symbol smallint NOT NULL,
+	textnote text,
+	shape_length float NOT NULL
+);
+SELECT AddGeometryColumn('', 'rapidlines', 'shape', 4326, 'MULTILINESTRING', 2);
+CREATE INDEX RapidLines_index on RapidLines using gist (shape);
+
+CREATE TABLE RecreationAreas (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featuretype int REFERENCES FeatureType,
+	type int NOT NULL,
+	name text,
+	featrel date NOT NULL,
+	attrrel date NOT NULL,
+	planacc smallint NOT NULL,
+	source int NOT NULL REFERENCES Source,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	symbol smallint NOT NULL,
+	textnote text,
+	shape_length float NOT NULL,
+	shape_area float NOT NULL
+);
+SELECT AddGeometryColumn('', 'recreationareas', 'shape', 4326, 'MULTILINESTRING', 2);
+CREATE INDEX RecreationAreas_index on RecreationAreas using gist (shape);
+
+CREATE TABLE Reserves (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	type int NOT NULL,
+	name text,
+	authority text,
+	featrel date NOT NULL,
+	attrrel date NOT NULL,
+	planacc smallint NOT NULL,
+	source int NOT NULL REFERENCES Source,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	symbol smallint NOT NULL,
+	shape_length float NOT NULL,
+	shape_area float NOT NULL
+);
+SELECT AddGeometryColumn('', 'reserves', 'shape', 4326, 'MULTILINESTRING', 2);
+CREATE INDEX Reserves_index on Reserves using gist (shape);
+
+CREATE TABLE Reservoirs (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	type int NOT NULL,
+	name text,
+	featrel date NOT NULL,
+	attrrel date NOT NULL,
+	planacc smallint NOT NULL,
+	source int NOT NULL REFERENCES Source,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	symbol smallint NOT NULL,
+	textnote text,
+	shape_length float NOT NULL,
+	shape_area float NOT NULL
+);
+SELECT AddGeometryColumn('', 'reservoirs', 'shape', 4326, 'MULTILINESTRING', 2);
+CREATE INDEX Reservoirs_index on Reservoirs using gist (shape);
+
+CREATE TABLE RoadCrossingLines (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	name text,
+	type int NOT NULL,
+	featrel date NOT NULL,
+	attrrel date NOT NULL,
+	planacc smallint NOT NULL,
+	source int NOT NULL REFERENCES Source,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	symbol smallint NOT NULL,
+	featurewidth float default 0,
+	textnote text,
+	shape_length float NOT NULL
+);
+SELECT AddGeometryColumn('', 'roadcrossinglines', 'shape', 4326, 'MULTILINESTRING', 2);
+CREATE INDEX RoadCrossingLines_index on RoadCrossingLines using gist (shape);
+
+CREATE TABLE RoadCrossingPoints (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	type int NOT NULL,
+	name text,
+	featrel date NOT NULL,
+	attrrel date NOT NULL,
+	planacc smallint NOT NULL,
+	source int NOT NULL REFERENCES Source,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	symbol smallint NOT NULL,
+	featurewidth float default 0,
+	orientation smallint default 0,
+	textnote text
+);
+SELECT AddGeometryColumn('', 'roadcrossingpoints', 'position', 4326, 'POINT', 2);
+CREATE INDEX RoadCrossingPoints_index on RoadCrossingPoints using gist (position);
+
+CREATE TABLE Roads (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	name text,
+	class text NOT NULL,
+	formation text,
+	nrn text,
+	srn text,
+	featrel date NOT NULL,
+	attrrel date NOT NULL,
+	planacc smallint NOT NULL,
+	source int NOT NULL REFERENCES Source,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	symbol smallint NOT NULL,
+	featurewidth float default 0,
+	textnote text,
+	shape_length float NOT NULL
+);
+SELECT AddGeometryColumn('', 'roads', 'shape', 4326, 'MULTILINESTRING', 2);
+CREATE INDEX Roads_index on Roads using gist (shape);
+
+CREATE TABLE RoadTunnelLines (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	featrel date NOT NULL,
+	attrrel date NOT NULL,
+	planacc smallint NOT NULL,
+	source int NOT NULL REFERENCES Source,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	symbol smallint NOT NULL,
+	featurewidth float default 0,
+	textnote text,
+	shape_length float NOT NULL
+);
+SELECT AddGeometryColumn('', 'roadtunnellines', 'shape', 4326, 'MULTILINESTRING', 2);
+CREATE INDEX RoadTunnelLines_index on RoadTunnelLines using gist (shape);
+
+CREATE TABLE RoadTunnelPoints (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	featrel date NOT NULL,
+	attrrel date NOT NULL,
+	planacc smallint NOT NULL,
+	source int NOT NULL REFERENCES Source,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	symbol smallint NOT NULL,
+	featurewidth float default 0,
+	orientation smallint default 0,
+	textnote text
+);
+SELECT AddGeometryColumn('', 'roadtunnelpoints', 'position', 4326, 'POINT', 2);
+CREATE INDEX RoadTunnelPoints_index on RoadTunnelPoints using gist (position);
+
+CREATE TABLE SandRidges (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	averageheight smallint,
+	featrel date NOT NULL,
+	attrrel date NOT NULL,
+	planacc smallint NOT NULL,
+	source int NOT NULL REFERENCES Source,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	symbol smallint NOT NULL,
+	shape_length float NOT NULL
+);
+SELECT AddGeometryColumn('', 'sandridges', 'shape', 4326, 'MULTILINESTRING', 2);
+CREATE INDEX SandRidges_index on SandRidges using gist (shape);
+
+CREATE TABLE Sands (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	type int NOT NULL,
+	featrel date NOT NULL,
+	attrrel date NOT NULL,
+	planacc smallint NOT NULL,
+	source int NOT NULL REFERENCES Source,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	symbol smallint NOT NULL,
+	shape_length float NOT NULL,
+	shape_area float NOT NULL
+);
+SELECT AddGeometryColumn('', 'sands', 'shape', 4326, 'MULTILINESTRING', 2);
+CREATE INDEX Sands_index on Sands using gist (shape);
+
+CREATE TABLE Seas (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	oceanname text,
+	seaname text,
+	otherwatername text,
+	featrel date NOT NULL,
+	attrrel date NOT NULL,
+	planacc smallint NOT NULL,
+	source int NOT NULL REFERENCES Source,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	symbol smallint NOT NULL,
+	shape_length float NOT NULL,
+	shape_area float NOT NULL
+);
+SELECT AddGeometryColumn('', 'seas', 'shape', 4326, 'MULTILINESTRING', 2);
+CREATE INDEX Seas_index on Seas using gist (shape);
+
+CREATE TABLE Spillways (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	featrel date NOT NULL,
+	attrrel date NOT NULL,
+	planacc smallint NOT NULL,
+	source int NOT NULL REFERENCES Source,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	symbol smallint NOT NULL,
+	textnote text,
+	shape_length float NOT NULL
+);
+SELECT AddGeometryColumn('', 'spillways', 'shape', 4326, 'MULTILINESTRING', 2);
+CREATE INDEX Spillways_index on Spillways using gist (shape);
+
+CREATE TABLE SpotElevations (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	class text NOT NULL,
+	elevation float NOT NULL,
+	featrel date NOT NULL,
+	attrrel date NOT NULL,
+	planacc smallint NOT NULL,
+	elevacc smallint NOT NULL,
+	source int NOT NULL REFERENCES Source,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	symbol smallint NOT NULL,
+	featurewidth float default 0,
+	orientation smallint default 0
+);
+SELECT AddGeometryColumn('', 'spotelevations', 'position', 4326, 'POINT', 2);
+CREATE INDEX SpotElevations_index on SpotElevations using gist (position);
+
+CREATE TABLE Springs (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	name text,
+	featrel date NOT NULL,
+	attrrel date NOT NULL,
+	planacc smallint NOT NULL,
+	source int NOT NULL REFERENCES Source,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	symbol smallint NOT NULL,
+	featurewidth float default 0,
+	orientation smallint default 0,
+	textnote text
+);
+SELECT AddGeometryColumn('', 'springs', 'position', 4326, 'POINT', 2);
+CREATE INDEX Springs_index on Springs using gist (position);
+
+CREATE TABLE StorageTanks (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	name text,
+	featrel date NOT NULL,
+	attrrel date NOT NULL,
+	planacc smallint NOT NULL,
+	source int NOT NULL REFERENCES Source,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	symbol smallint NOT NULL,
+	featurewidth float default 0,
+	orientation smallint default 0,
+	textnote text
+);
+SELECT AddGeometryColumn('', 'storagetanks', 'position', 4326, 'POINT', 2);
+CREATE INDEX StorageTanks_index on StorageTanks using gist (position);
+
+CREATE TABLE VerticalObstructions (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	name text,
+	description text,
+	height float,
+	featrel date NOT NULL,
+	attrrel date NOT NULL,
+	planacc smallint NOT NULL,
+	source int NOT NULL REFERENCES Source,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	symbol smallint NOT NULL,
+	featurewidth float default 0,
+	orientation smallint DEFAULT 0,
+	textnote text
+);
+SELECT AddGeometryColumn('', 'verticalobstructions', 'position', 4326, 'POINT', 2);
+CREATE INDEX VerticalObstructions_index on VerticalObstructions using gist (position);
+
+CREATE TABLE WatercourseAreas (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	name text,
+	perennial int REFERENCES Perennial,
+	hierarchy int REFERENCES Hierarchy,
+	featrel date NOT NULL,
+	attrrel date NOT NULL,
+	planacc smallint NOT NULL,
+	source int NOT NULL REFERENCES Source,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	symbol smallint NOT NULL,
+	textnote text,
+	shape_length float NOT NULL,
+	shape_area float NOT NULL
+);
+SELECT AddGeometryColumn('', 'watercourseareas', 'shape', 4326, 'MULTILINESTRING', 2);
+CREATE INDEX WatercourseAreas_index on WatercourseAreas using gist (shape);
+
+CREATE TABLE WatercourseLines (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	type int NOT NULL,
+	name text,
+	perennial int REFERENCES Perennial,
+	hierarchy int REFERENCES Hierarchy,
+	featrel date NOT NULL,
+	attrrel date NOT NULL,
+	planacc smallint NOT NULL,
+	source int NOT NULL REFERENCES Source,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	symbol smallint NOT NULL,
+	textnote text,
+	shape_length float NOT NULL
+);
+SELECT AddGeometryColumn('', 'watercourselines', 'shape', 4326, 'MULTILINESTRING', 2);
+CREATE INDEX WatercourseLines_index on WatercourseLines using gist (shape);
+
+CREATE TABLE WaterfallPoints (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	name text,
+	featrel date NOT NULL,
+	attrrel date NOT NULL,
+	planacc smallint NOT NULL,
+	source int NOT NULL REFERENCES Source,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	symbol smallint NOT NULL,
+	featurewidth float default 0,
+	orientation smallint default 0,
+	textnote text
+);
+SELECT AddGeometryColumn('', 'waterfallpoints', 'position', 4326, 'POINT', 2);
+CREATE INDEX WaterfallPoints_index on WaterfallPoints using gist (position);
+
+CREATE TABLE Waterholes (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	name text,
+	perennial int REFERENCES Perennial,
+	featrel date NOT NULL,
+	attrrel date NOT NULL,
+	planacc smallint NOT NULL,
+	source int NOT NULL REFERENCES Source,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	symbol smallint NOT NULL,
+	featurewidth float default 0,
+	orientation smallint default 0,
+	textnote text
+);
+SELECT AddGeometryColumn('', 'waterholes', 'position', 4326, 'POINT', 2);
+CREATE INDEX Waterholes_index on Waterholes using gist (position);
+
+CREATE TABLE WaterPoints (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	type int NOT NULL,
+	name text,
+	featrel date NOT NULL,
+	attrrel date NOT NULL,
+	planacc smallint NOT NULL,
+	source int NOT NULL REFERENCES Source,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	symbol smallint NOT NULL,
+	featurewidth float default 0,
+	orientation smallint default 0,
+	textnote text
+);
+SELECT AddGeometryColumn('', 'waterpoints', 'position', 4326, 'POINT', 2);
+CREATE INDEX WaterPoints_index on WaterPoints using gist (position);
+
+CREATE TABLE WaterTanks (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	name text,
+	featrel date NOT NULL,
+	attrrel date NOT NULL,
+	planacc smallint NOT NULL,
+	source int NOT NULL REFERENCES Source,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	symbol smallint NOT NULL,
+	featurewidth float default 0,
+	orientation smallint DEFAULT 0,
+	textnote text
+);
+SELECT AddGeometryColumn('', 'watertanks', 'position', 4326, 'POINT', 2);
+CREATE INDEX WaterTanks_index on WaterTanks using gist (position);
+
+CREATE TABLE Windbreaks (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	featrel date NOT NULL,
+	attrrel date NOT NULL,
+	planacc smallint NOT NULL,
+	source int NOT NULL REFERENCES Source,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	symbol smallint NOT NULL,
+	shape_length float NOT NULL
+);
+SELECT AddGeometryColumn('', 'windbreaks', 'shape', 4326, 'MULTILINESTRING', 2);
+CREATE INDEX Windbreaks_index on Windbreaks using gist (shape);
+
+CREATE TABLE Windpumps (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	name text,
+	featrel date NOT NULL,
+	attrrel date NOT NULL,
+	planacc smallint NOT NULL,
+	source int NOT NULL REFERENCES Source,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	symbol smallint NOT NULL,
+	featurewidth float default 0,
+	orientation smallint DEFAULT 0,
+	textnote text
+);
+SELECT AddGeometryColumn('', 'windpumps', 'position', 4326, 'POINT', 2);
+CREATE INDEX Windpumps_index on Windpumps using gist (position);
+
+CREATE TABLE Yards (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featuretype int NOT NULL REFERENCES FeatureType,
+	name text,
+	featrel date NOT NULL,
+	attrrel date NOT NULL,
+	planacc smallint NOT NULL,
+	source int NOT NULL REFERENCES Source,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	ga_pid int,
+	symbol smallint NOT NULL,
+	featurewidth float default 0,
+	orientation smallint default 0,
+	textnote text
+);
+SELECT AddGeometryColumn('', 'yards', 'position', 4326, 'POINT', 2);
+CREATE INDEX Yards_index on Yards using gist (position);
+
+CREATE TABLE Tracks (
+	objectid bigint DEFAULT nextval('object_id') PRIMARY KEY,
+	featrel date NOT NULL,
+	attrrel date NOT NULL,
+	planacc smallint NOT NULL,
+	source int NOT NULL REFERENCES Source,
+	created timestamp DEFAULT now(),
+	retired timestamp,
+	symbol smallint,
+	shape_length float
+);
+SELECT AddGeometryColumn('', 'tracks', 'shape', 4326, 'MULTILINESTRING', 2);
+CREATE INDEX Tracks_index on Tracks using gist (shape);
+
+CREATE TABLE defaults (
+  name text,
+  value text
+);
+
+INSERT INTO defaults (name, value) VALUES ('pointgeometry', 'position');
+INSERT INTO defaults (name, value) VALUES ('linegeometry', 'shape');
+INSERT INTO defaults (name, value) VALUES ('areageometry', 'shape');
+INSERT INTO defaults (name, value) VALUES ('copyright', 'copyright message');
