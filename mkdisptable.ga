@@ -37,6 +37,9 @@ insert into displayorder (featurename, drawtype, tablename, featurecolumn, defau
 insert into displayorder (featurename, drawtype, tablename, featurecolumn, displayorder) values ('MineAreas', 'ga_line', 'MineAreas', '',                                              350);
 insert into displayorder (featurename, drawtype, tablename, featurecolumn, defaultsymbol, displayorder) values ('Reserves', 'ga_line', 'Reserves', '', -65,                            360);
 insert into displayorder (featurename, drawtype, tablename, featurecolumn, defaultsymbol, displayorder) values ('Lakes', 'ga_line', 'Lakes', '', -114,                                 370);
+insert into displayorder (featurename, drawtype, tablename, featurecolumn, defaultsymbol, displayorder) values ('CanalAreas', 'ga_line', 'CanalAreas', '', -114,                       371);
+insert into displayorder (featurename, drawtype, tablename, featurecolumn, defaultsymbol, displayorder) values ('WatercourseAreas', 'ga_line', 'WatercourseAreas', '', -114,           372);
+insert into displayorder (featurename, drawtype, tablename, featurecolumn, defaultsymbol, displayorder) values ('Seas', 'ga_line', 'Seas', '', -114,                                   373);
 insert into displayorder (featurename, drawtype, tablename, featurecolumn, defaultsymbol, displayorder) values ('Reservoirs', 'ga_line', 'Reservoirs', '', -114,                       380);
 insert into displayorder (featurename, drawtype, tablename, featurecolumn, displayorder) values ('Contours', 'ga_line', 'Contours', '',                                                390);
 insert into displayorder (featurename, drawtype, tablename, featurecolumn, displayorder) values ('Spillways', 'ga_line', 'Spillways', '',                                              400);
