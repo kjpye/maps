@@ -2194,7 +2194,7 @@ $sth_sym = $dbh.prepare("SELECT symbol_ga FROM {%defaults{'symbols'}} WHERE type
 
 my ($leftzone, $rightzone);
 
-if ($ongraticule) {
+if (!$zone.defined && $ongraticule) {
   ($leftzone,  *, *) = latlon_to_utm('WGS-84', $lllatitude, $lllongitude+.0000001);
   ($rightzone, *, *) = latlon_to_utm('WGS-84', $urlatitude, $urlongitude-.0000001);
 } else {
