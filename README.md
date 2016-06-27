@@ -10,22 +10,22 @@ maps from that data.
 containing data available from data.vic.gov.au and generate
 a PostScript map of a particular area.
 
-`drawvic.pl6` is a perl6 version of the same script (not yet
-fully debugged).
+`drawvic.pl6` is a perl6 version of the same script which goes back to its roots as a script used to print data from Geosciene Australia's 1:250000 mapping.
 
 It's not perfect by any means, the main defect at the moment
-is that there are essentially no annotations on the map, and
+is that there are essentially no annotations related to data from VicMap, and
 all data is displayed no matter what scale you are generating,
 which makes small scale maps rather crowded.
 
 ##Database
 
-How to populate the database.
+###VicMap
+How to populate the VacMap database.
 
 1. Download the needed data for the area of concern.
 
   * Go to https://service.land.vic.gov.au/SpatialDatamart and create an account for yourself. (This is not necessary, but useful.)
-  * Got Search, and enter what you want in the "what" field. Useful things are "tr_road", tr_rail", "hy_water", "el_ground", "el_contour".
+  * Goto Search, and enter what you want in the "what" field. Useful things are "tr_road", tr_rail", "hy_water", "el_ground", "el_contour".
   * Select the databases you want. The useful databases (i.e. those which the scripts know how to handle) include tr_road, tr_road_infrastructure, tr_road_locality, hy_water_area_polygon, hy_water_point, hy_water_struct_area_polygon, hy_water_struct_line, hy_water_struct_point, hy_watercourse, tr_rail, tr_rail_infrastructure, el_contour.
   * Clock on "proceed to order".
   * Select the area you want the data for. ("Whole of State" could generate rather large files :-).) I usually use "Local Government Area" and wherever I'm interested in at the moment. (Note that the product of the number of datasets, and the number of areas must no more then 12.)
@@ -44,10 +44,15 @@ How to populate the database.
   * For each shp file (except for things like EXTRACT_POLYGON which simply contains the boundary of the data you have), run "shp2psql -a -D -s 4326 <shapefile> | psql vicmap", except, the first time you use a particular table, use "-c" instead of "-a".
   * Fix up some database tables. The code assumes that certain types of tables have certain columns, and they don't always exist, so you need to create those columns with a default value, usually zero: "psql vicmap -c 'alter table tr_road_infrastructure add column width float default 0'".
   * You will also need to populate the database with the postscript definitions of all the symbols (the symbols_ga table) and the mapping from Vicmap objects to those symbols (the vicmap.symbols table): "psql -d vicmap -f mksymbols_ga" and "psql -d vicmap -f mkvicmap_symbols". These will both give errors the first time they are run as they delete and then recreate tables.
+###GeoScience Australia 1:250000
+Data can be retrieved from data.gov.au by searching for the name of the map and selecting the correct map: '<name> 1:250000 GIS Dataset'. Click on "Download the file (pGDB). (You can also click on "Link to Map Product" and "Go to resource". This enables you to download the geoPDF version which can be displayed using any PDF viewer.
 
+You can unzip the resulting file and then process the data. The make_gis script show one way of doing this.
+###OpenStreetMap
+The script can utilise OSM for displaying roads.
 ##Usage
 
-`drawvic lat=dd.ddd long=ddd.ddd`
+`perl6 drawvic.pl6 lat=dd.ddd long=ddd.ddd`
 
 will produce PostScript on stdout (plus lots of progress information on stderr)
 which has the specified latitude and longitude at the bottom left hand corner.
@@ -159,15 +164,3 @@ drawvic currently knows how to draw the following features, assuming the relevan
 * graticule -- lines of longitude and latitude
 * grid -- eastings and northings
 * userannotations -- annotations specified as options
-
-##Getting the data to make it useful
-
-You can either go to data.vic.gov.au and navigate through
-SpatialData to the datasets you want, or go straight to
-service.land.vic.gov.au/SpatialDatamart (which is where you'll
-end up anyway). The advantage of the second option is that you
-can create an account and log in to keep track of what you have
-downloaded.
-
-When you have completed the downloads you can populate the
-database by using shp2psgl.
