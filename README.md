@@ -20,7 +20,7 @@ which makes small scale maps rather crowded.
 ##Database
 
 ###VicMap
-How to populate the VacMap database.
+How to populate the VicMap database.
 
 1. Download the needed data for the area of concern.
 
@@ -44,12 +44,15 @@ How to populate the VacMap database.
   * For each shp file (except for things like EXTRACT_POLYGON which simply contains the boundary of the data you have), run "shp2psql -a -D -s 4326 <shapefile> | psql vicmap", except, the first time you use a particular table, use "-c" instead of "-a".
   * Fix up some database tables. The code assumes that certain types of tables have certain columns, and they don't always exist, so you need to create those columns with a default value, usually zero: "psql vicmap -c 'alter table tr_road_infrastructure add column width float default 0'".
   * You will also need to populate the database with the postscript definitions of all the symbols (the symbols_ga table) and the mapping from Vicmap objects to those symbols (the vicmap.symbols table): "psql -d vicmap -f mksymbols_ga" and "psql -d vicmap -f mkvicmap_symbols". These will both give errors the first time they are run as they delete and then recreate tables.
+
 ###GeoScience Australia 1:250000
 Data can be retrieved from data.gov.au by searching for the name of the map and selecting the correct map: '<name> 1:250000 GIS Dataset'. Click on "Download the file (pGDB). (You can also click on "Link to Map Product" and "Go to resource". This enables you to download the geoPDF version which can be displayed using any PDF viewer.
 
 You can unzip the resulting file and then process the data. The make_gis script show one way of doing this.
+
 ###OpenStreetMap
 The script can utilise OSM for displaying roads.
+
 ##Usage
 
 `perl6 drawvic.pl6 lat=dd.ddd long=ddd.ddd`
