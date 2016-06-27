@@ -1805,6 +1805,22 @@ sub put_userannotations {
     }
 }
 
+#`[
+  sub draw_margins
+    Bool $left  -- draw left hand side  (and map will be at left of page)
+    Bool $right -- draw right hand side (and map will be at right of page)
+
+  one or both of $left and $right must be true
+
+  Returns a slip consisting of
+    X offset of lower left corner
+    Y offset of lower left corner
+    slope of "centre" edge in degrees
+
+  Draw the margins of (part of a) map,
+    including the labels along the relevant edge
+]
+
 sub draw_margins(Bool $left, Bool $right) {
     my ($xoff, $yoff, $slope);
 
@@ -1828,9 +1844,8 @@ sub draw_margins(Bool $left, Bool $right) {
 	if ($left) { # Calculate slope and position of right hand side
 	    my ($x1, $y1) = latlon2page($urlongitude, $lllatitude);
 	    my ($x2, $y2) = latlon2page($urlongitude, $urlatitude);
-	    $slope = atan2($y2-$y1, $x2-$x1) * 180 / 3.141596353 - 90;
-	    #note
-            #   "Right hand edge from ($x1, $y1) to ($x2, $y2, slope $slope";
+	    $slope = atan2($y2-$y1, $x2-$x1) * 180 / pi - 90;
+	    note "Right hand edge from ($x1, $y1) to ($x2, $y2), slope $slope";
 	    $TMP.print: sprintf
 		"$x1 $y1 translate %f rotate $x1 neg $y1 neg translate\n", -$slope;
 	    $xoff = $x1;
@@ -1838,9 +1853,8 @@ sub draw_margins(Bool $left, Bool $right) {
 	} else { # Calculate slope and position of left hand side
 	    my ($x3, $y3) = latlon2page($lllongitude, $lllatitude);
 	    my ($x4, $y4) = latlon2page($lllongitude, $urlatitude);
-	    $slope = atan2($y4-$y3, $x4-$x3) * 180 / 3.141596353 - 90;
-	    #note
-	    #   "Left hand edge from ($x3, $y3) to ($x4, $y4), slope $slope";
+	    $slope = atan2($y4-$y3, $x4-$x3) * 180 / pi - 90;
+	    note "Left hand edge from ($x3, $y3) to ($x4, $y4), slope $slope";
 	    $xoff = $x3;
 	    $yoff = $y4;
 	    $TMP.print:
@@ -1851,7 +1865,7 @@ sub draw_margins(Bool $left, Bool $right) {
     label_grid($left, $right)      if %drawobjects<grid>.defined;
     label_graticule($left, $right) if %drawobjects<graticule>.defined;
 
-    ($xoff, $yoff, $slope);
+    |($xoff, $yoff, $slope); # return a slip
 }
 
 # Draw the bounding box, remembering the path which then becomes the clip path
