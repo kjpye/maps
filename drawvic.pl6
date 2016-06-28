@@ -590,11 +590,24 @@ sub follow_line(Str $shape, $spacing, $func, Real $width, Real $thick, Str $colo
     }
 }
 
+#`[
+  The various routines for drawing lines from various tables
+
+  Common parts of these should be extracted.
+]
+
+#`[
+  sub draw_lines -- draw lines from a Vicmap table
+    $table          -- table name
+    $typecolumn     -- the name of the column containing the type of the line
+    $default_symbol -- if negative override the symbol to be used
+]
+
 sub draw_lines(Str $table, Str $typecolumn, Int $default_symbol = 0) {
   note "$table lines...";
   my $geomcol = %defaults{'linegeometry'};
 note "draw_lines: geomcol is $geomcol";
-  my $sth = $dbh.prepare("SELECT $geomcol, st_astext($geomcol) as shape FROM $table WHERE $geomcol && $rect");
+  my $sth = $dbh.prepare("SELECT $typecolumn, st_astext($geomcol) as shape FROM $table WHERE $geomcol && $rect");
   
   if $sth.execute {
     
@@ -654,6 +667,13 @@ note "draw_lines: geomcol is $geomcol";
     note "Table $table not found";
   }
 }
+
+#`[
+  sub draw_ga_lines -- draw lines from a Geosciences Australia table
+    $table          -- table name
+    $typecolumn     -- the name of the column containing the type of the line
+    $default_symbol -- if negative override the symbol to be used
+]
 
 sub draw_ga_lines(Str $table, Str $typecolumn, Int $default_symbol = 0) {
   note "$table ($default_symbol) lines...";
@@ -767,6 +787,11 @@ sub draw_properties() {
     }
 }
 
+#`[
+  sub draw_ga_lines -- draw lines (with width) from a Geosciences Australia table
+    $table          -- table name
+]
+
 sub draw_ga_wlines(Str $table) {
     note "$table lines...";
    my $sth = $dbh.prepare("SELECT symbol, st_astext(shape) as shape, featurewidth FROM $table WHERE shape && $rect");
@@ -795,6 +820,8 @@ sub draw_ga_wlines(Str $table) {
 	}
     }
 }
+
+# I think this is probably unnecessry
 
 sub draw_ga_wlines_orig(Str $table, Int $default_symbol) {
     note "$table lines...";
@@ -875,6 +902,20 @@ my %roadsymbols = (
   'roundabout'  => 256,
 );
 
+#`[
+  Routines for drawing roads.
+
+  These are more difficult than other lines because of dual carriageways
+  where we need to draw a yellow line superinposed on a wider red line.
+
+  Common features should be extracted from the various versions.
+]
+
+#`[
+  sub draw_roads -- draw roads from the Vicmap database table tr_raod
+    no parameters
+]
+
 sub draw_roads() {
     my @dual;
     my $featurewidth;
@@ -925,6 +966,11 @@ sub draw_roads() {
 	}
     }
 }
+
+#`[
+  sub draw_ga_roads -- draw roads from the Geoscience Australia database table roads
+    no parameters
+]
 
 sub draw_ga_roads() {
     my @dual;
@@ -989,6 +1035,13 @@ my %osmroads2ga = (
     'cycleway'      => 22,
     );
 
+#`[
+  sub draw_osmroads -- draw roads from the OpensStreetMap database table planet_osm_line
+    no parameters
+
+  roads in that table are lines where the highway column isn't empty
+]
+
 sub draw_osmroads() {
     my @dual;
     my $featurewidth = 0;
@@ -1032,6 +1085,18 @@ sub draw_osmroads() {
     $osmdbh.disconnect();
 }
 
+#`[
+  Routines for drawing points
+
+  Once again, the commonality should be extracted
+]
+
+#`[
+  sub draw_points -- draw points from a Vicmap table
+    $table -- database table
+    $column -- the name of the column specifying the feature type
+]
+
 sub draw_points(Str $table, Str $column) {
     note "$table points...";
   my $geomcol = %defaults{'pointgeometry'};
@@ -1064,6 +1129,11 @@ sub draw_points(Str $table, Str $column) {
 	$TMP.print: sprintf("$orientation %.6g %.6g $featurewidth point$symbol\n", $x, $y);
     }
 }
+
+#`[
+  sub draw_ga_points -- draw points from a Geoscience Australia table
+    $table -- database table
+]
 
 sub draw_ga_points(Str $table) {
     note "$table points...";
@@ -1818,9 +1888,9 @@ sub put_userannotations {
   one or both of $left and $right must be true
 
   Returns a slip consisting of
-    X offset of lower left corner
-    Y offset of lower left corner
-    slope of "centre" edge in degrees
+    X offset of lower left corner     -- used for placement on page
+    Y offset of lower left corner     -- used for placement on page
+    slope of "centre" edge in degrees -- used for aligning annotations
 
   Draw the margins of (part of a) map,
     including the labels along the relevant edge
