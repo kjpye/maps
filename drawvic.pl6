@@ -538,7 +538,7 @@ sub powerline(Real $x, Real $y, Real $angle, Real $width, Real $thick, Str $colo
 	$powerdirection = 1;
 	$TMP.say: "$x $y moveto";
     } else {
-        $angle *= pi / 180;
+        $angle *= π / 180;
 	my $nx = $x - $thick / 2 * sin($angle) * $powerdirection;
 	my $ny = $y + $thick / 2 * cos($angle) * $powerdirection;
 	$TMP.say: "$nx $ny lineto";
@@ -1386,7 +1386,7 @@ sub draw_annotations() {
 	    my $angle;
 	    if ($y2.defined) {
 		($x2, $y2) = latlon2page $x2, $y2;
-		$angle = atan2($y2 - $y1, $x2 - $x1) * 180 / 3.1415926535;
+		$angle = atan2($y2 - $y1, $x2 - $x1) * 180 / π;
 	    } else {
 		$angle = 0;
 	    }
@@ -1849,7 +1849,7 @@ sub draw_margins(Bool $left, Bool $right) {
 	if ($left) { # Calculate slope and position of right hand side
 	    my ($x1, $y1) = latlon2page($urlongitude, $lllatitude);
 	    my ($x2, $y2) = latlon2page($urlongitude, $urlatitude);
-	    $slope = atan2($y2-$y1, $x2-$x1) * 180 / pi - 90;
+	    $slope = atan2($y2-$y1, $x2-$x1) * 180 / π - 90;
 	    note "Right hand edge from ($x1, $y1) to ($x2, $y2), slope $slope";
 	    $TMP.print: sprintf
 		"$x1 $y1 translate %f rotate $x1 neg $y1 neg translate\n", -$slope;
@@ -1858,7 +1858,7 @@ sub draw_margins(Bool $left, Bool $right) {
 	} else { # Calculate slope and position of left hand side
 	    my ($x3, $y3) = latlon2page($lllongitude, $lllatitude);
 	    my ($x4, $y4) = latlon2page($lllongitude, $urlatitude);
-	    $slope = atan2($y4-$y3, $x4-$x3) * 180 / pi - 90;
+	    $slope = atan2($y4-$y3, $x4-$x3) * 180 / π - 90;
 	    note "Left hand edge from ($x3, $y3) to ($x4, $y4), slope $slope";
 	    $xoff = $x3;
 	    $yoff = $y4;
