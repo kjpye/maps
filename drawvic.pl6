@@ -615,6 +615,8 @@ note "draw_lines: geomcol is $geomcol";
       ++$object_count;
       given $symbol {
         when  57 {} # Depression contour (index)
+          put_line($shape, "line57A", 0);
+	  follow_line($shape, 4, &leftticks, .3, .2, '0 .59 1 .18');
         when  58 { # Depression contour (standard)
           put_line($shape, "line58A", 0);
 	  follow_line($shape, 4, &leftticks, .3, .15, '0 .59 1 .18');
@@ -673,7 +675,10 @@ sub draw_ga_lines(Str $table, Str $typecolumn, Int $default_symbol = 0) {
       next unless so $symbol;
       ++$object_count;
       given $symbol {
-        when  57 {} # Depression contour (index)
+        when  57 { # Depression contour (index)
+          put_line($shape, "line57A", 0);
+	  follow_line($shape, 4, &leftticks, .3, .2, '0 .59 1 .18');
+        }
         when  58 { # Depression contour (standard)
           put_line($shape, "line58A", 0);
 	  follow_line($shape, 4, &leftticks, .3, .15, '0 .59 1 .18');
