@@ -33,34 +33,7 @@ my Str $zone;
 my @properties;
 my %dependencies;
 
-# Should read this from the database
-# YES!
-#my %allobjects = map {$_ => 1}, <
-#                  contour
-#                  el_grnd_surface_point
-#                  hy_water_area_polygon
-#                  hy_water_point
-#                  hy_water_struct_area_polygon
-#                  hy_water_struct_line
-#                  hy_water_struct_point
-#                  hy_watercourse
-#                  lga_polygon
-#                  locality_polygon
-#		  locality_name
-#                  property
-#                  tr_air_infra_area_polygon
-#                  tr_airport_infrastructure
-#                  tr_rail
-#                  tr_rail_infrastructure
-#                  tr_road
-#                  tr_road_infrastructure
-#                  tree_density
-#                  graticule
-#                  grid
-#                  userannotations
-#                 >;
-#my %drawobjects = %allobjects;
-my @displays; # temporary stroage for [no]display options
+my @displays; # temporary storage for [no]display options
 my %allobjects;
 my %drawobjects;
 
@@ -272,7 +245,6 @@ EOF
   postscript_encode_font('Helvetica-Narrow-Oblique');
   postscript_encode_font('Helvetica-Narrow-BoldOblique');
   postscript_encode_font('Helvetica-BoldOblique');
-#  postscript_encode_font('Helvetica'); # was this meant to be something else???
 
   if ($lowermarginwidth > 20) {
     print qq :to 'EOF'
@@ -821,41 +793,6 @@ sub draw_ga_wlines(Str $table) {
     }
 }
 
-# I think this is probably unnecessry
-
-sub draw_ga_wlines_orig(Str $table, Int $default_symbol) {
-    note "$table lines...";
-    my $sth = $dbh.prepare("SELECT symbol, st_astext(shape) as shape, featurewidth FROM $table WHERE shape && $rect");
-    
-    $sth.execute();
-    
-    while ( my @row = $sth.fetchrow_array ) {
-	my $symbol = @row[0].Int;
-	my $shape = @row[1];
-	my Real $featurewidth = @row[3];
-	$featurewidth = 0 unless $featurewidth.defined && $featurewidth;
-	
-	if ($default_symbol.defined and $default_symbol < 0) {
-	    $symbol = -$default_symbol;
-	}
-	$symbol = $default_symbol if $default_symbol.defined and ! $symbol;
-	next unless so $symbol;
-	++$object_count;
-	if ($symbol == 57) { # Depression contour (index)
-	} elsif ($symbol == 58) { # Depression contour (standard)
-	} elsif ($symbol == 31) { # Embankment
-	} elsif ($symbol == 542) { # Powerline
-	} elsif ($symbol == 543) { # Powerline (WAC)
-	} elsif ($symbol == 920) { # Cliff (WAC)
-	} elsif ($symbol == 923) { # Cutting
-	} elsif ($symbol == 924) { # Cliff
-	} elsif ($symbol == 929) { # Razorback
-	} else {
-	    put_line($shape, "line$symbol", $featurewidth);
-	}
-    }
-}
-
 # This shouldn't be here, but in a database somewhere
 
 my %roadsymbols = (
@@ -1189,7 +1126,7 @@ my @road_widths = (.9, .9, .9, .6, .6, .6, .4, .4, .4, .4, .2, .2, .2);
 
 sub draw_roadpoints() {
     note "tr_road_infrastructure points...";
-  my $geomcol = %defaults{'pointgeometry'};
+    my $geomcol = %defaults{'pointgeometry'};
     my $sth = $dbh.prepare("SELECT ftype_code, st_astext($geomcol) as position, rotation, ufi, width FROM tr_road_infrastructure WHERE $geomcol && $rect");
     my $sth2 = $dbh.prepare("SELECT ftype_code, class_code FROM tr_road WHERE from_ufi = ? OR to_ufi = ?");
     
@@ -1306,19 +1243,11 @@ class Annotation {
   method short {
      $!index += 2;
      nativecast((int32), Blob.new(@!bytes[$!index-2 ..^ $!index]));
-#    my $short = self.byte;
-#    $short |= self.byte +<  8;
   }
 
   method int {
      $!index += 4;
      nativecast((int32), Blob.new(@!bytes[$!index-4 ..^ $!index]));
-#    my $long = self.byte;
-#    $long +|= (self.byte +<  8);
-#    $long +|= (self.byte +< 16);
-#    $long +|= (self.byte +< 24);
-#note "int: $long";
-#    $long;
   }
 
   method double {
@@ -1335,7 +1264,6 @@ sub draw_annotations() {
     $sth.execute();
     
     for $sth.allrows -> @row {
-#    while ( my @row = $sth.fetchrow_array ) {
 	++$object_count;
 	my $element = @row[0];
 	my $shape = @row[1];
