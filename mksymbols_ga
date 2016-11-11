@@ -1,4 +1,4 @@
-DROP TABLE Symbols_GA;
+DROP TABLE if exists Symbols_GA;
 
 CREATE TABLE Symbols_GA (
   name text,

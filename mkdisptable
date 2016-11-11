@@ -1,4 +1,4 @@
-drop table displayorder;
+drop table if exists displayorder;
 create table displayorder (
   featurename text,
   drawtype text,
