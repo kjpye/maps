@@ -416,7 +416,7 @@ my $sth_sym;
 use experimental :cached;
 sub get_symbol (Str $type, Str $ftype) is cached {
   my $symbol = 0;
-  note "Looking for $ftype\($type)";
+  note "Looking for {$ftype}({$type})";
   $sth_sym.execute($type, $ftype);
   my $sym = 0;
   while my @row = $sth_sym.fetchrow_array {
@@ -578,7 +578,6 @@ sub follow_line(Str $shape, $spacing, $func, Real $width, Real $thick, Str $colo
 sub draw_lines(Str $table, Str $typecolumn, Int $default_symbol = 0) {
   note "$table lines...";
   my $geomcol = %defaults{'linegeometry'};
-note "draw_lines: geomcol is $geomcol";
   my $sth = $dbh.prepare("SELECT $typecolumn, st_astext($geomcol) as shape FROM $table WHERE $geomcol && $rect");
   
   if $sth.execute {
@@ -715,7 +714,7 @@ sub put_outline(Str $text, Real $x, Real $y, Real $size, Str $colour, Real $thic
 
 sub draw_polygon_outline_names(Str $table, Str $column, Real $size, Real $thickness, Str $colour) {
   note "$table outline names...";
-  my $geomcol = %defaults{'line'};
+  my $geomcol = %defaults{'linegeometry'};
   my $sth = $dbh.prepare("SELECT $column, st_astext(st_envelope($geomcol)) as bbox FROM $table WHERE $geomcol && $rect");
   
   if $sth.execute {
@@ -861,7 +860,7 @@ sub draw_roads() {
     my $geomcol = %defaults{'linegeometry'};
 #    my $sth = $dbh.prepare("SELECT pfi, ftype_code, class_code, dir_code, road_seal, div_rd, st_astext($geomcol) as shape FROM tr_road WHERE $geomcol && $rect");
 #    my $sth = $dbh.prepare("SELECT ga_pid, ftype_code, class_code, dir_code, road_seal, div_rd, st_astext($geomcol) as shape FROM roads WHERE $geomcol && $rect");
-    my $sth = $dbh.prepare("SELECT ga_pid, ftype_code, class_code, dir_code, road_seal, div_rd, $geomcol as shape FROM roads WHERE $geomcol && $rect");
+    my $sth = $dbh.prepare("SELECT pfi, ftype_code, class_code, dir_code, road_seal, div_rd, st_astext($geomcol) as shape FROM tr_road WHERE $geomcol && $rect");
     
     $sth.execute();
     
@@ -937,7 +936,7 @@ sub draw_ga_roads() {
 
     note "Centre lines of roads...";
 
-    $sth = $dbh.prepare("SELECT symbol, shape FROM Roads WHERE objectid = ?");
+    $sth = $dbh.prepare("SELECT symbol, st_astext(shape) FROM Roads WHERE objectid = ?");
     for @dual -> $objectid {
 	$sth.execute($objectid);
 	
@@ -1038,8 +1037,11 @@ sub draw_points(Str $table, Str $column) {
     note "$table points...";
   my $geomcol = %defaults{'pointgeometry'};
 
-  #my $sth = $dbh.prepare("SELECT $column, st_astext($geomcol) AS position, rotation
-  my $sth = $dbh.prepare("SELECT $column, $geomcol AS position, rotation
+#  my $sth = $dbh.prepare("SELECT $column, st_astext($geomcol) AS position, rotation
+#                            FROM $table
+#			    WHERE {%defaults{'pointgeometry'}} && $rect
+#			   ");
+  my $sth = $dbh.prepare("SELECT $column, st_astext($geomcol) AS position
                             FROM $table
 			    WHERE {%defaults{'pointgeometry'}} && $rect
 			   ");
@@ -1049,7 +1051,8 @@ sub draw_points(Str $table, Str $column) {
       while my @row = $sth.fetchrow_array {
 	my $ftype        = @row[0];
 	my $position     = @row[1];
-	my $orientation  = 90 - @row[2] || 0;
+#	my $orientation  = 90 - @row[2] || 0;
+	my $orientation  = 0;
 	my $featurewidth = 0;
 	my $featuretype  = $ftype;
 
@@ -1117,7 +1120,7 @@ sub draw_spot_heights() {
         next unless $featuretype eq 'spot_height';
         
         $position ~~ / \( (\-?<[\d.]>+) \s+ (\-?<[\d.]>+) \) /;
-        my ($x, $y) = latlon2page $1, $2;
+        my ($x, $y) = latlon2page +$0, +$1;
         $TMP.print: sprintf "%.6g %.6g moveto ($altitude) show newpath\n", $x+0.5, $y-0.5;
     }
 }
@@ -1127,7 +1130,9 @@ my @road_widths = (.9, .9, .9, .6, .6, .6, .4, .4, .4, .4, .2, .2, .2);
 sub draw_roadpoints() {
     note "tr_road_infrastructure points...";
     my $geomcol = %defaults{'pointgeometry'};
-    my $sth = $dbh.prepare("SELECT ftype_code, st_astext($geomcol) as position, rotation, ufi, width FROM tr_road_infrastructure WHERE $geomcol && $rect");
+#    my $sth = $dbh.prepare("SELECT ftype_code, st_astext($geomcol) as position, rotation, ufi, width FROM tr_road_infrastructure WHERE $geomcol && $rect");
+    my $sth = $dbh.prepare("SELECT ftype_code, st_astext($geomcol) as
+    position, rotation, ufi FROM tr_road_infrastructure WHERE $geomcol && $rect");
     my $sth2 = $dbh.prepare("SELECT ftype_code, class_code FROM tr_road WHERE from_ufi = ? OR to_ufi = ?");
     
     if $sth.execute {
@@ -1138,7 +1143,8 @@ sub draw_roadpoints() {
         my $position     = @row[1];
         my $orientation  = 90 - @row[2] || 0;
         my $ufi          = @row[3];
-        my $featurewidth = @row[4];
+#        my $featurewidth = @row[4];
+        my $featurewidth  = 0;
         my $featuretype  = $ftype;
 	
 	my Str $ft = '';
@@ -1257,7 +1263,7 @@ class Annotation {
 
 }
 
-sub draw_annotations() {
+sub draw_ga_annotations() {
     note "Annotations...\n";
     my $sth = $dbh.prepare("SELECT element, st_astext(shape) as shape FROM Annotations WHERE shape && $rect");
     
@@ -1943,7 +1949,7 @@ sub draw_objects(Real $xoff, Real $yoff, Real $slope) {
       my $table       = @row[2].Str;
       my $typecolumn  = @row[3].Str;
       my $default     = @row[4].Int;
-      my $order       = @row[5].Str;
+      my $order       = @row[5].Int;
       $default = 0 unless $default.defined && $default;
       note "Drawing $feature: '$draw' '$table' '$typecolumn' ($order)";
       if $order && %drawobjects{$feature.lc} {
@@ -1967,7 +1973,7 @@ sub draw_objects(Real $xoff, Real $yoff, Real $slope) {
           when 'roadpoint'      { draw_roadpoints\          (                                    ); }
           when 'graticule'      { draw_graticule\           (                                    ); }
           when 'grid'           { draw_grid\                (                                    ); }
-         when 'annotation'     { draw_annotations\         (                                    ); }
+          when 'ga_annotation'  { draw_ga_annotations\      (                                    ); }
           when 'userannotation' { draw_userannotations\     ($xoff, $yoff, $slope                ); }
           default               { note "Unknown draw type $draw for feature $feature: objects ignored"; }
         }

@@ -1,0 +1,41 @@
+drop table if exists displayorder;
+create table displayorder (
+  featurename text,
+  drawtype text,
+  tablename text,
+  featurecolumn text,
+  defaultsymbol int default 0,
+  displayorder int default 0
+);
+grant select on displayorder to ro;
+
+insert into displayorder (featurename, drawtype, tablename, featurecolumn,                displayorder) values ('tree_density', 'treeden', 'tree_density', '', 0); -- 100);
+insert into displayorder (featurename, drawtype, tablename, featurecolumn,                displayorder) values ('hy_water_area_polygon', 'area', 'hy_water_area_polygon', 'ftype_code', 110);
+insert into displayorder (featurename, drawtype, tablename, featurecolumn,                displayorder) values ('hy_water_struct_area_polygon', 'area', 'hy_water_struct_area_polygon', '', 120);
+insert into displayorder (featurename, drawtype, tablename, featurecolumn,                displayorder) values ('tr_air_infra_area_polygon', 'area', 'tr_air_infra_area_polygon', '', 130);
+insert into displayorder (featurename, drawtype, tablename, featurecolumn,                displayorder) values ('tracks', 'line', 'tracks', '', 0);
+insert into displayorder (featurename, drawtype, tablename, featurecolumn,                displayorder) values ('mineareas', 'line', 'mineareas', '', 0);
+insert into displayorder (featurename, drawtype, tablename, featurecolumn,                displayorder) values ('reserves', 'line', 'reserves', '', 0);
+insert into displayorder (featurename, drawtype, tablename, featurecolumn,                displayorder) values ('lakes', 'line', 'lakes', '', 0);
+insert into displayorder (featurename, drawtype, tablename, featurecolumn, defaultsymbol, displayorder) values ('hy_water_area_polygon', 'line', 'hy_water_area_polygon', 'ftype_code', 114, 200);
+insert into displayorder (featurename, drawtype, tablename, featurecolumn, defaultsymbol, displayorder) values ('reservoirs', 'line', 'reservoirs', '', 114, 0);
+insert into displayorder (featurename, drawtype, tablename, featurecolumn, defaultsymbol, displayorder) values ('locality_polygon', 'line_f', 'locality_polygon', 'pfi', 65, 210);
+insert into displayorder (featurename, drawtype, tablename, featurecolumn,                displayorder) values ('locality_name', 'outline', 'locality_name', 'pfi', 0); -- 211);
+insert into displayorder (featurename, drawtype, tablename, featurecolumn, defaultsymbol, displayorder) values ('lga_polygon', 'line_f', 'lga_polygon', 'pfi', 62, 220);
+insert into displayorder (featurename, drawtype, tablename, featurecolumn,                displayorder) values ('el_contour', 'line', 'el_contour', 'ftype_code', 230);
+insert into displayorder (featurename, drawtype, tablename, featurecolumn,                displayorder) values ('hy_water_struct_line', 'line', 'hy_water_struct_line', 'ftype_code', 240);
+insert into displayorder (featurename, drawtype, tablename, featurecolumn,                displayorder) values ('hy_watercourse', 'line', 'hy_watercourse', 'ftype_code', 250);
+insert into displayorder (featurename, drawtype, tablename, featurecolumn,                displayorder) values ('tr_road', 'road', 'tr_road', 'ftype_code', 260);
+insert into displayorder (featurename, drawtype, tablename, featurecolumn,                displayorder) values ('tr_rail', 'line', 'tr_rail', 'ftype_code', 260);
+insert into displayorder (featurename, drawtype, tablename, featurecolumn,                displayorder) values ('properties', 'property', 'properties', '', 0); -- 270);
+insert into displayorder (featurename, drawtype, tablename, featurecolumn,                displayorder) values ('el_grnd_surface_point', 'point', 'el_grnd_surface_point', 'ftype_code', 280);
+insert into displayorder (featurename, drawtype, tablename, featurecolumn,                displayorder) values ('el_grnd_surface_point', 'spotheight', 'el_grnd_surface_point', 'ftype_code', 281);
+insert into displayorder (featurename, drawtype, tablename, featurecolumn,                displayorder) values ('hy_water_point', 'point', 'hy_water_point', 'ftype_code', 290);
+insert into displayorder (featurename, drawtype, tablename, featurecolumn,                displayorder) values ('hy_water_struct_point', 'point', 'hy_water_struct_point', 'ftype_code', 300);
+insert into displayorder (featurename, drawtype, tablename, featurecolumn,                displayorder) values ('tr_airport_infrastructure', 'point', 'tr_airport_infrastructure', 'ftype_code', 310);
+insert into displayorder (featurename, drawtype, tablename, featurecolumn,                displayorder) values ('tr_rail_infrastructure', 'point', 'tr_rail_infrastructure', 'ftype_code', 320);
+insert into displayorder (featurename, drawtype, tablename, featurecolumn,                displayorder) values ('tr_road_infrastructure', 'roadpoint', 'tr_road_infrastructure', 'ftype_code', 330);
+insert into displayorder (featurename, drawtype, tablename, featurecolumn,                displayorder) values ('graticule', 'graticule', 'graticule', '', 340);
+insert into displayorder (featurename, drawtype, tablename, featurecolumn,                displayorder) values ('grid', 'grid', 'grid', '', 350);
+insert into displayorder (featurename, drawtype, tablename, featurecolumn,                displayorder) values ('annotation', 'annotation', 'annotation', '', 400);
+insert into displayorder (featurename, drawtype, tablename, featurecolumn,                displayorder) values ('userannotation', 'userannotation', 'userannotation', '', 410);

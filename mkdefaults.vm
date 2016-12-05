@@ -1,0 +1,12 @@
+drop table if exists defaults;
+create table defaults (
+  name text,
+  value text
+);
+grant select on defaults to ro;
+
+insert into defaults (name, value) values ('pointgeometry', 'geom');
+insert into defaults (name, value) values ('linegeometry',  'geom');
+insert into defaults (name, value) values ('areageometry',  'geom');
+insert into defaults (name, value) values ('copyright',     'Some data Copyright State of Victoria 2016');
+insert into defaults (name, value) values ('symbols',       'vicmap_symbols');
