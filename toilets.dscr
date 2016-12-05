@@ -1,0 +1,49 @@
+file latest-csv-export.csv
+table PublicToilets
+columns {
+  ToiletID integer
+  URL text
+  Name text
+  Address1 text
+  Town text
+  State text
+  Postcode text
+  AddressNote text
+  Male boolean
+  Female boolean
+  Unisex boolean
+  DumpPoint boolean
+  FacilityType text
+  ToiletType text
+  AccessLimited boolean
+  PaymentRequired boolean
+  KeyRequired boolean
+  AccessNote boolean
+  Parking boolean
+  ParkingNote text
+  AccessibleMale boolean
+  AccessibleFemale boolean
+  AccessibleUnisex boolean
+  AccessibleNote boolean
+  MLAK boolean
+  ParkingAccessible boolean
+  AccessibleParkingNote text
+  Ambulant boolean
+  LHTransfer boolean
+  RHTransfer boolean
+  AdultChange boolean
+  IsOpen text
+  OpeningHoursSchedule text
+  OpeningHoursNote text
+  BabyChange boolean
+  Showers boolean
+  DrinkingWater boolean
+  SharpsDisposal boolean
+  SanitaryDisposal boolean
+  IconURL text
+  IconAltText text
+  Notes text
+  Status text
+  Latitude double
+  Longitude double
+}

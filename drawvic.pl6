@@ -1736,7 +1736,7 @@ sub format_dms(Real $lat is copy, Str $pos, Str $neg) {
 	$deg++;
 	$min -= 60;
     }
-    $string = sprintf "%d\\260%d'%.2f\" %s", $deg, $min, $sec, $hemisphere;
+    $string = sprintf "%d\\260%d'%.2f\" %s", $deg, $min, $sec, $hemisphere; # ' # for editors which cannot parse strings properly
     $string;
 }
 
