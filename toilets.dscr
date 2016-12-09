@@ -1,4 +1,4 @@
-file latest-csv-export.csv
+file /home/kevin/Downloads/latest-csv-export.csv
 table PublicToilets
 columns {
   ToiletID integer
@@ -18,13 +18,13 @@ columns {
   AccessLimited boolean
   PaymentRequired boolean
   KeyRequired boolean
-  AccessNote boolean
+  AccessNote text
   Parking boolean
   ParkingNote text
   AccessibleMale boolean
   AccessibleFemale boolean
   AccessibleUnisex boolean
-  AccessibleNote boolean
+  AccessibleNote text
   MLAK boolean
   ParkingAccessible boolean
   AccessibleParkingNote text
@@ -44,6 +44,6 @@ columns {
   IconAltText text
   Notes text
   Status text
-  Latitude double
-  Longitude double
+  Latitude double_precision
+  Longitude double_precision
 }

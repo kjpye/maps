@@ -1,4 +1,4 @@
-#!/home/kevinp/.rakudobrew/bin/perl6
+#!/home/kevin/.rakudobrew/bin/perl6
 
 use v6;
 
@@ -31,36 +31,37 @@ grammar Description {
 sub MAIN(Str $filename) {
   my $filecontents = $filename.IO.slurp;
   Description.parse($filecontents);
-  #say $file, ' ', $table;
-  say @columns;
 
   print qq:to 'HEADER';
-    drop table $table if exists;
+    drop table $table;
     create table $table (
     HEADER
+  my $eol = '';
   for @columns -> $col {
     my $type = %columns{$col};
-    print "  $col $type,\n";
+    $type ~~ s:g/_/ /;
+    print "$eol  $col $type";
+    $eol = ",\n";
   }
-  print ");\n";
-  my $fh = open $file, :r;
+  print "\n);\n";
+  my $fh = open $file, :r or fail "Could not open \"$file\": $!";
   my $parser = CSV::Parser.new( file_handle => $fh, contains_header_row => True );
-  my %data;
 
   my $count = 0;
   my $columns = "(" ~ @columns.join(', ') ~ ')';
-  while %data = %($parser.get_line()) {
+  while my %data = %($parser.get_line()) {
+    my $delim = '';
     print "INSERT INTO $table $columns VALUES (";
     for @columns -> $col {
       given %columns{$col} {
-        when 'integer' { print %data{$col}, ','; }
-        when 'text'    { print "E'", %data{$col}.subst("'", "\\'"), "',"; }
-        when 'boolean' { print %data{$col}||'False', ','; }
-        when 'double'  { print %data{$col}, ','; }
+        when 'integer' { print $delim, %data{$col}; $delim = ',';}
+        when 'text'    { print $delim, "'", %data{$col}.subst("'", "''", :g), "'"; $delim = ',';}
+        when 'boolean' { print $delim, %data{$col}||'False'; $delim = ',';}
+        when 'double_precision'  { print $delim, %data{$col}; $delim = ',';}
       }
     }
     print ");\n";
     ++$count;
   }
-  say "$count entries created";
+  note "$count entries created";
 }
