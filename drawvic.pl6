@@ -275,7 +275,7 @@ sub grid2page(Real $xin, Real $yin) {
 
 sub latlon2page(Real $xin, Real $yin) {
     ++$point_count;
-    my ($tzone, $xout, $yout) = latlon_to_utm('WGS-84', :$zone, $yin, $xin);
+    my ($tzone, $xout, $yout) = |latlon-to-utm('WGS-84', :$zone, $yin, $xin);
 # inline grid2page for speed
     #return grid2page($xout, $yout);
   ( ($xout + $xoffset) * $xscale + $xmin,
@@ -433,9 +433,10 @@ sub get_symbol (Str $type, Str $ftype) is cached {
 
 my $rect;
 
-sub draw_areas(Str $table) {
+sub draw_vm_areas(Str $table) {
   note "$table areas...";
   my $geomcol = %defaults{'areageometry'};
+  $geomcol = 'geom';
   my $sth = $dbh.prepare("SELECT ftype_code, st_astext($geomcol) as shape FROM $table WHERE $geomcol && $rect");
   
   if $sth.execute {
@@ -460,6 +461,7 @@ sub draw_areas(Str $table) {
 sub draw_ga_areas(Str $table) {
   note "$table areas...";
   my $geomcol = %defaults<areageometry>;
+  $geomcol = 'shape';
   my $sth = $dbh.prepare("SELECT symbol, st_astext($geomcol) as shape FROM $table WHERE $geomcol && $rect");
   
   if $sth.execute {
@@ -480,7 +482,8 @@ sub draw_ga_areas(Str $table) {
 sub draw_treeden() {
   note "tree_density areas...";
   my $geomcol = %defaults{'areageometry'};
-  my $sth = $dbh.prepare("SELECT ftype_code, tree_den, st_astext($geomcol) as shape FROM tree_density where $geomcol && $rect", RaiseError => 0);
+  $geomcol = 'geom';
+  my $sth = $dbh.prepare("SELECT ftype_code, tree_den, st_astext($geomcol) as shape FROM vm_tree_density where $geomcol && $rect", RaiseError => 0);
 
   if $sth.execute {
     
@@ -569,15 +572,16 @@ sub follow_line(Str $shape, $spacing, $func, Real $width, Real $thick, Str $colo
 ]
 
 #`[
-  sub draw_lines -- draw lines from a Vicmap table
+  sub draw_vm_lines -- draw lines from a Vicmap table
     $table          -- table name
     $typecolumn     -- the name of the column containing the type of the line
     $default_symbol -- if negative override the symbol to be used
 ]
 
-sub draw_lines(Str $table, Str $typecolumn, Int $default_symbol = 0) {
+sub draw_vm_lines(Str $table, Str $typecolumn, Int $default_symbol = 0) {
   note "$table lines...";
   my $geomcol = %defaults{'linegeometry'};
+  $geomcol = 'geom';
   my $sth = $dbh.prepare("SELECT $typecolumn, st_astext($geomcol) as shape FROM $table WHERE $geomcol && $rect");
   
   if $sth.execute {
@@ -649,6 +653,7 @@ sub draw_lines(Str $table, Str $typecolumn, Int $default_symbol = 0) {
 sub draw_ga_lines(Str $table, Str $typecolumn, Int $default_symbol = 0) {
   note "$table ($default_symbol) lines...";
   my $geomcol = %defaults{'linegeometry'};
+  $geomcol = 'shape';
 #note "Reading column $geomcol ($rect)";
   my $sth = $dbh.prepare("SELECT symbol, st_astext($geomcol) as shape FROM $table WHERE $geomcol && $rect");
   
@@ -715,6 +720,7 @@ sub put_outline(Str $text, Real $x, Real $y, Real $size, Str $colour, Real $thic
 sub draw_polygon_outline_names(Str $table, Str $column, Real $size, Real $thickness, Str $colour) {
   note "$table outline names...";
   my $geomcol = %defaults{'linegeometry'};
+  $geomcol = 'geom';
   my $sth = $dbh.prepare("SELECT $column, st_astext(st_envelope($geomcol)) as bbox FROM $table WHERE $geomcol && $rect");
   
   if $sth.execute {
@@ -745,7 +751,8 @@ sub draw_polygon_outline_names(Str $table, Str $column, Real $size, Real $thickn
 sub draw_properties() {
     note "property lines...";
   my $geomcol = %defaults{'linegeometry'};
-    my $sth = $dbh.prepare("SELECT st_astext($geomcol) as shape FROM property_view WHERE pfi = ?");
+  $geomcol = 'shape';
+    my $sth = $dbh.prepare("SELECT st_astext($geomcol) as shape FROM vm_property_view WHERE pfi = ?");
     
     for @properties -> $property {
         $sth.execute($property);
@@ -759,7 +766,7 @@ sub draw_properties() {
 }
 
 #`[
-  sub draw_ga_lines -- draw lines (with width) from a Geosciences Australia table
+  sub draw_ga_wlines -- draw lines (with width) from a Geosciences Australia table
     $table          -- table name
 ]
 
@@ -848,19 +855,18 @@ my %roadsymbols = (
 ]
 
 #`[
-  sub draw_roads -- draw roads from the Vicmap database table tr_raod
+  sub draw_vm_roads -- draw roads from the Vicmap database table tr_raod
     no parameters
 ]
 
-sub draw_roads() {
+sub draw_vm_roads() {
     my @dual;
     my $featurewidth;
 
     note "Roads...";
     my $geomcol = %defaults{'linegeometry'};
-#    my $sth = $dbh.prepare("SELECT pfi, ftype_code, class_code, dir_code, road_seal, div_rd, st_astext($geomcol) as shape FROM tr_road WHERE $geomcol && $rect");
-#    my $sth = $dbh.prepare("SELECT ga_pid, ftype_code, class_code, dir_code, road_seal, div_rd, st_astext($geomcol) as shape FROM roads WHERE $geomcol && $rect");
-    my $sth = $dbh.prepare("SELECT pfi, ftype_code, class_code, dir_code, road_seal, div_rd, st_astext($geomcol) as shape FROM tr_road WHERE $geomcol && $rect");
+  $geomcol = 'geom';
+    my $sth = $dbh.prepare("SELECT pfi, ftype_code, class_code, dir_code, road_seal, div_rd, st_astext($geomcol) as shape FROM vm_tr_road WHERE $geomcol && $rect");
     
     $sth.execute();
     
@@ -889,7 +895,7 @@ sub draw_roads() {
 
     note "Centre lines of roads...";
 
-    $sth = $dbh.prepare("SELECT ftype_code, st_astext(geom) as shape FROM tr_road WHERE pfi = ?");
+    $sth = $dbh.prepare("SELECT ftype_code, st_astext(geom) as shape FROM vm_tr_road WHERE pfi = ?");
     for @dual -> $objectid {
 	$sth.execute($objectid);
 	
@@ -914,6 +920,7 @@ sub draw_ga_roads() {
 
     note "Roads...";
     my $geomcol = %defaults{'linegeometry'};
+  $geomcol = 'shape';
     my $sth = $dbh.prepare("SELECT objectid, symbol, featurewidth,  st_astext($geomcol) as shape FROM roads WHERE $geomcol && $rect");
     
     $sth.execute();
@@ -983,9 +990,7 @@ sub draw_osmroads() {
     my $featurewidth = 0;
 
     note "OSMRoads...\n";
-    my $osmdbh = DBIish.connect("Pg", dbname => 'osm', RaiseError => 0); # or die $DBIish::errstr;
-    #my $osmdbh = DBIish.connect("dbi:Pg:dbname=osm", "", "", {AutoCommit => 0});
-    my $sth = $osmdbh.prepare("SELECT osm_id, highway, st_astext(way) as shape FROM planet_osm_line WHERE highway IS NOT NULL AND way && $rect");
+    my $sth = $dbh.prepare("SELECT osm_id, highway, st_astext(way) as shape FROM planet_osm_line WHERE highway IS NOT NULL AND way && $rect");
     
     $sth.execute();
     
@@ -1008,7 +1013,7 @@ sub draw_osmroads() {
 
 # Now go back and draw the yellow centre line on dual carriageways
 
-    $sth = $osmdbh.prepare("SELECT st_astext(way) as shape FROM planet_osm_line WHERE osm_id = ?");
+    $sth = $dbh.prepare("SELECT st_astext(way) as shape FROM planet_osm_line WHERE osm_id = ?");
     for @dual -> $objectid {
 	$sth.execute($objectid);
 	
@@ -1018,7 +1023,6 @@ sub draw_osmroads() {
 	    put_line($shape, 'line250A', $featurewidth);
 	}
     }
-    $osmdbh.disconnect();
 }
 
 #`[
@@ -1028,14 +1032,15 @@ sub draw_osmroads() {
 ]
 
 #`[
-  sub draw_points -- draw points from a Vicmap table
+  sub draw_vm_points -- draw points from a Vicmap table
     $table -- database table
     $column -- the name of the column specifying the feature type
 ]
 
-sub draw_points(Str $table, Str $column) {
+sub draw_vm_points(Str $table, Str $column) {
     note "$table points...";
   my $geomcol = %defaults{'pointgeometry'};
+  $geomcol = 'geom';
 
 #  my $sth = $dbh.prepare("SELECT $column, st_astext($geomcol) AS position, rotation
 #                            FROM $table
@@ -1078,6 +1083,7 @@ sub draw_points(Str $table, Str $column) {
 sub draw_ga_points(Str $table) {
     note "$table points...";
   my $geomcol = %defaults{'pointgeometry'};
+  $geomcol = 'position';
 
   my $sth = $dbh.prepare("SELECT symbol, st_astext($geomcol) AS position, orientation, featurewidth
                             FROM $table
@@ -1105,7 +1111,8 @@ sub draw_ga_points(Str $table) {
 sub draw_spot_heights() {
     note "spot heights...";
   my $geomcol = %defaults{'pointgeometry'};
-    my $sth = $dbh.prepare("SELECT ftype_code, st_astext($geomcol) AS position, altitude FROM el_grnd_surface_point WHERE $geomcol && $rect");
+  $geomcol = 'geom';
+    my $sth = $dbh.prepare("SELECT ftype_code, st_astext($geomcol) AS position, altitude FROM vm_el_grnd_surface_point WHERE $geomcol && $rect");
     
     $TMP.say: "/Helvetica-Latin1 2 selectfont 0 0 0 1 setcmykcolor";
 
@@ -1128,12 +1135,13 @@ sub draw_spot_heights() {
 my @road_widths = (.9, .9, .9, .6, .6, .6, .4, .4, .4, .4, .2, .2, .2);
 
 sub draw_roadpoints() {
-    note "tr_road_infrastructure points...";
+    note "vm_tr_road_infrastructure points...";
     my $geomcol = %defaults{'pointgeometry'};
-#    my $sth = $dbh.prepare("SELECT ftype_code, st_astext($geomcol) as position, rotation, ufi, width FROM tr_road_infrastructure WHERE $geomcol && $rect");
+  $geomcol = 'geom';
+#    my $sth = $dbh.prepare("SELECT ftype_code, st_astext($geomcol) as position, rotation, ufi, width FROM vm_tr_road_infrastructure WHERE $geomcol && $rect");
     my $sth = $dbh.prepare("SELECT ftype_code, st_astext($geomcol) as
-    position, rotation, ufi FROM tr_road_infrastructure WHERE $geomcol && $rect");
-    my $sth2 = $dbh.prepare("SELECT ftype_code, class_code FROM tr_road WHERE from_ufi = ? OR to_ufi = ?");
+    position, rotation, ufi FROM vm_tr_road_infrastructure WHERE $geomcol && $rect");
+    my $sth2 = $dbh.prepare("SELECT ftype_code, class_code FROM vm_tr_road WHERE from_ufi = ? OR to_ufi = ?");
     
     if $sth.execute {
      
@@ -1169,7 +1177,7 @@ sub draw_roadpoints() {
 	  $TMP.print: sprintf "$orientation %.6g %.6g $featurewidth point$symbol\n", $x, $y;
       }
     } else {
-      note "Table tr_road_infrastructure does not exist";
+      note "Table vm_tr_road_infrastructure does not exist";
     }
 }
 
@@ -1373,6 +1381,7 @@ sub draw_ga_annotations() {
 	    $xdiff = $ydiff = 0;
 	} else {
 	    note "Unknown annotation value $unknown1, ignoring\n";
+	    next;
 	}
         $ann.skip(18);
 	$ann.lastring;
@@ -1380,7 +1389,7 @@ sub draw_ga_annotations() {
 	
 	# finished parsing; now print something
 	
-	# Check for valid location -- sometimes we gat lat/lon with NaN values!
+	# Check for valid location -- sometimes we get lat/lon with NaN values!
 	if ($x1 == $x1 and $y1 == $y1) {
 	    $font = ($font eq 'Zurich Cn BT') ?? 'Helvetica-Narrow-Latin1' !! 'Helvetica-Latin1';
 	    $TMP.print: sprintf "/$font %.4g selectfont\n", $pointsize;
@@ -1417,10 +1426,10 @@ sub label_grid(Bool $left, Bool $right) {
     my $easting;
 # Label grid lines
 # Eastings below and above
-    ($lat, $long, $z) = utm_to_latlon('WGS-84', $zone, $starteasting, $minnorthing);
+    ($lat, $long, $z) = |utm-to-latlon('WGS-84', $zone, $starteasting, $minnorthing);
     ($x, $y1) = latlon2page($long, $lllatitude);
     $y1 -= 4;
-    ($lat, $long, $z) = utm_to_latlon('WGS-84', $zone, $starteasting, $maxnorthing);
+    ($lat, $long, $z) = |utm-to-latlon('WGS-84', $zone, $starteasting, $maxnorthing);
     ($x, $y2) = latlon2page($long, $urlatitude);
     $y2 += 1;
     $TMP.print: "gsave $x $y1 translate ";
@@ -1435,11 +1444,11 @@ sub label_grid(Bool $left, Bool $right) {
     $easting = $starteasting + $grid_spacing;
     
     while ($easting <= $maxeasting) {
-	($lat, $long, $z) = utm_to_latlon('WGS-84', $zone, $easting, $minnorthing);
+	($lat, $long, $z) = |utm-to-latlon('WGS-84', $zone, $easting, $minnorthing);
 	($x, $y1) = latlon2page($long, $lllatitude);
 #	($x, $y1) = grid2page($easting, $minnorthing);
 	$y1 -= 4;
-	($lat, $long, $z) = utm_to_latlon('WGS-84', $zone, $easting, $maxnorthing);
+	($lat, $long, $z) = |utm-to-latlon('WGS-84', $zone, $easting, $maxnorthing);
 	($x, $y2) = latlon2page($long, $urlatitude);
 #	($x, $y2) = grid2page($easting, $maxnorthing);
 	$y2 += 1;
@@ -1457,7 +1466,7 @@ sub label_grid(Bool $left, Bool $right) {
     
 # Northings
     if ($left) {
-	my ($lat, $long, $z) = utm_to_latlon('WGS-84', $zone, $mineasting, $startnorthing);
+	my ($lat, $long, $z) = |utm-to-latlon('WGS-84', $zone, $mineasting, $startnorthing);
 	my ($x, $y) = latlon2page($lllongitude, $lat);
 #	my ($x, $y) = grid2page($mineasting, $startnorthing);
 	$x -= 1;
@@ -1470,7 +1479,7 @@ sub label_grid(Bool $left, Bool $right) {
 	my $northing = $startnorthing + $grid_spacing;
 	
 	while ($northing <= $maxnorthing) {
-	    ($lat, $long, $z) = utm_to_latlon('WGS-84', $zone, $mineasting, $northing);
+	    ($lat, $long, $z) = |utm-to-latlon('WGS-84', $zone, $mineasting, $northing);
 	    ($x, $y) = latlon2page($lllongitude, $lat);
 #	    ($x, $y) = grid2page($mineasting, $northing);
 	    $x -= 1;
@@ -1485,7 +1494,7 @@ sub label_grid(Bool $left, Bool $right) {
 	}
     }	
     if ($right) {
-	my ($lat, $long, $z) = utm_to_latlon('WGS-84', $zone, $maxeasting, $startnorthing);
+	my ($lat, $long, $z) = |utm-to-latlon('WGS-84', $zone, $maxeasting, $startnorthing);
 	my ($x, $y) = latlon2page($urlongitude, $lat);
 #	my ($x, $y) = grid2page($maxeasting, $startnorthing);
 	$x += 4;
@@ -1498,7 +1507,7 @@ sub label_grid(Bool $left, Bool $right) {
 	my $northing = $startnorthing + $grid_spacing;
 	
 	while ($northing <= $maxnorthing) {
-	    ($lat, $long, $z) = utm_to_latlon('WGS-84', $zone, $maxeasting, $northing);
+	    ($lat, $long, $z) = |utm-to-latlon('WGS-84', $zone, $maxeasting, $northing);
 	    ($x, $y) = latlon2page($urlongitude, $lat);
 #	    ($x, $y) = grid2page($maxeasting, $northing);
 	    $x += 1;
@@ -1834,7 +1843,7 @@ sub draw_margins(Bool $left, Bool $right) {
     my ($xoff, $yoff, $slope);
 
     (*, $xoffset, $yoffset)
-	= latlon_to_utm('WGS-84', :$zone, $lllatitude, $lllongitude);
+	= |latlon-to-utm('WGS-84', :$zone, $lllatitude, $lllongitude);
     
     $xoffset = -$xoffset;
     $yoffset = -$yoffset;
@@ -1952,22 +1961,22 @@ sub draw_objects(Real $xoff, Real $yoff, Real $slope) {
       my $order       = @row[5].Int;
       $default = 0 unless $default.defined && $default;
       note "Drawing $feature: '$draw' '$table' '$typecolumn' ($order)";
-      if $order && %drawobjects{$feature.lc} {
+      if $order > 0 && %drawobjects{$feature.lc} {
         given $draw {
           when 'treeden'        { draw_treeden\             (                                    ); }
-          when 'area'           { draw_areas\               ($table                              ); }
+          when 'vm_area'           { draw_vm_areas\               ($table                              ); }
           when 'ga_area'        { draw_ga_areas\            ($table                              ); }
-          when 'line'           { draw_lines\               ($table, $typecolumn,      -$default ); }
+          when 'vm_line'           { draw_vm_lines\               ($table, $typecolumn,      -$default ); }
           when 'ga_line'        { draw_ga_lines\            ($table, $typecolumn,      -$default ); }
-          when 'line_f'         { draw_lines\               ($table, $typecolumn,      -$default,); }
+          when 'vm_line_f'         { draw_vm_lines\               ($table, $typecolumn,      -$default,); }
           when 'outline'        { draw_polygon_outline_names($table, $typecolumn, 8, 0.2, '1 0 .86 0'); }
-          when 'road'           { draw_roads\               (                                    ); }
+          when 'vm_road'           { draw_vm_roads\               (                                    ); }
           when 'ga_road'        { draw_ga_roads\            (                                    ); }
           when 'osm_road'       { draw_osmroads\            (                                    ); }
-#         when 'wline'          { draw_wlines\              ($table                              ); }
+#         when 'vm_wline'          { draw_vm_wlines\              ($table                              ); }
           when 'ga_wline'       { draw_ga_wlines\           ($table,                             ); }
           when 'property'       { draw_properties\          (                                    ); }
-          when 'point'          { draw_points\              ($table, $typecolumn                 ); }
+          when 'vm_point'          { draw_vm_points\              ($table, $typecolumn                 ); }
           when 'ga_point'       { draw_ga_points\           ($table,                            ); }
           when 'spotheight'     { draw_spot_heights\        (                                    ); }
           when 'roadpoint'      { draw_roadpoints\          (                                    ); }
@@ -2087,22 +2096,22 @@ if ($ongraticule) {
   fail "No location specified" unless $lllongitude.defined && $lllatitude.defined;
   if $zone.defined && $zone ne '' {
     (*, $lleasting, $llnorthing)
-	    = latlon_to_utm('WGS-84', :$zone, $lllatitude, $lllongitude);
+	    = |latlon-to-utm('WGS-84', :$zone, $lllatitude, $lllongitude);
     note "Calculated grid as $lleasting:$llnorthing from lat $lllatitude long $lllongitude zone $zone";
   } else {
     ($zone, $lleasting, $llnorthing)
-	    = latlon_to_utm('WGS-84', $lllatitude, $lllongitude);
+	    = |latlon-to-utm('WGS-84', $lllatitude, $lllongitude);
     note "Calculated grid as $lleasting:$llnorthing from lat $lllatitude long $lllongitude calculated zone $zone";
   }
   if (! $graticulewidth.defined) {
     my ($tlat, $tlong, Nil)
-	    = utm_to_latlon('WGS-84', $zone, $lleasting+$imagewidth, $llnorthing);
+	    = |utm-to-latlon('WGS-84', $zone, $lleasting+$imagewidth, $llnorthing);
     $graticulewidth = $tlong - $lllongitude;
     note "Calculated graticule width as $tlong - $lllongitude ($lleasting $llnorthing $imagewidth) tlat = $tlat";
   }
   if (! $graticuleheight.defined) {
     my ($tlat, $tlong, Nil)
-	    = utm_to_latlon('WGS-84', $zone, $lleasting, $llnorthing+$imageheight);
+	    = |utm-to-latlon('WGS-84', $zone, $lleasting, $llnorthing+$imageheight);
     $graticuleheight = $tlat - $lllatitude;
   }
   $lrlongitude = $urlongitude = $lllongitude + $graticulewidth;
@@ -2110,10 +2119,10 @@ if ($ongraticule) {
   $ullongitude = $lllongitude;
   $lrlatitude = $lllatitude;
   note "$graticulewidth: $lrlongitude $ullatitude $ullongitude $lrlatitude";
-  (*, $lleasting, $llnorthing) = latlon_to_utm('WGS-84', :$zone, $lllatitude, $lllongitude);
-  (*, $lreasting, $lrnorthing) = latlon_to_utm('WGS-84', :$zone, $lrlatitude, $lrlongitude);
-  (*, $uleasting, $ulnorthing) = latlon_to_utm('WGS-84', :$zone, $ullatitude, $ullongitude);
-  (*, $ureasting, $urnorthing) = latlon_to_utm('WGS-84', :$zone, $urlatitude, $urlongitude);
+  (*, $lleasting, $llnorthing) = |latlon-to-utm('WGS-84', :$zone, $lllatitude, $lllongitude);
+  (*, $lreasting, $lrnorthing) = |latlon-to-utm('WGS-84', :$zone, $lrlatitude, $lrlongitude);
+  (*, $uleasting, $ulnorthing) = |latlon-to-utm('WGS-84', :$zone, $ullatitude, $ullongitude);
+  (*, $ureasting, $urnorthing) = |latlon-to-utm('WGS-84', :$zone, $urlatitude, $urlongitude);
 } else { # on grid
   if (! $lleasting.defined or ! $llnorthing.defined or ! $zone.defined) {
     fail "No location specified\n";
@@ -2129,21 +2138,21 @@ if ($ongraticule) {
   $urnorthing = $ulnorthing = $llnorthing + $gridheight;
   $lrnorthing = $llnorthing;
   note "About to calculate bounding box (zone $zone)";
-  ($lllatitude, $lllongitude, Nil) = utm_to_latlon('WGS-84', $zone, $lleasting, $llnorthing);
-  ($lrlatitude, $lrlongitude, Nil) = utm_to_latlon('WGS-84', $zone, $lreasting, $lrnorthing);
-  ($ullatitude, $ullongitude, Nil) = utm_to_latlon('WGS-84', $zone, $uleasting, $ulnorthing);
-  ($urlatitude, $urlongitude, Nil) = utm_to_latlon('WGS-84', $zone, $ureasting, $urnorthing);
+  ($lllatitude, $lllongitude, Nil) = |utm-to-latlon('WGS-84', $zone, $lleasting, $llnorthing);
+  ($lrlatitude, $lrlongitude, Nil) = |utm-to-latlon('WGS-84', $zone, $lreasting, $lrnorthing);
+  ($ullatitude, $ullongitude, Nil) = |utm-to-latlon('WGS-84', $zone, $uleasting, $ulnorthing);
+  ($urlatitude, $urlongitude, Nil) = |utm-to-latlon('WGS-84', $zone, $ureasting, $urnorthing);
   note "$lllatitude $lllongitude $urlatitude $urlongitude\n";
 }
 
 if ($bleedright) {
-  my ($d1, $teast, $tnorth) = latlon_to_utm('WGS-84', :zone($zone), $urlatitude.Real, $lllongitude.Real);
-  my ($d2, $urlatitude, $urlongitude)  = utm_to_latlon('WGS-84', $zone, $teast+$imagewidth, $tnorth);
+  my ($d1, $teast, $tnorth) = |latlon-to-utm('WGS-84', :zone($zone), $urlatitude.Real, $lllongitude.Real);
+  my ($d2, $urlatitude, $urlongitude)  = |utm-to-latlon('WGS-84', $zone, $teast+$imagewidth, $tnorth);
 }
 
 if ($bleedtop) {
-  my ($d1, $teast, $tnorth) = latlon_to_utm('WGS-84', :$zone, $lllatitude.Real, $urlongitude.Real);
-  my ($d2, $urlatitude, $urlongitude)  = utm_to_latlon('WGS-84', $zone, $teast+$imagewidth, $tnorth);
+  my ($d1, $teast, $tnorth) = |latlon-to-utm('WGS-84', :$zone, $lllatitude.Real, $urlongitude.Real);
+  my ($d2, $urlatitude, $urlongitude)  = |utm-to-latlon('WGS-84', $zone, $teast+$imagewidth, $tnorth);
 }
 
 note qq:to 'EOF';
@@ -2218,8 +2227,8 @@ $sth_sym = $dbh.prepare("SELECT symbol_ga FROM {%defaults{'symbols'}} WHERE type
 my ($leftzone, $rightzone);
 
 if (!$zone.defined && $ongraticule) {
-  ($leftzone,  *, *) = latlon_to_utm('WGS-84', $lllatitude, $lllongitude+.0000001);
-  ($rightzone, *, *) = latlon_to_utm('WGS-84', $urlatitude, $urlongitude-.0000001);
+  ($leftzone,  *, *) = |latlon-to-utm('WGS-84', $lllatitude, $lllongitude+.0000001);
+  ($rightzone, *, *) = |latlon-to-utm('WGS-84', $urlatitude, $urlongitude-.0000001);
 } else {
   $leftzone = $rightzone = $zone;
 }

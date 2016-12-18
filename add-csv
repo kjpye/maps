@@ -33,7 +33,7 @@ sub MAIN(Str $filename) {
   Description.parse($filecontents);
 
   print qq:to 'HEADER';
-    drop table $table;
+    drop table if exists $table;
     create table $table (
     HEADER
   my $eol = '';
@@ -54,10 +54,10 @@ sub MAIN(Str $filename) {
     print "INSERT INTO $table $columns VALUES (";
     for @columns -> $col {
       given %columns{$col} {
-        when 'integer' { print $delim, %data{$col}; $delim = ',';}
-        when 'text'    { print $delim, "'", %data{$col}.subst("'", "''", :g), "'"; $delim = ',';}
-        when 'boolean' { print $delim, %data{$col}||'False'; $delim = ',';}
-        when 'double_precision'  { print $delim, %data{$col}; $delim = ',';}
+        when 'integer'           { print $delim,      %data{$col};                           $delim = ',';}
+        when 'text'              { print $delim, "'", %data{$col}.subst("'", "''", :g), "'"; $delim = ',';}
+        when 'boolean'           { print $delim,      %data{$col} || 'False';                $delim = ',';}
+        when 'double_precision'  { print $delim,      %data{$col};                           $delim = ',';}
       }
     }
     print ");\n";
