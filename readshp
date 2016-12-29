@@ -1,0 +1,147 @@
+#!/usr/bin/env perl6
+
+use NativeCall;
+
+my $shp = slurp '../../maps/Railways.shp', :bin;
+say $shp.bytes;
+my $shp-i = 0; # index into $shp
+
+my $shx = slurp '../../maps/Railways.shx', :bin;
+say $shx.bytes;
+my $shx-i = 0; # index into $shx
+
+my $dbf = slurp '../../maps/Railways.dbf', :bin;
+say $dbf.bytes;
+my $dbf-i = 0; # index into $dbf
+
+sub skip($buf, $index is rw, $count) {
+  $index += $count;
+}
+
+sub read-be-int ($buf, $index is rw) {
+  my $val = $buf[$index++];
+  $val +<= 8;
+  $val += $buf[$index++];
+  $val +<= 8;
+  $val += $buf[$index++];
+  $val +<= 8;
+  $val += $buf[$index++];
+}
+
+sub read-le-int ($buf, $index is rw) {
+  my $val = $buf[$index++];
+  $val += $buf[$index++] +< 8;
+  $val += $buf[$index++] +< 16;
+  $val += $buf[$index++] +< 24;
+}
+
+sub read-le-short ($buf, $index is rw) {
+  my $val = $buf[$index++];
+  $val += $buf[$index++] +< 8;
+}
+
+sub read-double ($buf, $index is rw) {
+  $index += 8;
+  nativecast((num64), Blob.new($buf[($index-8) ..^ $index]));
+}
+
+sub read-byte ($buf, $index is rw) {
+  my $val = $buf[$index++];
+}
+
+# Read shp header
+
+my $file-code = read-be-int($shp, $shp-i);
+say $file-code;
+skip($shp, $shp-i, 20);
+my $length = read-be-int($shp, $shp-i);
+say $length;
+my $version = read-le-int($shp, $shp-i);
+say $version;
+my $shape-type = read-le-int($shp, $shp-i);
+say $shape-type;
+my $xmin = read-double($shp, $shp-i);
+my $ymin = read-double($shp, $shp-i);
+my $xmax = read-double($shp, $shp-i);
+my $ymax = read-double($shp, $shp-i);
+my $zmin = read-double($shp, $shp-i);
+my $zmax = read-double($shp, $shp-i);
+my $mmin = read-double($shp, $shp-i);
+my $mmax = read-double($shp, $shp-i);
+say "$xmin $xmax $ymin $ymax $zmin $zmax $mmin $mmax";
+say "Read shp header -- index is $shp-i";
+
+
+# Read dbf header
+my $dbf-type     = read-byte($dbf, $dbf-i);
+die "Incorrect dbf file type\n" unless $dbf-type == 3;
+my $year         = 1900 + read-byte($dbf, $dbf-i);
+my $month        = read-byte($dbf, $dbf-i);
+my $day          = read-byte($dbf, $dbf-i);
+say "Last modification date: $year-$month-$day";
+my $records      = read-le-int($dbf, $dbf-i);
+say "$records records";
+my $first-offset = read-le-short($dbf, $dbf-i);
+say "Initial offset $first-offset";
+my $record-length = read-le-short($dbf, $dbf-i);
+say "Record length $record-length";
+skip($dbf, $dbf-i, 2);
+my $incomplete-transaction = read-byte($dbf, $dbf-i);
+my $encrytion = read-byte($dbf, $dbf-i);
+skip($dbf, $dbf-i, 12);
+my $table-flags = read-byte($dbf, $dbf-i);
+my $code-page-mark = read-byte($dbf, $dbf-i);
+skip($dbf, $dbf-i, 2);
+
+# Read subrecord structure
+
+sub read-chars ($buf, $index is rw, $length) {
+  my $string  = '';
+  for ^$length {
+    my $chr = read-byte($buf, $index);
+    $string ~= $chr.chr if $chr;
+  }
+  $string;
+}
+
+sub read-record($buf, $index is rw) {
+  my $field-name         =  read-chars($buf, $index, 11);
+  my $field-type         =   read-byte($buf, $index);
+  my $displacement       = read-le-int($buf, $index);
+  my $field-length       =   read-byte($buf, $index);
+  my $decimals           =   read-byte($buf, $index);
+  my $field-flags        =   read-byte($buf, $index);
+  my $autoincrement-next = read-le-int($buf, $index);
+  my $step-value         =   read-byte($buf, $index);
+                                  skip($buf, $index, 8);
+  %(name          => $field-name,
+    type          => $field-type.chr,
+    displacement  => $displacement,
+    length        => $field-length,
+    decimals      => $decimals,
+    flags         => $field-flags,
+    autoincrement => $autoincrement-next,
+    step          => $step-value
+  )
+}
+
+my @fields;
+
+while $dbf[$dbf-i] != 13 {
+  @fields.push(read-record($dbf, $dbf-i));
+}
+skip($dbf, $dbf-i, 1);
+
+say "{@fields.elems} fields";
+
+for ^$records {
+  skip($dbf, $dbf-i, 1); # Why???
+  for @fields -> %field {
+    my $name = %field<name>;
+    my $value = read-chars($dbf, $dbf-i, %field<length>);
+    say "$name: \"$value\"";
+  }
+  say '';
+}
+
+say "dbf index is now $dbf-i";
