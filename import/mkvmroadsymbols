@@ -1,0 +1,61 @@
+drop table vm_road_types;
+create table vm_road_types (
+  function text,
+  class text,
+  sealed text,
+  symbol integer,
+  dual int,
+  comment text
+);
+
+insert into vm_road_types (function, class, sealed, symbol, dual, comment) values ('road',        '0', 's', 250, 1, 'dual carriageway');
+insert into vm_road_types (function, class, sealed, symbol, dual, comment) values ('road',        '1', 's', 251, 0, 'principal sealed');
+insert into vm_road_types (function, class, sealed, symbol, dual, comment) values ('road',        '2', 's', 251, 0, 'principal sealed');
+insert into vm_road_types (function, class, sealed, symbol, dual, comment) values ('road',        '3', 's', 256, 0, 'secondary sealed');
+insert into vm_road_types (function, class, sealed, symbol, dual, comment) values ('road',        '4', 's', 256, 0, 'secondary sealed');
+insert into vm_road_types (function, class, sealed, symbol, dual, comment) values ('road',        '5', 's', 256, 0, 'secondary sealed');
+insert into vm_road_types (function, class, sealed, symbol, dual, comment) values ('road',        '6', 's', 257, 0, 'minor sealed');
+insert into vm_road_types (function, class, sealed, symbol, dual, comment) values ('road',        '7', 's', 257, 0, 'minor sealed');
+insert into vm_road_types (function, class, sealed, symbol, dual, comment) values ('road',        '8', 's', 257, 0, 'minor sealed');
+insert into vm_road_types (function, class, sealed, symbol, dual, comment) values ('road',        '9', 's', 257, 0, 'minor sealed');
+insert into vm_road_types (function, class, sealed, symbol, dual, comment) values ('road',       '10', 's', 257, 0, 'minor sealed');
+insert into vm_road_types (function, class, sealed, symbol, dual, comment) values ('road',       '11', 's', 257, 0, 'minor sealed');
+insert into vm_road_types (function, class, sealed, symbol, dual, comment) values ('road',       '12', 's',  22, 0, 'foot track');
+insert into vm_road_types (function, class, sealed, symbol, dual, comment) values ('road',        '0', 'u', 258, 0, 'principal unsealed');
+insert into vm_road_types (function, class, sealed, symbol, dual, comment) values ('road',        '1', 'u', 258, 0, 'principal unsealed');
+insert into vm_road_types (function, class, sealed, symbol, dual, comment) values ('road',        '2', 'u', 258, 0, 'principal unsealed');
+insert into vm_road_types (function, class, sealed, symbol, dual, comment) values ('road',        '3', 'u', 259, 0, 'secondary unsealed');
+insert into vm_road_types (function, class, sealed, symbol, dual, comment) values ('road',        '4', 'u', 259, 0, 'secondary unsealed');
+insert into vm_road_types (function, class, sealed, symbol, dual, comment) values ('road',        '5', 'u', 259, 0, 'secondary unsealed');
+insert into vm_road_types (function, class, sealed, symbol, dual, comment) values ('road',        '6', 'u', 253, 0, 'minor unsealed');
+insert into vm_road_types (function, class, sealed, symbol, dual, comment) values ('road',        '7', 'u', 253, 0, 'minor unsealed');
+insert into vm_road_types (function, class, sealed, symbol, dual, comment) values ('road',        '8', 'u', 254, 0, 'vehicular track');
+insert into vm_road_types (function, class, sealed, symbol, dual, comment) values ('road',        '9', 'u', 254, 0, 'vehicular track');
+insert into vm_road_types (function, class, sealed, symbol, dual, comment) values ('road',       '10', 'u', 254, 0, 'vehicular track');
+insert into vm_road_types (function, class, sealed, symbol, dual, comment) values ('road',       '11', 'u', 254, 0, 'vehicular track');
+insert into vm_road_types (function, class, sealed, symbol, dual, comment) values ('road',       '12', 'u',  22, 0, 'foot track');
+insert into vm_road_types (function, class, sealed, symbol, dual, comment) values ('footbridge',  '',   '', 268, 0, 'foot bridge');
+insert into vm_road_types (function, class, sealed, symbol, dual, comment) values ('footbridge',  '',   '', 268, 0, 'foot bridge');
+insert into vm_road_types (function, class, sealed, symbol, dual, comment) values ('ford',        '',   '', 253, 0, '');
+insert into vm_road_types (function, class, sealed, symbol, dual, comment) values ('bridge',      '0', 's', 260, 0, 'bridge');
+insert into vm_road_types (function, class, sealed, symbol, dual, comment) values ('bridge',      '1', 's', 260, 0, 'bridge');
+insert into vm_road_types (function, class, sealed, symbol, dual, comment) values ('bridge',      '2', 's', 260, 0, 'bridge');
+insert into vm_road_types (function, class, sealed, symbol, dual, comment) values ('bridge',      '3', 's', 260, 0, 'bridge');
+insert into vm_road_types (function, class, sealed, symbol, dual, comment) values ('bridge',      '4', 's', 260, 0, 'bridge');
+insert into vm_road_types (function, class, sealed, symbol, dual, comment) values ('bridge',      '5', 's', 260, 0, 'bridge');
+insert into vm_road_types (function, class, sealed, symbol, dual, comment) values ('bridge',      '6', 's', 260, 0, 'bridge');
+insert into vm_road_types (function, class, sealed, symbol, dual, comment) values ('bridge',      '5', 'u', 260, 0, 'bridge');
+insert into vm_road_types (function, class, sealed, symbol, dual, comment) values ('bridge',      '6', 'u', 260, 0, 'bridge');
+insert into vm_road_types (function, class, sealed, symbol, dual, comment) values ('bridge',      '',   '', 260, 0, 'bridge');
+insert into vm_road_types (function, class, sealed, symbol, dual, comment) values ('connector',   '',   '',   0, 0, '');
+insert into vm_road_types (function, class, sealed, symbol, dual, comment) values ('roundabout',  '',   '', 256, 0, '');
+insert into vm_road_types (function, class, sealed, symbol, dual, comment) values ('tertiary_link',  '',   '',   1, 0, '');
+insert into vm_road_types (function, class, sealed, symbol, dual, comment) values ('secondary_link',  '',   '',   0, 0, '');
+insert into vm_road_types (function, class, sealed, symbol, dual, comment) values ('primary_link',  '',   '',   0, 0, '');
+insert into vm_road_types (function, class, sealed, symbol, dual, comment) values ('steps',  '',   '',   0, 22, '');
+insert into vm_road_types (function, class, sealed, symbol, dual, comment) values ('bridleway',  '',   '',  22, 0, '');
+insert into vm_road_types (function, class, sealed, symbol, dual, comment) values ('living_street',  '',   '',  22, 0, '');
+insert into vm_road_types (function, class, sealed, symbol, dual, comment) values ('pedestrian',  '',   '',  22, 0, '');
+insert into vm_road_types (function, class, sealed, symbol, dual, comment) values ('rest_area',  '',   '',  22, 0, '');
+insert into vm_road_types (function, class, sealed, symbol, dual, comment) values ('abandoned',  '',   '',  22, 0, '');
+insert into vm_road_types (function, class, sealed, symbol, dual, comment) values ('proposed',  '',   '',  22, 0, '');

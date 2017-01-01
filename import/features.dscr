@@ -1,0 +1,11 @@
+file /home/kevin/src/maps/displayorder.csv
+table displayorder
+columns {
+  source        text
+  featurename   text
+  drawtype      text
+  tablename     text
+  featurecolumn text
+  defaultsymbol integer
+  displayorder  integer
+}

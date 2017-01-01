@@ -5,6 +5,9 @@ use strict;
 
 use POSIX;
 
+my $db = shift // 'maps';
+my $prefix = shift // 'ga_';
+
 use vars qw(%table);
 %table = (AerialCableway => 'line',
 	  AircraftFacilityPoints => 'point',
@@ -158,8 +161,8 @@ use vars qw(%tables);
 use vars qw($debug);
 $debug = 0;
 
-my $dbh = DBI->connect("dbi:Pg:dbname=map250k", "", "", {AutoCommit => 1});
-my $sth = $dbh->prepare("SELECT name, type FROM FeatureType");
+my $dbh = DBI->connect("dbi:Pg:dbname=$db", "", "", {AutoCommit => 1});
+my $sth = $dbh->prepare("SELECT name, type FROM ${prefix}FeatureType");
 $sth->execute();
 
 my @row;
@@ -179,7 +182,7 @@ sub get_featuretype
     my $type = ++$max_featuretype;
     $featuretype{$name} = $type;
     $name =~ s/\'/\\'/g;
-    my $sth = $dbh->prepare("INSERT INTO FeatureType (name, type) VALUES ('$name', $type);");
+    my $sth = $dbh->prepare("INSERT INTO ${prefix}FeatureType (name, type) VALUES ('$name', $type);");
     $sth->execute();
 print STDERR "Added featuretype $type ($name) to database\n";
     return $type;
@@ -198,8 +201,8 @@ sub do_insert
     {
 	$columns =~ s/\,\s*$//;
 	$columnvalues =~ s/\,\s*$//;
-	my $sth = $dbh->prepare("INSERT INTO $table_name ($columns) VALUES ($columnvalues);");
-	print STDERR "INSERT INTO $table_name ($columns) VALUES ($columnvalues);\n" unless $sth->execute();
+	my $sth = $dbh->prepare("INSERT INTO ${prefix}$table_name ($columns) VALUES ($columnvalues);");
+	print STDERR "INSERT INTO ${prefix}$table_name ($columns) VALUES ($columnvalues);\n" unless $sth->execute();
     }
     $columns = '';
     $columnvalues = '';

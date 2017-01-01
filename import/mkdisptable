@@ -1,0 +1,265 @@
+drop table if exists displayorder;
+create table displayorder (
+  featurename text,
+  drawtype text,
+  tablename text,
+  featurecolumn text default '',
+  defaultsymbol int default 0,
+  displayorder int default 0
+);
+grant select on displayorder to ro;
+
+insert into displayorder (featurename,                    drawtype,  tablename,                      featurecolumn,                               displayorder)
+                  values ('tree_density',                 'treeden', 'tree_density',                 '',                                          0           ); -- 100);
+insert into displayorder (featurename,                    drawtype,  tablename,                      featurecolumn,                               displayorder)
+                  values ('hy_water_area_polygon',        'area',    'hy_water_area_polygon',        'ftype_code',                                110         );
+insert into displayorder (featurename,                    drawtype,  tablename,                      featurecolumn,                               displayorder)
+                  values ('hy_water_struct_area_polygon', 'area',    'hy_water_struct_area_polygon', '',                                          120         );
+insert into displayorder (featurename,                    drawtype,  tablename,                      featurecolumn,                               displayorder)
+                  values ('tr_air_infra_area_polygon',    'area',    'tr_air_infra_area_polygon',    '',                                          130         );
+insert into displayorder (featurename,                    drawtype,  tablename,                      featurecolumn,                               displayorder)
+                  values ('tracks',                       'line',    'tracks',                       '',                                          0           );
+insert into displayorder (featurename,                    drawtype,  tablename,                      featurecolumn,                               displayorder)
+                  values ('mineareas',                    'line',    'mineareas',                    '',                                          0           );
+insert into displayorder (featurename,                    drawtype,  tablename,                      featurecolumn,                               displayorder)
+                  values ('reserves',                     'line',    'reserves',                     '',                                          0           );
+insert into displayorder (featurename, drawtype, tablename, featurecolumn,                displayorder)
+                  values ('lakes',                        'line',    'lakes',                        '',                                          0           );
+insert into displayorder (featurename,                    drawtype,  tablename,                      featurecolumn,                defaultsymbol, displayorder)
+                  values ('hy_water_area_polygon',        'line',    'hy_water_area_polygon',        'ftype_code',                 114,           200         );
+insert into displayorder (featurename, drawtype, tablename, featurecolumn, defaultsymbol, displayorder)
+                  values ('reservoirs',                   'line',    'reservoirs',                   '',                           114,           0           );
+insert into displayorder (featurename, drawtype, tablename, featurecolumn, defaultsymbol, displayorder)
+                  values ('locality_polygon',             'line_f',  'locality_polygon',             'pfi',                        65,            210         );
+insert into displayorder (featurename, drawtype, tablename, featurecolumn,                displayorder)
+                  values ('locality_name',                'outline', 'locality_name',                'pfi',                                       0           ); -- 211);
+insert into displayorder (featurename, drawtype, tablename, featurecolumn, defaultsymbol, displayorder)
+                  values ('lga_polygon',                  'line_f',  'lga_polygon',                  'pfi',                        62,            220         );
+insert into displayorder (featurename, drawtype, tablename, featurecolumn,                displayorder)
+                  values ('el_contour',                   'line',    'el_contour',                   'ftype_code',                                230         );
+insert into displayorder (featurename, drawtype, tablename, featurecolumn,                displayorder)
+                  values ('hy_water_struct_line',         'line',    'hy_water_struct_line',         'ftype_code',                                240         );
+insert into displayorder (featurename, drawtype, tablename, featurecolumn,                displayorder)
+                  values ('hy_watercourse',               'line',    'hy_watercourse',               'ftype_code',                                250         );
+insert into displayorder (featurename, drawtype, tablename, featurecolumn,                displayorder)
+                  values ('tr_road',                      'road',    'tr_road',                      'ftype_code',                                260         );
+insert into displayorder (featurename, drawtype, tablename, featurecolumn,                displayorder)
+                  values ('tr_rail',                      'line',    'tr_rail',                      'ftype_code',                                260         );
+insert into displayorder (featurename,                    drawtype,   tablename,                      featurecolumn,                               displayorder)
+                  values ('properties',                   'property', 'properties',                   '',                                          0           ); -- 270);
+insert into displayorder (featurename, drawtype, tablename, featurecolumn,                displayorder)
+                  values ('el_grnd_surface_point',        'point',    'el_grnd_surface_point',        'ftype_code',                                280         );
+insert into displayorder (featurename,                    drawtype,     tablename,                     featurecolumn,                               displayorder)
+                  values ('el_grnd_surface_point',        'spotheight', 'el_grnd_surface_point',       'ftype_code',                                281         );
+insert into displayorder (featurename, drawtype, tablename, featurecolumn,                displayorder)
+                  values ('hy_water_point',               'point',      'hy_water_point',              'ftype_code',                                290         );
+insert into displayorder (featurename, drawtype, tablename, featurecolumn,                displayorder) 
+                  values ('hy_water_struct_point',        'point',      'hy_water_struct_point',       'ftype_code',                                300         );
+insert into displayorder (featurename, drawtype, tablename, featurecolumn,                displayorder)
+                  values ('tr_airport_infrastructure',    'point',      'tr_airport_infrastructure',   'ftype_code',                                310         );
+insert into displayorder (featurename, drawtype, tablename, featurecolumn,                displayorder)
+                  values ('tr_rail_infrastructure',       'point',      'tr_rail_infrastructure',      'ftype_code',                                320         );
+insert into displayorder (featurename, drawtype, tablename, featurecolumn,                displayorder)
+                  values ('tr_road_infrastructure',       'roadpoint',  'tr_road_infrastructure',      'ftype_code',                                330         );
+insert into displayorder (featurename, drawtype, tablename, featurecolumn,                displayorder)
+                  values ('graticule',                    'graticule',  'graticule',                   '',                                          340         );
+insert into displayorder (featurename, drawtype, tablename, featurecolumn,                displayorder)
+                  values ('grid',                         'grid',       'grid',                        '',                                          350         );
+insert into displayorder (featurename, drawtype, tablename, featurecolumn,                displayorder)
+                  values ('annotation',                   'annotation', 'annotation',                  '',                                          400         );
+insert into displayorder (featurename, drawtype, tablename, featurecolumn,                displayorder)
+                  values ('userannotation',               'userann',    'userannotation',              '',                                          410         );
+insert into displayorder (featurename,                    drawtype,     tablename,                                                                  displayorder)
+                  values ('Seas',                         'ga_area',    'Seas',                                                                     100         );
+insert into displayorder (featurename, drawtype, tablename,                               displayorder)
+                  values ('NativeVegetationAreas',        'ga_area',    'NativeVegetationAreas',                                                    110         );
+insert into displayorder (featurename, drawtype, tablename,                               displayorder)
+                  values ('Flats',                        'ga_area',    'Flats',                                                                    120         );
+insert into displayorder (featurename,                    drawtype,     tablename,                                                                  displayorder) 
+                  values ('ForeshoreFlats',               'ga_area',    'ForeshoreFlats',                                                           130);
+insert into displayorder (featurename,                    drawtype,     tablename,                                                                  displayorder)
+                  values ('Sands',                        'ga_area',        'Sands',                                                                140);
+insert into displayorder (featurename,                    drawtype,     tablename,                                                                  displayorder)
+                  values ('Islands',                      'ga_area',        'Islands',                                                              150);
+insert into displayorder (featurename,                    drawtype,     tablename,                                                                  displayorder) 
+                  values ('Lakes',                        'ga_area',        'Lakes',                                                                160);
+insert into displayorder (featurename,                    drawtype,     tablename,                                                                  displayorder) 
+                  values ('CanalAreas',                   'ga_area',        'CanalAreas',                                                           170);
+insert into displayorder (featurename,                    drawtype,     tablename,                                                                  displayorder) 
+                  values ('WatercourseAreas',             'ga_area',        'WatercourseAreas',                                                     180);
+insert into displayorder (featurename,                    drawtype,     tablename,                                                                  displayorder) 
+                  values ('Reserves',                     'ga_area',        'Reserves',                                                             190);
+insert into displayorder (featurename,                    drawtype,     tablename,                                                                  displayorder) 
+                  values ('Reservoirs',                   'ga_area',        'Reservoirs',                                                           200);
+insert into displayorder (featurename,                    drawtype,     tablename,                                                                  displayorder) 
+                  values ('RecreationAreas',              'ga_area',        'RecreationAreas',                                                      210);
+insert into displayorder (featurename,                    drawtype,     tablename,                                                                  displayorder) 
+                  values ('BuiltUpAreas',                 'ga_area',        'BuiltUpAreas',                                                         220);
+insert into displayorder (featurename,                    drawtype,     tablename,                                                                  displayorder) 
+                  values ('Mainlands',                    'ga_area',        'Mainlands',                                                            230);
+insert into displayorder (featurename,                    drawtype,     tablename,                                                                  displayorder) 
+                  values ('CultivatedAreas',              'ga_area',        'CultivatedAreas',                                                      240);
+insert into displayorder (featurename,                    drawtype,     tablename,                                                                  displayorder) 
+                  values ('LargeAreaFeatures',            'ga_area',        'LargeAreaFeatures',                                                    250);
+insert into displayorder (featurename,                    drawtype,     tablename,                                                                  displayorder) 
+                  values ('BuildingAreas',                'ga_area',        'BuildingAreas',                                                        260);
+insert into displayorder (featurename,                    drawtype,     tablename,                                                                  displayorder) 
+                  values ('CemeteryAreas',                'ga_area',        'CemeteryAreas',                                                        270);
+insert into displayorder (featurename,                    drawtype,     tablename,                                                                  displayorder) 
+                  values ('MineAreas',                    'ga_area',        'MineAreas',                                                            280);
+insert into displayorder (featurename,                    drawtype,     tablename,                                                                  displayorder) 
+                  values ('DeformationAreas',             'ga_area',        'DeformationAreas',                                                     290);
+insert into displayorder (featurename,                    drawtype,     tablename,                                                                  displayorder) 
+                  values ('MarineHazardAreas',            'ga_area',        'MarineHazardAreas',                                                    300);
+insert into displayorder (featurename,                    drawtype,     tablename,                                                                  displayorder) 
+                  values ('PondageAreas',                 'ga_area',        'PondageAreas',                                                         310);
+insert into displayorder (featurename,                    drawtype,     tablename,                                                                  displayorder) 
+                  values ('ProhibitedAreas',              'ga_area',        'ProhibitedAreas',                                                      320);
+insert into displayorder (featurename,                    drawtype,     tablename,                                                                  displayorder) 
+                  values ('RapidAreas',                   'ga_area',        'RapidAreas',                                                           330);
+insert into displayorder (featurename, drawtype, tablename, defaultsymbol,                displayorder) 
+                  values ('Tracks',                       'ga_line',        'Tracks',                                                        -1001, 340);
+insert into displayorder (featurename,                    drawtype,     tablename,                                                                  displayorder) 
+                  values ('MineAreas',                    'ga_line',        'MineAreas',                                                            350);
+insert into displayorder (featurename, drawtype, tablename, defaultsymbol,                displayorder) 
+                  values ('Reserves',                     'ga_line',        'Reserves',                                                        -65, 360);
+insert into displayorder (featurename, drawtype, tablename, defaultsymbol, displayorder) 
+                  values ('Lakes',                        'ga_line',        'Lakes', -114,                                                          370);
+insert into displayorder (featurename, drawtype, tablename, defaultsymbol, displayorder) 
+                  values ('CanalAreas',                   'ga_line',        'CanalAreas',                               -114,                       371);
+insert into displayorder (featurename, drawtype, tablename, defaultsymbol, displayorder) 
+                  values ('WatercourseAreas',             'ga_line',        'WatercourseAreas',                                     -114,           372);
+insert into displayorder (featurename, drawtype, tablename, defaultsymbol, displayorder) 
+                  values ('Seas',                         'ga_line',        'Seas',                         -114,                                   373);
+insert into displayorder (featurename, drawtype, tablename, defaultsymbol, displayorder) 
+                  values ('Reservoirs',                   'ga_line',        'Reservoirs',                               -114,                       380);
+insert into displayorder (featurename,                  drawtype,         tablename,                                                                displayorder) 
+                  values ('Contours',                     'ga_line',        'Contours',                                                             390);
+insert into displayorder (featurename,                  drawtype,         tablename,                                                                displayorder) 
+                  values ('Spillways',                    'ga_line',        'Spillways',                                                            400);
+insert into displayorder (featurename,                  drawtype,         tablename,                                                                displayorder) 
+                  values ('FrameworkBoundaries',          'ga_line',        'FrameworkBoundaries',                                                  410);
+insert into displayorder (featurename,                  drawtype,         tablename,                                                                displayorder) 
+                  values ('SandRidges',                   'ga_line',        'SandRidges',                                                           420);
+insert into displayorder (featurename,                  drawtype,         tablename,                                                                displayorder) 
+                  values ('WaterCourseLines',             'ga_line',        'WaterCourseLines',                                                     430);
+insert into displayorder (featurename,                  drawtype,         tablename,                                                                displayorder) 
+                  values ('RapidLines',                   'ga_line',        'RapidLines',                                                           440);
+insert into displayorder (featurename,                  drawtype,         tablename,                                                                displayorder) 
+                  values ('CanalLines',                   'ga_line',        'CanalLines',                                                           450);
+insert into displayorder (featurename,                  drawtype,         tablename,                                                                displayorder) 
+                  values ('Roads',                        'ga_road',        'Roads',                                                                460);
+insert into displayorder (featurename,                  drawtype,         tablename,                                                                displayorder) 
+                  values ('OsmRoads',                     'osm_road',       'planet_osm_line',                                                      461);
+insert into displayorder (featurename,                  drawtype,         tablename,                                                                displayorder) 
+                  values ('RoadCrossingLines',            'ga_wline',       'RoadCrossingLines',                                                    470);
+insert into displayorder (featurename,                  drawtype,         tablename,                                                                displayorder) 
+                  values ('RoadTunnelLines',              'ga_wline',       'RoadTunnelLines',                                                      480);
+insert into displayorder (featurename,                  drawtype,         tablename,                                                                displayorder) 
+                  values ('FootTracks',                   'ga_line',        'FootTracks',                                                           490);
+insert into displayorder (featurename,                  drawtype,         tablename,                                                                displayorder) 
+                  values ('Railways',                     'ga_line',        'Railways',                                                             500);
+insert into displayorder (featurename,                  drawtype,         tablename,                                                                displayorder) 
+                  values ('RailwayCrossingLines',         'ga_wline',       'RailwayCrossingLines',                                                 510);
+insert into displayorder (featurename,                  drawtype,         tablename,                                                                displayorder) 
+                  values ('RailwayTunnelLines',           'ga_wline',       'RailwayTunnelLines',                                                   520);
+insert into displayorder (featurename,                  drawtype,         tablename,                                                                displayorder) 
+                  values ('AerialCableways',              'ga_line',        'AerialCableways',                                                      530);
+insert into displayorder (featurename,                  drawtype,         tablename,                                                                displayorder) 
+                  values ('FerryRouteLines',              'ga_line',        'FerryRouteLines',                                                      540);
+insert into displayorder (featurename,                  drawtype,         tablename,                                                                displayorder) 
+                  values ('ClearedLines',                 'ga_line',        'ClearedLines',                                                         550);
+insert into displayorder (featurename,                  drawtype,         tablename,                                                                displayorder) 
+                  values ('Discontinuities',              'ga_line',        'Discontinuities',                                                      560);
+insert into displayorder (featurename,                  drawtype,         tablename,                                                                displayorder) 
+                  values ('Fences',                       'ga_line',        'Fences',                                                               570);
+insert into displayorder (featurename,                  drawtype,         tablename,                                                                displayorder) 
+                  values ('Pipelines',                    'ga_line',        'Pipelines',                                                            580);
+insert into displayorder (featurename,                  drawtype,         tablename,                                                                displayorder) 
+                  values ('CartographicLines',            'ga_line',        'CartographicLines',                                                    590);
+insert into displayorder (featurename,                  drawtype,         tablename,                                                                displayorder) 
+                  values ('Conveyors',                    'ga_line',        'Conveyors',                                                            600);
+insert into displayorder (featurename,                  drawtype,         tablename,                                                                displayorder) 
+                  values ('Craters',                      'ga_line',        'Craters',                                                              610);
+insert into displayorder (featurename,                  drawtype,         tablename,                                                                displayorder) 
+                  values ('Damwalls',                     'ga_wline',       'Damwalls',                                                             620);
+insert into displayorder (featurename,                  drawtype,         tablename,                                                                displayorder) 
+                  values ('MarineInfrastructureLines'  ,  'ga_line',        'MarineInfrastructureLines',                                            630);
+insert into displayorder (featurename,                  drawtype,         tablename,                                                                displayorder) 
+                  values ('PowerLines',                   'ga_line',        'PowerLines',                                                           640);
+insert into displayorder (featurename,                  drawtype,         tablename,                                                                displayorder) 
+                  values ('Windbreaks',                   'ga_line',        'Windbreaks',                                                           650);
+insert into displayorder (featurename,                  drawtype,         tablename,                                                                displayorder) 
+                  values ('Tracks',                       'ga_line',        'Tracks',                                                               660);
+insert into displayorder (featurename,                  drawtype,         tablename,                                                                displayorder) 
+                  values ('PopulatedPlaces',              'ga_point',       'PopulatedPlaces',                                                      670);
+insert into displayorder (featurename,                  drawtype,         tablename,                                                                displayorder) 
+                  values ('BarrierPoints',                'ga_point',       'BarrierPoints',                                                        680);
+insert into displayorder (featurename,                  drawtype,         tablename,                                                                displayorder) 
+                  values ('Bores',                        'ga_point',       'Bores',                                                                690);
+insert into displayorder (featurename,                  drawtype,         tablename,                                                                displayorder) 
+                  values ('AircraftFacilityPoints',       'ga_point',       'AircraftFacilityPoints',                                               700);
+insert into displayorder (featurename,                  drawtype,         tablename,                                                                displayorder) 
+                  values ('Benchmarks',                   'ga_point',       'Benchmarks',                                                           710);
+insert into displayorder (featurename,                  drawtype,         tablename,                                                                displayorder) 
+                  values ('BuildingPoints',               'ga_point',       'BuildingPoints',                                                       720);
+insert into displayorder (featurename,                  drawtype,         tablename,                                                                displayorder) 
+                  values ('CartographicPoints',           'ga_point',       'CartographicPoints',                                                   730);
+insert into displayorder (featurename,                  drawtype,         tablename,                                                                displayorder) 
+                  values ('Caves',                        'ga_point',       'Caves',                                                                740);
+insert into displayorder (featurename,                  drawtype,         tablename,                                                                displayorder) 
+                  values ('CemeteryPoints',               'ga_point',       'CemeteryPoints',                                                       750);
+insert into displayorder (featurename,                  drawtype,         tablename,                                                                displayorder) 
+                  values ('MinePoints',                   'ga_point',       'MinePoints',                                                           760);
+insert into displayorder (featurename,                  drawtype,         tablename,                                                                displayorder) 
+                  values ('PetroleumWells',               'ga_point',       'PetroleumWells',                                                       770);
+insert into displayorder (featurename,                  drawtype,         tablename,                                                                displayorder) 
+                  values ('Homesteads',                   'ga_point',       'Homesteads',                                                           780);
+insert into displayorder (featurename,                  drawtype,         tablename,                                                                displayorder) 
+                  values ('Locations',                    'ga_point',       'Locations',                                                            790);
+insert into displayorder (featurename,                  drawtype,         tablename,                                                                displayorder) 
+                  values ('PlaceNames',                   'ga_point',       'PlaceNames',                                                           800);
+insert into displayorder (featurename,                  drawtype,         tablename,                                                                displayorder) 
+                  values ('SpotElevations',               'ga_point',       'SpotElevations',                                                       810);
+insert into displayorder (featurename,                  drawtype,         tablename,                                                                displayorder) 
+                  values ('HorizontalControlPoints',      'ga_point',       'HorizontalControlPoints',                                              820);
+insert into displayorder (featurename,                  drawtype,         tablename,                                                                displayorder) 
+                  values ('Pinnacles',                    'ga_point',       'Pinnacles',                                                            830);
+insert into displayorder (featurename,                  drawtype,         tablename,                                                                displayorder) 
+                  values ('Locks',                        'ga_point',       'Locks',                                                                840);
+insert into displayorder (featurename,                  drawtype,         tablename,                                                                displayorder) 
+                  values ('Springs',                      'ga_point',       'Springs',                                                              850);
+insert into displayorder (featurename,                  drawtype,         tablename,                                                                displayorder) 
+                  values ('WaterfallPoints',              'ga_point',       'WaterfallPoints',                                                      860);
+insert into displayorder (featurename,                  drawtype,         tablename,                                                                displayorder) 
+                  values ('WaterPoints',                  'ga_point',       'WaterPoints',                                                          870);
+insert into displayorder (featurename,                  drawtype,         tablename,                                                                displayorder) 
+                  values ('WaterHoles',                   'ga_point',       'WaterHoles',                                                           880);
+insert into displayorder (featurename,                  drawtype,         tablename,                                                                displayorder) 
+                  values ('WaterTanks',                   'ga_point',       'WaterTanks',                                                           890);
+insert into displayorder (featurename,                  drawtype,         tablename,                                                                displayorder) 
+                  values ('StorageTanks',                 'ga_point',       'StorageTanks',                                                         900);
+insert into displayorder (featurename,                  drawtype,         tablename,                                                                displayorder) 
+                  values ('Yards',                        'ga_point',       'Yards',                                                                910);
+insert into displayorder (featurename,                  drawtype,         tablename,                                                                displayorder) 
+                  values ('MarineHazardPoints',           'ga_point',       'MarineHazardPoints',                                                   920);
+insert into displayorder (featurename,                  drawtype,         tablename,                                                                displayorder) 
+                  values ('MarineInfrastructurePoints  ', 'ga_point',       'MarineInfrastructurePoints',                                           930);
+insert into displayorder (featurename,                  drawtype,         tablename,                                                                displayorder) 
+                  values ('RailwayBridgePoints',          'ga_point',       'RailwayBridgePoints',                                                  940);
+insert into displayorder (featurename,                  drawtype,         tablename,                                                                displayorder) 
+                  values ('RailwayStopPoints',            'ga_point',       'RailwayStopPoints',                                                    950);
+insert into displayorder (featurename,                  drawtype,         tablename,                                                                displayorder) 
+                  values ('RailwayTunnelPoints',          'ga_point',       'RailwayTunnelPoints',                                                  960);
+insert into displayorder (featurename,                  drawtype,         tablename,                                                                displayorder) 
+                  values ('VerticalObstructions',         'ga_point',       'VerticalObstructions',                                                 970);
+insert into displayorder (featurename,                  drawtype,         tablename,                                                                displayorder) 
+                  values ('Windpumps',                    'ga_point',       'Windpumps',                                                            980);
+insert into displayorder (featurename,                  drawtype,         tablename,                                                                displayorder) 
+                  values ('graticule',                    'graticule',      'graticule',                                                            990);
+insert into displayorder (featurename,                  drawtype,         tablename,                                                                displayorder) 
+                  values ('grid',                         'grid',           'grid',                                                                 1000);
+insert into displayorder (featurename,                  drawtype,         tablename,                                                                displayorder) 
+                  values ('annotation',                   'ga_annotation',  'ga_annotation',                                                        1010);
+insert into displayorder (featurename,                  drawtype,         tablename,                                                                displayorder) 
+                  values ('userannotation',             'userannotation', 'userannotation',                                                         1020);

@@ -814,7 +814,7 @@ my %roadsymbols = (
   'road_9s'     => 257, # minor sealed
   'road_10s'    => 257, # minor sealed
   'road_11s'    => 257, # minor sealed
-  'road_12s'    =>  22, # minor sealed
+  'road_12s'    =>  22, # foot track
   'road_0u'     => 258, # principal unsealed
   'road_1u'     => 258, # principal unsealed
   'road_2u'     => 258, # principal unsealed
@@ -864,9 +864,7 @@ sub draw_vm_roads() {
     my $featurewidth;
 
     note "Roads...";
-    my $geomcol = %defaults{'linegeometry'};
-  $geomcol = 'geom';
-    my $sth = $dbh.prepare("SELECT pfi, ftype_code, class_code, dir_code, road_seal, div_rd, st_astext($geomcol) as shape FROM vm_tr_road WHERE $geomcol && $rect");
+    my $sth = $dbh.prepare("SELECT pfi, ftype_code, class_code, dir_code, road_seal, div_rd, st_astext(geom) as shape FROM vm_tr_road WHERE geom && $rect");
     
     $sth.execute();
     
@@ -884,11 +882,11 @@ sub draw_vm_roads() {
         $sealed = ($sealed == 1) ?? 's' !! 'u';
         my $symbol = %roadsymbols{"{$ftype_code}"}; # get default
         $symbol = %roadsymbols{"{$ftype_code}_$class$sealed"};
-	note "Unknown road type \"{$ftype_code}_$class$sealed\"" unless $symbol;
+	note "Unknown road type \"{$ftype_code}_{$class}{$sealed}\"" unless $symbol;
 	next unless $symbol;
 	@dual.push: $objectid if $symbol == 250;
 	++$object_count;
-	put_line($shape, "line$symbol", $featurewidth);
+	put_line($shape, "line{$symbol}", $featurewidth);
     }
 
 # Now go back and draw the yellow centre line on dual carriageways
@@ -943,14 +941,16 @@ sub draw_ga_roads() {
 
     note "Centre lines of roads...";
 
-    $sth = $dbh.prepare("SELECT symbol, st_astext(shape) FROM Roads WHERE objectid = ?");
+    $sth = $dbh.prepare("SELECT symbol, st_astext(shape), featurewidth
+                         FROM Roads
+			 WHERE objectid = ?");
     for @dual -> $objectid {
 	$sth.execute($objectid);
 	
 	while my @row = $sth.fetchrow_array {
-	    my $symbol = @row[0];
-	    my $shape = @row[1];
-#	    $featurewidth = 0.6;
+	    my $symbol       = @row[0];
+	    my $shape        = @row[1];
+	    my $featurewidth = @row[2];
 	    
 	    put_line($shape, 'line250A', $featurewidth);
 	}
@@ -1181,6 +1181,7 @@ sub draw_roadpoints() {
     }
 }
 
+my $debugannotation = False;
 
 class Annotation {
   has $!length;
@@ -1197,7 +1198,7 @@ class Annotation {
   use experimental :pack;
 
   method start($annotation) {
-#note $annotation;
+    note $annotation if $debugannotation;
     $!index = 0;
     $!length = $annotation.elems;
     for ^$!length -> $i {
@@ -1206,18 +1207,18 @@ class Annotation {
   }
 
   method skip(Int $skip) {
-#note "skipping $skip bytes";
+    note "skipping $skip bytes at $!index" if $debugannotation;
     $!index += $skip;
   }
 
   method byte {
     fail('annotation out of range') if $!index >= $!length;
-#note "about to read byte number $!index (@!bytes[$!index])";
+    note "about to read byte number $!index (@!bytes[$!index])" if $debugannotation;
     @!bytes[$!index++];
   }
 
   method getbytes(Int $count) {
-#note "getbytes $count";
+    note "getbytes $count from $!index" if $debugannotation;
     $!index += $count;
     @!bytes[($!index-$count) ..^ $!index - 1]>>.chr.join;
   }
@@ -1230,9 +1231,9 @@ class Annotation {
   }
 
   method string {
-#note "read string";
+    note "read string at $!index" if $debugannotation;
     my $length = self.int;
-#note "reading string of length $length";
+    note "reading string of length $length" if $debugannotation;
     self.getutf16($length);
   }
 
@@ -1273,7 +1274,7 @@ class Annotation {
 
 sub draw_ga_annotations() {
     note "Annotations...\n";
-    my $sth = $dbh.prepare("SELECT element, st_astext(shape) as shape FROM Annotations WHERE shape && $rect");
+    my $sth = $dbh.prepare("SELECT element, st_astext(shape) as shape, objectid FROM Annotations WHERE shape && $rect");
     
     $sth.execute();
     
@@ -1281,12 +1282,16 @@ sub draw_ga_annotations() {
 	++$object_count;
 	my $element = @row[0];
 	my $shape = @row[1];
+        my $objectid = @row[2];
 	my ($string2, $string3, $font);
 	my ($x1, $y1, $x2, $y2);
 	my $unknown1;
 	my $justn = 0;
 	my ($rotangle, $xdiff, $ydiff);
+#note $objectid;
+note $shape if $objectid == 6651940;
 	
+    next if $objectid == 6651940;
 	my $ann = Annotation.new();
         $ann.start($element);
 
@@ -1387,6 +1392,7 @@ sub draw_ga_annotations() {
 	$ann.lastring;
         $ann.skip(41);
 	
+        note "Drawing annotation" if $debugannotation;
 	# finished parsing; now print something
 	
 	# Check for valid location -- sometimes we get lat/lon with NaN values!
