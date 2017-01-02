@@ -799,52 +799,6 @@ sub draw_ga_wlines(Str $table) {
     }
 }
 
-# This shouldn't be here, but in a database somewhere
-
-my %roadsymbols = (
-  'road_0s'     => 250, # dual carriageway
-  'road_1s'     => 251, # principal sealed
-  'road_2s'     => 251, # principal sealed
-  'road_3s'     => 256, # secondary sealed
-  'road_4s'     => 256, # secondary sealed
-  'road_5s'     => 256, # secondary sealed
-  'road_6s'     => 257, # minor sealed
-  'road_7s'     => 257, # minor sealed
-  'road_8s'     => 257, # minor sealed
-  'road_9s'     => 257, # minor sealed
-  'road_10s'    => 257, # minor sealed
-  'road_11s'    => 257, # minor sealed
-  'road_12s'    =>  22, # foot track
-  'road_0u'     => 258, # principal unsealed
-  'road_1u'     => 258, # principal unsealed
-  'road_2u'     => 258, # principal unsealed
-  'road_3u'     => 259, # secondary unsealed
-  'road_4u'     => 259, # secondary unsealed
-  'road_5u'     => 259, # secondary unsealed
-  'road_6u'     => 253, # minor unsealed
-  'road_7u'     => 253, # minor unsealed
-  'road_8u'     => 254, # vehicular track
-  'road_9u'     => 254, # vehicular track
-  'road_10u'    => 254, # vehicular track
-  'road_11u'    => 254, # vehicular track
-  'road_12u'    =>  22, # foot track
-  'footbridge'  => 268, # foot bridge
-  'foot_bridge' => 268, # foot bridge
-  'ford'        => 253,
-  'bridge_0s'   => 260, # bridge
-  'bridge_1s'   => 260, # bridge
-  'bridge_2s'   => 260, # bridge
-  'bridge_3s'   => 260, # bridge
-  'bridge_4s'   => 260, # bridge
-  'bridge_5s'   => 260, # bridge
-  'bridge_6s'   => 260, # bridge
-  'bridge_5u'   => 260, # bridge
-  'bridge_6u'   => 260, # bridge
-  'bridge'      => 260, # bridge
-  'connector'   =>   0,
-  'roundabout'  => 256,
-);
-
 #`[
   Routines for drawing roads.
 
@@ -863,12 +817,23 @@ sub draw_vm_roads() {
     my @dual;
     my $featurewidth;
 
+# Read in symbols
+  my %roadsymbols;
+  my $sth = $dbh.prepare("SELECT function, class, sealed, symbol
+                          FROM   vm_road_types");
+  $sth.execute();
+  while my @row = $sth.fetchrow_array {
+    %roadsymbols{"{@row[0]}:{@row[1]}:{@row[2]}"} = @row[3];
+  }
+
     note "Roads...";
-    my $sth = $dbh.prepare("SELECT pfi, ftype_code, class_code, dir_code, road_seal, div_rd, st_astext(geom) as shape FROM vm_tr_road WHERE geom && $rect");
+     $sth = $dbh.prepare("SELECT pfi, ftype_code, class_code, dir_code, road_seal, div_rd, st_astext(geom) as shape
+                          FROM vm_tr_road
+                          WHERE geom && $rect");
     
     $sth.execute();
     
-    while my @row = $sth.fetchrow_array {
+    while @row = $sth.fetchrow_array {
 
 	my $objectid     = @row[0];
 	my $ftype_code   = @row[1];
@@ -879,10 +844,10 @@ sub draw_vm_roads() {
         my $divided      = @row[5];
 	my $shape        = @row[6];
 	
-        $sealed = ($sealed == 1) ?? 's' !! 'u';
-        my $symbol = %roadsymbols{"{$ftype_code}"}; # get default
-        $symbol = %roadsymbols{"{$ftype_code}_$class$sealed"};
-	note "Unknown road type \"{$ftype_code}_{$class}{$sealed}\"" unless $symbol;
+        $sealed = $sealed == 1 ?? 's' !! 'u';
+        my $symbol = %roadsymbols{"{$ftype_code}:{$class}:{$sealed}"} //
+                     %roadsymbols{"{$ftype_code}::"}; # default
+	note "Unknown road type \"{$ftype_code}:{$class}:{$sealed}\"" unless $symbol;
 	next unless $symbol;
 	@dual.push: $objectid if $symbol == 250;
 	++$object_count;

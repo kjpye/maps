@@ -1,4 +1,4 @@
-file /home/kevin/src/maps/displayorder.csv
+file /home/kevin/src/maps/import/displayorder.csv
 table displayorder
 columns {
   source        text
