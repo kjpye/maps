@@ -1,4 +1,4 @@
-#!/usr/bin/perl6
+#!/usr/bin/env perl6
 
 # vi: syntax=on
 use v6;
