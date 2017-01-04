@@ -192,7 +192,7 @@ sub process_option($arg is copy) {
 	$graticule_spacing = $0;
 	$graticule_spacing /= 60 unless $1.lc eq 'd';
     }
-    when m:i/^[no]?display '=' (\S+)$/ {
+    when m:i/^[no]?display[all]? '=' (\S+)$/ {
         @displays.push: $arg;
     }
     when m:i/^symbols '=' (\S+)$/ {
@@ -884,7 +884,7 @@ sub draw_ga_roads() {
     note "Roads...";
     my $geomcol = %defaults{'linegeometry'};
   $geomcol = 'shape';
-    my $sth = $dbh.prepare("SELECT objectid, symbol, featurewidth,  st_astext($geomcol) as shape FROM roads WHERE $geomcol && $rect");
+    my $sth = $dbh.prepare("SELECT objectid, symbol, featurewidth,  st_astext($geomcol) as shape FROM ga_roads WHERE $geomcol && $rect");
     
     $sth.execute();
     
@@ -907,7 +907,7 @@ sub draw_ga_roads() {
     note "Centre lines of roads...";
 
     $sth = $dbh.prepare("SELECT symbol, st_astext(shape), featurewidth
-                         FROM Roads
+                         FROM ga_Roads
 			 WHERE objectid = ?");
     for @dual -> $objectid {
 	$sth.execute($objectid);
@@ -1937,9 +1937,9 @@ sub draw_objects(Real $xoff, Real $yoff, Real $slope) {
           when 'treeden'        { draw_treeden\             (                                    ); }
           when 'vm_area'           { draw_vm_areas\               ($table                              ); }
           when 'ga_area'        { draw_ga_areas\            ($table                              ); }
-          when 'vm_line'           { draw_vm_lines\               ($table, $typecolumn,      -$default ); }
-          when 'ga_line'        { draw_ga_lines\            ($table, $typecolumn,      -$default ); }
-          when 'vm_line_f'         { draw_vm_lines\               ($table, $typecolumn,      -$default,); }
+          when 'vm_line'           { draw_vm_lines\               ($table, $typecolumn,       $default ); }
+          when 'ga_line'        { draw_ga_lines\            ($table, $typecolumn,       $default ); }
+          when 'vm_line_f'         { draw_vm_lines\               ($table, $typecolumn,       $default,); }
           when 'outline'        { draw_polygon_outline_names($table, $typecolumn, 8, 0.2, '1 0 .86 0'); }
           when 'vm_road'           { draw_vm_roads\               (                                    ); }
           when 'ga_road'        { draw_ga_roads\            (                                    ); }
@@ -2171,7 +2171,7 @@ while @row = $sth_def.fetchrow_array() {
 }
 %drawobjects = %allobjects;
 
-# Now we can handle the [no]display options
+# Now we can handle the [no]display[all] options
 
 for @displays -> $arg {
     given $arg {
@@ -2188,7 +2188,21 @@ for @displays -> $arg {
             %drawobjects = ();
         }
         when m:i/^nodisplay '=' (\S+)$/ {
-        %drawobjects{$0.lc} = 0;
+            %drawobjects{$0.lc} = 0;
+        }
+        when m:i/^nodisplayall '=' (\S+)$/ {
+            my $hide = $0;
+            for keys %allobjects -> $type
+            {
+                %drawobjects{$type} = 0 if $type ~~ /^<$hide>.*$/;
+            }
+        }
+        when m:i/^displayall '=' (\S+)$/ {
+            my $show = $0;
+            for keys %allobjects -> $type
+            {
+                %drawobjects{$type} = 1 if $type ~~ /^<$show>.*$/;
+            }
         }
     }
 }
