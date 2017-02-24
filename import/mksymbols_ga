@@ -1565,7 +1565,15 @@ VALUES ('line260', 'solidline', '
   /featurewidth exch def
   gsave
   { /starty exch def /startx exch def /currentx startx def /currenty starty def} % moveto
-  {/prevy currenty def /prevx currentx def /currenty exch def /currentx exch def localdict /secondx known {} {/secondx currentx def /secondy currenty def} ifelse } % lineto
+  {/prevy currenty def
+   /prevx currentx def
+   /currenty exch def
+   /currentx exch def
+   localdict /secondx known
+    {}
+    {/secondx currentx def /secondy currenty def}
+    ifelse
+  } % lineto
   {} % curveto
   {} % closepath
   pathforall
@@ -2607,7 +2615,9 @@ VALUES ('point27', '', '
     0.15 setlinewidth
     0 0 0 1 setcmykcolor
     -1.5 1.2 moveto
-    3 0 rlineto 0 -2.5 rlineto -1.5 -0.8 rlineto -1.5 0.8 rlineto closepath gsave 0 0 0 0 setcmykcolor fill grestore stroke
+    3 0 rlineto 0 -2.5 rlineto -1.5 -0.8 rlineto -1.5 0.8 rlineto closepath
+    gsave 0 0 0 0 setcmykcolor fill grestore
+    stroke
   grestore
 } bind def
 ');
@@ -3584,7 +3594,9 @@ VALUES ('point1005', '', '
   gsave
   moveto
   dup stringwidth pop dup 2 div neg 0 rmoveto currentpoint translate
-  dup 0 rlineto 0 3 rlineto neg 0 rlineto closepath gsave 0 0 0 0 setcmykcolor fill grestore 0.2 setlinewidth 0 0 0 1 setcmykcolor stroke
+  dup 0 rlineto 0 3 rlineto neg 0 rlineto closepath
+  gsave 0 0 0 0 setcmykcolor fill grestore
+  0.2 setlinewidth 0 0 0 1 setcmykcolor stroke
   0 0 moveto show
   grestore
 } bind def
