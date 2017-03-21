@@ -2,15 +2,12 @@
 
 use NativeCall;
 
-multi sub MAIN($prefix) {
-  my $shp = slurp "$prefix.shp", :bin;
-  my $shp-i = 0; # index into $shp
-
-  my $shx = slurp "$prefix.shx", :bin;
-  my $shx-i = 0; # index into $shx
-
-  my $dbf = slurp "$prefix.dbf", :bin;
-  my $dbf-i = 0; # index into $dbf
+my $shp;
+my $shp-i;
+my $shx;
+my $shx-i;
+my $dbf;
+my $dbf-i;
 
 sub skip($buf, $index is rw, $count) {
   $index += $count;
@@ -46,51 +43,6 @@ sub read-double ($buf, $index is rw) {
 sub read-byte ($buf, $index is rw) {
   my $val = $buf[$index++];
 }
-
-# Read shp header
-
-my $file-code = read-be-int($shp, $shp-i);
-say $file-code;
-skip($shp, $shp-i, 20);
-my $length = read-be-int($shp, $shp-i);
-say $length;
-my $version = read-le-int($shp, $shp-i);
-say $version;
-my $shape-type = read-le-int($shp, $shp-i);
-say $shape-type;
-my $xmin = read-double($shp, $shp-i);
-my $ymin = read-double($shp, $shp-i);
-my $xmax = read-double($shp, $shp-i);
-my $ymax = read-double($shp, $shp-i);
-my $zmin = read-double($shp, $shp-i);
-my $zmax = read-double($shp, $shp-i);
-my $mmin = read-double($shp, $shp-i);
-my $mmax = read-double($shp, $shp-i);
-say "$xmin $xmax $ymin $ymax $zmin $zmax $mmin $mmax";
-say "Read shp header -- index is $shp-i";
-
-# Read dbf header
-my $dbf-type     = read-byte($dbf, $dbf-i);
-die "Incorrect dbf file type\n" unless $dbf-type == 3;
-my $year         = 1900 + read-byte($dbf, $dbf-i);
-my $month        = read-byte($dbf, $dbf-i);
-my $day          = read-byte($dbf, $dbf-i);
-say "Last modification date: $year-$month-$day";
-my $records      = read-le-int($dbf, $dbf-i);
-say "$records records";
-my $first-offset = read-le-short($dbf, $dbf-i);
-say "Initial offset $first-offset";
-my $record-length = read-le-short($dbf, $dbf-i);
-say "Record length $record-length";
-skip($dbf, $dbf-i, 2);
-my $incomplete-transaction = read-byte($dbf, $dbf-i);
-my $encrytion = read-byte($dbf, $dbf-i);
-skip($dbf, $dbf-i, 12);
-my $table-flags = read-byte($dbf, $dbf-i);
-my $code-page-mark = read-byte($dbf, $dbf-i);
-skip($dbf, $dbf-i, 2);
-
-# Read subrecord structure
 
 sub read-chars ($buf, $index is rw, $length) {
   my $string  = '';
@@ -137,8 +89,21 @@ say "Reading record type $shape-type";
       my $y = read-double($shp, $shp-i);
       return "{$x},{$y}";
     }
-#   when 8 {  # MultiPoint
-#   }
+   when 8 {  # MultiPoint
+      my $xmin       = read-double($shp, $shp-i);
+      my $ymin       = read-double($shp, $shp-i);
+      my $xmax       = read-double($shp, $shp-i);
+      my $ymax       = read-double($shp, $shp-i);
+      my $num-points = read-le-int($shp, $shp-i);
+      my $ret = 'MultiPoint: (';
+      for ^$num-points {
+        my $x = read-double($shp, $shp-i);
+        my $y = read-double($shp, $shp-i);
+        $ret ~= "($x,$y) ";
+      }
+      $ret ~~ s/\s$/))/;
+      return $ret;
+   }
     when 3 {  # PolyLine
       my $xmin       = read-double($shp, $shp-i);
       my $ymin       = read-double($shp, $shp-i);
@@ -179,7 +144,7 @@ say "Reading record type $shape-type";
       @index.push: -1; # end flag
       my $nextpart = @index.shift; # should be 0
       $nextpart    = @index.shift; # the start of the second line part
-      my $ret = 'PolyGon: ((';
+      my $ret = 'Polygon: ((';
       for ^$num-points -> $num {
         if $num == $nextpart {
           $ret ~= ') (';
@@ -221,15 +186,6 @@ say "Reading record type $shape-type";
 
 my @dbf-fields;
 
-# Read dbf field information
-
-while $dbf[$dbf-i] != 13 {
-  @dbf-fields.push(read-dbf-header-record($dbf, $dbf-i));
-}
-skip($dbf, $dbf-i, 1); # ???
-
-say "{@dbf-fields.elems} fields";
-
 sub read-dbf-record {
   my %val;
     skip($dbf, $dbf-i, 1); # Why???
@@ -241,13 +197,76 @@ sub read-dbf-record {
   %val;
 }
 
-for ^$records -> $num {
-  say "Reading record {$num+1}";
-  my $shp-record = read-shp-record();
-  my %dbf-record = read-dbf-record();
-  for %dbf-record.kv -> $key, $value {
-    say "$key: \"$value\"";
+multi sub MAIN($prefix) {
+  $shp = slurp "$prefix.shp", :bin;
+  $shp-i = 0; # index into $shp
+
+  $shx = slurp "$prefix.shx", :bin;
+  $shx-i = 0; # index into $shx
+
+  $dbf = slurp "$prefix.dbf", :bin;
+  $dbf-i = 0; # index into $dbf
+
+
+# Read shp header
+
+  my $file-code = read-be-int($shp, $shp-i);
+  say $file-code;
+  skip($shp, $shp-i, 20);
+  my $length = read-be-int($shp, $shp-i);
+  say $length;
+  my $version = read-le-int($shp, $shp-i);
+  say $version;
+  my $shape-type = read-le-int($shp, $shp-i);
+  say $shape-type;
+  my $xmin = read-double($shp, $shp-i);
+  my $ymin = read-double($shp, $shp-i);
+  my $xmax = read-double($shp, $shp-i);
+  my $ymax = read-double($shp, $shp-i);
+  my $zmin = read-double($shp, $shp-i);
+  my $zmax = read-double($shp, $shp-i);
+  my $mmin = read-double($shp, $shp-i);
+  my $mmax = read-double($shp, $shp-i);
+  say "$xmin $xmax $ymin $ymax $zmin $zmax $mmin $mmax";
+  say "Read shp header -- index is $shp-i";
+
+# Read dbf header
+  my $dbf-type     = read-byte($dbf, $dbf-i);
+  die "Incorrect dbf file type\n" unless $dbf-type == 3;
+  my $year         = 1900 + read-byte($dbf, $dbf-i);
+  my $month        = read-byte($dbf, $dbf-i);
+  my $day          = read-byte($dbf, $dbf-i);
+  say "Last modification date: $year-$month-$day";
+  my $records      = read-le-int($dbf, $dbf-i);
+  say "$records records";
+  my $first-offset = read-le-short($dbf, $dbf-i);
+  say "Initial offset $first-offset";
+  my $record-length = read-le-short($dbf, $dbf-i);
+  say "Record length $record-length";
+  skip($dbf, $dbf-i, 2);
+  my $incomplete-transaction = read-byte($dbf, $dbf-i);
+  my $encrytion = read-byte($dbf, $dbf-i);
+  skip($dbf, $dbf-i, 12);
+  my $table-flags = read-byte($dbf, $dbf-i);
+  my $code-page-mark = read-byte($dbf, $dbf-i);
+  skip($dbf, $dbf-i, 2);
+
+# Read dbf field information
+
+  while $dbf[$dbf-i] != 13 {
+    @dbf-fields.push(read-dbf-header-record($dbf, $dbf-i));
   }
-  say "geometry: $shp-record";
-}
+  skip($dbf, $dbf-i, 1); # ???
+
+  say "{@dbf-fields.elems} fields";
+
+  for ^$records -> $num {
+    say "Reading record {$num+1}";
+    my $shp-record = read-shp-record();
+    my %dbf-record = read-dbf-record();
+    for %dbf-record.kv -> $key, $value {
+      say "$key: \"$value\"";
+    }
+    say "geometry: $shp-record";
+  }
 }
