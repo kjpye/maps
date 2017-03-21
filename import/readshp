@@ -2,17 +2,15 @@
 
 use NativeCall;
 
-my $dir = '.';
-my $file = 'RestAreas';
+multi sub MAIN($prefix) {
+  my $shp = slurp "$prefix.shp", :bin;
+  my $shp-i = 0; # index into $shp
 
-my $shp = slurp "$dir/$file.shp", :bin;
-my $shp-i = 0; # index into $shp
+  my $shx = slurp "$prefix.shx", :bin;
+  my $shx-i = 0; # index into $shx
 
-my $shx = slurp "$dir/$file.shx", :bin;
-my $shx-i = 0; # index into $shx
-
-my $dbf = slurp "$dir/$file.dbf", :bin;
-my $dbf-i = 0; # index into $dbf
+  my $dbf = slurp "$prefix.dbf", :bin;
+  my $dbf-i = 0; # index into $dbf
 
 sub skip($buf, $index is rw, $count) {
   $index += $count;
@@ -128,6 +126,7 @@ sub read-shp-record {
   my $record-number  = read-be-int($shp, $shp-i);
   my $content-length = read-be-int($shp, $shp-i);
   my $shape-type     = read-le-int($shp, $shp-i);
+say "Reading record type $shape-type";
   given $shape-type {
 # These are ordered according to the documentation
     when 0 {  # Null
@@ -166,8 +165,32 @@ sub read-shp-record {
       $ret ~~ s/\s$/))/;
       return $ret;
     }
-#   when 5 {  # Polygon
-#   }
+   when 5 {  # Polygon
+      my $xmin       = read-double($shp, $shp-i);
+      my $ymin       = read-double($shp, $shp-i);
+      my $xmax       = read-double($shp, $shp-i);
+      my $ymax       = read-double($shp, $shp-i);
+      my $num-parts  = read-le-int($shp, $shp-i);
+      my $num-points = read-le-int($shp, $shp-i);
+      my @index;
+      for ^$num-parts {
+        @index.push: read-le-int($shp, $shp-i);
+      }
+      @index.push: -1; # end flag
+      my $nextpart = @index.shift; # should be 0
+      $nextpart    = @index.shift; # the start of the second line part
+      my $ret = 'PolyGon: ((';
+      for ^$num-points -> $num {
+        if $num == $nextpart {
+          $ret ~= ') (';
+        }
+        my $x = read-double($shp, $shp-i);
+        my $y = read-double($shp, $shp-i);
+        $ret ~= "$x,$y ";
+      }
+      $ret ~~ s/\s$/))/;
+      return $ret;
+   }
    when 21 { # PointM
       my $x = read-double($shp, $shp-i);
       my $y = read-double($shp, $shp-i);
@@ -226,4 +249,5 @@ for ^$records -> $num {
     say "$key: \"$value\"";
   }
   say "geometry: $shp-record";
+}
 }
