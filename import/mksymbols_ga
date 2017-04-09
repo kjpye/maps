@@ -1212,6 +1212,12 @@ VALUES ('area5', 'pattern5 pattfill', '
 ');
 
 INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('area557', 'cmykfill', '
+/area557 { % Hypsometric tint 200m - 500m
+  0 0 .12 0 cmykfill
+} bind def
+');
+INSERT INTO Symbols_GA (name, dependencies, body)
 VALUES ('area6', 'pattern6 pattfill', '
 /area6 { % Plantation (on 100K softwood only)
   pattern6 pattfill

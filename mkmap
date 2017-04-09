@@ -434,7 +434,50 @@ sub get_symbol (Str $type, Str $ftype) is cached {
 
 my $rect;
 
-sub draw_areas(Str $table, Str $columns, Str $geomcol, Str $widthcol) {
+my %areafeaturetypes;
+
+sub draw_areas(Str $table, Str $columns, Str $geomcol) {
+  note "$table areas...";
+
+  my @columns     = $columns.split: ':';
+  my $selectcolumns = @columns.join: ', ';
+  my $numfeatcols = +@columns;
+
+  my $sth = $dbh.prepare("SELECT $selectcolumns, st_astext($geomcol) as shape
+                          FROM $table
+                          WHERE $geomcol && $rect
+                         ");
+  
+  if $sth.execute {
+    
+    while my @row = $sth.fetchrow_array {
+       my $featuretype = '';
+      for ^$numfeatcols {
+        $featuretype ~= @row.shift ~ ':';
+      }
+      $featuretype ~~ s/\:$//;
+
+      my $symbol = 0;
+    %areafeaturetypes{$table}{$featuretype}++;
+    if $featuretype ~~ /^\d+$/ {
+      $symbol = $featuretype;
+    } else {
+      $sth_symb.execute($table, $featuretype, 'area');
+      while my @syms = $sth_symb.fetchrow_array {
+        $symbol = @syms[0].Int;
+      }
+    }
+    note "draw_areas: $table $featuretype $symbol";
+
+      my $shape = @row.shift;
+      
+      next unless $symbol > 0;
+      ++$object_count;
+      put_line($shape.Str, "area$symbol", );
+    }
+  } else {
+    note "Table $table not found";
+  }
 }
 
 sub draw_vm_areas(Str $table) {
@@ -819,6 +862,59 @@ sub draw_ga_lines(Str $table, Str $typecolumn, $default_symbol = 0) {
 	default {
           put_line($shape.Str, "line$symbol", 0);
         }
+      }
+    }
+  } else {
+    note "Table $table not found";
+  }
+}
+
+sub draw_contours(Str $table, Str $columns, Str $geomcol, Str $widthcol) {
+  note "$table contours...";
+
+  my @columns     = $columns.split: ':';
+  my $selectcolumns = @columns.join: ', ';
+  my $numfeatcols = +@columns;
+  $selectcolumns    ~= ',' ~ $widthcol if $widthcol;
+
+  my $featurewidth = 0;
+
+  my $sth = $dbh.prepare("SELECT $selectcolumns, st_astext($geomcol) as shape
+                          FROM $table
+                          WHERE $geomcol && $rect
+                         ");
+  
+  if $sth.execute {
+    
+    while my @row = $sth.fetchrow_array {
+      my $featuretype = '';
+      for ^$numfeatcols {
+        $featuretype ~= @row.shift ~ ':';
+      }
+      $featuretype ~~ s/\:$//;
+    
+      my $symbol = 0;
+    %linefeaturetypes{$table}{$featuretype}++;
+    if $featuretype ~~ /^\d+$/ {
+      $symbol = $featuretype;
+    } else {
+      $sth_symb.execute($table, $featuretype, 'line');
+      while my @syms = $sth_symb.fetchrow_array {
+        $symbol = @syms[0].Int;
+      }
+    }
+    #note "draw_line: $table $featuretype $symbol";
+
+    $featurewidth = @row.shift if $widthcol;
+
+      my $shape = @row.shift;
+      
+      next unless $symbol > 0;
+      ++$object_count;
+      if %funnylines{$symbol}.defined {
+        %funnylines{$symbol}($shape);
+      } else {
+        put_line($shape.Str, "line$symbol", 0);
       }
     }
   } else {
@@ -2113,7 +2209,6 @@ sub draw_objects(Real $xoff, Real $yoff, Real $slope) {
       note "Drawing $feature: '$draw' '$table' '$typecolumn' ($order)";
       if $order > 0 && %drawobjects{$feature.lc} {
         given $draw {
-          when 'treeden'        { draw_treeden\             (                                                     ); }
           when 'vm_area'        { draw_vm_areas\            ($table                                               ); }
           when 'ga_area'        { draw_ga_areas\            ($table                                               ); }
           when 'vm_line'        { draw_vm_lines\            ($table, $typecolumn,       $default                  ); }
@@ -2442,6 +2537,13 @@ unlink $tmpfile;
 say "showpage";
 
 note "$object_count objects, $point_count points\n";
+
+note :areas:;
+for %areafeaturetypes.keys -> $k {
+  for %areafeaturetypes{$k}.keys ->$f {
+    note "$k:$f";
+  }
+}
 
 note "lines:";
 for %linefeaturetypes.keys -> $k {
