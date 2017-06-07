@@ -37,6 +37,8 @@ my @displays; # temporary storage for [no]display options
 my %allobjects;
 my %drawobjects;
 
+my $contourinterval = 1;
+
 my %papersizes;
 my $papersize = 'a3';
 my ($paperwidth, $paperheight);
@@ -219,6 +221,9 @@ sub process_option($arg is copy) {
 	    $INC.close;
 	}
     }
+    when m:i/contour[interval] '=' (.*) {
+      $contourinterval = $0;
+    }  
     default { note "Unknown option \"$arg\" ignored\n"; }
   }
 }
@@ -710,6 +715,61 @@ sub draw_lines(Str $table, Str $columns, Str $geomcol, Str $widthcol) {
     #note "draw_line: $table $featuretype $symbol";
 
     $featurewidth = @row.shift if $widthcol;
+
+      my $shape = @row.shift;
+      
+      next unless $symbol > 0;
+      ++$object_count;
+      if %funnylines{$symbol}.defined {
+        %funnylines{$symbol}($shape);
+      } else {
+        put_line($shape.Str, "line$symbol", 0);
+      }
+    }
+  } else {
+    note "Table $table not found";
+  }
+}
+
+sub draw_contours(Str $table, Str $columns, Str $geomcol, Str $elevcol) {
+  note "$table contours...";
+
+  my @columns     = $columns.split: ':';
+  my $selectcolumns = @columns.join: ', ';
+  my $numfeatcols = +@columns;
+  $selectcolumns    ~= ',' ~ $elevcol if $elevcol;
+
+  my $elevation = $contourinterval;
+
+  my $sth = $dbh.prepare("SELECT $selectcolumns, st_astext($geomcol) as shape
+                          FROM $table
+                          WHERE $geomcol && $rect
+                         ");
+  
+  if $sth.execute {
+    
+    while my @row = $sth.fetchrow_array {
+      my $featuretype = '';
+      for ^$numfeatcols {
+        $featuretype ~= @row.shift ~ ':';
+      }
+      $featuretype ~~ s/\:$//;
+    
+      my $symbol = 0;
+      %linefeaturetypes{$table}{$featuretype}++;
+      if $featuretype ~~ /^\d+$/ {
+        $symbol = $featuretype;
+      } else {
+        $sth_symb.execute($table, $featuretype, 'line');
+        while my @syms = $sth_symb.fetchrow_array {
+          $symbol = @syms[0].Int;
+        }
+      }
+      #note "draw_line: $table $featuretype $symbol";
+  
+      $elevation = @row.shift if $elevcol;
+
+      next unless $elevation %% $contourinterval;
 
       my $shape = @row.shift;
       
@@ -2244,6 +2304,7 @@ sub draw_objects(Real $xoff, Real $yoff, Real $slope) {
           when 'ga_wline'       { draw_ga_wlines\           ($table,                                              ); }
           when 'property'       { draw_properties\          (                                                     ); }
           when 'point'          { draw_points\              ($table, $typecolumn, $geomcol, $orientcol, $widthcol ); }
+          when 'contour'        { draw_contours\            ($table, $typecolumn, $geomcol,             $widthcol ); } # widthcol is contour elevation
           when 'line'           { draw_lines\               ($table, $typecolumn, $geomcol,             $widthcol ); }
           when 'area'           { draw_areas\               ($table, $typecolumn, $geomcol,                       ); }
           when 'ga_point'       { draw_ga_points\           ($table,                                              ); }
