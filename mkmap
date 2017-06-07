@@ -69,6 +69,8 @@ sub set_papersizes() {
   }
 }
 
+my $contourinterval = 1;
+
 my ($xoffset, $yoffset, $xmin, $ymin); # where the map actually goes on the page
 
 sub add_annotation(Real $long, Real $lat, Real $xoffset, Real $yoffset, Str $string) {
@@ -201,6 +203,9 @@ sub process_option($arg is copy) {
     when m:i/^property \= (<[\d,]>+) / {
        @properties.push: $0.split(',');
     }
+    when m:i/^contour[interval]? \= (\d+)/ {
+      $contourinterval = $0;
+    }
     when m:i/^file '=' (.*)/ {
         my $includefile = $0;
         my $INC = $includefile.IO.open(:r) and {
@@ -273,7 +278,7 @@ sub grid2page(Real $xin, Real $yin) {
            ($yin + $yoffset) * $yscale + $ymin);
 }
 
-sub latlon2page(Real $xin, Real $yin) {
+sub latlon2page($xin, $yin) {
     ++$point_count;
     my ($tzone, $xout, $yout) = |latlon-to-utm('WGS-84', :$zone, $yin, $xin);
 # inline grid2page for speed
@@ -432,6 +437,7 @@ sub get_symbol (Str $type, Str $ftype) is cached {
   $symbol;
 }
 
+my ($lllong, $lllat, $urlong, $urlat);
 my $rect;
 
 my %areafeaturetypes;
@@ -467,7 +473,6 @@ sub draw_areas(Str $table, Str $columns, Str $geomcol) {
         $symbol = @syms[0].Int;
       }
     }
-    note "draw_areas: $table $featuretype $symbol";
 
       my $shape = @row.shift;
       
@@ -821,7 +826,6 @@ sub draw_ga_lines(Str $table, Str $typecolumn, $default_symbol = 0) {
       
 #note $symbol;
       if $default_symbol > 0 {
-        note "Changing symbol type from $symbol to $default_symbol";
 	$symbol = $default_symbol;
       }
       next unless $symbol > 0;
@@ -869,15 +873,15 @@ sub draw_ga_lines(Str $table, Str $typecolumn, $default_symbol = 0) {
   }
 }
 
-sub draw_contours(Str $table, Str $columns, Str $geomcol, Str $widthcol) {
+sub draw_contours(Str $table, Str $columns, Str $geomcol, Str $elevationcol) {
   note "$table contours...";
 
   my @columns     = $columns.split: ':';
   my $selectcolumns = @columns.join: ', ';
   my $numfeatcols = +@columns;
-  $selectcolumns    ~= ',' ~ $widthcol if $widthcol;
+  $selectcolumns    ~= ',' ~ $elevationcol if $elevationcol;
 
-  my $featurewidth = 0;
+  my $elevation = 0;
 
   my $sth = $dbh.prepare("SELECT $selectcolumns, st_astext($geomcol) as shape
                           FROM $table
@@ -894,22 +898,23 @@ sub draw_contours(Str $table, Str $columns, Str $geomcol, Str $widthcol) {
       $featuretype ~~ s/\:$//;
     
       my $symbol = 0;
-    %linefeaturetypes{$table}{$featuretype}++;
-    if $featuretype ~~ /^\d+$/ {
-      $symbol = $featuretype;
-    } else {
-      $sth_symb.execute($table, $featuretype, 'line');
-      while my @syms = $sth_symb.fetchrow_array {
-        $symbol = @syms[0].Int;
+      %linefeaturetypes{$table}{$featuretype}++;
+      if $featuretype ~~ /^\d+$/ {
+        $symbol = $featuretype;
+      } else {
+        $sth_symb.execute($table, $featuretype, 'line');
+        while my @syms = $sth_symb.fetchrow_array {
+          $symbol = @syms[0].Int;
+        }
       }
-    }
-    #note "draw_line: $table $featuretype $symbol";
+      #note "draw_line: $table $featuretype $symbol";
 
-    $featurewidth = @row.shift if $widthcol;
+      $elevation = @row.shift if $elevationcol;
 
       my $shape = @row.shift;
       
       next unless $symbol > 0;
+      next unless $elevation % $contourinterval == 0;
       ++$object_count;
       if %funnylines{$symbol}.defined {
         %funnylines{$symbol}($shape);
@@ -1248,10 +1253,24 @@ sub draw_points(Str $table, Str $columns, Str $geomcol, Str $orientcol, Str $wid
   my $featurewidth = 0;
   my $orientation  = 0;
 
-  my $sth = $dbh.prepare("SELECT $selectcolumns, st_astext($geomcol) AS position
+  my $sth;
+  my $latlong = False;
+  if $geomcol.index(':') {
+    $latlong = True;
+    my ($longcol, $latcol) = $geomcol.split(':');
+    $sth = $dbh.prepare("SELECT $selectcolumns, $longcol, $latcol
+                            FROM $table
+                            WHERE $longcol > $lllong
+                              AND $longcol < $urlong
+                              AND $latcol  > $lllat
+                              AND $latcol  < $urlat
+                             ");
+  } else {
+    $sth = $dbh.prepare("SELECT $selectcolumns, st_astext($geomcol) AS position
                             FROM $table
 			    WHERE {$geomcol} && $rect
 			   ");
+  }
     
   $sth.execute();
     
@@ -1262,6 +1281,22 @@ sub draw_points(Str $table, Str $columns, Str $geomcol, Str $orientcol, Str $wid
     }
     $featuretype ~~ s/\:$//;
     
+    $featurewidth = @row.shift if $widthcol;
+    $orientation  = @row.shift if $orientcol;
+    
+    my $long;
+    my $lat;
+    if $latlong {
+      $long = +@row.shift;
+      $lat  = +@row.shift;
+    } else {
+      my $position     = @row.shift;
+      $position ~~ / \( ( \-? <[\d\.]>+) \s+ ( \-? <[\d\.]>+ ) \) /;
+      $long = +$0;
+      $lat = +$1;
+    }
+    my ($x, $y) = latlon2page +$long, +$lat;
+
     my $symbol = 0;
     %pointfeaturetypes{$table}{$featuretype}++;
     if $featuretype ~~ /^\d+$/ {
@@ -1273,28 +1308,13 @@ sub draw_points(Str $table, Str $columns, Str $geomcol, Str $orientcol, Str $wid
       }
     }
 	
-    $featurewidth = @row.shift if $widthcol;
-    $orientation  = @row.shift if $orientcol;
-    
-    my $position     = @row.shift;
-
     #next unless @display_feature[$featuretype]; ### TODO
     next unless $symbol;
     ++$object_count;
-    $position ~~ / \( ( \-? <[\d\.]>+) \s+ ( \-? <[\d\.]>+ ) \) /;
-    my ($x, $y) = latlon2page +$0, +$1;
     %dependencies{"point$symbol"}++;
     $TMP.print: sprintf("$orientation %.6g %.6g $featurewidth point$symbol\n", $x, $y);
   }
 }
-
-#`[
-  sub draw_vm_points -- draw points from a Vicmap table
-    $table -- database table
-    $column -- the name of the column specifying the feature type
-
-  REMOVED -- replaced by draw_points
-]
 
 #`[
   sub draw_ga_points -- draw points from a Geoscience Australia table
@@ -1529,6 +1549,7 @@ note $shape if $objectid == 6651940;
         $ann.start($element);
 
 # The following horrendous code is an attempt to extract data from the undocumented annotations in the Australian 1:250000 series maps
+# It's also extremely slow :-(
 	#{my $el = $element; while ($el) {$TMP.printf: "%02.2x ", ord(substr($el, 0, 1)); substr($el, 0, 1) = ''; } $TMP.print: "\n";}
 	$ann.skip(54);
 	$string2 = $ann.string;
@@ -2214,6 +2235,7 @@ sub draw_objects(Real $xoff, Real $yoff, Real $slope) {
           when 'vm_line'        { draw_vm_lines\            ($table, $typecolumn,       $default                  ); }
           when 'ga_line'        { draw_ga_lines\            ($table, $typecolumn,       $default                  ); }
           when 'vm_line_f'      { draw_vm_lines\            ($table, $typecolumn,       $default,                 ); }
+          when 'contour'        { draw_contours\            ($table, $typecolumn, $geomcol,             $widthcol ); }
           when 'outline'        { draw_polygon_outline_names($table, $typecolumn, 8, 0.2, '1 0 .86 0'             ); }
           when 'vm_road'        { draw_vm_roads\            (                                                     ); }
           when 'ga_road'        { draw_ga_roads\            (                                                     ); }
@@ -2246,11 +2268,11 @@ sub drawit(Str $drawzone, Real $d_lllong, Real $d_lllat, Real $d_urlong, Real $d
 	= ($d_lllong, $d_urlong, $d_lllat, $d_urlat);
     note "drawit: $zone $lllongitude $lllatitude $urlongitude $urlatitude $left $right";
 
-    my ($lllong, $lllat, $urlong, $urlat) = ($lllongitude - 0.01,
-    					     $lllatitude - 0.01,
-        				     $urlongitude + 0.01,
-					     $urlatitude + 0.01
-				            );
+    ($lllong, $lllat, $urlong, $urlat) = ($lllongitude - 0.01,
+                                          $lllatitude - 0.01,
+                                          $urlongitude + 0.01,
+                                          $urlatitude + 0.01
+	            );
 
     $rect = "ST_GeometryFromText('POLYGON(($lllong $lllat, $urlong $lllat, $urlong $urlat, $lllong $urlat, $lllong $lllat))', 4326)"; # 4283)";
 
