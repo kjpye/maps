@@ -71,8 +71,6 @@ sub set_papersizes() {
   }
 }
 
-my $contourinterval = 1;
-
 my ($xoffset, $yoffset, $xmin, $ymin); # where the map actually goes on the page
 
 sub add_annotation(Real $long, Real $lat, Real $xoffset, Real $yoffset, Str $string) {
@@ -183,10 +181,11 @@ sub process_option($arg is copy) {
         $zone = $0.uc;
 	note "Zone: $zone\n";
     }
-    when m:i/^scale\=[1:]?(\d+)(<[kKmM]>?)$/ {
+    when m:i/^scale\=[1\:]?(\d+)(<[kKmM]>?)$/ {
 	$scale = $0;
 	$scale *= 1000    if $1.lc eq 'k';
 	$scale *= 1000000 if $1.lc eq 'm';
+note "scale set to $scale";
     }
     when m:i/ ^ grid[spacing]? \= (\d+) (k?) m?$/ {
 	$grid_spacing = $0;
@@ -221,9 +220,6 @@ sub process_option($arg is copy) {
 	    $INC.close;
 	}
     }
-    when m:i/contour[interval] '=' (.*) {
-      $contourinterval = $0;
-    }  
     default { note "Unknown option \"$arg\" ignored\n"; }
   }
 }
@@ -926,60 +922,6 @@ sub draw_ga_lines(Str $table, Str $typecolumn, $default_symbol = 0) {
 	default {
           put_line($shape.Str, "line$symbol", 0);
         }
-      }
-    }
-  } else {
-    note "Table $table not found";
-  }
-}
-
-sub draw_contours(Str $table, Str $columns, Str $geomcol, Str $elevationcol) {
-  note "$table contours...";
-
-  my @columns     = $columns.split: ':';
-  my $selectcolumns = @columns.join: ', ';
-  my $numfeatcols = +@columns;
-  $selectcolumns    ~= ',' ~ $elevationcol if $elevationcol;
-
-  my $elevation = 0;
-
-  my $sth = $dbh.prepare("SELECT $selectcolumns, st_astext($geomcol) as shape
-                          FROM $table
-                          WHERE $geomcol && $rect
-                         ");
-  
-  if $sth.execute {
-    
-    while my @row = $sth.fetchrow_array {
-      my $featuretype = '';
-      for ^$numfeatcols {
-        $featuretype ~= @row.shift ~ ':';
-      }
-      $featuretype ~~ s/\:$//;
-    
-      my $symbol = 0;
-      %linefeaturetypes{$table}{$featuretype}++;
-      if $featuretype ~~ /^\d+$/ {
-        $symbol = $featuretype;
-      } else {
-        $sth_symb.execute($table, $featuretype, 'line');
-        while my @syms = $sth_symb.fetchrow_array {
-          $symbol = @syms[0].Int;
-        }
-      }
-      #note "draw_line: $table $featuretype $symbol";
-
-      $elevation = @row.shift if $elevationcol;
-
-      my $shape = @row.shift;
-      
-      next unless $symbol > 0;
-      next unless $elevation % $contourinterval == 0;
-      ++$object_count;
-      if %funnylines{$symbol}.defined {
-        %funnylines{$symbol}($shape);
-      } else {
-        put_line($shape.Str, "line$symbol", 0);
       }
     }
   } else {

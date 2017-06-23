@@ -1752,7 +1752,7 @@ INSERT INTO Symbols_GA (name, dependencies, body)
 VALUES ('line542', '', '
 /line542 { % Powerline
   /featurewidth exch def
-% TODO
+% handled specially in the code
 } bind def
 ');
 
@@ -1760,7 +1760,7 @@ INSERT INTO Symbols_GA (name, dependencies, body)
 VALUES ('line543', '', '
 /line543 { % Powerline (WAC only)
   /featurewidth exch def
-% TODO
+% handled specially in the code
 } bind def
 ');
 
@@ -3208,7 +3208,7 @@ VALUES ('point54', '', '
 
 INSERT INTO Symbols_GA (name, dependencies, body)
 VALUES ('point540', '', '
-/point54 { % Powerline Pylon
+/point540 { % Powerline Pylon
   /featurewidth exch def
   gsave
     translate rotate
@@ -3492,7 +3492,20 @@ VALUES ('point96', '', '
   /featurewidth exch def
   gsave
   translate rotate
-  % TODO implement
+  0 0 0 1 setcmykcolor
+  -0.575 -0.46 moveto
+  0.37 0 rlineto
+  0 0.595 rlineto
+  0.05 0.135 0.255 180 0 arcn
+  0 -0.595 rlineto
+  0.27 0 rlineto
+  0 0.1 rlineto
+  -0.17 0 rlineto
+  0 0.495 rlineto
+  0 0.135 0.405 0 180 arc
+  0 -0.495 rlineto
+  -0.17 0 rlineto
+  closepath fill
   grestore
 } bind def
 ');
@@ -3503,7 +3516,7 @@ VALUES ('point98', '', '
   /featurewidth exch def
   gsave
   translate rotate
-  .1 setlinewidth 0 0 0 .1 setcmykcolor
+  .1 setlinewidth 0 0 0 1 setcmykcolor
   % TODO get size right
   -0.5 0 moveto 0 1 rlineto stroke
   60 rotate -0.5 0 moveto 0 1 rlineto stroke
