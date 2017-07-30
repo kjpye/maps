@@ -653,7 +653,7 @@ my %funnylines = ();
   follow_line($shape, .5, &powerline, .5, .2, '1 .73 0 0');
   $TMP.say: "1 .73 0 0 setcmykcolor .2 setlinewidth stroke";
 }
-%funnylines<543> = sub ($shape) { # Powerline (WAC)
+%funnylines<543> = sub ($shape) { # Powerline
   $powerlinestart = 1;
   follow_line($shape, .5, &powerline, .5, .2, '.79 .9 0 0');
   $TMP.say: ".79 .9 0 0 setcmykcolor .2 setlinewidth stroke";
@@ -1349,6 +1349,90 @@ sub draw_ga_points(Str $table) {
 	%dependencies{"point$symbol"}++;
 	$TMP.print: sprintf "$orientation %.6g %.6g $featurewidth point$symbol\n", $x, $y;
     }
+}
+
+#`[
+  Routines for drawing text
+
+  Once again, the commonality should be extracted
+]
+
+#`[
+  sub draw_text -- draw text from a generic table
+    $table -- database table
+]
+
+sub draw_text(Str $table, Str $textcolumn, Str $geomcol, Str $widthcols) {
+  note "$table text...";
+
+  my $selectcolumns = $textcolumn;
+  my @widthcols     = $widthcols.split: ':';
+  my $numwidthcols  = +@widthcols;
+  if $numwidthcols {
+     $selectcolumns ~= ', ';
+     $selectcolumns ~= @widthcols.join(', ');
+  }
+
+  my $sth;
+  my $latlong = False;
+  if $geomcol.index(':') {
+    $latlong = True;
+    my ($longcol, $latcol) = $geomcol.split(':');
+    $sth = $dbh.prepare("SELECT $selectcolumns, $longcol, $latcol
+                            FROM $table
+                            WHERE $longcol > $lllong
+                              AND $longcol < $urlong
+                              AND $latcol  > $lllat
+                              AND $latcol  < $urlat
+                             ");
+  } else {
+    $sth = $dbh.prepare("SELECT $selectcolumns, st_astext($geomcol) AS position
+                            FROM $table
+			    WHERE {$geomcol} && $rect
+			   ");
+  }
+    
+  $sth.execute();
+    
+  while my @row = $sth.fetchrow_array {
+    my $text  = @row.shift;
+    my $widthtype = '';
+    for ^$numwidthcols {
+      $widthtype ~= @row.shift ~ ':';
+    }
+    $widthtype ~~ s/\:$//;
+    
+    
+    my $long;
+    my $lat;
+    if $latlong {
+      $long = +@row.shift;
+      $lat  = +@row.shift;
+    } else {
+      my $position     = @row.shift;
+      $position ~~ / \( ( \-? <[\d\.]>+) \s+ ( \-? <[\d\.]>+ ) \) /;
+      $long = +$0;
+      $lat = +$1;
+    }
+    my ($x, $y) = latlon2page +$long, +$lat;
+    $x += 1; $y += 1; # offset text slightly
+
+    my $width = 0;
+    %pointfeaturetypes{$table}{$widthtype}++;
+    if $widthtype ~~ /^\d+$/ {
+      $width = $widthtype;
+    } else {
+      $sth_symb.execute($table, $widthtype, 'text');
+      while my @syms = $sth_symb.fetchrow_array {
+        $width = @syms[0].Int;
+      }
+    }
+	
+    #next unless @display_feature[$featuretype]; ### TODO
+    next unless $width;
+    ++$object_count;
+    $TMP.print: sprintf("0 0 0 1 setcmykcolor %.6g %.6g moveto /Arial findfont $width scalefont setfont ($text) show\n", $x, $y);
+  }
 }
 
 sub draw_spot_heights() {
@@ -2254,6 +2338,7 @@ sub draw_objects(Real $xoff, Real $yoff, Real $slope) {
           when 'roadpoint'      { draw_roadpoints\          (                                                     ); }
           when 'graticule'      { draw_graticule\           (                                                     ); }
           when 'grid'           { draw_grid\                (                                                     ); }
+          when 'text'           { draw_text\                ($table, $typecolumn, $geomcol,             $widthcol          ); }
           when 'ga_annotation'  { draw_ga_annotations\      (                                                     ); }
           when 'userannotation' { draw_userannotations\     ($xoff, $yoff, $slope                                 ); }
           default               { note "Unknown draw type $draw for feature $feature: objects ignored"; }
