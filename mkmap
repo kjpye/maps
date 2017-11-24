@@ -1359,7 +1359,10 @@ sub draw_ga_points(Str $table) {
 
 #`[
   sub draw_text -- draw text from a generic table
-    $table -- database table
+    $table      -- database table
+    $textcolumn -- the column which contains the text to be printed
+    $geomcol    -- the column which specifies where the text should go (subject to an offset)
+    $widthcols  -- the column(s) which will be used to determine font, pointsize etc.
 ]
 
 sub draw_text(Str $table, Str $textcolumn, Str $geomcol, Str $widthcols) {
@@ -1410,6 +1413,7 @@ sub draw_text(Str $table, Str $textcolumn, Str $geomcol, Str $widthcols) {
       $lat  = +@row.shift;
     } else {
       my $position     = @row.shift;
+# TODO: generalise for line and polygon objects
       $position ~~ / \( ( \-? <[\d\.]>+) \s+ ( \-? <[\d\.]>+ ) \) /;
       $long = +$0;
       $lat = +$1;
@@ -1936,9 +1940,10 @@ sub label_graticule(Bool $left, Bool $right) {
     }
 }
 
+# Draw the lines of longitude and latitude:
+
 sub draw_graticule() {
     note "Drawing graticule...";
-# Now draw the lines of longitude and latitude:
 
     my $minlat = ($lllatitude/$graticule_spacing).Int * $graticule_spacing;
     $minlat += $graticule_spacing if $minlat < $lllatitude;
@@ -1976,7 +1981,7 @@ $TMP.print: "% draw graticule from $minlong, $minlat to $urlongitude, $urlatitud
 	while ($lat <= $urlatitude + .0001) {
 	    ($x, $y) = latlon2page $long, $lat;
 	    $TMP.print: "$x $y moveto -.5 0 rlineto 1 0 rlineto stroke\n";
-	    $lat += 1.0/60.0;
+	    $lat += 1.0/60.0; # FIX -- should relate to line spacing 
 	}
 	#$TMP.print: "stroke\n";
 	$long += $graticule_spacing;
@@ -1990,7 +1995,7 @@ $TMP.print: "% draw graticule from $minlong, $minlat to $urlongitude, $urlatitud
 	while ($lat <= $urlatitude + .0001) {
 	    ($x, $y) = latlon2page $long, $lat;
 	    $TMP.print: "$x $y moveto -1 0 rlineto 2 0 rlineto stroke\n";
-	    $lat += 5.0/60.0;
+	    $lat += 5.0/60.0; # FIX -- this is 1:250000 specific
 	}
 	#$TMP.print: "stroke\n";
 	$long += $graticule_spacing;
@@ -2524,7 +2529,6 @@ EOF
 
 my $tmpfile = '/tmp/' ~ $*PID.Str;
 $TMP = $tmpfile.IO.open(:a) or fail "Could not open /tmp/$*PID: $!";
-# FIX LATER unlink($tmpfile); # saves cleaning up later
 
 $xmin = $leftmarginwidth;
 $ymin = $lowermarginwidth;
@@ -2540,7 +2544,7 @@ $yscale = $xscale = 1000/$scale; # convert metres on the ground to mm on the map
 my $passwd = 'xyz123';
 #$dbh = DBIish.connect("Pg", user => 'ro', password => $passwd, dbname => $db, RaiseError => 0); # or die $DBIish::errstr;
 note "Connecting to database $db";
-$dbh = DBIish.connect("Pg", dbname => $db, RaiseError => False); # or die $DBIish::errstr;
+$dbh = DBIish.connect("Pg", dbname => $db, RaiseError => False) or die $DBIish::errstr;
 
 $sth_symb = $dbh.prepare("SELECT symbol
                           FROM   symbols
@@ -2638,7 +2642,7 @@ do_dependencies();
 
 $dbh.dispose();
 
-#$TMP.seek(0, SeekFromBeginning) or fail "Could not seek in TMP file: $!";
+$TMP.close;
 $TMP = $tmpfile.IO.open(:r);
 .say for $TMP.lines;
 $TMP.close;
