@@ -85,7 +85,7 @@ sub add_annotation(Real $long, Real $lat, Real $xoffset, Real $yoffset, Str $str
 }
 
 my ($leftmarginwidth, $lowermarginwidth, $rightmarginwidth, $uppermarginwidth)
-    = (30, 25, 30, 25); # negative to bleed over page boundary
+    = (30, 35, 30, 25); # negative to bleed over page boundary
 my ($imagewidth, $imageheight);
 my ($gridwidth, $graticulewidth);
 my ($gridheight, $graticuleheight);
@@ -257,6 +257,7 @@ EOF
       /Helvetica-Narrow-Latin1 3 selectfont
       8 8 moveto
       ($copyright) show
+      $pagewidth 8 sub 8 moveto (1:$scale) dup stringwidth pop neg 0 rmoveto show
     EOF
   }
 }
@@ -1891,12 +1892,14 @@ sub label_graticule(Bool $left, Bool $right) {
     while ($long < $urlongitude + .0001) {
 	my $lat = $lllatitude;
 	my ($x, $y) = latlon2page $long, $lllatitude;
-	$y -= 10;
+	$y -= 8;
 	my $string = latlon2string($long, "EW", $first);
 	$TMP.print: "$x $y moveto ($string) dup stringwidth pop 2 div neg 0 rmoveto show\n" unless ($first && ! $left);
-	($x, $y) = latlon2page $long, $urlatitude;
-	$y += 7;
-	$TMP.print: "$x $y moveto ($string) dup stringwidth pop 2 div neg 0 rmoveto show\n" unless ($first && !$left);
+        if ! $bleedtop {
+          ($x, $y) = latlon2page $long, $urlatitude;
+          $y += 7;
+          $TMP.print: "$x $y moveto ($string) dup stringwidth pop 2 div neg 0 rmoveto show\n" unless ($first && !$left);
+        }
 	$long += $graticule_spacing;
 	$first = 0;
     }
