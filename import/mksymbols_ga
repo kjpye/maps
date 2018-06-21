@@ -1414,6 +1414,17 @@ VALUES ('line22', 'dashedline', '
 ');
 
 INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('line9022', 'dashedline', '
+/line9022 { % Foot Track
+  /featurewidth exch def
+  [1.75 .25] 0
+  .2
+  0 0 0 1
+  dashedline
+} bind def
+');
+
+INSERT INTO Symbols_GA (name, dependencies, body)
 VALUES ('line242', 'solidline', '
 /line242 { % Secondary Road (WAC only)
   /featurewidth exch def
@@ -1424,11 +1435,31 @@ VALUES ('line242', 'solidline', '
 ');
 
 INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('line9242', 'solidline', '
+/line9242 { % Secondary Road (WAC only)
+  /featurewidth exch def
+  .2
+  .79 .9 0 0
+  solidline
+} bind def
+');
+
+INSERT INTO Symbols_GA (name, dependencies, body)
 VALUES ('line243', 'solidline', '
 /line243 { % Other Road (WAC only)
   /featurewidth exch def
   .15
   0 1 1 0
+  solidline
+} bind def
+');
+
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('line9243', 'solidline', '
+/line9243 { % Other Road (WAC only)
+  /featurewidth exch def
+  .15
+  .79 .9 0 0
   solidline
 } bind def
 ');
@@ -1449,10 +1480,17 @@ VALUES ('line250', 'solidline', '
     .9
     0 1 1 0
     solidline
-%  grestore
-%  .6
-%  0 0 1 0
-%  solidline
+} bind def
+');
+
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('line9250', 'solidline', '
+/line9250 { % Road -- Dual carriageway
+  /featurewidth exch def
+%  gsave
+    .9
+    .79 .9 0 0
+    solidline
 } bind def
 ');
 
@@ -1477,6 +1515,16 @@ VALUES ('line251', 'solidline', '
 ');
 
 INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('line9251', 'solidline', '
+/line9251 { % Road -- principal sealed
+  /featurewidth exch def
+  .9
+  .79 .9 0 0
+  solidline
+} bind def
+');
+
+INSERT INTO Symbols_GA (name, dependencies, body)
 VALUES ('line252', 'dashedline', '
 /line252 { % Road -- under construction
   /featurewidth exch def
@@ -1484,6 +1532,18 @@ VALUES ('line252', 'dashedline', '
   [3.75 .25] 0
   .9
   0 1 1 0
+  dashedline
+} bind def
+');
+
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('line9252', 'dashedline', '
+/line9252 { % Road -- under construction
+  /featurewidth exch def
+% TODO Fix width
+  [3.75 .25] 0
+  .9
+  .79 .9 0 0
   dashedline
 } bind def
 ');
@@ -1500,12 +1560,34 @@ VALUES ('line253', 'dashedline', '
 ');
 
 INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('line9253', 'dashedline', '
+/line9253 { % Road -- minor unsealed
+  /featurewidth exch def
+  [2.3 .25] 0
+  .4
+  .79 .9 0 0
+  dashedline
+} bind def
+');
+
+INSERT INTO Symbols_GA (name, dependencies, body)
 VALUES ('line254', 'dashedline', '
 /line254 { % Road -- vehicular track
   /featurewidth exch def
   [1.5 .25] 0
   .2
   0 1 1 0
+  dashedline
+} bind def
+');
+
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('line9254', 'dashedline', '
+/line9254 { % Road -- vehicular track
+  /featurewidth exch def
+  [1.5 .25] 0
+  .2
+  .79 .9 0 0
   dashedline
 } bind def
 ');
@@ -1532,12 +1614,33 @@ VALUES ('line256', 'solidline', '
 ');
 
 INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('line9256', 'solidline', '
+/line256 { % Road -- secondary sealed
+  /featurewidth exch def
+  .6
+  .79 .9 0 0
+  solidline
+} bind def
+');
+
+INSERT INTO Symbols_GA (name, dependencies, body)
 VALUES ('line257', 'solidline', '
 /line257 { % Road -- minor sealed
   /featurewidth exch def
         % Road -- principal (WAC only)
   .4
   0 1 1 0
+  solidline
+} bind def
+');
+
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('line9257', 'solidline', '
+/line9257 { % Road -- minor sealed
+  /featurewidth exch def
+        % Road -- principal (WAC only)
+  .4
+  .79 .9 0 0
   solidline
 } bind def
 ');
@@ -1554,6 +1657,17 @@ VALUES ('line258', 'dashedline', '
 ');
 
 INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('line9258', 'dashedline', '
+/line9258 { % Road -- Principal unsealed
+  /featurewidth exch def
+  [5 .7] 0 
+  .9
+  .79 .9 0 0
+  dashedline
+} bind def
+');
+
+INSERT INTO Symbols_GA (name, dependencies, body)
 VALUES ('line259', 'dashedline', '
 /line259 { % Road -- Secondary unsealed
   /featurewidth exch def
@@ -1565,8 +1679,64 @@ VALUES ('line259', 'dashedline', '
 ');
 
 INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('line9259', 'dashedline', '
+/line9259 { % Road -- Secondary unsealed
+  /featurewidth exch def
+  [3.5 .4] 0
+  .6
+  .79 .9 0 0
+  dashedline
+} bind def
+');
+
+INSERT INTO Symbols_GA (name, dependencies, body)
 VALUES ('line260', 'solidline', '
 /line260 { % Railway or Road Bridge Line
+  /localdict 10 dict def localdict begin
+  /featurewidth exch def
+  gsave
+  { /starty exch def /startx exch def /currentx startx def /currenty starty def} % moveto
+  {/prevy currenty def
+   /prevx currentx def
+   /currenty exch def
+   /currentx exch def
+   localdict /secondx known
+    {}
+    {/secondx currentx def /secondy currenty def}
+    ifelse
+  } % lineto
+  {} % curveto
+  {} % closepath
+  pathforall
+% Draw the angular ends
+% leading end:
+  gsave
+    newpath
+    startx starty translate
+    secondx startx sub secondy starty sub atan neg rotate
+    -.2 setlinewidth 0 0 0 1 setcmykcolor featurewidth 2 div
+    dup 0 moveto 0.6 2 sqrt mul dup neg rlineto stroke
+    neg 0 moveto -0.6 2 sqrt mul dup rlineto stroke
+  grestore
+% trailing end:
+  gsave
+    newpath
+    currentx currenty translate
+    prevx currentx sub prevy currenty sub atan neg rotate
+    -.2 setlinewidth 0 0 0 1 setcmykcolor featurewidth 2 div
+    dup 0 moveto 0.6 2 sqrt mul dup neg rlineto stroke
+    neg 0 moveto -0.6 2 sqrt mul dup rlineto stroke
+  grestore
+  grestore
+  gsave featurewidth 0.4 add 0 0 0 1 solidline grestore
+  featurewidth dup 0.26 lt { 0 0 0 1 } { 0 0 1 0 } ifelse solidline
+  end
+} bind def
+');
+
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('line9260', 'solidline', '
+/line9260 { % Railway or Road Bridge Line; no different from line260
   /localdict 10 dict def localdict begin
   /featurewidth exch def
   gsave
@@ -2721,7 +2891,11 @@ VALUES ('point404', '', '
     0 1 1 0 setcmykcolor
     1.5
     dup neg dup neg moveto dup dup lineto dup dup neg lineto neg dup lineto closepath fill
-% TODO Needs letter "F"
+% Letter "F"
+    0 0 0 0 setcmykcolor
+    -0.75 -1.3 moveto 0.75 0 rlineto 0 1 rlineto 0.75 0 rlineto 0 0.6 rlineto
+    -0.75 0 rlineto 0 0.4 rlineto 0.75 0 rlineto 0 0.6 rlineto -1.5 0 rlineto
+    closepath fill
   grestore
 } bind def
 ');
@@ -3680,6 +3854,21 @@ VALUES ('point1006', '', '
   350.788085 568.6084745 lineto
   350.788085 5.7684445 lineto
   closepath fill
+  grestore
+} bind def
+');
+
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('point1007', '', '
+/point1007 { % Church
+  /featurewidth exch def
+  gsave
+    translate rotate
+    0 0 0 1 setcmykcolor
+    0.6
+    dup neg dup neg moveto dup dup lineto dup dup neg lineto neg dup lineto closepath fill
+    0.2 setlinewidth
+    0 0.6 moveto 0 1.2 rlineto 0 -0.6 rlineto -0.6 0 rlineto 1.2 0 rlineto stroke
   grestore
 } bind def
 ');

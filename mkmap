@@ -1,6 +1,5 @@
 #!/usr/bin/env perl6
 
-# vi: syntax=on
 use v6;
 
 use DBIish;
@@ -94,6 +93,7 @@ my $grid_spacing = 1000; # spacing betwen grid lines in metres
 my $graticule_spacing = 1.0/60; # spacing between graticule lines in degrees
 my (Bool $ongrid, Bool $ongraticule) = (False, False);
 my (Bool $bleedright, Bool $bleedtop) = (False, False);
+my %emphasise-roads;
 
 sub process_option($arg is copy) {
     note "Processing option $arg";
@@ -106,6 +106,10 @@ sub process_option($arg is copy) {
                / {
 	add_annotation(+$0, +$1, +$2, +$3, ~$4);
 	return;
+    }
+    if $arg ~~ m:i/ ^ emph '=' (.*)/ {
+        %emphasise-roads{$0} = 1;
+        return;
     }
 # ignore whitespace in all remaining options
     $arg ~~ s:g/\s+//;
@@ -257,7 +261,7 @@ EOF
       /Helvetica-Narrow-Latin1 3 selectfont
       8 8 moveto
       ($copyright) show
-      $pagewidth 8 sub 8 moveto (1:$scale) dup stringwidth pop neg 0 rmoveto show
+      $paperwidth 8 sub 8 moveto (1:$scale) dup stringwidth pop neg 0 rmoveto show
     EOF
   }
 }
@@ -358,7 +362,7 @@ my Real $prev_y;
 
 sub plot_point(Real $x, Real $y, Bool $moveto) {
     my ($x1, $y1) = latlon2page $x, $y;
-    $TMP.print: sprintf "%.5g %.5g %s\n", $x1, $y1, $moveto ?? 'moveto' !! 'lineto';
+    $TMP.print: sprintf "%.6g %.6g %s\n", $x1, $y1, $moveto ?? 'moveto' !! 'lineto';
 }
 
 my $prev_moveto;
@@ -394,6 +398,10 @@ sub add_point(Real $x, Real $y) {
 	$prev_moveto = $moveto;
     }
     $quadrant = $new_quadrant;
+}
+
+sub put-comment($comment) {
+  $TMP.print: "% $comment\n";
 }
 
 sub put_line(Str $shape is copy, Str $func, $featurewidth = '') {
@@ -487,33 +495,33 @@ sub draw_areas(Str $table, Str $columns, Str $geomcol) {
   }
 }
 
-sub draw_vm_areas(Str $table) {
-  note "$table areas...";
-  my $geomcol = %defaults{'areageometry'};
-  $geomcol = 'geom';
-  my $sth = $dbh.prepare("SELECT ftype_code, st_astext($geomcol) as shape
-                          FROM $table
-                          WHERE $geomcol && $rect
-                         ");
-  
-  if $sth.execute {
-    
-    while my @row = $sth.fetchrow_array {
-      my $ftype = @row[0];
-      my $shape = @row[1];
-      
-     my $ft = '';
-     $ft ~= $ftype;
-      my $symbol = get_symbol 'area', $ft;
-      
-      next unless $symbol > 0;
-      ++$object_count;
-      put_line($shape, "area$symbol");
-    }
-  } else {
-    note "$table not found";
-  }
-}
+#sub draw_vm_areas(Str $table) {
+#  note "$table areas...";
+#  my $geomcol = %defaults{'areageometry'};
+#  $geomcol = 'geom';
+#  my $sth = $dbh.prepare("SELECT ftype_code, st_astext($geomcol) as shape
+#                          FROM $table
+#                          WHERE $geomcol && $rect
+#                         ");
+#  
+#  if $sth.execute {
+#    
+#    while my @row = $sth.fetchrow_array {
+#      my $ftype = @row[0];
+#      my $shape = @row[1];
+#      
+#     my $ft = '';
+#     $ft ~= $ftype;
+#      my $symbol = get_symbol 'area', $ft;
+#      
+#      next unless $symbol > 0;
+#      ++$object_count;
+#      put_line($shape, "area$symbol");
+#    }
+#  } else {
+#    note "$table not found";
+#  }
+#}
 
 sub draw_ga_areas(Str $table) {
   note "$table areas...";
@@ -1035,13 +1043,15 @@ sub draw_ga_wlines(Str $table) {
 ]
 
 #`[
-  sub draw_vm_roads -- draw roads from the Vicmap database table tr_raod
+  sub draw_vm_roads -- draw roads from the Vicmap database table tr_road
     no parameters
 ]
 
 sub draw_vm_roads() {
     my @dual;
     my $featurewidth;
+
+dd %emphasise-roads;
 
 # Read in symbols
   my %roadsymbols;
@@ -1054,7 +1064,7 @@ sub draw_vm_roads() {
   }
 
     note "Roads...";
-     $sth = $dbh.prepare("SELECT pfi, ftype_code, class_code, dir_code, road_seal, div_rd, st_astext(geom) AS shape
+     $sth = $dbh.prepare("SELECT pfi, ftype_code, class_code, dir_code, road_seal, div_rd, ezirdnmlbl, st_astext(geom) AS shape
                           FROM vm_tr_road
                           WHERE geom && $rect
                          ");
@@ -1070,7 +1080,8 @@ sub draw_vm_roads() {
         my $dir          = @row[3];
         my $sealed       = @row[4];
         my $divided      = @row[5];
-	my $shape        = @row[6];
+	my $road-name    = @row[6];
+	my $shape        = @row[7];
 	
         $sealed = $sealed == 1 ?? 's' !! 'u';
         my $symbol = %roadsymbols{"{$ftype_code}:{$class}:{$sealed}"} //
@@ -1079,6 +1090,8 @@ sub draw_vm_roads() {
 	next unless $symbol > 0;
 	@dual.push: $objectid if $symbol == 250;
 	++$object_count;
+        put-comment($road-name);
+        $symbol += 9000 if %emphasise-roads{$road-name}.defined;
 	put_line($shape, "line$symbol", $featurewidth);
     }
 
@@ -1294,7 +1307,7 @@ sub draw_points(Str $table, Str $columns, Str $geomcol, Str $orientcol, Str $wid
       $lat  = +@row.shift;
     } else {
       my $position     = @row.shift;
-      $position ~~ / \( ( \-? <[\d\.]>+) \s+ ( \-? <[\d\.]>+ ) \) /;
+      $position ~~ / \( ( \-? <[\d\.]>+) \s+ ( \-? <[\d\.]>+ ) <[,)]> /;
       $long = +$0;
       $lat = +$1;
     }
@@ -1310,6 +1323,7 @@ sub draw_points(Str $table, Str $columns, Str $geomcol, Str $orientcol, Str $wid
         $symbol = @syms[0].Int;
       }
     }
+note "$symbol: $x $y";
 	
     #next unless @display_feature[$featuretype]; ### TODO
     next unless $symbol;
@@ -2324,17 +2338,16 @@ sub draw_objects(Real $xoff, Real $yoff, Real $slope) {
       note "Drawing $feature: '$draw' '$table' '$typecolumn' ($order)";
       if $order > 0 && %drawobjects{$feature.lc} {
         given $draw {
-          when 'vm_area'        { draw_vm_areas\            ($table                                               ); }
+#         when 'vm_area'        { draw_vm_areas\            ($table                                               ); } # not used
           when 'ga_area'        { draw_ga_areas\            ($table                                               ); }
-          when 'vm_line'        { draw_vm_lines\            ($table, $typecolumn,       $default                  ); }
+          when 'vm_line'        { draw_vm_lines\            ($table, $typecolumn,       $default                  ); } # not used -- but where is vi_line?
           when 'ga_line'        { draw_ga_lines\            ($table, $typecolumn,       $default                  ); }
           when 'vm_line_f'      { draw_vm_lines\            ($table, $typecolumn,       $default,                 ); }
-          when 'contour'        { draw_contours\            ($table, $typecolumn, $geomcol,             $widthcol ); }
           when 'outline'        { draw_polygon_outline_names($table, $typecolumn, 8, 0.2, '1 0 .86 0'             ); }
           when 'vm_road'        { draw_vm_roads\            (                                                     ); }
           when 'ga_road'        { draw_ga_roads\            (                                                     ); }
           when 'osm_road'       { draw_osmroads\            (                                                     ); }
-#         when 'vm_wline'       { draw_vm_wlines\           ($table                                               ); }
+#         when 'vm_wline'       { draw_vm_wlines\           ($table                                               ); } # not used
           when 'ga_wline'       { draw_ga_wlines\           ($table,                                              ); }
           when 'property'       { draw_properties\          (                                                     ); }
           when 'point'          { draw_points\              ($table, $typecolumn, $geomcol, $orientcol, $widthcol ); }
