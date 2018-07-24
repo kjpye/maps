@@ -1,0 +1,25 @@
+Script started on Tue 24 Jul 2018 05:39:26 PM AEST
+7]2;kevin@linux-u3un:~/src/maps/import]1;linux-u3un8kevin@linux-u3un:~/src/maps/import> psql maps
+psql (9.6.9, server 9.4.17)
+Type "help" for help.
+
+maps=# \d displayorder
+                      Table "public.displayorder"
+    Column     |  Type   |                  Modifiers                   
+---------------+---------+----------------------------------------------
+ source        | text    | 
+ featurename   | text    | 
+ drawtype      | text    | 
+ tablename     | text    | 
+ featurecolumn | text    | 
+ defaultsymbol | integer | default 0
+ displayorder  | integer | 
+ geomcol       | text    | default ''::text
+ widthcol      | text    | default ''::text
+ orientcol     | text    | default ''::text
+ id            | bigint  | default nextval('displayorder_id'::regclass)
+
+maps=# \q
+7]2;kevin@linux-u3un:~/src/maps/import]1;linux-u3un8kevin@linux-u3un:~/src/maps/import> exit
+
+Script done on Tue 24 Jul 2018 05:39:40 PM AEST
