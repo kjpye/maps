@@ -1,0 +1,3360 @@
+draw_dot,"
+/draw_dot
+{
+    currentpoint .1 0 360 arc
+    closepath fill
+} bind def
+",""
+draw_random_dots,"
+/draw_random_dots
+{
+  4.66 1.56 moveto draw_dot
+  5.97 8.6 moveto draw_dot
+  3.24 7.7 moveto draw_dot
+  5.28 1.89 moveto draw_dot
+  8.25 3.97 moveto draw_dot
+  7.02 7.45 moveto draw_dot
+  9.79 2.84 moveto draw_dot
+  3.97 3.85 moveto draw_dot
+  5.89 8.69 moveto draw_dot
+  5.8 7.81 moveto draw_dot
+  0.592 0.00314 moveto draw_dot
+  0.0348 0.453 moveto draw_dot
+  6.78 5.14 moveto draw_dot
+  6.36 3.54 moveto draw_dot
+  4.97 0.555 moveto draw_dot
+  0.604 1.09 moveto draw_dot
+  0.873 7.72 moveto draw_dot
+  9.65 3.89 moveto draw_dot
+  6.99 8.28 moveto draw_dot
+  1.46 1.69 moveto draw_dot
+  3.04 0.549 moveto draw_dot
+  8.57 7.29 moveto draw_dot
+  7.91 2.63 moveto draw_dot
+  1.81 4.29 moveto draw_dot
+  0.719 5.8 moveto draw_dot
+  2.71 9.33 moveto draw_dot
+  2.67 2.35 moveto draw_dot
+  2.64 6.48 moveto draw_dot
+  5.97 5.29 moveto draw_dot
+  0.446 4.25 moveto draw_dot
+  2.87 6.86 moveto draw_dot
+  3.42 1 moveto draw_dot
+  2.97 2.26 moveto draw_dot
+  2.79 6.79 moveto draw_dot
+  9.4 5.25 moveto draw_dot
+  0.119 4.76 moveto draw_dot
+  6.31 0.671 moveto draw_dot
+  6.35 3.01 moveto draw_dot
+  8.33 3.14 moveto draw_dot
+  8.06 4.87 moveto draw_dot
+  3.67 2.03 moveto draw_dot
+  2.51 7.22 moveto draw_dot
+  2.2 5.65 moveto draw_dot
+  4.48 8.76 moveto draw_dot
+  9.05 5.8 moveto draw_dot
+  6.21 4.43 moveto draw_dot
+  7.71 0.899 moveto draw_dot
+  9.04 4.85 moveto draw_dot
+  8.96 7.97 moveto draw_dot
+  0.236 6.83 moveto draw_dot
+  7.42 1.88 moveto draw_dot
+  5.45 9.95 moveto draw_dot
+  4.65 3.58 moveto draw_dot
+  0.659 5.89 moveto draw_dot
+  9.77 6.51 moveto draw_dot
+  3.55 9.68 moveto draw_dot
+  7.97 3.74 moveto draw_dot
+  4.59 1.06 moveto draw_dot
+  6.98 4.76 moveto draw_dot
+  9.23 8.65 moveto draw_dot
+  7.12 3.97 moveto draw_dot
+  4.15 0.142 moveto draw_dot
+  4.76 9.01 moveto draw_dot
+  9.17 7.81 moveto draw_dot
+  1.24 1.33 moveto draw_dot
+  9.51 6.19 moveto draw_dot
+  1.21 8.99 moveto draw_dot
+  8.19 7.38 moveto draw_dot
+  9.52 9.87 moveto draw_dot
+  9.35 0.511 moveto draw_dot
+  5.13 5.18 moveto draw_dot
+  9.96 5.23 moveto draw_dot
+  1.49 9.73 moveto draw_dot
+  9.43 1.83 moveto draw_dot
+  5.08 5.34 moveto draw_dot
+  5.65 1.94 moveto draw_dot
+  9.77 3.45 moveto draw_dot
+  8.57 7.01 moveto draw_dot
+  1.73 7.47 moveto draw_dot
+  1.23 6.26 moveto draw_dot
+  5.89 4.03 moveto draw_dot
+  6.61 9.82 moveto draw_dot
+  5.32 8.25 moveto draw_dot
+  1.03 6.28 moveto draw_dot
+  2.37 3.38 moveto draw_dot
+  0.756 0.166 moveto draw_dot
+  9.24 0.719 moveto draw_dot
+  4.44 4.85 moveto draw_dot
+  1.75 6.42 moveto draw_dot
+  5.32 7.89 moveto draw_dot
+  8.22 6.26 moveto draw_dot
+  2.86 0.238 moveto draw_dot
+  4.06 5.61 moveto draw_dot
+  4.52 2.05 moveto draw_dot
+  6.96 6.11 moveto draw_dot
+  5.98 6.45 moveto draw_dot
+  9.69 3.19 moveto draw_dot
+  9.78 8.51 moveto draw_dot
+  0.56 4.8 moveto draw_dot
+  0.137 1.15 moveto draw_dot
+  3.74 3.29 moveto draw_dot
+  0.926 6.38 moveto draw_dot
+  3.59 3.43 moveto draw_dot
+  6.61 2.85 moveto draw_dot
+  1.21 4.44 moveto draw_dot
+  5.53 6.34 moveto draw_dot
+  8.47 3.75 moveto draw_dot
+  4.38 3.3 moveto draw_dot
+  9.98 3.46 moveto draw_dot
+  1.5 2.12 moveto draw_dot
+  7.07 5.03 moveto draw_dot
+  0.101 5.34 moveto draw_dot
+  9.83 5.45 moveto draw_dot
+  6.3 9.72 moveto draw_dot
+  1.74 4.33 moveto draw_dot
+  7.89 1.48 moveto draw_dot
+  1.28 1.08 moveto draw_dot
+  0.0447 7.52 moveto draw_dot
+  3.23 7.51 moveto draw_dot
+  2.92 3.31 moveto draw_dot
+  7.63 1.46 moveto draw_dot
+  0.934 4.61 moveto draw_dot
+  3.28 2.64 moveto draw_dot
+  5.73 7.34 moveto draw_dot
+  7.34 3.04 moveto draw_dot
+  8.92 3.94 moveto draw_dot
+  9.23 9.55 moveto draw_dot
+  8.61 8.71 moveto draw_dot
+  1.31 9.82 moveto draw_dot
+  7.34 1.32 moveto draw_dot
+  6.27 9.58 moveto draw_dot
+  1.65 9.97 moveto draw_dot
+  1.74 7.65 moveto draw_dot
+  3.16 1.49 moveto draw_dot
+  0.638 6.95 moveto draw_dot
+  3.42 8.69 moveto draw_dot
+  4.74 6.26 moveto draw_dot
+  3.27 7.57 moveto draw_dot
+  3.81 9.35 moveto draw_dot
+  0.7 4.34 moveto draw_dot
+  9.06 7.42 moveto draw_dot
+  8.31 0.753 moveto draw_dot
+  2.99 8.26 moveto draw_dot
+  2.2 1.48 moveto draw_dot
+  7.03 4.28 moveto draw_dot
+  5.71 3.16 moveto draw_dot
+  8.47 1.23 moveto draw_dot
+  3.71 4.11 moveto draw_dot
+  1.92 5.43 moveto draw_dot
+  0.166 7.6 moveto draw_dot
+  1.76 7.06 moveto draw_dot
+  5.86 3.16 moveto draw_dot
+  8.06 9.22 moveto draw_dot
+  3.76 4.83 moveto draw_dot
+  1.61 1.94 moveto draw_dot
+  1.24 7.3 moveto draw_dot
+  6 8.23 moveto draw_dot
+  7.34 0.546 moveto draw_dot
+  6.67 9.28 moveto draw_dot
+  4.45 5.23 moveto draw_dot
+  5.59 1.28 moveto draw_dot
+  1.73 1.5 moveto draw_dot
+  4.84 8.23 moveto draw_dot
+  7.4 6.4 moveto draw_dot
+  3.51 0.529 moveto draw_dot
+  0.00994 2.42 moveto draw_dot
+  9.04 6.65 moveto draw_dot
+  2.26 5.6 moveto draw_dot
+  0.865 3.94 moveto draw_dot
+  2.36 3.51 moveto draw_dot
+  8.59 1.97 moveto draw_dot
+  5.98 6.49 moveto draw_dot
+  8.13 9.65 moveto draw_dot
+  0.495 0.917 moveto draw_dot
+  3.35 9.64 moveto draw_dot
+  3.89 8 moveto draw_dot
+  1.77 6.9 moveto draw_dot
+  2.02 1.25 moveto draw_dot
+  5.04 2.49 moveto draw_dot
+  4.3 7.86 moveto draw_dot
+  6.92 9.92 moveto draw_dot
+  4.2 4.84 moveto draw_dot
+  6.56 5.94 moveto draw_dot
+  2.76 7.36 moveto draw_dot
+  5.47 5.25 moveto draw_dot
+  2.47 1.32 moveto draw_dot
+  5.37 3.32 moveto draw_dot
+  2.36 1.68 moveto draw_dot
+  7.22 0.0557 moveto draw_dot
+  1.59 5.5 moveto draw_dot
+  1.41 2.91 moveto draw_dot
+  5.97 1.25 moveto draw_dot
+  4.72 8.85 moveto draw_dot
+  6.39 1.16 moveto draw_dot
+  3.73 3.09 moveto draw_dot
+  7.54 0.221 moveto draw_dot
+  9.04 8.7 moveto draw_dot
+  4.55 5.18 moveto draw_dot
+  2.24 5.05 moveto draw_dot
+  1.97 9.76 moveto draw_dot
+  4.58 8.52 moveto draw_dot
+  6.1 4.94 moveto draw_dot
+  2.81 2.91 moveto draw_dot
+  7.47 5.32 moveto draw_dot
+  5.95 6.14 moveto draw_dot
+  3.03 7.04 moveto draw_dot
+  4.61 9.87 moveto draw_dot
+  9.96 9.13 moveto draw_dot
+  8.84 8.3 moveto draw_dot
+  7.63 6.74 moveto draw_dot
+  8.25 4.78 moveto draw_dot
+  6.35 1.39 moveto draw_dot
+  9.95 2.36 moveto draw_dot
+  0.16 3.43 moveto draw_dot
+  2.11 8.2 moveto draw_dot
+  2.56 6.31 moveto draw_dot
+  7.9 5.17 moveto draw_dot
+  4.65 8.86 moveto draw_dot
+  2.05 8.37 moveto draw_dot
+  2.41 1.74 moveto draw_dot
+  8.44 4.54 moveto draw_dot
+  6.8 2 moveto draw_dot
+  6.81 7.44 moveto draw_dot
+  5.59 4.89 moveto draw_dot
+  2.34 0.47 moveto draw_dot
+  9.4 6.14 moveto draw_dot
+  7.08 5.95 moveto draw_dot
+  6.61 9.56 moveto draw_dot
+  3.59 9.06 moveto draw_dot
+  8.71 1.53 moveto draw_dot
+  1.65 8.58 moveto draw_dot
+  1.4 4.61 moveto draw_dot
+  8.96 9.57 moveto draw_dot
+  0.114 9.44 moveto draw_dot
+  7.75 7.53 moveto draw_dot
+  5.4 7.29 moveto draw_dot
+  7.32 6.1 moveto draw_dot
+  2.26 1.84 moveto draw_dot
+  6.21 0.74 moveto draw_dot
+  4.79 9.61 moveto draw_dot
+  8.53 8.95 moveto draw_dot
+  7.08 3.78 moveto draw_dot
+  4.16 1.07 moveto draw_dot
+  2.63 0.685 moveto draw_dot
+  7.31 7.04 moveto draw_dot
+  6.96 4.84 moveto draw_dot
+  9.21 8.86 moveto draw_dot
+  2.9 3.06 moveto draw_dot
+  7.05 2.15 moveto draw_dot
+  1.83 9.49 moveto draw_dot
+  9.63 4.96 moveto draw_dot
+  8.41 6.44 moveto draw_dot
+  2.07 7.58 moveto draw_dot
+  5.63 5.89 moveto draw_dot
+  4.16 3.33 moveto draw_dot
+  3.06 8.02 moveto draw_dot
+  4.74 8.9 moveto draw_dot
+  6.62 6.93 moveto draw_dot
+  3.98 2.44 moveto draw_dot
+  5.01 4.48 moveto draw_dot
+  5.48 1.95 moveto draw_dot
+  5.54 7.66 moveto draw_dot
+  6.48 2.36 moveto draw_dot
+  4.92 7.22 moveto draw_dot
+  9.48 3.84 moveto draw_dot
+  3.71 8.01 moveto draw_dot
+  7.43 0.299 moveto draw_dot
+  2.55 8.94 moveto draw_dot
+  4.01 5.95 moveto draw_dot
+  6.3 0.734 moveto draw_dot
+  3.56 0.58 moveto draw_dot
+  5.98 6.71 moveto draw_dot
+  4.05 4.02 moveto draw_dot
+  6.46 0.0682 moveto draw_dot
+  2.56 6.42 moveto draw_dot
+  9.67 3.91 moveto draw_dot
+  1.93 9.33 moveto draw_dot
+  2.94 7.85 moveto draw_dot
+  1.06 9.93 moveto draw_dot
+  1.88 0.966 moveto draw_dot
+  8.9 6.8 moveto draw_dot
+  7.02 0.423 moveto draw_dot
+  4.13 3.58 moveto draw_dot
+  6.93 2.87 moveto draw_dot
+  2.6 0.214 moveto draw_dot
+  4.83 1.34 moveto draw_dot
+  1.84 1.23 moveto draw_dot
+  5.36 9.46 moveto draw_dot
+  4.59 2.23 moveto draw_dot
+  7.38 2.12 moveto draw_dot
+  9.2 9.06 moveto draw_dot
+  2.98 3.09 moveto draw_dot
+  6.4 7.04 moveto draw_dot
+  3.88 5.55 moveto draw_dot
+  6.05 7.44 moveto draw_dot
+  0.418 7.28 moveto draw_dot
+  0.896 6.43 moveto draw_dot
+  3.64 4.11 moveto draw_dot
+  2.46 2.43 moveto draw_dot
+  6.34 8.69 moveto draw_dot
+  8.19 5.77 moveto draw_dot
+  7.81 8.68 moveto draw_dot
+  3.46 2.11 moveto draw_dot
+  0.498 4.79 moveto draw_dot
+  1.59 5.25 moveto draw_dot
+  5.38 1.55 moveto draw_dot
+  4.04 6.14 moveto draw_dot
+  8.01 8.77 moveto draw_dot
+  9.91 2.8 moveto draw_dot
+  6.8 1.03 moveto draw_dot
+  1.79 8.96 moveto draw_dot
+  2.32 3.87 moveto draw_dot
+  6.79 9.65 moveto draw_dot
+  4.8 4.29 moveto draw_dot
+  9.81 6.19 moveto draw_dot
+  2.39 9.29 moveto draw_dot
+  6.29 6.34 moveto draw_dot
+  4.35 8.98 moveto draw_dot
+  7.04 1.05 moveto draw_dot
+  9.11 0.818 moveto draw_dot
+  7.15 6.92 moveto draw_dot
+  2.63 4.31 moveto draw_dot
+  6.48 2.62 moveto draw_dot
+  6.99 0.149 moveto draw_dot
+  4.13 1.71 moveto draw_dot
+  5.68 6.63 moveto draw_dot
+  4.58 0.612 moveto draw_dot
+  9.86 8.44 moveto draw_dot
+  6.55 4.5 moveto draw_dot
+  0.419 5.26 moveto draw_dot
+  6.39 1.96 moveto draw_dot
+  3.41 0.997 moveto draw_dot
+  8.25 8.35 moveto draw_dot
+  9.44 9.61 moveto draw_dot
+  2.02 2.88 moveto draw_dot
+  3.33 2.28 moveto draw_dot
+  2.67 5.25 moveto draw_dot
+  1.32 9.64 moveto draw_dot
+  9.41 6.51 moveto draw_dot
+  4.84 2.34 moveto draw_dot
+  9.58 8.85 moveto draw_dot
+  1.12 7.78 moveto draw_dot
+  7.55 0.0539 moveto draw_dot
+  8.55 8.73 moveto draw_dot
+  7.03 6.02 moveto draw_dot
+  3.83 2 moveto draw_dot
+  1.76 7.53 moveto draw_dot
+  7.9 0.557 moveto draw_dot
+  3.33 2.97 moveto draw_dot
+  8.97 6.5 moveto draw_dot
+  9.91 3.68 moveto draw_dot
+  5.44 4.78 moveto draw_dot
+  8.99 3.4 moveto draw_dot
+  5.64 8.65 moveto draw_dot
+  4.24 2.17 moveto draw_dot
+  8.79 8.16 moveto draw_dot
+  7.9 1.9 moveto draw_dot
+  5.66 8.12 moveto draw_dot
+  8.55 6.67 moveto draw_dot
+  2.25 2.26 moveto draw_dot
+  0.255 3.43 moveto draw_dot
+  7.12 7.1 moveto draw_dot
+  4.64 6.3 moveto draw_dot
+  6.67 3.11 moveto draw_dot
+  7.32 0.619 moveto draw_dot
+  1.63 8.27 moveto draw_dot
+  5.12 8.14 moveto draw_dot
+  8.6 1.3 moveto draw_dot
+  9.22 4.28 moveto draw_dot
+  6.62 0.896 moveto draw_dot
+  1.77 8 moveto draw_dot
+  9.27 3.47 moveto draw_dot
+  2.98 8.81 moveto draw_dot
+  8.35 3.79 moveto draw_dot
+  0.0937 7.38 moveto draw_dot
+  5.66 0.823 moveto draw_dot
+  7.01 3.53 moveto draw_dot
+  1.92 8.06 moveto draw_dot
+  1.05 8.98 moveto draw_dot
+  8.59 6.12 moveto draw_dot
+  2.48 3 moveto draw_dot
+  2.41 1.81 moveto draw_dot
+  0.313 5.1 moveto draw_dot
+  7.38 5.9 moveto draw_dot
+  9.26 4.09 moveto draw_dot
+  5.16 3.68 moveto draw_dot
+  3.87 3.53 moveto draw_dot
+  6.78 0.986 moveto draw_dot
+  6.11 5.49 moveto draw_dot
+  3.61 1.73 moveto draw_dot
+  6.47 3.17 moveto draw_dot
+  9.2 4.66 moveto draw_dot
+  0.598 5.51 moveto draw_dot
+  0.681 9.95 moveto draw_dot
+  5.82 7.36 moveto draw_dot
+  4.93 4.31 moveto draw_dot
+  4.08 7.72 moveto draw_dot
+  3.02 4.64 moveto draw_dot
+  1.37 6.25 moveto draw_dot
+  3.23 9.66 moveto draw_dot
+} bind def",draw_dot
+draw_dw10_dot,"
+/draw_dw10_dot
+{
+    currentpoint .05 0 360 arc
+    closepath fill
+} bind def
+",""
+draw_dw10_dots,"
+/draw_dw10_dots
+{
+0 0 moveto draw_dw10_dot
+0 0.1 moveto draw_dw10_dot
+0 0.82 moveto draw_dw10_dot
+0 0.91 moveto draw_dw10_dot
+0 0.73 moveto draw_dw10_dot
+0 1 moveto draw_dw10_dot
+0.02 0.46 moveto draw_dw10_dot
+0.02 0.559 moveto draw_dw10_dot
+0.02 0.64 moveto draw_dw10_dot
+0.03 0.361 moveto draw_dw10_dot
+0.07 0.95 moveto draw_dw10_dot
+0.05 0.28 moveto draw_dw10_dot
+0.08 0.199 moveto draw_dw10_dot
+0.09 0.847 moveto draw_dw10_dot
+0.09 0.023 moveto draw_dw10_dot
+0.10 0.559 moveto draw_dw10_dot
+0.11 0.478 moveto draw_dw10_dot
+0.11 0.658 moveto draw_dw10_dot
+0.12 0.109 moveto draw_dw10_dot
+0.12 0.379 moveto draw_dw10_dot
+0.14 0.298 moveto draw_dw10_dot
+0.15 0.775 moveto draw_dw10_dot
+0.17 0.906 moveto draw_dw10_dot
+0.17 0.208 moveto draw_dw10_dot
+0.18 0.019 moveto draw_dw10_dot
+0.20 0.496 moveto draw_dw10_dot
+0.120 0.595 moveto draw_dw10_dot
+0.21 0.415 moveto draw_dw10_dot
+0.23 0.721 moveto draw_dw10_dot
+0.23 0.127 moveto draw_dw10_dot
+0.23 0.316 moveto draw_dw10_dot
+0.24 0.843 moveto draw_dw10_dot
+0.27 0.235 moveto draw_dw10_dot
+0.28 0.541 moveto draw_dw10_dot
+0.28 0.933 moveto draw_dw10_dot
+0.29 0.05 moveto draw_dw10_dot
+0.30 0.424 moveto draw_dw10_dot
+0.30 0.789 moveto draw_dw10_dot
+0.31 0.667 moveto draw_dw10_dot
+0.31 0.154 moveto draw_dw10_dot
+0.32 0.343 moveto draw_dw10_dot
+0.34 0.87 moveto draw_dw10_dot
+0.34 0.262 moveto draw_dw10_dot
+0.38 0.505 moveto draw_dw10_dot
+0.38 0.622 moveto draw_dw10_dot
+0.38 0.735 moveto draw_dw10_dot
+0.38 0.086 moveto draw_dw10_dot
+0.38 0.96 moveto draw_dw10_dot
+0.40 0.19 moveto draw_dw10_dot
+0.40 0.397 moveto draw_dw10_dot
+0.42 0.316 moveto draw_dw10_dot
+0.43 0.816 moveto draw_dw10_dot
+0.45 0.69 moveto draw_dw10_dot
+0.45 0.897 moveto draw_dw10_dot
+0.47 0.46 moveto draw_dw10_dot
+0.47 0.586 moveto draw_dw10_dot
+0.47 0.235 moveto draw_dw10_dot
+0.47 0.005 moveto draw_dw10_dot
+0.47 0.122 moveto draw_dw10_dot
+0.51 0.762 moveto draw_dw10_dot
+0.51 0.37 moveto draw_dw10_dot
+0.53 0.843 moveto draw_dw10_dot
+0.54 0.654 moveto draw_dw10_dot
+0.54 0.167 moveto draw_dw10_dot
+0.55 0.289 moveto draw_dw10_dot
+0.55 0.924 moveto draw_dw10_dot
+0.56 0.55 moveto draw_dw10_dot
+0.57 0.433 moveto draw_dw10_dot
+0.57 0.041 moveto draw_dw10_dot
+0.58 0.735 moveto draw_dw10_dot
+0.62 0.816 moveto draw_dw10_dot
+0.62 0.627 moveto draw_dw10_dot
+0.63 0.221 moveto draw_dw10_dot
+0.64 0.915 moveto draw_dw10_dot
+0.65 0.095 moveto draw_dw10_dot
+0.65 0.996 moveto draw_dw10_dot
+0.68 0.519 moveto draw_dw10_dot
+0.68 0.708 moveto draw_dw10_dot
+0.68 0.406 moveto draw_dw10_dot
+0.70 0.275 moveto draw_dw10_dot
+0.71 0.798 moveto draw_dw10_dot
+0.73 0.609 moveto draw_dw10_dot
+0.73 0.879 moveto draw_dw10_dot
+0.74 0.158 moveto draw_dw10_dot
+0.74 0.978 moveto draw_dw10_dot
+0.75 0.059 moveto draw_dw10_dot
+0.75 0.347 moveto draw_dw10_dot
+0.77 0.51 moveto draw_dw10_dot
+0.77 0.699 moveto draw_dw10_dot
+0.80 0.78 moveto draw_dw10_dot
+0.80 0.43 moveto draw_dw10_dot
+0.81 0.6 moveto draw_dw10_dot
+0.81 0.861 moveto draw_dw10_dot
+0.85 0.059 moveto draw_dw10_dot
+0.85 0.14 moveto draw_dw10_dot
+0.85 0.96 moveto draw_dw10_dot
+0.85 0.23 moveto draw_dw10_dot
+0.85 0.5 moveto draw_dw10_dot
+0.85 0.32 moveto draw_dw10_dot
+
+1.68 0.46 moveto draw_dw10_dot
+1.68 0.559 moveto draw_dw10_dot
+1.68 0.64 moveto draw_dw10_dot
+1.67 0.361 moveto draw_dw10_dot
+1.65 0.28 moveto draw_dw10_dot
+1.63 0.95 moveto draw_dw10_dot
+1.62 0.199 moveto draw_dw10_dot
+1.61 0.847 moveto draw_dw10_dot
+1.61 0.023 moveto draw_dw10_dot
+1.6 0.559 moveto draw_dw10_dot
+1.6 0.478 moveto draw_dw10_dot
+1.6 0.658 moveto draw_dw10_dot
+1.58 0.109 moveto draw_dw10_dot
+1.58 0.379 moveto draw_dw10_dot
+1.56 0.298 moveto draw_dw10_dot
+1.55 0.775 moveto draw_dw10_dot
+1.53 0.906 moveto draw_dw10_dot
+1.53 0.208 moveto draw_dw10_dot
+1.52 0.019 moveto draw_dw10_dot
+1.5 0.496 moveto draw_dw10_dot
+1.5 0.595 moveto draw_dw10_dot
+1.5 0.415 moveto draw_dw10_dot
+1.47 0.721 moveto draw_dw10_dot
+1.47 0.127 moveto draw_dw10_dot
+1.47 0.316 moveto draw_dw10_dot
+1.46 0.843 moveto draw_dw10_dot
+1.43 0.235 moveto draw_dw10_dot
+1.42 0.541 moveto draw_dw10_dot
+1.42 0.933 moveto draw_dw10_dot
+1.41 0.05 moveto draw_dw10_dot
+1.40 0.424 moveto draw_dw10_dot
+1.40 0.789 moveto draw_dw10_dot
+1.40 0.667 moveto draw_dw10_dot
+1.39 0.154 moveto draw_dw10_dot
+1.38 0.343 moveto draw_dw10_dot
+1.36 0.87 moveto draw_dw10_dot
+1.36 0.262 moveto draw_dw10_dot
+1.32 0.505 moveto draw_dw10_dot
+1.32 0.622 moveto draw_dw10_dot
+1.32 0.735 moveto draw_dw10_dot
+1.32 0.086 moveto draw_dw10_dot
+1.32 0.96 moveto draw_dw10_dot
+1.30 0.19 moveto draw_dw10_dot
+1.30 0.397 moveto draw_dw10_dot
+1.28 0.316 moveto draw_dw10_dot
+1.27 0.816 moveto draw_dw10_dot
+1.25 0.69 moveto draw_dw10_dot
+1.25 0.897 moveto draw_dw10_dot
+1.23 0.46 moveto draw_dw10_dot
+1.23 0.586 moveto draw_dw10_dot
+1.23 0.235 moveto draw_dw10_dot
+1.23 0.005 moveto draw_dw10_dot
+1.23 0.122 moveto draw_dw10_dot
+1.19 0.762 moveto draw_dw10_dot
+1.19 0.37 moveto draw_dw10_dot
+1.17 0.843 moveto draw_dw10_dot
+1.16 0.654 moveto draw_dw10_dot
+1.16 0.167 moveto draw_dw10_dot
+1.15 0.289 moveto draw_dw10_dot
+1.15 0.924 moveto draw_dw10_dot
+1.14 0.55 moveto draw_dw10_dot
+1.13 0.433 moveto draw_dw10_dot
+1.13 0.041 moveto draw_dw10_dot
+1.12 0.735 moveto draw_dw10_dot
+1.08 0.816 moveto draw_dw10_dot
+1.08 0.627 moveto draw_dw10_dot
+1.07 0.221 moveto draw_dw10_dot
+1.07 0.915 moveto draw_dw10_dot
+1.05 0.095 moveto draw_dw10_dot
+1.05 0.996 moveto draw_dw10_dot
+1.02 0.519 moveto draw_dw10_dot
+1.02 0.708 moveto draw_dw10_dot
+1.02 0.406 moveto draw_dw10_dot
+1.00 0.275 moveto draw_dw10_dot
+0.99 0.798 moveto draw_dw10_dot
+0.97 0.609 moveto draw_dw10_dot
+0.97 0.879 moveto draw_dw10_dot
+0.96 0.158 moveto draw_dw10_dot
+0.96 0.978 moveto draw_dw10_dot
+0.95 0.059 moveto draw_dw10_dot
+0.94 0.347 moveto draw_dw10_dot
+0.93 0.51 moveto draw_dw10_dot
+0.93 0.699 moveto draw_dw10_dot
+0.90 0.78 moveto draw_dw10_dot
+0.90 0.43 moveto draw_dw10_dot
+0.89 0.6 moveto draw_dw10_dot
+0.89 0.861 moveto draw_dw10_dot
+} bind def",draw_dw10_dot
+pattern11,"
+/pattern11
+<<
+  /PatternType 1
+  /PaintType 1
+  /TilingType 1
+  /BBox [0 0 10 10]
+  /XStep 10
+  /YStep 10
+  /PaintProc
+  {
+    begin
+      1 .1 0 .1 setcmykcolor
+      draw_random_dots
+    end
+  } bind
+>>
+matrix makepattern def
+",draw_random_dots
+pattern200,"
+/pattern200
+<<
+  /PatternType 1
+  /PaintType 1
+  /TilingType 1
+  /BBox [0 0 1.7 1.0]
+  /XStep 1.7
+  /YStep 1.0
+  /PaintProc
+  {
+    begin
+      .15 0 .43 0 setcmykcolor
+      draw_dw10_dots
+    end
+  } bind
+>>
+matrix makepattern def
+",draw_dw10_dots
+pattern201,"
+/pattern201
+<<
+  /PatternType 1
+  /PaintType 1
+  /TilingType 1
+  /BBox [0 0 1.7 1.0]
+  /XStep 1.7
+  /YStep 1.0
+  /PaintProc
+  {
+    begin
+      0 0 0 0 setcmykcolor
+      draw_dw10_dots
+    end
+  } bind
+>>
+matrix makepattern def
+",draw_dw10_dots
+pattern12,"
+/pattern12
+<<
+  /PatternType 1
+  /PaintType 1
+  /TilingType 1
+  /BBox [0 0 1 1]
+  /XStep 1
+  /YStep 1
+  /PaintProc
+  {
+    begin
+      .65 0 0 0 setcmykcolor
+      0 0 .3 .3 rectfill
+    end
+  } bind
+>>
+matrix makepattern def
+",""
+pattern14,"
+/pattern14
+<<
+  /PatternType 1
+  /PaintType 1
+  /TilingType 1
+  /BBox [0 0 10 10]
+  /XStep 10
+  /YStep 10
+  /PaintProc
+  {
+    begin
+      1 .1 0 .1 setcmykcolor
+      0.000 0.25 moveto 1.732 0 rlineto
+      2.435 0.25 moveto 1.518 0 rlineto
+      5.388 0.25 moveto 1.238 0 rlineto
+      6.951 0.25 moveto 1.920 0 rlineto
+
+      0.000 0.75 moveto 2.626 0 rlineto
+      2.812 0.75 moveto 3.250 0 rlineto
+      9.775 0.75 moveto 0.224 0 rlineto
+
+      1.066 1.25 moveto 3.363 0 rlineto
+      5.666 1.25 moveto 3.715 0 rlineto
+
+      0.000 1.75 moveto 3.218 0 rlineto
+      6.155 1.75 moveto 3.435 0 rlineto
+
+      0.644 2.25 moveto 0.818 0 rlineto
+      3.602 2.25 moveto 0.948 0 rlineto
+      4.822 2.25 moveto 2.774 0 rlineto
+      7.823 2.25 moveto 2.176 0 rlineto
+
+      1.142 2.75 moveto 1.699 0 rlineto
+      3.330 2.75 moveto 3.523 0 rlineto
+      8.996 2.75 moveto 1.003 0 rlineto
+
+      0.000 3.25 moveto 1.278 0 rlineto
+      3.472 3.25 moveto 2.704 0 rlineto
+      7.274 3.25 moveto 2.376 0 rlineto
+      9.982 3.25 moveto 0.017 0 rlineto
+
+      0.000 3.75 moveto 3.672 0 rlineto
+      7.621 3.75 moveto 1.570 0 rlineto
+
+      0.240 4.25 moveto 0.801 0 rlineto
+      1.398 4.25 moveto 1.761 0 rlineto
+      3.326 4.25 moveto 0.411 0 rlineto
+      6.700 4.25 moveto 0.181 0 rlineto
+
+      0.000 4.75 moveto 1.306 0 rlineto
+      1.369 4.75 moveto 3.514 0 rlineto
+      5.064 4.75 moveto 3.110 0 rlineto
+
+      0.000 5.25 moveto 0.410 0 rlineto
+      3.598 5.25 moveto 2.567 0 rlineto
+      7.630 5.25 moveto 2.369 0 rlineto
+
+      1.512 5.75 moveto 3.193 0 rlineto
+      6.849 5.75 moveto 3.150 0 rlineto
+
+      0.000 6.25 moveto 2.507 0 rlineto
+      4.161 6.25 moveto 0.515 0 rlineto
+      6.973 6.25 moveto 2.858 0 rlineto
+
+      0.194 6.75 moveto 2.974 0 rlineto
+      3.851 6.75 moveto 1.805 0 rlineto
+      6.148 6.75 moveto 1.193 0 rlineto
+      7.506 6.75 moveto 1.682 0 rlineto
+      9.670 6.75 moveto 0.329 0 rlineto
+
+      1.166 7.25 moveto 3.018 0 rlineto
+      5.117 7.25 moveto 1.156 0 rlineto
+
+      0.000 7.75 moveto 2.397 0 rlineto
+      5.715 7.75 moveto 3.001 0 rlineto
+
+      0.000 8.25 moveto 2.855 0 rlineto
+      3.327 8.25 moveto 0.218 0 rlineto
+      7.460 8.25 moveto 0.617 0 rlineto
+
+      0.638 8.75 moveto 1.199 0 rlineto
+      3.764 8.75 moveto 3.400 0 rlineto
+
+      0.000 9.25 moveto 1.432 0 rlineto
+      1.797 9.25 moveto 1.686 0 rlineto
+      6.183 9.25 moveto 1.281 0 rlineto
+      8.872 9.25 moveto 0.226 0 rlineto
+
+      1.784 9.75 moveto 3.521 0 rlineto
+      5.357 9.75 moveto 2.888 0 rlineto
+      
+      0.05 setlinewidth stroke
+    end
+  } bind
+>>
+matrix makepattern def
+",""
+pattern22,"
+/pattern22
+<<
+  /PatternType 1
+  /PaintType 1
+  /TilingType 1
+  /BBox [0 0 10 10]
+  /XStep 10
+  /YStep 10
+  /PaintProc
+  {
+    begin
+      0 .59 1 .18 setcmykcolor
+      draw_random_dots
+    end
+  } bind
+>>
+matrix makepattern def
+",draw_random_dots
+pattern25,"
+/pattern25
+<<
+  /PatternType 1
+  /PaintType 1
+  /TilingType 1
+  /BBox [0 0 10 10]
+  /XStep 10
+  /YStep 10
+  /PaintProc
+  {
+    begin
+      0 .59 1 .18 setcmykcolor
+      draw_random_dots
+    end
+% TODO Add dune symbols
+  } bind
+>>
+matrix makepattern def
+",draw_random_dots
+pattern4,"
+/pattern4
+<<
+  /PatternType 1
+  /PaintType 1
+  /TilingType 1
+  /BBox [0 0 .77 .77]
+  /XStep .77
+  /YStep .77
+  /PaintProc
+  {
+    begin
+      .15 0 .43 0 setcmykcolor 0 0 XStep YStep rectfill
+      1 0 .86 0 setcmykcolor
+      0 0 moveto .77 .77 lineto
+      0.2 setlinewidth stroke
+    end
+  } bind
+>>
+matrix makepattern def
+",""
+pattern5,"
+/pattern5
+<<
+  /PatternType 1
+  /PaintType 1
+  /TilingType 1
+  /BBox [0 0 1 1]
+  /XStep 1
+  /YStep 1
+  /PaintProc
+  {
+    begin
+      0 0 .4 0 setcmykcolor 0 0 XStep YStep rectfill
+      1 .1 0 .1 setcmykcolor
+      0 0 moveto 1.5 1.5 lineto
+      0 1 moveto 1 0 lineto
+      0.05 setlinewidth stroke
+    end
+  } bind
+>>
+matrix makepattern def
+",""
+pattern881,"
+/pattern881
+<<
+  /PatternType 1
+  /PaintType 1
+  /TilingType 1
+  /BBox [0 0 10 10]
+  /XStep 10
+  /YStep 10
+  /PaintProc
+  {
+    begin
+      .2 0 0 0 setcmykcolor 0 0 XStep YStep rectfill
+      0 0 0 0 setcmykcolor
+      draw_random_dots
+    end
+  } bind
+>>
+matrix makepattern def
+",draw_random_dots
+drawconifer,"
+/drawconifer{
+    gsave
+      % 0.2 setlinewidth
+      translate
+      -.1 0 moveto
+      0 .4 rlineto -0.2 0 rlineto .2 .4 rlineto -.2 0 rlineto .3 .4 rlineto
+      .3 -.4 rlineto -.2 0 rlineto .2 -.4 rlineto -.2 0 rlineto 0 -.4 rlineto
+      closepath fill
+    grestore
+} bind def
+",""
+pattern6,"
+/pattern6
+<<
+  /PatternType 1
+  /PaintType 1
+  /TilingType 1
+  /BBox [0 0 3 2]
+  /XStep 3
+  /YStep 2
+  /PaintProc
+  {
+    begin
+      0 0 .4 0 setcmykcolor 0 0 XStep YStep rectfill
+      1 0 .86 0 setcmykcolor % Doco says 1 .1 0 .1
+      .75 0 drawconifer
+      2.25 1 drawconifer
+      2.25 -1 drawconifer
+    end
+  } bind
+>>
+matrix makepattern def
+",drawconifer
+drawgrass,"
+/drawgrass{
+  0.2 setlinewidth
+  gsave
+    translate
+.5 .5 scale
+    -1 0 moveto 2 0 rlineto
+    -.7 -.5 moveto 1.4 0 rlineto
+    -.7 0 moveto -1 .5 lineto
+    -.2 0 moveto -.4 1 lineto
+    .2 0 moveto .42 .95 lineto
+    .7 0 moveto 1 .6 lineto
+    stroke
+  grestore
+} bind def
+",""
+pattern908,"
+/pattern908
+<<
+  /PatternType 1
+  /PaintType 1
+  /TilingType 1
+  /BBox [0 0 10 10]
+  /XStep 10
+  /YStep 10
+  /PaintProc
+  {
+    begin
+      1 .1 0 .1 setcmykcolor
+      draw_random_dots
+      1.25 3.75 drawgrass
+      3.75 1.25 drawgrass
+      6.25 8.75 drawgrass
+      8.75 6.25 drawgrass
+    end
+  } bind
+>>
+matrix makepattern def
+",draw_random_dots drawgrass
+cmykfill,"
+/cmykfill {
+  gsave
+    setcmykcolor
+    closepath fill
+  grestore
+  newpath
+} bind def
+",""
+pattfill,"
+/pattfill {
+  gsave
+    closepath
+    setpattern fill
+  grestore
+  newpath
+} bind def
+",""
+solidline,"
+/solidline {
+  gsave
+    setcmykcolor
+    setlinewidth
+    stroke
+  grestore
+  newpath
+} bind def
+",""
+dashedline,"
+/dashedline {
+  gsave
+    setcmykcolor
+    setlinewidth
+    setdash
+    0 setlinecap
+    stroke
+  grestore
+  newpath
+} bind def
+",""
+circle,"
+/circle {
+  gsave
+    setcmykcolor
+    setlinewidth
+    4 1 roll translate rotate
+    newpath 0 0 3 -1 roll 0 360 arc
+    closepath stroke
+  grestore
+} bind def
+",""
+filledcircle,"
+/filledcircle {
+  gsave
+    setcmykcolor 4 1 roll translate rotate 0 0 3 -1 roll 0 360 arc
+    closepath fill
+  grestore
+} bind def
+",""
+line9254,"
+/line9254 { % Road -- vehicular track
+  /featurewidth exch def
+  [1.5 .25] 0
+  .2
+  .79 .9 0 0
+  dashedline
+} bind def
+",dashedline
+inverted_v,"
+/inverted_v {
+  gsave
+    2 mul setlinewidth
+    /height exch def
+    /width exch def
+    width 2 div neg 0 moveto
+    0 height lineto
+    width 2 div 0 lineto
+    closepath clip
+    newpath
+    width 2 div neg 0 moveto
+    0 height lineto
+    width 2 div 0 lineto
+    stroke
+  grestore
+} bind def
+",""
+area10,"
+/area10 { % Lake etc
+  .2 0 0 0 cmykfill
+} bind def
+",cmykfill
+area11,"
+/area11 { % Lake etc
+  pattern11 pattfill
+} bind def
+",pattern11 pattfill
+area12,"
+/area12 { % Flood Irrigation Storage
+  pattern12 pattfill
+} bind def
+",pattern12 pattfill
+area102,"
+/area102 { % Mine Area
+  0 0 0 .1 cmykfill
+} bind def
+",cmykfill
+area14,"
+/area14 { % Land Subject to Inundation
+  pattern14 pattfill
+} bind def
+",pattern14 pattfill
+area2,"
+/area2 { % Forest or Shrub
+  .15 0 .43 0 cmykfill
+} bind def
+",cmykfill
+area200,"
+/area200 { % Forest or shrub (dense) -- should be patterned
+  pattern200 pattfill
+} bind def
+",pattern200 pattfill
+area201,"
+/area201 { % Forest or shrub (sparse) -- should be patterned
+  gsave .15 0 .43 0 cmykfill grestore
+  pattern201 pattfill
+} bind def
+",pattern201 pattfill cmykfill
+area22,"
+/area22 { % Foreshore Flat
+       % Sand Area
+  pattern22 pattfill
+} bind def
+",pattern22 pattfill
+area23,"
+/area23 { % Saline Coastal Flat
+       % Salt Evaporator
+       % Settling Pond
+       % Aquaculture Area
+  pattern11 pattfill
+} bind def
+",pattern11 pattfill
+area24,"
+/area24
+ { % Recreation Area
+  .8 0 .69 0 cmykfill
+} bind def
+",cmykfill
+area25,"
+/area25 { % Sand Dune
+  pattern25 pattfill
+} bind def
+",pattern25 pattfill
+area26,"
+/area26 { % Building Area
+  0 0 0 1 cmykfill
+} bind def
+",cmykfill
+area4,"
+/area4 { % Rainforest
+  pattern4 pattfill
+} bind def
+",pattern4 pattfill
+area420,"
+/area420 { % Built Up Area
+  0 .29 .3 0 cmykfill
+} bind def
+",cmykfill
+area5,"
+/area5 { % Orchard
+  pattern5 pattfill
+} bind def
+",pattern5 pattfill
+area557,"
+/area557 { % Hypsometric tint 200m - 500m
+  0 0 .12 0 cmykfill
+} bind def
+",cmykfill
+area6,"
+/area6 { % Plantation (on 100K softwood only)
+  pattern6 pattfill
+} bind def
+",pattern6 pattfill
+area7,"
+/area7 { % Mangrove
+  .45 .05 .4 .05 cmykfill
+} bind def
+",cmykfill
+area881,"
+/area881 { % Rapid area
+  pattern881 pattfill
+} bind def
+",pattern881 pattfill
+area90,"
+/area90 { % Distorted Surface Outcrop
+  0 .09 .15 .03 cmykfill
+} bind def
+",cmykfill
+area908,"
+/area908 { % Swamp
+        % Marine Swamp
+  pattern908 pattfill
+} bind def
+",pattern908 pattfill
+area97,"
+/area97 { % Reef
+  .5 .05 0 .05 cmykfill
+} bind def
+",cmykfill
+line102,"
+/line102 { % Mine Boundary Line
+  /featurewidth exch def
+  .15 0 0 0 1 solidline
+} bind def
+",solidline
+line111,"
+/line111 { % Old Lake Bed Boundary
+  /featurewidth exch def
+  [2 .4] 0
+  .15
+  1 .1 0 .1
+  dashedline
+} bind def
+",dashedline
+line114,"
+/line114 { % Waterbody Boundaries etc
+  /featurewidth exch def
+  .15 1 .1 0 .1 solidline
+} bind def
+",solidline
+line170,"
+/line170 { % Rubbish Tip
+  /featurewidth exch def
+  [.75 .25] 0
+  .1
+  0 0 0 1
+  dashedline
+} bind def
+",dashedline
+line183,"
+/line183 { % Conveyor
+  /featurewidth exch def
+  [.75 .25] 0
+  .14
+  0 0 0 1
+  dashedline
+} bind def
+",dashedline
+line20,"
+/line20 { %Ferry Route Line
+  /featurewidth exch def
+  [.75 .25] 0
+  .1
+  0 0 0 1
+  dashedline
+} bind def
+",dashedline
+line205,"
+/line205 { % Railway and Road Tunnel Line
+  /featurewidth exch def
+  [.75 .3] 0
+  .1
+  0 0 0 1
+  dashedline
+} bind def
+",dashedline
+line206,"
+/line206 { % Railway - single
+  /featurewidth exch def
+  gsave
+    [.1 3.9] 2
+    1
+    0 0 0 1
+    dashedline
+  grestore
+  .25 0 0 0 1 solidline
+} bind def
+",dashedline solidline
+line208,"
+/line208 { % Railway - light
+  /featurewidth exch def
+  gsave
+    [.05 2.45] 1.25
+    1
+    0 0 0 1
+    dashedline
+  grestore
+  .15 0 0 0 1
+  solidline
+} bind def
+",dashedline solidline
+line209,"
+/line209 { % Railway - abandoned
+  /featurewidth exch def
+  gsave
+    [.1 3.9] 2
+    1
+    0 0 0 1
+    dashedline
+  grestore
+  [3 1] 3.5
+  .25
+  0 0 0 1
+  dashedline
+} bind def
+",dashedline
+line21,"
+/line21 { % Ford Line
+  /featurewidth exch def
+  [.75 .25] 0
+  .1
+  0 0 0 1
+  dashedline
+} bind def
+",dashedline
+line210,"
+/line210 { % Railway - multiple
+  /featurewidth exch def
+  gsave
+    [.1 4 .1 .5] 2.05
+    1
+    0 0 0 1
+    dashedline
+  grestore
+  .25 0 0 0 1 solidline
+} bind def
+",dashedline solidline
+line22,"
+/line22 { % Foot Track
+  /featurewidth exch def
+  [1.75 .25] 0
+  .2
+  0 0 0 1
+  dashedline
+} bind def
+",dashedline
+line9022,"
+/line9022 { % Foot Track
+  /featurewidth exch def
+  [1.75 .25] 0
+  .2
+  0 0 0 1
+  dashedline
+} bind def
+",dashedline
+line242,"
+/line242 { % Secondary Road (WAC only)
+  /featurewidth exch def
+  .2
+  0 1 1 0
+  solidline
+} bind def
+",solidline
+line9242,"
+/line9242 { % Secondary Road (WAC only)
+  /featurewidth exch def
+  .2
+  .79 .9 0 0
+  solidline
+} bind def
+",solidline
+line243,"
+/line243 { % Other Road (WAC only)
+  /featurewidth exch def
+  .15
+  0 1 1 0
+  solidline
+} bind def
+",solidline
+line9243,"
+/line9243 { % Other Road (WAC only)
+  /featurewidth exch def
+  .15
+  .79 .9 0 0
+  solidline
+} bind def
+",solidline
+line245,"
+/line245 { % Railway or Road Causeway
+  /featurewidth exch def
+% TODO
+} bind def
+",""
+line250,"
+/line250 { % Road -- Dual carriageway
+  /featurewidth exch def
+%  gsave
+    .9
+    0 1 1 0
+    solidline
+} bind def
+",solidline
+line9250,"
+/line9250 { % Road -- Dual carriageway
+  /featurewidth exch def
+%  gsave
+    .9
+    .79 .9 0 0
+    solidline
+} bind def
+",solidline
+line250A,"
+/line250A { % Road -- Dual carriageway (centre stripe)
+  /featurewidth exch def
+  .6
+  0 0 1 0
+  solidline
+} bind def
+",solidline
+line251,"
+/line251 { % Road -- principal sealed
+  /featurewidth exch def
+  .9
+  0 1 1 0
+  solidline
+} bind def
+",solidline
+line9251,"
+/line9251 { % Road -- principal sealed
+  /featurewidth exch def
+  .9
+  .79 .9 0 0
+  solidline
+} bind def
+",solidline
+line252,"
+/line252 { % Road -- under construction
+  /featurewidth exch def
+% TODO Fix width
+  [3.75 .25] 0
+  .9
+  0 1 1 0
+  dashedline
+} bind def
+",dashedline
+line9252,"
+/line9252 { % Road -- under construction
+  /featurewidth exch def
+% TODO Fix width
+  [3.75 .25] 0
+  .9
+  .79 .9 0 0
+  dashedline
+} bind def
+",dashedline
+line253,"
+/line253 { % Road -- minor unsealed
+  /featurewidth exch def
+  [2.3 .25] 0
+  .4
+  0 1 1 0
+  dashedline
+} bind def
+",dashedline
+line9253,"
+/line9253 { % Road -- minor unsealed
+  /featurewidth exch def
+  [2.3 .25] 0
+  .4
+  .79 .9 0 0
+  dashedline
+} bind def
+",dashedline
+line254,"
+/line254 { % Road -- vehicular track
+  /featurewidth exch def
+  [1.5 .25] 0
+  .2
+  0 1 1 0
+  dashedline
+} bind def
+",dashedline
+line255,"
+/line255 { % Arrow -- with arrow
+  /featurewidth exch def
+  .1
+  0 0 0 1
+  solidline
+% TODO add arrow
+} bind def
+",solidline
+line256,"
+/line256 { % Road -- secondary sealed
+  /featurewidth exch def
+  .6
+  0 1 1 0
+  solidline
+} bind def
+",solidline
+line9256,"
+/line256 { % Road -- secondary sealed
+  /featurewidth exch def
+  .6
+  .79 .9 0 0
+  solidline
+} bind def
+",solidline
+line257,"
+/line257 { % Road -- minor sealed
+  /featurewidth exch def
+        % Road -- principal (WAC only)
+  .4
+  0 1 1 0
+  solidline
+} bind def
+",solidline
+line9257,"
+/line9257 { % Road -- minor sealed
+  /featurewidth exch def
+        % Road -- principal (WAC only)
+  .4
+  .79 .9 0 0
+  solidline
+} bind def
+",solidline
+line258,"
+/line258 { % Road -- Principal unsealed
+  /featurewidth exch def
+  [5 .7] 0 
+  .9
+  0 1 1 0
+  dashedline
+} bind def
+",dashedline
+line9258,"
+/line9258 { % Road -- Principal unsealed
+  /featurewidth exch def
+  [5 .7] 0 
+  .9
+  .79 .9 0 0
+  dashedline
+} bind def
+",dashedline
+line259,"
+/line259 { % Road -- Secondary unsealed
+  /featurewidth exch def
+  [3.5 .4] 0
+  .6
+  0 1 1 0
+  dashedline
+} bind def
+",dashedline
+line9259,"
+/line9259 { % Road -- Secondary unsealed
+  /featurewidth exch def
+  [3.5 .4] 0
+  .6
+  .79 .9 0 0
+  dashedline
+} bind def
+",dashedline
+line260,"
+/line260 { % Railway or Road Bridge Line
+  /localdict 10 dict def localdict begin
+  /featurewidth exch def
+  gsave
+  { /starty exch def /startx exch def /currentx startx def /currenty starty def} % moveto
+  {/prevy currenty def
+   /prevx currentx def
+   /currenty exch def
+   /currentx exch def
+   localdict /secondx known
+    {}
+    {/secondx currentx def /secondy currenty def}
+    ifelse
+  } % lineto
+  {} % curveto
+  {} % closepath
+  pathforall
+% Draw the angular ends
+% leading end:
+  gsave
+    newpath
+    startx starty translate
+    secondx startx sub secondy starty sub atan neg rotate
+    -.2 setlinewidth 0 0 0 1 setcmykcolor featurewidth 2 div
+    dup 0 moveto 0.6 2 sqrt mul dup neg rlineto stroke
+    neg 0 moveto -0.6 2 sqrt mul dup rlineto stroke
+  grestore
+% trailing end:
+  gsave
+    newpath
+    currentx currenty translate
+    prevx currentx sub prevy currenty sub atan neg rotate
+    -.2 setlinewidth 0 0 0 1 setcmykcolor featurewidth 2 div
+    dup 0 moveto 0.6 2 sqrt mul dup neg rlineto stroke
+    neg 0 moveto -0.6 2 sqrt mul dup rlineto stroke
+  grestore
+  grestore
+  gsave featurewidth 0.4 add 0 0 0 1 solidline grestore
+  featurewidth dup 0.26 lt { 0 0 0 1 } { 0 0 1 0 } ifelse solidline
+  end
+} bind def
+",solidline
+line9260,"
+/line9260 { % Railway or Road Bridge Line; no different from line260
+  /localdict 10 dict def localdict begin
+  /featurewidth exch def
+  gsave
+  { /starty exch def /startx exch def /currentx startx def /currenty starty def} % moveto
+  {/prevy currenty def
+   /prevx currentx def
+   /currenty exch def
+   /currentx exch def
+   localdict /secondx known
+    {}
+    {/secondx currentx def /secondy currenty def}
+    ifelse
+  } % lineto
+  {} % curveto
+  {} % closepath
+  pathforall
+% Draw the angular ends
+% leading end:
+  gsave
+    newpath
+    startx starty translate
+    secondx startx sub secondy starty sub atan neg rotate
+    -.2 setlinewidth 0 0 0 1 setcmykcolor featurewidth 2 div
+    dup 0 moveto 0.6 2 sqrt mul dup neg rlineto stroke
+    neg 0 moveto -0.6 2 sqrt mul dup rlineto stroke
+  grestore
+% trailing end:
+  gsave
+    newpath
+    currentx currenty translate
+    prevx currentx sub prevy currenty sub atan neg rotate
+    -.2 setlinewidth 0 0 0 1 setcmykcolor featurewidth 2 div
+    dup 0 moveto 0.6 2 sqrt mul dup neg rlineto stroke
+    neg 0 moveto -0.6 2 sqrt mul dup rlineto stroke
+  grestore
+  grestore
+  gsave featurewidth 0.4 add 0 0 0 1 solidline grestore
+  featurewidth dup 0.26 lt { 0 0 0 1 } { 0 0 1 0 } ifelse solidline
+  end
+} bind def
+",solidline
+line265,"
+/line265 { % Pointer
+  /featurewidth exch def
+  .1
+  0 0 0 1
+  solidline
+% TODO add arrow
+} bind def
+",solidline
+line266,"
+/line266 { % Railway overpass
+  /featurewidth exch def
+  gsave
+    1.4
+    0 0 0 0
+    solidline
+  grestore
+  1
+  0 0 0 1
+  solidline
+% TODO Get width right
+} bind def
+",solidline
+line267,"
+/line267 { % Road overpass
+  /featurewidth exch def
+  gsave
+    1.3
+    0 0 0 0
+    solidline
+  grestore
+  .9
+  0 1 1 0
+  solidline
+% TODO Get width right
+} bind def
+",solidline
+line268,"
+/line268 { % Foot bridge
+  /featurewidth exch def
+  .2
+  0 0 0 1
+  solidline
+% TODO add ends
+} bind def
+",solidline
+line281,"
+/line281 { % Pipeline -- above ground and elevated (not water)
+  /featurewidth exch def
+  .15
+  0 0 0 1
+  solidline
+} bind def
+",solidline
+line282,"
+/line282 { % Pipeline -- underground (not water)
+  /featurewidth exch def
+  [1.75 .25] 0
+  .15
+  0 0 0 1
+  dashedline
+} bind def
+",dashedline
+line30,"
+/line30 { % Aerial Cableway
+  /featurewidth exch def
+  [.75 .25] 0
+  .15
+  0 0 0 1
+  dashedline
+} bind def
+",dashedline
+line31,"
+/line31 { % Embankment
+  /featurewidth exch def
+% TODO
+} bind def
+",""
+line33,"
+/line33 { % Sand Ridge
+  /featurewidth exch def
+  .25
+  0 .35 .6 .11
+  solidline
+} bind def
+",solidline
+line42,"
+/line42 { % Lock line and arrow (without arrow)
+  /featurewidth exch def
+  .1
+  0 0 0 1
+  solidline
+} bind def
+",solidline
+line45,"
+/line45 { % Dam Wall (coincident with road)
+  /featurewidth exch def
+  gsave
+    featurewidth .3 add
+    0 0 0 1
+    solidline
+  grestore
+  featurewidth
+  0 1 1 0
+  solidline
+} bind def
+",solidline
+line541,"
+/line541 { % Powerline (superceded)
+  /featurewidth exch def
+  .15
+  0 0 0 1
+  solidline
+} bind def
+",solidline
+line542,"
+/line542 { % Powerline
+  /featurewidth exch def
+% handled specially in the code
+} bind def
+",""
+line543,"
+/line543 { % Powerline (WAC only)
+  /featurewidth exch def
+% handled specially in the code
+} bind def
+",""
+line55,"
+/line55 { % Standard Contour (Index)
+  /featurewidth exch def
+  .2
+  0 .59 1 .18
+  solidline
+} bind def
+",solidline
+line56,"
+/line56 { % Standard Contour (Not index)
+  /featurewidth exch def
+  .1
+  0 .59 1 .18
+  solidline
+} bind def
+",solidline
+line57A,"
+/line57A { % Depression Contour (Index)
+  /featurewidth exch def
+  .2
+  0 .59 1 .18
+  solidline
+} bind def
+",solidline
+line573,"
+/line573 { % Grid Line -- Standard
+        % Bathymetric Line -- Standard
+  /featurewidth exch def
+  .1
+  1 .1 0 .1
+  solidline
+} bind def
+",solidline
+line574,"
+/line574 { % Grid Line -- 100 000m @ 250K
+           %              10 000m @ 100K
+  /featurewidth exch def
+  .2
+  1 .1 0 .1
+  solidline
+} bind def
+",solidline
+line575,"
+/line575 { % Graticule Line
+  /featurewidth exch def
+          Dam or Weir (WAC only)
+  .2
+  0 0 0 1
+  solidline
+} bind def
+",solidline
+line58,"
+/line58 { % Standard Contour (Not index)
+  /featurewidth exch def
+  .1
+  0 .59 1 .18
+  solidline
+} bind def
+",solidline
+line58A,"
+/line58A { % Depression Contour (Not index)
+  /featurewidth exch def
+  .1
+  0 .59 1 .18
+  solidline
+} bind def
+",solidline
+line59,"
+/line59 { % Auxiliary Contour
+  /featurewidth exch def
+  [4.5 .8] 0
+  .1
+  0 .59 1 .18
+  dashedline
+} bind def
+",dashedline
+line60,"
+/line60 { % Habitation Boundaries and Cultural Boundaries
+  /featurewidth exch def
+  .15
+  0 0 0 1
+  solidline
+} bind def
+",solidline
+line601,"
+/line601 { % Open Grass Plain Boundary (WAC only)
+  /featurewidth exch def
+  [1.9 .6 ] 0
+  .15
+  0 0 0 1
+  dashedline
+} bind def
+",dashedline
+line62,"
+/line62 { % International Boundary
+  /featurewidth exch def
+  [6.25 .75 1.5 .75] 0
+  .5
+  0 0 0 1
+  dashedline
+} bind def
+",dashedline
+line620,"
+/line620 { % International Boundary (WAC only)
+  /featurewidth exch def
+  [5 .75 1.5 .75 1.5 .75] 0
+  .4
+  0 0 0 1
+  dashedline
+} bind def
+",dashedline
+line63,"
+/line63 { % Landmark Area (edge symbology)
+  /featurewidth exch def
+  [.75 .3] 0
+  .1
+  0 0 0 1
+  dashedline
+} bind def
+",dashedline
+line64,"
+/line64 { % Prohibited Area Boundary Line -- Single boundary
+  /featurewidth exch def
+  gsave
+    1.5
+    .4 .29 0 0
+    solidline
+% TODO limit verge to only one side
+  grestore
+  [3.75 1.25 .25 1.25] 0
+  .1
+  0 0 0 1
+  dashedline
+} bind def
+",dashedline solidline
+line641,"
+/line641 { % Prohibited Area Boundary Line -- Dual boundary
+  /featurewidth exch def
+  gsave
+    1.5
+    .4 .29 0 0
+    solidline
+  grestore
+  [3.75 1.25 .25 1.25] 0
+  .1
+  0 0 0 1
+  dashedline
+} bind def
+",solidline dashedline
+line65,"
+/line65 { % Reserve Boundary Line -- Single boundary
+  /featurewidth exch def
+  gsave
+    closepath clip
+    1.5
+    .4 0 .34 0
+    solidline
+% TODO limit verge to only one side
+  grestore
+  .25
+  1 0 .86 0
+  solidline
+} bind def
+",solidline 
+line650,"
+/line650 { % Reserve Boundary Line -- Single boundary (no spline)
+  /featurewidth exch def
+  closepath clip
+  1.5
+  .4 0 .34 0
+  solidline
+% TODO limit verge to only one side
+} bind def
+",solidline
+line66,"
+/line66 { % Tropic of Capricorn
+  /featurewidth exch def
+  [1.75 .25] 0
+  .15
+  0 0 0 1
+  dashedline
+} bind def
+",dashedline
+line660,"
+/line660 { % Isogonal Line
+  /featurewidth exch def
+  [2.5 1.2] 0
+  .2
+  .79 .9 0 0
+  dashedline
+} bind def
+",dashedline
+line68,"
+/line68 { % Reserve Boundary Line -- Dual boundary not coincident with a symbolised feature
+  /featurewidth exch def
+  gsave
+    1.5
+    .4 0 .34 0
+    solidline
+  grestore
+  .25
+  1 0 .86 0
+  solidline
+} bind def
+",solidline
+line680,"
+/line680 { % Reserve Boundary Line -- Dual boundary coincident with edge of perennial feature or sea
+  /featurewidth exch def
+  1.5
+  .4 0 .34 0
+  solidline
+} bind def
+",solidline
+line681,"
+/line681 { % Reserve Boundary Line -- Dual boundary coincident with a symbolised feature
+  /featurewidth exch def
+  gsave
+    2.55
+    .4 0 .34 0
+    solidline
+  grestore
+  gsave
+    1.55
+    1 0 .86 0
+    solidline
+  grestore
+  gsave
+    1.05
+    0 0 0 0
+    solidline
+  grestore
+  .9
+  0 1 1 0
+  solidline
+% TODO get line widths correct
+} bind def
+",solidline
+line70,"
+/line70 { % Jetty
+  /featurewidth exch def
+  .3
+  0 0 0 1
+  solidline
+} bind def
+",solidline
+line702,"
+/line702 { % Aircraft Facility Line
+  /featurewidth exch def
+  .15
+  1 .73 0 0
+  solidline
+} bind def
+",solidline
+area706,"
+/area706 { % Runway area
+  1 .73 0 0 cmykfill
+} bind def
+",cmykfill
+line706,"
+/line706 { % Runway Centreline
+  /featurewidth exch def
+  .4
+  1 .73 0 0
+  solidline
+} bind def
+",solidline
+line71,"
+/line71 { % Sea Wall
+  /featurewidth exch def
+  .3
+  0 0 0 1
+  solidline
+} bind def
+",solidline
+line714,"
+/line714 { % Customs Aerodrome -- Pecked Line
+  /featurewidth exch def
+  [2.5 .6] 0
+  .2
+  .79 .9 0 0
+  dashedline
+} bind def
+",dashedline
+line751,"
+/line751 { % Breakwater
+  /featurewidth exch def
+  .3
+  0 0 0 1
+  solidline
+} bind def
+",solidline
+line752,"
+/line752 { % Wharf Line
+  /featurewidth exch def
+  .3
+  0 0 0 1
+  solidline
+} bind def
+",solidline
+line755,"
+/line755 { % Boat Ramp Line
+  /featurewidth exch def
+  .2
+  0 0 0 1
+  solidline
+} bind def
+",solidline
+line79,"
+/line79 { % Boundary -- State or Territory (WAC only)
+  /featurewidth exch def
+  gsave
+    2
+    0 .35 .15 0
+    solidline
+  grestore
+  [5 .75 1.5 .75] 0
+  .3
+  0 0 0 1
+  dashedline
+} bind def
+",solidline dashedline
+line80,"
+/line80 { % State Border
+  /featurewidth exch def
+  [5 .75 1.5 .75] 0
+  .3
+  0 0 0 1
+  dashedline
+} bind def
+",dashedline
+line881,"
+/line881 { % Rapid Line -- on major watercourse chain
+  /featurewidth exch def
+  .2
+  1 .1 0 .1
+  solidline
+% TODO add arrows
+} bind def
+",solidline
+line882,"
+/line882 { % Rapid Line -- on minor watercourse chain
+  /featurewidth exch def
+  .15
+  1 .1 0 .1
+  solidline
+% TODO add arrows
+} bind def
+",solidline
+line87,"
+/line87 { % Windbreak
+  /featurewidth exch def
+  .3
+  1 0 .86 0
+  solidline
+} bind def
+",solidline
+line90,"
+/line90 { % Physiography Boundaries -- Bounding a crater & distorted surface
+  /featurewidth exch def
+  [.75 .3] 0
+  .15
+  0 0 0 1
+  dashedline
+} bind def
+",dashedline
+line904,"
+/line904 { % Black Soil Plain Bounding Line
+  /featurewidth exch def
+  [2.5 .6] 0
+  .25
+  0 0 0 1
+  dashedline
+} bind def
+",dashedline
+line91,"
+/line91 { % Watercourse -- Hierarchy: Major (100K use only for non-perennial features)
+  /featurewidth exch def
+  [4 .3] 0
+  .2
+  1 .1 0 .1
+  dashedline
+} bind def
+",dashedline
+line912,"
+/line912 { % Physiography Boundaries -- Bounding Rocky Outcrops
+  /featurewidth exch def
+  [.75 .25] 0
+  .1
+  0 0 0 1
+  dashedline
+} bind def
+",dashedline
+line92,"
+/line92 { % Watercourse -- Hierarchy: Minor (250K no flow arrow and 100K use only for perennial features)
+  /featurewidth exch def
+  .2
+  1 .1 0 .1
+  solidline
+} bind def
+",solidline
+line920A,"
+/line920A { % Cliff (WAC only)
+  /featurewidth exch def
+  .2
+  0 .59 1 .18
+  solidline
+} bind def
+",solidline
+line921,"
+/line921 { % Levee
+  /featurewidth exch def
+  gsave
+    [.1 .5] .3
+    1
+    0 0 0 1
+    dashedline
+  grestore
+  .1
+  0 0 0 1
+  solidline
+} bind def
+",dashedline solidline
+line922,"
+/line922 { % Watercourse -- Hierarchy: Major with direction of flow
+  /featurewidth exch def
+  .2
+  1 .1 0 .1
+  solidline
+% TODO add arrowhead
+} bind def
+",solidline
+line923,"
+/line923 { % Cutting
+  /featurewidth exch def
+% TODO
+} bind def
+",""
+line924A,"
+/line924A { % Cliff
+  /featurewidth exch def
+  .2
+  0 0 0 1
+  solidline
+} bind def
+",solidline
+line925,"
+/line925 { % Dam Wall
+  /featurewidth exch def
+  .4
+  0 0 0 1
+  solidline
+} bind def
+",solidline
+line926,"
+/line926 { % Spillway
+  /featurewidth exch def
+  .3
+  1 .1 0 .1
+  solidline
+} bind def
+",solidline
+line927,"
+/line927 { % Fence
+  /featurewidth exch def
+  .1
+  0 0 0 1
+  solidline
+} bind def
+",solidline
+line929A,"
+/line929A { % Razorback
+  /featurewidth exch def
+  .2
+  0 0 0 1
+  solidline
+} bind def
+",solidline
+line93,"
+/line93 { % Old Lake Bed boundary
+  /featurewidth exch def
+  [2 .5] 0
+  .15
+  1 .1 0 .1
+  dashedline
+} bind def
+",dashedline
+line94,"
+/line94 { % Waterbody boundaries and Shoreline
+  /featurewidth exch def
+  .15
+  1 .1 0 .1
+  solidline
+} bind def
+",solidline
+line940,"
+/line940 { % Watercourse -- Hierarchy: Minor (250k no flow arrow and 100K used for perennial features only)
+  /featurewidth exch def
+  .15
+  1 .1 0 .1
+  solidline
+} bind def
+",solidline
+line942,"
+/line942 { % Watercourse -- Hierarchy: Minor with direction of flow
+  /featurewidth exch def
+  .15
+  1 .1 0 .1
+  solidline
+% TODO add arrow
+} bind def
+",solidline
+line944,"
+/line944 { % Watercourse -- Hierarchy: Minor (100K use only for non-preennial features)
+  /featurewidth exch def
+  [4 .3] 0
+  .15
+  1 .1 0 .1
+  dashedline
+} bind def
+",dashedline
+line947,"
+/line947 { % Canal and Pipeline (water)
+  /featurewidth exch def
+  .25
+  1 .1 0 .1
+  solidline
+} bind def
+",solidline
+line95,"
+/line95 { % Shoal (edge symbology)
+  /featurewidth exch def
+  [1.75 .25] 0
+  .15
+  1 .1 0 .1
+  dashedline
+} bind def
+",dashedline
+line99,"
+/line99 { % Cleared Line
+  /featurewidth exch def
+  [1.75 .25] 0
+  .15
+  0 0 0 1
+  dashedline
+} bind def
+",dashedline
+areo_end,"
+/aero_end {
+    grestore
+} bind def
+",""
+aero_outer,"
+/aero_outer {
+  .4 setlinewidth 0 0 2.3 0 360 arc stroke
+} bind def
+",""
+aero_dashed,"
+/aero_dashed {
+  .4 setlinewidth 0 0 2.3 -34.5 34.5 arc stroke
+  0 0 2.3 55.5 124.5 arc stroke
+  0 0 2.3 145.5 214.5 arc stroke
+  0 0 2.3 235.5 304.5 arc stroke
+} bind def
+",""
+aero_inner,"
+/aero_inner {
+  .15 setlinewidth 0 0 1.85 0 360 arc stroke
+} bind def
+",""
+aero_pass,"
+/aero_pass {
+  .4 setlinewidth
+  0 2.3 moveto 0 3.5 lineto stroke
+  0 -2.3 moveto 0 -3.5 lineto stroke
+  -2.3 0 moveto -3.5 0 lineto stroke
+  2.3 0 moveto 3.5 0 lineto stroke
+} bind def
+",""
+aero_anchor,"
+/aero_anchor {
+  0 1.1 translate
+  .15 setlinewidth 0 0 .2 0 360 arc stroke
+  .3 setlinewidth
+  -.6 .2 .15 2 div sub .15 add neg moveto 1.2 0 rlineto stroke
+  0 -.2 moveto 0 -2.35 rlineto stroke
+  .3 setlinewidth
+  0 -.4925 translate
+  0 0 1.9 -115 -65 arc stroke
+  gsave
+    -24 rotate
+    0 -1.6 moveto -.5 -.3 rlineto
+                      .5 -.3 rlineto closepath fill
+  grestore
+  24 rotate
+  0 -1.6 moveto
+   .5 -.3 rlineto
+  -.5 -.3 rlineto
+  closepath fill
+} bind def
+",""
+point103,"
+/point103 {% Petroleum Well
+  /featurewidth exch def
+  .3 % radius
+  0 0 0 1 % color
+  filledcircle
+} bind def
+",filledcircle
+point106,"
+/point106 { % Mine Point
+  /featurewidth exch def
+  gsave
+    translate 45 add rotate
+    0 0 0 1 setcmykcolor
+    .15 setlinewidth
+    2 {1.75 2 div neg 0 moveto 1.75 0 rlineto 0 .5 rlineto 0 -1 rlineto stroke 90 rotate} repeat
+% need to add the ends properly
+  grestore
+} bind def
+",""
+point11,"
+/point11 { % Bore
+  /featurewidth exch def
+  .3 % radius
+  0.15 % line width
+  1 .1 0 .1 % color
+  circle
+} bind def
+",circle
+point113,"
+/point113 { % Petroleum Well (WAC only)
+  /featurewidth exch def
+  gsave
+    translate rotate
+    0 0 moveto
+    -1.1 0 rlineto
+    1.1 2.9 rlineto
+    1.1 -2.9 rlineto
+    closepath
+    clip
+    newpath
+    0 0 moveto
+    -1.1 0 rmoveto
+    1.1 2.9 rlineto
+    1.1 -2.9 rlineto
+    .15 setlinewidth
+    stroke
+    0 0 moveto
+    -1.1 1.95 rmoveto 2.2 0 rlineto
+    1.9 setlinewidth
+    stroke
+  grestore
+} bind def
+",""
+point222,"
+/point222 { % Railway station
+  /featurewidth exch def
+  gsave
+    .5
+    0 0 0 1
+    filledcircle
+  grestore
+} bind def
+",filledcircle
+point25,"
+/point25 { % grid
+  /featurewidth exch def
+  gsave
+    translate rotate
+    .15 setlinewidth
+    0 0 0 1 setcmykcolor
+    -.75 0 moveto 1.5 0 rlineto stroke
+    -.75 .75 moveto 0 -1.5 rlineto 1.5
+    0 rlineto 0 1.5 rlineto closepath stroke
+  grestore
+} bind def
+",""
+point26,"
+/point26 { % gate
+  /featurewidth exch def
+  gsave
+    translate rotate
+    .15 setlinewidth
+    0 0 0 1 setcmykcolor
+    -.75 dup moveto 1.5 dup rlineto -1.5 0 rlineto 1.5 dup neg rlineto closepath stroke
+  grestore
+} bind def
+",""
+point260,"
+/point260 { % Railway Bridge Point
+            % Road Bridge Point
+  /featurewidth exch 2 div def
+  gsave
+%    /featurewidth .25 2 div def
+    translate rotate
+    .2 setlinewidth
+    0 0 0 1 setcmykcolor
+    -0.82 featurewidth .52 add moveto 0.42 -0.42 rlineto 0.4 0 rlineto 0.42 0.42 rlineto stroke
+    -0.82 featurewidth neg .52 sub moveto 0.42 0.42 rlineto 0.4 0 rlineto 0.42 -0.42 rlineto stroke
+  grestore
+} bind def
+",""
+point27,"
+/point27 { % Road marker - national
+  /featurewidth exch def
+  gsave
+    translate rotate
+    0.15 setlinewidth
+    0 0 0 1 setcmykcolor
+    -1.5 1.2 moveto
+    3 0 rlineto 0 -2.5 rlineto -1.5 -0.8 rlineto -1.5 0.8 rlineto closepath
+    gsave 0 0 0 0 setcmykcolor fill grestore
+    stroke
+  grestore
+} bind def
+",""
+point271,"
+/point271 { % Road marker - national (oversize)
+  /featurewidth exch def
+  gsave
+    translate rotate
+    0.15 setlinewidth
+    0 0 0 1 setcmykcolor
+    -1.75 1.2 moveto
+    3.5 0 rlineto 0 -2.5 rlineto -1.75 -0.8 rlineto -1.75 0.8 rlineto closepath stroke
+  grestore
+} bind def
+",""
+point28,"
+/point28 { % Road marker - state
+  /featurewidth exch def
+  gsave
+    translate rotate
+    0.15 setlinewidth
+    -1.25 1.1 moveto
+    2.5 0 rlineto 0 -2.2 rlineto -2.5 0 rlineto closepath
+    gsave .2 0 0 0 setcmykcolor fill grestore
+    0 0 0 1 setcmykcolor stroke
+  grestore
+} bind def
+",""
+point281,"
+/point281 { % Road marker - state (oversize)
+  /featurewidth exch def
+  gsave
+    translate rotate
+    0.15 setlinewidth
+    -2.4 1.1 moveto
+    4.8 0 rlineto 0 -2.2 rlineto -4.8 0 rlineto closepath
+    gsave .2 0 0 0 setcmykcolor fill grestore
+    0 0 0 1 setcmykcolor stroke
+  grestore
+} bind def
+",""
+point290,"
+/point290 { % Transition point
+  /featurewidth exch def
+  gsave
+    translate rotate
+    0.15 setlinewidth
+    0 0 0 1 setcmykcolor
+    0.55 0 .55 90 270 arc stroke
+  grestore
+} bind def
+",""
+point40,"
+/point40 { % Homestead and building point
+  /featurewidth exch def
+  gsave
+    translate rotate
+    0 0 0 1 setcmykcolor
+    0.3
+    dup neg dup neg moveto dup dup lineto dup dup neg lineto neg dup lineto closepath fill
+  grestore
+} bind def
+",""
+point401,"
+/point401 { % Ambulance Station
+  /featurewidth exch def
+  gsave
+    translate rotate
+    1 0 1 0 setcmykcolor
+    1.5
+    dup neg dup neg moveto dup dup lineto dup dup neg lineto neg dup lineto closepath fill
+%%% Needs letter ""A""
+  grestore
+} bind def
+",""
+point404,"
+/point404 { % Fire Station
+  /featurewidth exch def
+  gsave
+    translate rotate
+    0 1 1 0 setcmykcolor
+    1.5
+    dup neg dup neg moveto dup dup lineto dup dup neg lineto neg dup lineto closepath fill
+% Letter ""F""
+    0 0 0 0 setcmykcolor
+    -0.75 -1.3 moveto 0.75 0 rlineto 0 1 rlineto 0.75 0 rlineto 0 0.6 rlineto
+    -0.75 0 rlineto 0 0.4 rlineto 0.75 0 rlineto 0 0.6 rlineto -1.5 0 rlineto
+    closepath fill
+  grestore
+} bind def
+",""
+point406,"
+/point406 { % Police Station
+  /featurewidth exch def
+  gsave
+    translate rotate
+    .95 .52 0 0 setcmykcolor
+    -1.5 dup translate
+    0 0 moveto 1 0 rlineto 0 1 rlineto -1 0 rlineto closepath fill
+    2 0 moveto 1 0 rlineto 0 1 rlineto -1 0 rlineto closepath fill
+    1 1 moveto 1 0 rlineto 0 1 rlineto -1 0 rlineto closepath fill
+    0 2 moveto 1 0 rlineto 0 1 rlineto -1 0 rlineto closepath fill
+    2 2 moveto 1 0 rlineto 0 1 rlineto -1 0 rlineto closepath fill
+    .1 setlinewidth
+    .05 .05 moveto 2.9 0 rlineto 0 2.9 rlineto -2.9 0 rlineto closepath stroke
+  grestore
+} bind def
+",""
+point41,"
+/point41 { % Building point (ruin)
+  /featurewidth exch def
+  gsave
+    translate rotate
+    0.15 setlinewidth
+    0 0 0 1 setcmykcolor
+    0.3
+    dup neg dup neg moveto dup dup lineto dup dup neg lineto neg dup lineto closepath stroke
+  grestore
+} bind def
+",""
+point420,"
+/point420 { % Populated place and place name
+  /featurewidth exch def
+  gsave
+    translate rotate
+    0 0 .45 0 360 arc closepath
+    gsave 0 0 1 0 setcmykcolor fill grestore
+    0 1 1 0 setcmykcolor
+    .15 setlinewidth stroke
+  grestore
+} bind def
+",""
+point421,"
+/point421 { % Village or settlement < 500 people
+  /featurewidth exch def
+  gsave
+    translate rotate
+    0 0 .55 0 360 arc closepath
+    gsave 0 0 1 0 setcmykcolor fill grestore
+    0 0 0 1 setcmykcolor
+    .15 setlinewidth stroke
+  grestore
+} bind def
+",""
+point422,"
+/point422 { % Village or settlement 500-1000 people
+  /featurewidth exch def
+  gsave
+    translate rotate
+    0 0 .6 0 360 arc closepath
+    gsave 0 0 1 0 setcmykcolor fill grestore
+    0 0 0 1 setcmykcolor
+    .15 setlinewidth stroke
+  grestore
+} bind def
+",""
+point423,"
+/point423 { % Town 1001-2000 people
+  /featurewidth exch def
+  gsave
+    translate rotate
+    0 0 .8 0 360 arc closepath
+    gsave 0 0 1 0 setcmykcolor fill grestore
+    0 0 0 1 setcmykcolor
+    .2 setlinewidth stroke
+  grestore
+} bind def
+",""
+point424,"
+/point424 { % Town 2001-5000 people
+  /featurewidth exch def
+  gsave
+    translate rotate
+    0 0 1.05 0 360 arc closepath
+    gsave 0 0 1 0 setcmykcolor fill grestore
+    0 0 0 1 setcmykcolor
+    .2 setlinewidth stroke
+  grestore
+} bind def
+",""
+point429,"
+/point429 { % Building - grain storage
+  /featurewidth exch def
+  gsave
+    translate rotate
+    0 0 0 1 setcmykcolor
+    0.15 setlinewidth
+    -.527 .526 moveto -.485 0 lineto .485 0 lineto .527 .526 lineto
+    -.984 .427 moveto 0 .727 lineto .984 .427 lineto
+    stroke
+  grestore
+} bind def
+",""
+point430,"
+/point430 { % Building point
+  /featurewidth exch def
+  gsave
+    translate rotate
+    0 0 0 1 setcmykcolor
+    -.2 dup moveto .4 0 rlineto 0 .4 rlineto -.4 0 rlineto
+    closepath fill
+  grestore
+} bind def
+",""
+point433,"
+/point433 { % Yard
+  /featurewidth exch def
+  gsave
+    translate rotate
+    0 0 0 1 setcmykcolor
+    0.1 setlinewidth
+    -0.45 dup moveto .9 0 rlineto 0 .9 rlineto -.9 0 rlineto
+    closepath stroke
+  grestore
+} bind def
+",""
+point434,"
+/point434 { % Windpump
+  /featurewidth exch def
+  gsave
+    translate rotate
+    0 0 0 1 setcmykcolor
+    .15 setlinewidth
+    -.55 0 moveto 1.1 0 rlineto stroke
+    0 0 moveto 0 1.4 lineto stroke
+    0 1.4 translate
+    45 rotate
+    2 {-.75 0 moveto 1.5 0 rlineto stroke 90 rotate} repeat
+  grestore
+} bind def
+",""
+point498,"
+/point498 { % Vertical obstruction (silo)
+  /featurewidth exch def
+  gsave
+% TODO fix dimensions
+    0 0 0 1 setcmykcolor
+    translate rotate
+    0.1 setlinewidth
+    -0.6 0 moveto 0.6 0 lineto stroke
+    -0.2 0 moveto 0 1.5 rlineto stroke
+    0.2 0 moveto 0 1.5 rlineto stroke
+    -0.4 1.2 moveto 0 1.7 lineto 0.4 1.3 lineto stroke
+  grestore
+} bind def
+",""
+point499,"
+/point499 { % Vertical obstruction (tower)
+  /featurewidth exch def
+  gsave
+    0 0 0 1 setcmykcolor
+    translate rotate
+    0 0 .15 0 360 arc closepath fill
+    0 -.15 translate
+    1.5 2 .15 inverted_v
+  grestore
+} bind def
+",inverted_v
+point451,"
+/point451 { % Cemetery point
+  /featurewidth exch def
+  .375 % radius
+  0.1 % line width
+  0 0 0 1 % color
+  circle
+} bind def
+",circle
+point497,"
+/point497 { % Vertical obstruction (chimney) - incompletely specified
+  /featurewidth exch def
+  gsave
+    translate rotate
+    0 0 0 1 setcmykcolor
+    .15 setlinewidth
+    -.5 0 moveto 1 0 rlineto stroke
+    gsave
+      0 1.75 .075 sub .1125 sub translate
+      .8 .225 scale
+      0 0 .5 0 360 arc closepath fill
+    grestore
+%%% fix the following properly
+    -.5 0 moveto -.4 1.75 lineto
+    .5 0 moveto .4 1.75 lineto stroke
+  grestore
+} bind def
+",""
+point50,"
+/point50 { % Benchmark 
+  /featurewidth exch def
+  .5
+  0 0 0 1
+  filledcircle
+} bind def
+",filledcircle
+point500,"
+/point500 { % Vertical Obstruction (wind turbine generator)
+  /featurewidth exch def
+  gsave
+    translate rotate
+    0 0 0 1 setcmykcolor
+    -0.25 0 moveto 0.25 0 lineto 0 2.15 lineto closepath fill
+    0 2.15 translate
+    0 0 .2 0 360 arc
+    .1 setlinewidth
+    0 0 moveto 0 .85 lineto stroke
+    130 rotate
+    0 0 moveto 0 .85 lineto stroke
+    120 rotate
+    0 0 moveto 0 .85 lineto stroke
+  grestore
+} bind def
+",""
+point501,"
+/point501 { % Vertical Obstruction (other)
+  /featurewidth exch def
+  .375 % radius
+  0.1 % line width
+  0 0 0 1 % color
+  circle
+} bind def
+",circle
+point502,"
+/point502 { % Microwave repeater station
+  /featurewidth exch def
+  gsave
+    0 0 0 1 setcmykcolor
+    translate rotate
+    1.4 3 .15 inverted_v
+    0 2.6 .4 0 360 arc closepath fill
+  grestore
+} bind def
+",inverted_v
+point503,"
+/point503 { % Obstacle (singular) - lit
+  /featurewidth exch def
+  gsave
+    .79 .9 0 0 setcmykcolor
+    translate rotate
+    0 0 .2 0 360 arc closepath fill
+    2.5 3 .3 inverted_v
+    0 3 translate
+    .15 setlinewidth
+    5 {.5 0 moveto .7 0 rlineto stroke 45 rotate} repeat
+  grestore
+} bind def
+",inverted_v
+point504,"
+/point504 { % Obstacle (group) - lit
+  /featurewidth exch def
+  gsave
+    .79 .9 0 0 setcmykcolor
+    translate rotate
+    0 0 .2 0 360 arc closepath fill
+    -.45 0 translate 2.5 3 .3 inverted_v
+    .9 0 translate 2.5 3 .3 inverted_v
+    0 3 translate
+    .15 setlinewidth
+    3 {.5 0 moveto .7 0 rlineto stroke 45 rotate} repeat
+    -45 rotate 0 .9 translate
+    3 {.5 0 moveto .7 0 rlineto stroke 45 rotate} repeat
+  grestore
+} bind def
+",inverted_v
+point505,"
+/point505 { % Obstacle (singular) - unlit
+  /featurewidth exch def
+  gsave
+    .79 .9 0 0 setcmykcolor
+    translate rotate
+    0 0 .2 0 360 arc closepath fill
+    2.5 3 .3 inverted_v
+  grestore
+} bind def
+",inverted_v
+point506,"
+/point506 { % Obstacle (group) - unlit
+  /featurewidth exch def
+  gsave
+    .79 .9 0 0 setcmykcolor
+    translate rotate
+    0 0 .2 0 360 arc closepath fill
+    -.45 0 translate 2.5 3 .3 inverted_v
+    .9 0 translate 2.5 3 .3 inverted_v
+  grestore
+} bind def
+",inverted_v
+point507,"
+/point507 { % Broadcasting station (singular) - radio or television with mast lit
+  /featurewidth exch def
+  gsave
+    .79 .9 0 0 setcmykcolor
+    translate rotate
+    0 0 .2 0 360 arc closepath fill
+    .3 setlinewidth 0 0 1 0 360 arc closepath stroke
+    0 -.473 translate
+    3.6 3 .3 inverted_v
+    0 3 translate
+    .15 setlinewidth
+    5 {.5 0 moveto .7 0 rlineto stroke 45 rotate} repeat
+  grestore
+} bind def
+",inverted_v
+point508,"
+/point508 { % Broadcasting station (group) - radio or television with mast lit
+  /featurewidth exch def
+  gsave
+    .79 .9 0 0 setcmykcolor
+    translate rotate
+    0 0 .2 0 360 arc closepath fill
+    .3 setlinewidth 0 0 1.1 0 360 arc closepath stroke
+    -.45 0 translate % what do we really want here???
+    2.5 3 .3 inverted_v
+    .9 0 translate
+    2.5 3 .3 inverted_v
+    0 3 translate
+    .15 setlinewidth
+    3 {.5 0 moveto .7 0 rlineto stroke 45 rotate} repeat
+    -45 rotate 0 .9 translate
+    3 {.5 0 moveto .7 0 rlineto stroke 45 rotate} repeat
+  grestore
+} bind def
+",inverted_v
+point509,"
+/point509 { % Broadcasting station (singular) - radio or television with mast unlit
+  /featurewidth exch def
+  gsave
+    .79 .9 0 0 setcmykcolor
+    translate rotate
+    0 0 .2 0 360 arc closepath fill
+    .3 setlinewidth 0 0 1 0 360 arc closepath stroke
+    0 -.473 translate
+    3.6 3 .3 inverted_v
+  grestore
+} bind def
+",inverted_v
+point51,"
+/point51 { % Horizontal Control Point
+  /featurewidth exch def
+  gsave
+    translate
+    0 0
+    .075
+    0 0 0 1
+    filledcircle
+    0.15 setlinewidth
+    0 1 moveto 0.75 -0.5 lineto -1.5 0 rlineto closepath stroke
+  grestore
+} bind def
+",filledcircle
+point510,"
+/point510 { % Broadcasting station (group) - radio or television with mast unlit
+  /featurewidth exch def
+  gsave
+    .79 .9 0 0 setcmykcolor
+    translate rotate
+    0 0 .2 0 360 arc closepath fill
+    .3 setlinewidth 0 0 1.1 0 360 arc closepath stroke
+    -.45 0 translate % what do we really want here???
+    2.5 3 .3 inverted_v
+    .9 0 translate
+    2.5 3 .3 inverted_v
+  grestore
+} bind def
+",inverted_v
+point511,"
+/point511 { % Broadcasting station - radio or television without mast
+        % Air navigation beacon - without obstruction or aerodrome
+  /featurewidth exch def
+  gsave
+    .79 .9 0 0 setcmykcolor
+    translate rotate
+    0 0 .2 0 360 arc closepath fill
+    .3 setlinewidth
+    0 0 1.1 0 360 arc closepath stroke
+  grestore
+} bind def
+",""
+point52,"
+/point52 { % Spot Elevation
+  /featurewidth exch def
+  .1825
+  0 0 0 1
+  filledcircle
+} bind def
+",filledcircle
+point520,"
+/point520 { % Spot Elevation (WAC maximum)
+  /featurewidth exch def
+  gsave
+    .35
+    0 0 0 1
+    filledcircle
+  grestore
+} bind def
+",filledcircle
+point54,"
+/point54 { % Distance indicator
+  /featurewidth exch def
+  gsave
+    translate rotate
+    0 1 1 0 setcmykcolor
+    .15 setlinewidth
+    0 0 moveto 2 0 lineto stroke
+    2.45 0 .45 0 360 arc closepath fill
+  grestore
+} bind def
+",""
+point540,"
+/point540 { % Powerline Pylon
+  /featurewidth exch def
+  gsave
+    translate rotate
+% TODO
+  grestore
+} bind def
+",""
+point701,"
+/point701 { % Aircraft Facility Point -- Airport
+  /featurewidth exch def
+  2.9 % radius
+  0.4 % line width
+  1 .73 0 0 % color
+  circle
+} bind def
+",circle
+point703,"
+/point703 { % Aircraft Facility Point -- Landing Ground
+  /featurewidth exch def
+  3 copy
+  1.75 % radius
+  0.3 % line width
+  1 .73 0 0 % color
+  circle
+  gsave
+    translate rotate -1.25 0 moveto 2.5 0 rlineto .3 setlinewidth 1 .73 0 0 setcmykcolor stroke
+  grestore
+} bind def
+",circle
+point708,"
+/point708 { % Aircraft Facility Point -- Heliport
+  /featurewidth exch def
+  3 copy
+  1.35 % radius
+  0.2 % line width
+  1 .73 0 0 % color
+  circle
+  gsave
+    translate rotate 1 .73 0 0 setcmykcolor
+    -0.71 0 moveto 1.42 0 rlineto .3 setlinewidth stroke
+    -0.51 0.875 moveto 0 -1.75 rlineto .4 setlinewidth stroke
+    0.51 0.875 moveto 0 -1.75 rlineto .4 setlinewidth stroke
+  grestore
+} bind def
+",circle
+point710,"
+/point710 { % Aerodrome - civilian unlicensed
+  /featurewidth exch def
+  aero_start aero_dashed aero_end
+} bind def
+",aero_start aero_dashed aero_end
+point711,"
+/point711 { % Aerodrome - civilian unusable
+  /featurewidth exch def
+  aero_start aero_outer
+  % should draw ""U""
+  aero_end
+} bind def
+",aero_start aero_outer aero_end
+point712,"
+/point712 { % Aerodrome - licensed civilian with passenger facilities
+  /featurewidth exch def
+  aero_start aero_outer aero_pass aero_end
+} bind def
+",aero_start aero_outer aero_pass aero_end
+point713,"
+/point713 { % Aerodrome - licensed civilian without passenger facilities
+    aero_start aero_outer aero_end
+} bind def
+",aero_start aero_outer aero_end
+point716,"
+/point716 { % Aerodrome - licensed joint civilian and military
+    aero_start aero_outer aero_inner aero_pass aero_end
+} bind def
+",aero_start aero_outer aero_inner aero_pass aero_end
+point717,"
+/point717 { % Aerodrome - licensed military
+    aero_start aero_outer aero_inner aero_end
+} bind def
+",aero_start aero_outer aero_inner aero_end
+point718,"
+/point718 { % Aerodrome - water civilian licensed with passenger facilities
+    aero_start aero_outer aero_pass aero_anchor aero_end
+} bind def
+",aero_start aero_outer aero_pass aero_anchor aero_end
+point719,"
+/point719 { % Aerodrome - water joint civilian and military
+    aero_start aero_outer aero_inner aero_pass aero_anchor aero_end
+} bind def
+",aero_start aero_outer aero_inner aero_pass aero_anchor aero_end
+point72,"
+/point72 { % Lighthouse
+  /featurewidth exch def
+  gsave
+    translate rotate
+    0 0 0 1 setcmykcolor
+    .866 0 moveto -.5 .75 lineto -.5 -.75 lineto closepath
+    -.866 0 moveto .5 .75 lineto .5 -.75 lineto closepath
+    0 0 .375 0 -360 arc fill
+  grestore
+} bind def
+",filledcircle
+point720,"
+/point720 { % Aerodrome - water licensed military
+    aero_start aero_outer aero_inner aero_anchor aero_end
+} bind def
+",aero_start aero_outer aero_inner aero_anchor aero_end
+point73,"
+/point73 { % Spring (not completely specified)
+  /featurewidth exch def
+  gsave
+    translate rotate
+    0 0 0
+    .375 1 .1 0 .1
+    filledcircle 
+    1 .1 0 .1 setcmykcolor
+    .15 setlinewidth
+    0 0 moveto 2 -.5 lineto stroke
+  grestore
+} bind def
+",filledcircle
+point754,"
+/point754 { % Lock
+  /featurewidth exch def
+  gsave
+    translate rotate
+    0 0 0 1 setcmykcolor
+    .15 setlinewidth
+    0 .45 moveto .7 0 lineto 0 -.45 lineto -1 -.45 lineto -.2 0 lineto -1 .45 lineto closepath stroke
+  grestore
+} bind def
+",""
+point756,"
+/point756 { % Wreck -- bare or tidal
+  /featurewidth exch def
+  gsave
+    translate rotate
+    .1 setlinewidth
+    0 0 0.25 0 360 arc
+    -1.5 0 moveto -0.25 0 lineto .25 0 moveto 1.5 0 lineto -1.3 0.75 lineto -0.9 0 lineto stroke
+    1.5 0 translate -22.5 rotate -1.4 0 translate 0 0 moveto 0 1 lineto -.375 .71 moveto .75 0 rlineto stroke
+%    1.5 0 translate -1.4 0 moveto 0 1 lineto stroke -1.4 0.71 moveto -0.375 0 rlineto 0 .75 rlineto stroke
+  grestore
+} bind def
+",""
+point759,"
+/point759 { % Wreck -- Submerged
+  /featurewidth exch def
+  gsave
+    translate rotate
+    .1 setlinewidth
+    -1.35 0 moveto 2.7 0 rlineto
+    -.6 -.3 moveto 0 .6 rlineto
+    0 -.4 moveto 0 .8 rlineto
+    .6 -.3 moveto 0 .6 rlineto
+    stroke
+  grestore
+} bind def
+",""
+point801,"
+/point801 { % Storage Tank
+  /featurewidth exch def
+  .375 0 0 0 1
+  filledcircle 
+} bind def
+",filledcircle
+point81,"
+/point81 { % Waterpoint
+  /featurewidth exch def
+  .375 1 .1 0 .1
+  filledcircle 
+} bind def
+",filledcircle
+point82,"
+/point82 { % Waterpoint
+  /featurewidth exch def
+  .375 1 .1 0 .1
+  filledcircle 
+} bind def
+",filledcircle
+point84,"
+/point84 { % Pinnacle
+  /featurewidth exch def
+  gsave
+    translate rotate
+    0 0 0 1 setcmykcolor
+    0 0 .25 0 360 arc fill
+    .1 setlinewidth
+    -.5 0 moveto 1 0 rlineto 0 -.5 moveto 0 1 rlineto stroke
+    45 rotate
+    -.5 0 moveto 1 0 rlineto 0 -.5 moveto 0 1 rlineto stroke
+  grestore
+} bind def
+",""
+point86,"
+/point86 { % Water Tank
+  /featurewidth exch def
+  gsave
+    translate rotate
+    1 .1 0 .1 setcmykcolor
+    -.375 -.375 moveto .75 0 rlineto 0 .75 rlineto -.75 0 rlineto
+    closepath fill
+  grestore
+} bind def
+",""
+point89,"
+/point89 { % Waterfall
+  /featurewidth exch def
+% TODO make wider than river
+  gsave
+    translate rotate
+    .25 setlinewidth
+    1 .1 0 .1 setcmykcolor
+    0 -.5 moveto 0 1 rlineto stroke
+%    closepath fill
+  grestore
+} bind def
+",""
+point948,"
+/point948 { % Flow Direction Arrow
+  /featurewidth exch def
+  gsave
+  translate rotate
+  .1 setlinewidth 1 .1 0 .1 setcmykcolor
+  -.7 -.5 moveto 0 0 lineto -.7 .5 lineto stroke
+  grestore
+} bind def
+",""
+point96,"
+/point96 { % Cave
+  /featurewidth exch def
+  gsave
+  translate rotate
+  0 0 0 1 setcmykcolor
+  -0.575 -0.46 moveto
+  0.37 0 rlineto
+  0 0.595 rlineto
+  0.05 0.135 0.255 180 0 arcn
+  0 -0.595 rlineto
+  0.27 0 rlineto
+  0 0.1 rlineto
+  -0.17 0 rlineto
+  0 0.495 rlineto
+  0 0.135 0.405 0 180 arc
+  0 -0.495 rlineto
+  -0.17 0 rlineto
+  closepath fill
+  grestore
+} bind def
+",""
+point98,"
+/point98 { % Offshore Rock -- bare and/or tidal
+  /featurewidth exch def
+  gsave
+  translate rotate
+  .1 setlinewidth 0 0 0 1 setcmykcolor
+  % TODO get size right
+  -0.5 0 moveto 0 1 rlineto stroke
+  60 rotate -0.5 0 moveto 0 1 rlineto stroke
+  60 rotate -0.5 0 moveto 0 1 rlineto stroke
+  grestore
+} bind def
+",""
+point980,"
+/point980 { % Offshore Rock -- submerged
+  /featurewidth exch def
+  gsave
+  translate rotate
+  .1 setlinewidth 0 0 0 .1 setcmykcolor
+  % TODO get size right
+  -0.5 0 moveto 0 1 rlineto stroke
+  90 rotate -0.5 0 moveto 0 1 rlineto stroke
+  grestore
+} bind def
+",""
+line1000,"
+/line1000 { % GPS tracks
+  /featurewidth exch def
+  [.75 1.5] 0
+  .2
+  .5 .5 0 0
+  dashedline
+} bind def
+",dashedline
+line1001,"
+/line1001 { % GPS tracks
+  /featurewidth exch def
+  1 setlinejoin
+  2
+  1 0 0 0
+  solidline
+} bind def
+",solidline
+line1002,"
+/line1002 { % Tramway
+  /featurewidth exch def
+  [.2 .8] 0
+  .9
+  0 0 0 0.8
+  dashedline
+} bind def
+",dashedline
+point1002,"
+/point1002 { % Barrier
+  /featurewidth exch def
+% TODO make wider than road
+  gsave
+    translate rotate
+%    0 0 0 1 setcmykcolor
+%    0 -.5 moveto 0 1 rlineto stroke
+%    closepath fill
+  .4 setlinewidth
+  0 0 0 1 setcmykcolor
+  0 -.75 moveto 0 1.5 rlineto stroke
+  grestore
+} bind def
+",solidline
+point1003,"
+/point1003 { % Roundabout
+  /featurewidth exch def
+  1.0 0 1 1 0
+  filledcircle 
+} bind def
+",filledcircle
+point1004,"
+/point1004 { % Intersection -- signal
+  /featurewidth exch def
+  1.0 .70 .9 0 0
+  filledcircle 
+} bind def
+",filledcircle
+point1005,"
+/point1005 { % spot time stamp
+  gsave
+  moveto
+  dup stringwidth pop dup 2 div neg 0 rmoveto currentpoint translate
+  dup 0 rlineto 0 3 rlineto neg 0 rlineto closepath
+  gsave 0 0 0 0 setcmykcolor fill grestore
+  0.2 setlinewidth 0 0 0 1 setcmykcolor stroke
+  0 0 moveto show
+  grestore
+} bind def
+",""
+point1006,"
+/point1006 { % public toilet unisex
+  gsave
+  pop moveto pop
+  0 0 0 1 setcmykcolor
+  currentpoint translate .01 -.01 scale
+  130.95011 46.585770 moveto currentpoint 46.54521 0 360 arc
+  124.50539 388.15534 moveto
+  124.50539 549.98933 lineto
+  124.26193 579.39154 80.494976 579.39154 80.108304 549.98933 curveto
+  80.108304 388.15534 lineto
+  22.821751 388.15534 lineto
+  84.404788 171.89962 lineto
+  74.379644 171.89962 lineto
+  38.575540 295.06510 lineto
+  29.524278 322.30474 -7.3109962 311.27714 1.3392857 282.17574 curveto
+  41.439860 148.98509 lineto
+  46.051436 133.68965 65.32836 106.68061 98.726432 106.02037 curveto
+  128.80188 106.02037 lineto
+  163.17384 106.02037 lineto
+  195.60950 106.68061 214.96663 133.91881 220.46041 148.98509 curveto
+  260.56101 282.17574 lineto
+  268.69571 311.13390 232.15259 323.02082 223.32473 295.0651 curveto
+  187.52063 171.89962 lineto
+  176.06331 171.89962 lineto
+  239.07855 388.15534 lineto
+  180.35980 388.15534 lineto
+  180.35980 549.98933 lineto
+  180.81810 579.39154 137.22302 579.2483 137.39487 549.98933 curveto
+  137.39487 388.15534 lineto
+  124.50539 388.15534 lineto
+  closepath fill
+  511.90545 46.58577 moveto currentpoint 46.54521 0 360 arc
+  462.49589 106.02037 moveto
+  426.70613 106.02037 403.77713 137.00793 403.77713 167.60313 curveto
+  403.77713 310.81886 lineto
+  403.44773 338.80318 443.74313 338.80318 443.87777 310.81886 curveto
+  443.87777 179.06038 lineto
+  453.90289 179.06038 lineto
+  453.90289 542.82853 lineto
+  453.28133 580.80938 506.95025 579.72094 506.89297 542.82853 curveto
+  506.89297 330.86906 lineto
+  515.48597 330.86906 lineto
+  515.48597 542.82853 lineto
+  516.18773 579.72094 570.13733 580.80938 569.90817 542.82853 curveto
+  569.90817 179.06038 lineto
+  579.93333 179.06038 lineto
+  579.93333 310.81886 lineto
+  579.46073 339.01802 619.54701 339.01802 620.03389 310.81886 curveto
+  620.03389 167.60313 lineto
+  619.46109 137.00793 595.67281 106.56889 559.88305 106.02037 curveto
+  462.49589 106.02037 lineto
+  closepath fill
+  297.79132 5.7684445 moveto
+  297.79132 568.6084745 lineto
+  350.788085 568.6084745 lineto
+  350.788085 5.7684445 lineto
+  closepath fill
+  grestore
+} bind def
+",""
+point1007,"
+/point1007 { % Church
+  /featurewidth exch def
+  gsave
+    translate rotate
+    0 0 0 1 setcmykcolor
+    0.6
+    dup neg dup neg moveto dup dup lineto dup dup neg lineto neg dup lineto closepath fill
+    0.2 setlinewidth
+    0 0.6 moveto 0 1.2 rlineto 0 -0.6 rlineto -0.6 0 rlineto 1.2 0 rlineto stroke
+  grestore
+} bind def
+",""
