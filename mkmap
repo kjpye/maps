@@ -457,8 +457,10 @@ sub draw_areas(Str $table, Str $columns, Str $geomcol) {
 
   my @columns     = $columns.split: ':';
   my $selectcolumns = @columns.join: ', ';
+dd $selectcolumns;
   my $numfeatcols = +@columns;
 
+dd @columns;
   my $sth = $dbh.prepare("SELECT $selectcolumns, st_astext($geomcol) as shape
                           FROM $table
                           WHERE $geomcol && $rect
@@ -467,7 +469,7 @@ sub draw_areas(Str $table, Str $columns, Str $geomcol) {
   if $sth.execute {
     
     while my @row = $sth.fetchrow_array {
-       my $featuretype = '';
+      my $featuretype = '';
       for ^$numfeatcols {
         $featuretype ~= @row.shift ~ ':';
       }
@@ -2357,6 +2359,7 @@ sub draw_objects(Real $xoff, Real $yoff, Real $slope) {
           when 'ga_point'       { draw_ga_points\           ($table,                                              ); }
           when 'spotheight'     { draw_spot_heights\        (                                                     ); }
           when 'roadpoint'      { draw_roadpoints\          (                                                     ); }
+          when 'treeden'        { draw_treeden\             (                                                     ); }
           when 'graticule'      { draw_graticule\           (                                                     ); }
           when 'grid'           { draw_grid\                (                                                     ); }
           when 'text'           { draw_text\                ($table, $typecolumn, $geomcol,             $widthcol          ); }

@@ -1,0 +1,10 @@
+DROP TABLE symbols;
+
+CREATE TABLE symbols (
+  featuretype text,
+  symbol      int  default 0,
+  type        text,
+  dbtable     text
+);
+
+\copy symbols from 'symbols.csv' csv;

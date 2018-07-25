@@ -1,0 +1,16 @@
+drop table displayorder;
+
+create table displayorder (
+  source        text default '',
+  featurename   text not null,
+  drawtype      text not null,
+  tablename     text default '',
+  featurecolumn text default '',
+  defaultsymbol int  default 0,
+  displayorder  int  default 0,
+  geomcol       text default 'geom',
+  orientcol     text default '',
+  widthcol      text default ''
+);
+
+\copy displayorder(source, featurename, drawtype, tablename, featurecolumn, defaultsymbol, displayorder) from 'displayorder.csv' csv header;
