@@ -4,7 +4,7 @@ Code to process free data from the Australian and Victorian (and possibly other)
 
 ## Contents ##
 
-`mkmap` is a perl&nbsp;6 script to access a Postgresql database containing data available from various sources and generate a PostScript map of a particular area.
+`mkmap` is a perl 6 script to access a Postgresql database containing data available from various sources and generate a PostScript map of a particular area.
 
 It's not perfect by any means, the main defect at the moment is that there are essentially no annotations related to data from VicMap, and all data is displayed no matter what scale you are generating, which makes small scale maps rather crowded.
 
