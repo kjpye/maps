@@ -1,5 +1,5 @@
 source,featurename,drawtype,tablename,featurecolumn,defaultsymbol,displayorder
-,vm_tree_density,treeden,vm_tree_density,,,-1000
+,vm_tree_density,treeden,vm_tree_density,,,1000
 vm,vm_tracks,vm_line,vm_tracks,,0,0
 vm,vm_mineareas,vm_line,vm_mineareas,,0,0
 vm,vm_reserves,vm_line,vm_reserves,,0,0

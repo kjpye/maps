@@ -7,7 +7,7 @@ Tables:
 	address
 
 Commands:
-	/usr/lib/postgresql10/bin/shp2pgsql -c -D -s 4326 address.shp vm_address | psql maps
+	/usr/lib/postgresql10/bin/shp2pgsql -c -D -s 4326 -W latin1 address.shp vm_address | psql maps
 
 VMELEV
 ======
@@ -18,7 +18,7 @@ Tables:
 	el_contour
 
 Commands:
-	/usr/lib/postgresql10/bin/shp2pgsql -c -D -s 4326 el_contour.shp vm_el_contour | psql maps
+	/usr/lib/postgresql10/bin/shp2pgsql -c -D -s 4326 -W latin1 el_contour.shp vm_el_contour | psql maps
 
 VMHYDRO
 =======
@@ -36,14 +36,14 @@ Tables:
 	hy_water_struct_point
 
 Commands:
-	/usr/lib/postgresql10/bin/shp2pgsql -c -D -s 4326 hy_navigation_line.shp vm_hy_navigation_line | psql maps
-	/usr/lib/postgresql10/bin/shp2pgsql -c -D -s 4326 hy_navigation_point.shp vm_hy_navigation_point | psql maps
-	/usr/lib/postgresql10/bin/shp2pgsql -c -D -s 4326 hy_water_area_polygon.shp vm_hy_water_area_polygon | psql maps
-	/usr/lib/postgresql10/bin/shp2pgsql -c -D -s 4326 hy_watercourse.shp vm_hy_watercourse | psql maps
-	/usr/lib/postgresql10/bin/shp2pgsql -c -D -s 4326 hy_water_point.shp vm_hy_water_point | psql maps
-	/usr/lib/postgresql10/bin/shp2pgsql -c -D -s 4326 hy_water_struct_area_polygon.shp vm_hy_water_struct_area_polygon | psql maps
-	/usr/lib/postgresql10/bin/shp2pgsql -c -D -s 4326 hy_water_struct_line.shp vm_hy_water_struct_line | psql maps
-	/usr/lib/postgresql10/bin/shp2pgsql -c -D -s 4326 hy_water_struct_point.shp vm_hy_water_struct_point | psql maps
+	/usr/lib/postgresql10/bin/shp2pgsql -c -D -s 4326 -W latin1 hy_navigation_line.shp vm_hy_navigation_line | psql maps
+	/usr/lib/postgresql10/bin/shp2pgsql -c -D -s 4326 -W latin1 hy_navigation_point.shp vm_hy_navigation_point | psql maps
+	/usr/lib/postgresql10/bin/shp2pgsql -c -D -s 4326 -W latin1 hy_water_area_polygon.shp vm_hy_water_area_polygon | psql maps
+	/usr/lib/postgresql10/bin/shp2pgsql -c -D -s 4326 -W latin1 hy_watercourse.shp vm_hy_watercourse | psql maps
+	/usr/lib/postgresql10/bin/shp2pgsql -c -D -s 4326 -W latin1 hy_water_point.shp vm_hy_water_point | psql maps
+	/usr/lib/postgresql10/bin/shp2pgsql -c -D -s 4326 -W latin1 hy_water_struct_area_polygon.shp vm_hy_water_struct_area_polygon | psql maps
+	/usr/lib/postgresql10/bin/shp2pgsql -c -D -s 4326 -W latin1 hy_water_struct_line.shp vm_hy_water_struct_line | psql maps
+	/usr/lib/postgresql10/bin/shp2pgsql -c -D -s 4326 -W latin1 hy_water_struct_point.shp vm_hy_water_struct_point | psql maps
 
 VMPROP
 ======
@@ -54,7 +54,7 @@ Tables:
 	property
 
 Commands:
-	/usr/lib/postgresql10/bin/shp2pgsql -c -D -s 4326 property.shp vm_property | psql maps
+	/usr/lib/postgresql10/bin/shp2pgsql -c -D -s 4326 -W latin1 property.shp vm_property | psql maps
 		(gives errors but sill imports what we want)
 
 VMTRANS
@@ -79,14 +79,14 @@ Tables:
 	tr_road_locality_section
 
 Commands:
-	/usr/lib/postgresql10/bin/shp2pgsql -c -D -s 4326 tr_air_infra_area_polygon.shp vm_tr_air_infra_area_polygon | psql maps
-	/usr/lib/postgresql10/bin/shp2pgsql -c -D -s 4326 tr_air_infra_point.shp vm_tr_air_infra_point | psql maps
-	/usr/lib/postgresql10/bin/shp2pgsql -c -D -s 4326 tr_airport_area_polygon.shp vm_tr_airport_area_polygon | psql maps
-	/usr/lib/postgresql10/bin/shp2pgsql -c -D -s 4326 tr_airport_infrastructure.shp vm_tr_airport_infrastructure | psql maps
-	/usr/lib/postgresql10/bin/shp2pgsql -c -D -s 4326 tr_rail.shp vm_tr_rail | psql maps
-	/usr/lib/postgresql10/bin/shp2pgsql -c -D -s 4326 tr_rail_infrastructure.shp vm_tr_rail_infrastructure | psql maps
-	/usr/lib/postgresql10/bin/shp2pgsql -c -D -s 4326 tr_road.shp vm_tr_road | psql maps
-	/usr/lib/postgresql10/bin/shp2pgsql -c -D -s 4326 tr_road_infrastructure.shp vm_tr_road_infrastructure | psql maps
+	/usr/lib/postgresql10/bin/shp2pgsql -c -D -s 4326 -W latin1 tr_air_infra_area_polygon.shp vm_tr_air_infra_area_polygon | psql maps
+	/usr/lib/postgresql10/bin/shp2pgsql -c -D -s 4326 -W latin1 tr_air_infra_point.shp vm_tr_air_infra_point | psql maps
+	/usr/lib/postgresql10/bin/shp2pgsql -c -D -s 4326 -W latin1 tr_airport_area_polygon.shp vm_tr_airport_area_polygon | psql maps
+	/usr/lib/postgresql10/bin/shp2pgsql -c -D -s 4326 -W latin1 tr_airport_infrastructure.shp vm_tr_airport_infrastructure | psql maps
+	/usr/lib/postgresql10/bin/shp2pgsql -c -D -s 4326 -W latin1 tr_rail.shp vm_tr_rail | psql maps
+	/usr/lib/postgresql10/bin/shp2pgsql -c -D -s 4326 -W latin1 tr_rail_infrastructure.shp vm_tr_rail_infrastructure | psql maps
+	/usr/lib/postgresql10/bin/shp2pgsql -c -D -s 4326 -W latin1 tr_road.shp vm_tr_road | psql maps
+	/usr/lib/postgresql10/bin/shp2pgsql -c -D -s 4326 -W latin1 tr_road_infrastructure.shp vm_tr_road_infrastructure | psql maps
 
 VMVEG
 =====
@@ -99,6 +99,6 @@ Tables:
 	tree_density_scattered
 
 Commands:
-	/usr/lib/postgresql10/bin/shp2pgsql -c -D -s 4326 tree_density_dense.shp vm_tree_density_dense | psql maps
-	/usr/lib/postgresql10/bin/shp2pgsql -c -D -s 4326 tree_density_medium.shp vm_tree_density_medium | psql maps
-	/usr/lib/postgresql10/bin/shp2pgsql -c -D -s 4326 tree_density_scattered.shp vm_tree_density_scattered | psql maps
+	/usr/lib/postgresql10/bin/shp2pgsql -c -D -s 4326 -W latin1 tree_density_dense.shp vm_tree_density | psql maps
+	/usr/lib/postgresql10/bin/shp2pgsql -a -D -s 4326 -W latin1 tree_density_medium.shp vm_tree_density | psql maps
+	/usr/lib/postgresql10/bin/shp2pgsql -a -D -s 4326 -W latin1 tree_density_scattered.shp vm_tree_density | psql maps

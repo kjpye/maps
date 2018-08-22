@@ -2,7 +2,7 @@ drop table displayorder;
 
 create table displayorder (
   source        text default '',
-  featurename   text not null,
+  featurename   text default '',
   drawtype      text not null,
   tablename     text default '',
   featurecolumn text default '',
