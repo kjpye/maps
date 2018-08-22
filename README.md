@@ -6,12 +6,14 @@ maps from that data.
 
 ##Contents
 
-`mkmap` is a perl6 script to access a Postgresql database
-containing data available from various sources and generate
+`drawvic` is a perl5 script to access a Postgresql database
+containing data available from data.vic.gov.au and generate
 a PostScript map of a particular area.
 
+`drawvic.pl6` is a perl6 version of the same script which goes back to its roots as a script used to print data from Geosciene Australia's 1:250000 mapping.
+
 It's not perfect by any means, the main defect at the moment
-is that there are essentially no annotations related to data except for specific annotation tables, and
+is that there are essentially no annotations related to data from VicMap, and
 all data is displayed no matter what scale you are generating,
 which makes small scale maps rather crowded.
 
@@ -26,21 +28,25 @@ How to populate the VicMap database.
   * Goto Search, and enter what you want in the "what" field. Useful things are "tr_road", tr_rail", "hy_water", "el_ground", "el_contour".
   * Select the databases you want. The useful databases (i.e. those which the scripts know how to handle) include tr_road, tr_road_infrastructure, tr_road_locality, hy_water_area_polygon, hy_water_point, hy_water_struct_area_polygon, hy_water_struct_line, hy_water_struct_point, hy_watercourse, tr_rail, tr_rail_infrastructure, el_contour.
   * Clock on "proceed to order".
-  * Select the area you want the data for. ("Whole of State" could generate rather large files, but they're manageable except for things like tree_density which contain great detail.) I usually use "Local Government Area" and wherever I'm interested in at the moment. (Note that the product of the number of datasets, and the number of areas must be no more then 12.)
+  * Select the area you want the data for. ("Whole of State" could generate
+  * rather large files, but they're manageable except for things like
+  * tree_density which contain great detail.) I usually use "Local Government
+  * Area" and wherever I'm interested in at the moment. (Note that the product
+  * of the number of datasets, and the number of areas must be no more then 12.)
   * Select the buffer zone (i.e. how far outside the selected area you want data for), the format ("ESRI shapefile"), projection ("Geographicals on GDA-94") and delivery method
   * Click on "Apply to All".
   * Now click "Submit", and "Submit" again.
-  * When your order is ready, you will receive an email with the link to the data, which is valid for ten days. When the servers are busy this might take up to an hour or two. Sometimes, for very large whole-of-state queries it will link to an ftp site containing multiple files. Download the file with the correct projection.
+  * When your order is ready, you will receive an email with the link to the data, which is valid for ten days. When the servers are busy this might take up to an hour or two.
 
 2. Unpack the data, and populate the database.
 
   * Find a convenient directory and download the zip files to that directory.
   * Unzip the data.
   * Work out where the .shp files have been put.
-  * Create a postgresql database: "createdb maps".
+  * Create a postgresql database: "createdb vicmap".
   * Ensure that postgis has been installed in that database.
   * For each shp file (except for things like EXTRACT_POLYGON which simply
-  * contains the boundary of the data you have), run "shp2psql -a -D -s 4326 <shapefile> [<tablename>] | psql maps", except, the first time you use a particular table, use "-c" instead of "-a". The tablename is optional, but I usually create the tables as vm_<name> to avoid conflicts. Some of the other code assumes this.
+  * contains the boundary of the data you have), run "shp2psql -a -D -s 4326 <shapefile> [<tablename>] | psql vicmap", except, the first time you use a particular table, use "-c" instead of "-a". The tablename is optional, but I usually create the tables as vm_<name> to avoid conflicts. Some of the other code assumes this.
   * Fix up some database tables. The code assumes that certain types of tables have certain columns, and they don't always exist, so you need to create those columns with a default value, usually zero: "psql vicmap -c 'alter table tr_road_infrastructure add column width float default 0'". [Currently unnecessary]
   * You will also need to populate the database with the postscript definitions of all the symbols (the symbols_ga table) and the mapping from Vicmap objects to those symbols (the vicmap.symbols table): "psql -d vicmap -f mksymbols_ga" and "psql -d vicmap -f mkvicmap_symbols". These will both give errors the first time they are run as they delete and then recreate tables.
 
@@ -58,12 +64,12 @@ I have used http://download.geofabrik.de/australia-oceania-latest.osm.pbf to get
 
 ##Usage
 
-`mkmap lat=dd.ddd long=ddd.ddd`
+`perl6 drawvic.pl6 lat=dd.ddd long=ddd.ddd`
 
 will produce PostScript on stdout (plus lots of progress information on stderr)
 which has the specified latitude and longitude at the bottom left hand corner.
 
-Each script will process ~/.mkmaprc and .mkmaprc as a list of options before
+Each script will process ~/.drawrc and .drawrc as a list of options before
 parsing the command line options. Options specified later will override earlier
 options.
 
@@ -113,11 +119,11 @@ Other options:
 
 `north=mmmmmm` -- see northing
 
-`zone=55H` -- The UTM zone of the map. Must be specified if eastings and northings are specified for the lower left corner, otherwise defaults to the zone of the lower left corner.
-
 `width=15m` -- The width of the map in decimal degrees (or decimal minutes if "m" appended).
 
 `height=15m` -- The height of the map in decimal degrees (or decimal minutes if "m" appended).
+
+`zone=55H` -- The UTM zone of the map. Must be specified if eastings and northings are specified for the lower left corner, otherwise defaults to the zone of the lower left corner.
 
 `scale=30000` -- The scale of the map. (May be specified as 1:30000 also.) Defaults to 1:25000.
 
