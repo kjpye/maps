@@ -1,10 +1,10 @@
-#Maps#
+#Maps
 
 Code to process free data from the Australian and Victorian
 (and possibly other) government web sites, and produce useful
 maps from that data.
 
-##Contents##
+##Contents
 
 `mkmap` is a perl6 script to access a Postgresql database
 containing data available from various sources and generate
@@ -15,9 +15,9 @@ is that there are essentially no annotations related to data except for specific
 all data is displayed no matter what scale you are generating,
 which makes small scale maps rather crowded.
 
-##Database##
+##Database
 
-###VicMap###
+###VicMap
 How to populate the VicMap database.
 
 1. Download the needed data for the area of concern.
@@ -44,19 +44,19 @@ How to populate the VicMap database.
   * Fix up some database tables. The code assumes that certain types of tables have certain columns, and they don't always exist, so you need to create those columns with a default value, usually zero: "psql vicmap -c 'alter table tr_road_infrastructure add column width float default 0'". [Currently unnecessary]
   * You will also need to populate the database with the postscript definitions of all the symbols (the symbols_ga table) and the mapping from Vicmap objects to those symbols (the vicmap.symbols table): "psql -d vicmap -f mksymbols_ga" and "psql -d vicmap -f mkvicmap_symbols". These will both give errors the first time they are run as they delete and then recreate tables.
 
-###GeoScience Australia 1:250000###
+###GeoScience Australia 1:250000
 Data can be retrieved from data.gov.au by searching for the name of the map and selecting the correct map: '<name> 1:250000 GIS Dataset'. Click on "Download the file (pGDB). (You can also click on "Link to Map Product" and "Go to resource". This enables you to download the geoPDF version which can be displayed using any PDF viewer.
 
 You can unzip the resulting file and then process the data. The make_gis script show one way of doing this.
 
-###OpenStreetMap###
+###OpenStreetMap
 The script can utilise OSM for displaying roads.
 
 To download the data, try getting an extract fromn the osm database from somewhere, and running something like "osm2pgsql -l -d <database> ~/Downloads.australia.extract.osm.pbf".
 
 I have used http://download.geofabrik.de/australia-oceania-latest.osm.pbf to get all of Australia.
 
-##Usage##
+##Usage
 
 `mkmap lat=dd.ddd long=ddd.ddd`
 
@@ -145,7 +145,7 @@ Other options:
 
 `file=include.cfg` -- Process the specified file as options.
 
-##Features available##
+##Features available
 
 drawvic currently knows how to draw the following features, assuming the relevant data is in the database:
 * vm_el_contour -- contours
