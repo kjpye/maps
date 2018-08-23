@@ -2436,7 +2436,7 @@ sub do_dependency($sth is copy, Str $dependency) {
 
 set_papersizes();
 
-for %*ENV<HOME> ~ '/.drawrc', '.drawrc' -> $cfgfile {
+for %*ENV<HOME> ~ '/.mkmap.rc', '.mkmap.rc' -> $cfgfile {
   note "Handling config file $cfgfile";
   if my $opt = $cfgfile.IO.open {
     for $opt.lines -> $line {
