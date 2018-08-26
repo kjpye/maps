@@ -46,7 +46,7 @@ my $orientation = 'landscape';
 
 my @annotations;
 
-sub set_papersizes() {
+sub set-papersizes() {
   # Keys are papersize, values are a string with
   # width and length in mm separated by commas.
   %papersizes = (
@@ -73,7 +73,7 @@ sub set_papersizes() {
 
 my ($xoffset, $yoffset, $xmin, $ymin); # where the map actually goes on the page
 
-sub add_annotation(Real $long, Real $lat, Real $xoffset, Real $yoffset, Str $string) {
+sub add-annotation(Real $long, Real $lat, Real $xoffset, Real $yoffset, Str $string) {
     my $annotation = {};
     %($annotation)<long>    = $long;
     %($annotation)<lat>     = $lat;
@@ -86,14 +86,13 @@ sub add_annotation(Real $long, Real $lat, Real $xoffset, Real $yoffset, Str $str
 
 my ($leftmarginwidth, $lowermarginwidth, $rightmarginwidth, $uppermarginwidth)
     = (30, 35, 30, 25); # negative to bleed over page boundary
-my ($imagewidth, $imageheight);
 my ($gridwidth, $graticulewidth);
 my ($gridheight, $graticuleheight);
 my $db = 'vicmap'; # which database to access
-my $grid_spacing = 1000; # spacing betwen grid lines in metres
-my $graticule_spacing = 1.0/60; # spacing between graticule lines in degrees
+my $grid-spacing = 1000; # spacing betwen grid lines in metres
+my $graticule-spacing = 1.0/60; # spacing between graticule lines in degrees
 my (Bool $ongrid, Bool $ongraticule) = (False, False);
-my (Bool $bleedright, Bool $bleedtop) = (False, False);
+my (Bool $bleedright, Bool $bleedleft, Bool $bleedtop, Bool $bleedbottom) = (False, False, False, False);
 my %emphasise-roads;
 my $outputfile;
 
@@ -106,7 +105,7 @@ sub process-option($arg is copy) {
                  <[, \s]>+ ( \-? <[\d .]>+ )
                  <[, \s]>+ (.*)
                / {
-	add_annotation(+$0, +$1, +$2, +$3, ~$4);
+	add-annotation(+$0, +$1, +$2, +$3, ~$4);
 	return;
     }
     if $arg ~~ m:i/ ^ emph '=' (.*)/ {
@@ -132,12 +131,16 @@ sub process-option($arg is copy) {
 	$orientation = $0;
     }
     when m:i/ bleedright '=' (.*) / {
-	$bleedright = ?$0;
-	$rightmarginwidth = -20 if $bleedright;
+	$bleedright = ?+$0;
     }
-    when m:i/ bleedtop '=' (.*)/ {
-	$bleedtop = ?$0;
-	$uppermarginwidth = -10 if $bleedtop; # FIXME
+    when m:i/ bleedleft '=' (.*)/ {
+	$bleedleft = ?+$0;
+    }
+    when m:i/ bleedtop '=' (.*) / {
+	$bleedtop = ?+$0;
+    }
+    when m:i/ bleedbottom '=' (.*)/ {
+	$bleedbottom = ?+$0;
     }
     when m:i/^leftmargin[width]? '=' (\d+[\.\d+]?)$/ {
         $leftmarginwidth = $0;
@@ -203,12 +206,12 @@ sub process-option($arg is copy) {
         note "scale set to $scale" if $debug > 1;
     }
     when m:i/ ^ grid[spacing]? \= (\d+) (k?) m?$/ {
-	$grid_spacing = $0;
-	$grid_spacing *= 1000 if $1.defined && $1.lc eq 'k';
+	$grid-spacing = $0;
+	$grid-spacing *= 1000 if $1.defined && $1.lc eq 'k';
     }
     when m:i/^ graticule[spacing]? \= (\d+) (<[dDmM]>?) $/ {
-	$graticule_spacing = $0;
-	$graticule_spacing /= 60 unless $1.lc eq 'd';
+	$graticule-spacing = $0;
+	$graticule-spacing /= 60 unless $1.lc eq 'd';
     }
     when m:i/^[no]?display[all]? '=' (\S+)$/ {
         @displays.push: $arg;
@@ -243,7 +246,7 @@ sub process-option($arg is copy) {
   }
 }
 
-sub postscript_encode_font(Str $font) {
+sub postscript-encode-font(Str $font) {
   print qq:to 'EOF';
     /{$font} findfont
     dup length dict begin
@@ -255,7 +258,7 @@ sub postscript_encode_font(Str $font) {
     EOF
 }
 
-sub postscript_prefix() {
+sub postscript-prefix() {
   print qq :to 'EOF';
 \%!PS-Adobe
 \%! $copyright
@@ -265,13 +268,13 @@ EOF
 
   say "$paperheight 0 translate 90 rotate" if $orientation eq 'landscape';
 
-  postscript_encode_font('Helvetica');
-  postscript_encode_font('Helvetica-Narrow');
-  postscript_encode_font('Helvetica-Narrow-Oblique');
-  postscript_encode_font('Helvetica-Narrow-BoldOblique');
-  postscript_encode_font('Helvetica-BoldOblique');
+  postscript-encode-font('Helvetica');
+  postscript-encode-font('Helvetica-Narrow');
+  postscript-encode-font('Helvetica-Narrow-Oblique');
+  postscript-encode-font('Helvetica-Narrow-BoldOblique');
+  postscript-encode-font('Helvetica-BoldOblique');
 
-  if ($lowermarginwidth > 20) {
+  if (!$bleedbottom and $lowermarginwidth > 20) {
     print qq :to 'EOF'
       /Helvetica-Narrow-Latin1 3 selectfont
       8 8 moveto
@@ -281,7 +284,7 @@ EOF
   }
 }
 
-sub read_points (Str $shape) {
+sub read-points (Str $shape) {
   if $shape ~~ /^POLYGON\(\(/ {
     $shape.comb(/ <[+-]>? \d+ [ '.' \d+ ]/ );
   } else {
@@ -289,8 +292,8 @@ sub read_points (Str $shape) {
   }
 }
 
-my $point_count = 0;
-my $object_count = 0;
+my $point-count = 0;
+my $object-count = 0;
 my $xscale;
 my $yscale;
     
@@ -300,7 +303,7 @@ sub grid2page(Real $xin, Real $yin) {
 }
 
 sub latlon2page($xin, $yin) {
-    ++$point_count;
+    ++$point-count;
     my ($tzone, $xout, $yout) = |latlon-to-utm('WGS-84', :$zone, $yin, $xin);
 # inline grid2page for speed
     #return grid2page($xout, $yout);
@@ -372,56 +375,56 @@ sub latlon2string($val is copy, $dirs, $full is copy) {
 
 my Bool $moveto;
 my Int  $quadrant = -1;
-my Real $prev_x;
-my Real $prev_y;
+my Real $prev-x;
+my Real $prev-y;
 
-sub plot_point(Real $x, Real $y, Bool $moveto) {
+sub plot-point(Real $x, Real $y, Bool $moveto) {
     my ($x1, $y1) = latlon2page $x, $y;
     $TMP.print: sprintf "%.6g %.6g %s\n", $x1, $y1, $moveto ?? 'moveto' !! 'lineto';
 }
 
-my $prev_moveto;
-sub plot_previous_point() {
-    if $prev_x.defined and $prev_y.defined && !$prev_moveto {
-	plot_point($prev_x, $prev_y, $prev_moveto);
-	$prev_x = (Real);
-	$prev_y = (Real);
+my $prev-moveto;
+sub plot-previous-point() {
+    if $prev-x.defined and $prev-y.defined && !$prev-moveto {
+	plot-point($prev-x, $prev-y, $prev-moveto);
+	$prev-x = (Real);
+	$prev-y = (Real);
     }
 }
 
 my ($minx, $miny, $maxx, $maxy);
 
-sub add_point(Real $x, Real $y) {
-    my $new_quadrant = 5;
+sub add-point(Real $x, Real $y) {
+    my $new-quadrant = 5;
 
     return unless $x.defined and $y.defined;
 
-    $new_quadrant -= 1 if $x < $minx;
-    $new_quadrant += 1 if $x > $maxx;
-    $new_quadrant += 3 if $y < $miny;
-    $new_quadrant -= 3 if $y > $maxy;
+    $new-quadrant -= 1 if $x < $minx;
+    $new-quadrant += 1 if $x > $maxx;
+    $new-quadrant += 3 if $y < $miny;
+    $new-quadrant -= 3 if $y > $maxy;
     
-    if ($quadrant == 5 || $quadrant != $new_quadrant) {
-	plot_previous_point() if $quadrant != 5;
-	plot_point($x, $y, $moveto);
-	$prev_x = Nil;
-	$prev_y = Nil;
+    if ($quadrant == 5 || $quadrant != $new-quadrant) {
+	plot-previous-point() if $quadrant != 5;
+	plot-point($x, $y, $moveto);
+	$prev-x = Nil;
+	$prev-y = Nil;
 	$moveto = False;
     } else {
-	$prev_x = $x;
-	$prev_y = $y;
-	$prev_moveto = $moveto;
+	$prev-x = $x;
+	$prev-y = $y;
+	$prev-moveto = $moveto;
     }
-    $quadrant = $new_quadrant;
+    $quadrant = $new-quadrant;
 }
 
 sub put-comment($comment) {
   $TMP.print: "% $comment\n";
 }
 
-sub put_line(Str $shape is copy, Str $func, $featurewidth = '') {
-    $prev_x = Nil;
-    $prev_y = Nil;
+sub put-line(Str $shape is copy, Str $func, $featurewidth = '') {
+    $prev-x = Nil;
+    $prev-y = Nil;
 
     my @segments = $shape.split: '),(';
 #$TMP.print: "% ",  $shape, "\n";
@@ -431,26 +434,26 @@ $TMP.print: "% Segment ", $segno++, "\n";
 	$quadrant = -1;
 	$moveto = True;
         for $segment.comb: /\-?<[\d\.]>+/ -> $x, $y { # just extract the numbers and ignore anything else
-	  add_point(+$x, +$y);
+	  add-point(+$x, +$y);
 	}
-	plot_previous_point() if $quadrant != 5;
+	plot-previous-point() if $quadrant != 5;
     }
-    plot_previous_point() if $quadrant != 5;
+    plot-previous-point() if $quadrant != 5;
     $TMP.say: "$featurewidth $func";
     %dependencies{$func}++;
 }
 
 my $dbh;
-my $sth_sym;
-my $sth_symb;
+my $sth-sym;
+my $sth-symb;
 
 use experimental :cached;
-sub get_symbol (Str $type, Str $ftype) is cached {
+sub get-symbol (Str $type, Str $ftype) is cached {
   my $symbol = 0;
   note "Looking for {$ftype}({$type})" if $debug >= 10;
-  $sth_sym.execute($type, $ftype);
+  $sth-sym.execute($type, $ftype);
   my $sym = 0;
-  while my @row = $sth_sym.fetchrow_array {
+  while my @row = $sth-sym.fetchrow_array {
     $sym = @row[0].Int;
     next unless $sym;
     $symbol = $sym;
@@ -467,7 +470,7 @@ my $rect;
 
 my %areafeaturetypes;
 
-sub draw_areas(Str $table, Str $columns, Str $geomcol) {
+sub draw-areas(Str $table, Str $columns, Str $geomcol) {
   note "$table areas..." if $debug >= 1;
 
   my @columns     = $columns.split: ':';
@@ -493,8 +496,8 @@ sub draw_areas(Str $table, Str $columns, Str $geomcol) {
     if $featuretype ~~ /^\d+$/ {
       $symbol = $featuretype;
     } else {
-      $sth_symb.execute($table, $featuretype, 'area');
-      while my @syms = $sth_symb.fetchrow_array {
+      $sth-symb.execute($table, $featuretype, 'area');
+      while my @syms = $sth-symb.fetchrow_array {
         $symbol = @syms[0].Int;
       }
     }
@@ -502,15 +505,15 @@ sub draw_areas(Str $table, Str $columns, Str $geomcol) {
       my $shape = @row.shift;
       
       next unless $symbol > 0;
-      ++$object_count;
-      put_line($shape.Str, "area$symbol", );
+      ++$object-count;
+      put-line($shape.Str, "area$symbol", );
     }
   } else {
     note "Table $table not found";
   }
 }
 
-sub draw_ga_areas(Str $table) {
+sub draw-ga-areas(Str $table) {
   note "$table areas..." if $debug >= 1;
   my $geomcol = %defaults<areageometry>;
   $geomcol = 'shape';
@@ -526,16 +529,16 @@ sub draw_ga_areas(Str $table) {
       my $shape = @row[1];
       
       next unless $symbol > 0;
-      ++$object_count;
-      put_line($shape, "area$symbol");
+      ++$object-count;
+      put-line($shape, "area$symbol");
     }
   } else {
     note "$table not found";
   }
 }
 
-sub draw_treeden() {
-  note "tree_density areas..." if $debug >= 1;
+sub draw-treeden() {
+  note "tree-density areas..." if $debug >= 1;
   my $geomcol = %defaults{'areageometry'};
   $geomcol = 'geom';
   my $sth = $dbh.prepare("SELECT ftype_code, tree_den, st_astext($geomcol) as shape
@@ -551,11 +554,11 @@ sub draw_treeden() {
       my $density = @row[1];
       my $shape = @row[2];
    
-      my $symbol = get_symbol('area', ([~] $ftype, '_', $density).Str.lc);
+      my $symbol = get-symbol('area', ([~] $ftype, '_', $density).Str.lc);
       
       next unless $symbol > 0;
-      ++$object_count;
-      put_line($shape, "area$symbol");
+      ++$object-count;
+      put-line($shape, "area$symbol");
     }
   } else {
     note "Table tree_density not found";
@@ -593,7 +596,7 @@ sub altticks(Real $x, Real $y, Real $angle, Real $width is rw, Real $thick, Str 
     $tickdirection = ! $tickdirection;
 }
 
-sub follow_line(Str $shape, $spacing, $func, Real $width, Real $thick, Str $colour) {
+sub follow-line(Str $shape, $spacing, $func, Real $width, Real $thick, Str $colour) {
     my ($oldx, $oldy);
     my $counter = $spacing / 2;
 
@@ -636,41 +639,41 @@ sub follow_line(Str $shape, $spacing, $func, Real $width, Real $thick, Str $colo
 my %funnylines = ();
 
 %funnylines<57> = sub ($shape) { # Depression contour (index)
-  put_line($shape, "line57A", 0);
-  follow_line($shape, 4, &leftticks, .3, .2, '0 .59 1 .18');
+  put-line($shape, "line57A", 0);
+  follow-line($shape, 4, &leftticks, .3, .2, '0 .59 1 .18');
 }
 %funnylines<58> = sub ($shape) { # Depression contour (standard)
-  put_line($shape, "line58A", 0);
-  follow_line($shape, 4, &leftticks, .3, .15, '0 .59 1 .18');
+  put-line($shape, "line58A", 0);
+  follow-line($shape, 4, &leftticks, .3, .15, '0 .59 1 .18');
 }
 %funnylines<31> = sub ($shape) {} # Embankment
 %funnylines<542> = sub ($shape) { # Powerline
   $powerlinestart = 1;
-  follow_line($shape, .5, &powerline, .5, .2, '1 .73 0 0');
+  follow-line($shape, .5, &powerline, .5, .2, '1 .73 0 0');
   $TMP.say: "1 .73 0 0 setcmykcolor .2 setlinewidth stroke";
 }
 %funnylines<543> = sub ($shape) { # Powerline
   $powerlinestart = 1;
-  follow_line($shape, .5, &powerline, .5, .2, '.79 .9 0 0');
+  follow-line($shape, .5, &powerline, .5, .2, '.79 .9 0 0');
   $TMP.say: ".79 .9 0 0 setcmykcolor .2 setlinewidth stroke";
 }
 %funnylines<920> = sub ($shape) { # Cliff (WAC)
-  put_line($shape, "line920A", 0);
-  follow_line($shape, 1, &leftticks, .4, .15, '0 .59 1 .18');
+  put-line($shape, "line920A", 0);
+  follow-line($shape, 1, &leftticks, .4, .15, '0 .59 1 .18');
 }
 %funnylines<923> = sub ($shape) {} # Cutting
 %funnylines<924> = sub ($shape) { # Cliff
-  put_line($shape, "line924A", 0);
-  follow_line($shape, 1, &leftticks, .4, .15, '0 0 0 1');
+  put-line($shape, "line924A", 0);
+  follow-line($shape, 1, &leftticks, .4, .15, '0 0 0 1');
 }
 %funnylines<929> = sub ($shape) { # Razorback
-  put_line($shape, "line929A", 0);
-  follow_line($shape, 1, &altticks, .4, .15, '0 0 0 1');
+  put-line($shape, "line929A", 0);
+  follow-line($shape, 1, &altticks, .4, .15, '0 0 0 1');
 }
 
 my %linefeaturetypes;
 
-sub draw_lines(Str $table, Str $columns, Str $geomcol, Str $widthcol) {
+sub draw-lines(Str $table, Str $columns, Str $geomcol, Str $widthcol) {
   note "$table lines..." if $debug >= 1;
 
   my @columns     = $columns.split: ':';
@@ -699,23 +702,23 @@ sub draw_lines(Str $table, Str $columns, Str $geomcol, Str $widthcol) {
     if $featuretype ~~ /^\d+$/ {
       $symbol = $featuretype;
     } else {
-      $sth_symb.execute($table, $featuretype, 'line');
-      while my @syms = $sth_symb.fetchrow_array {
+      $sth-symb.execute($table, $featuretype, 'line');
+      while my @syms = $sth-symb.fetchrow_array {
         $symbol = @syms[0].Int;
       }
     }
-    note "draw_line: $table $featuretype $symbol" if $debug >= 10;
+    note "draw-line: $table $featuretype $symbol" if $debug >= 10;
 
     $featurewidth = @row.shift if $widthcol;
 
       my $shape = @row.shift;
       
       next unless $symbol > 0;
-      ++$object_count;
+      ++$object-count;
       if %funnylines{$symbol}.defined {
         %funnylines{$symbol}($shape);
       } else {
-        put_line($shape.Str, "line$symbol", 0);
+        put-line($shape.Str, "line$symbol", 0);
       }
     }
   } else {
@@ -723,7 +726,7 @@ sub draw_lines(Str $table, Str $columns, Str $geomcol, Str $widthcol) {
   }
 }
 
-sub draw_contours(Str $table, Str $columns, Str $geomcol, Str $elevcol) {
+sub draw-contours(Str $table, Str $columns, Str $geomcol, Str $elevcol) {
   note "$table contours..." if $debug >= 1;
 
   my @columns     = $columns.split: ':';
@@ -752,8 +755,8 @@ sub draw_contours(Str $table, Str $columns, Str $geomcol, Str $elevcol) {
       if $featuretype ~~ /^\d+$/ {
         $symbol = $featuretype;
       } else {
-        $sth_symb.execute($table, $featuretype, 'line');
-        while my @syms = $sth_symb.fetchrow_array {
+        $sth-symb.execute($table, $featuretype, 'line');
+        while my @syms = $sth-symb.fetchrow_array {
           $symbol = @syms[0].Int;
         }
       }
@@ -766,11 +769,11 @@ sub draw_contours(Str $table, Str $columns, Str $geomcol, Str $elevcol) {
       my $shape = @row.shift;
       
       next unless $symbol > 0;
-      ++$object_count;
+      ++$object-count;
       if %funnylines{$symbol}.defined {
         %funnylines{$symbol}($shape);
       } else {
-        put_line($shape.Str, "line$symbol", 0);
+        put-line($shape.Str, "line$symbol", 0);
       }
     }
   } else {
@@ -779,13 +782,13 @@ sub draw_contours(Str $table, Str $columns, Str $geomcol, Str $elevcol) {
 }
 
 #`[
-  sub draw_vm_lines -- draw lines from a Vicmap table
+  sub draw-vm-lines -- draw lines from a Vicmap table
     $table          -- table name
     $typecolumn     -- the name of the column containing the type of the line
-    $default_symbol -- if positive override the symbol to be used
+    $default-symbol -- if positive override the symbol to be used
 ]
 
-sub draw_vm_lines(Str $table, Str $typecolumn, $default_symbol = 0) {
+sub draw-vm-lines(Str $table, Str $typecolumn, $default-symbol = 0) {
   note "$table lines..." if $debug >= 1;
   my $geomcol = %defaults{'linegeometry'};
   $geomcol = 'geom';
@@ -803,48 +806,48 @@ sub draw_vm_lines(Str $table, Str $typecolumn, $default_symbol = 0) {
       my $ft = '';
       $ft ~= $ftype;
       my $symbol = 0;
-      if ($default_symbol.defined and $default_symbol > 0) {
-	$symbol = $default_symbol;
+      if ($default-symbol.defined and $default-symbol > 0) {
+	$symbol = $default-symbol;
       } else {
-	$symbol = get_symbol('line', $ft);
+	$symbol = get-symbol('line', $ft);
       }
       next unless $symbol > 0;
-      ++$object_count;
+      ++$object-count;
       given $symbol {
         when  57 { # Depression contour (index)
-          put_line($shape, "line57A", 0);
-	  follow_line($shape, 4, &leftticks, .3, .2, '0 .59 1 .18');
+          put-line($shape, "line57A", 0);
+	  follow-line($shape, 4, &leftticks, .3, .2, '0 .59 1 .18');
         }
         when  58 { # Depression contour (standard)
-          put_line($shape, "line58A", 0);
-	  follow_line($shape, 4, &leftticks, .3, .15, '0 .59 1 .18');
+          put-line($shape, "line58A", 0);
+	  follow-line($shape, 4, &leftticks, .3, .15, '0 .59 1 .18');
         }
 	when  31 {} # Embankment
         when 542 { # Powerline
           $powerlinestart = 1;
-          follow_line($shape, .5, &powerline, .5, .2, '1 .73 0 0');
+          follow-line($shape, .5, &powerline, .5, .2, '1 .73 0 0');
           $TMP.say: "1 .73 0 0 setcmykcolor .2 setlinewidth stroke";
         }
 	when 543 { # Powerline (WAC)
           $powerlinestart = 1;
-          follow_line($shape, .5, &powerline, .5, .2, '.79 .9 0 0');
+          follow-line($shape, .5, &powerline, .5, .2, '.79 .9 0 0');
           $TMP.say: ".79 .9 0 0 setcmykcolor .2 setlinewidth stroke";
         }
 	when 920 { # Cliff (WAC)
-          put_line($shape, "line920A", 0);
-          follow_line($shape, 1, &leftticks, .4, .15, '0 .59 1 .18');
+          put-line($shape, "line920A", 0);
+          follow-line($shape, 1, &leftticks, .4, .15, '0 .59 1 .18');
         }
 	when 923 {} # Cutting
         when 924 { # Cliff
-          put_line($shape, "line924A", 0);
-          follow_line($shape, 1, &leftticks, .4, .15, '0 0 0 1');
+          put-line($shape, "line924A", 0);
+          follow-line($shape, 1, &leftticks, .4, .15, '0 0 0 1');
         }
 	when 929 { # Razorback
-          put_line($shape, "line929A", 0);
-          follow_line($shape, 1, &altticks, .4, .15, '0 0 0 1');
+          put-line($shape, "line929A", 0);
+          follow-line($shape, 1, &altticks, .4, .15, '0 0 0 1');
         }
 	default {
-          put_line($shape.Str, "line$symbol", 0);
+          put-line($shape.Str, "line$symbol", 0);
         }
       }
     }
@@ -854,14 +857,14 @@ sub draw_vm_lines(Str $table, Str $typecolumn, $default_symbol = 0) {
 }
 
 #`[
-  sub draw_ga_lines -- draw lines from a Geosciences Australia table
+  sub draw-ga-lines -- draw lines from a Geosciences Australia table
     $table          -- table name
     $typecolumn     -- the name of the column containing the type of the line
-    $default_symbol -- if positive override the symbol to be used
+    $default-symbol -- if positive override the symbol to be used
 ]
 
-sub draw_ga_lines(Str $table, Str $typecolumn, $default_symbol = 0) {
-  note "$table ($default_symbol) lines..." if $debug >= 1;
+sub draw-ga-lines(Str $table, Str $typecolumn, $default-symbol = 0) {
+  note "$table ($default-symbol) lines..." if $debug >= 1;
   my $geomcol = %defaults{'linegeometry'};
   $geomcol = 'shape';
   note "Reading column $geomcol ($rect)" if $debug >= 1;
@@ -877,46 +880,46 @@ sub draw_ga_lines(Str $table, Str $typecolumn, $default_symbol = 0) {
       my $shape = @row[1];
       
       note $symbol if $debug >= 10;
-      if $default_symbol > 0 {
-	$symbol = $default_symbol;
+      if $default-symbol > 0 {
+	$symbol = $default-symbol;
       }
       next unless $symbol > 0;
-      ++$object_count;
+      ++$object-count;
       given $symbol {
         when  57 { # Depression contour (index)
-          put_line($shape, "line57A", 0);
-	  follow_line($shape, 4, &leftticks, .3, .2, '0 .59 1 .18');
+          put-line($shape, "line57A", 0);
+	  follow-line($shape, 4, &leftticks, .3, .2, '0 .59 1 .18');
         }
         when  58 { # Depression contour (standard)
-          put_line($shape, "line58A", 0);
-	  follow_line($shape, 4, &leftticks, .3, .15, '0 .59 1 .18');
+          put-line($shape, "line58A", 0);
+	  follow-line($shape, 4, &leftticks, .3, .15, '0 .59 1 .18');
         }
 	when  31 {} # Embankment
         when 542 { # Powerline
           $powerlinestart = 1;
-          follow_line($shape, .5, &powerline, .5, .2, '1 .73 0 0');
+          follow-line($shape, .5, &powerline, .5, .2, '1 .73 0 0');
           $TMP.say: "1 .73 0 0 setcmykcolor .2 setlinewidth stroke";
         }
 	when 543 { # Powerline (WAC)
           $powerlinestart = 1;
-          follow_line($shape, .5, &powerline, .5, .2, '.79 .9 0 0');
+          follow-line($shape, .5, &powerline, .5, .2, '.79 .9 0 0');
           $TMP.say: ".79 .9 0 0 setcmykcolor .2 setlinewidth stroke";
         }
 	when 920 { # Cliff (WAC)
-          put_line($shape, "line920A", 0);
-          follow_line($shape, 1, &leftticks, .4, .15, '0 .59 1 .18');
+          put-line($shape, "line920A", 0);
+          follow-line($shape, 1, &leftticks, .4, .15, '0 .59 1 .18');
         }
 	when 923 {} # Cutting
         when 924 { # Cliff
-          put_line($shape, "line924A", 0);
-          follow_line($shape, 1, &leftticks, .4, .15, '0 0 0 1');
+          put-line($shape, "line924A", 0);
+          follow-line($shape, 1, &leftticks, .4, .15, '0 0 0 1');
         }
 	when 929 { # Razorback
-          put_line($shape, "line929A", 0);
-          follow_line($shape, 1, &altticks, .4, .15, '0 0 0 1');
+          put-line($shape, "line929A", 0);
+          follow-line($shape, 1, &altticks, .4, .15, '0 0 0 1');
         }
 	default {
-          put_line($shape.Str, "line$symbol", 0);
+          put-line($shape.Str, "line$symbol", 0);
         }
       }
     }
@@ -925,11 +928,11 @@ sub draw_ga_lines(Str $table, Str $typecolumn, $default_symbol = 0) {
   }
 }
 
-sub put_outline(Str $text, Real $x, Real $y, Real $size, Str $colour, Real $thickness) { 
+sub put-outline(Str $text, Real $x, Real $y, Real $size, Str $colour, Real $thickness) { 
     $TMP.print: sprintf "%f %f moveto (%s) /Helvetica findfont %f scalefont setfont stringwidth pop 2 div neg 0 rmoveto (%s) false charpath %s setcmykcolor %f setlinewidth stroke\n", $x, $y, $text, $size, $text, $colour, $thickness;
 }
 
-sub draw_polygon_outline_names(Str $table, Str $column, Real $size, Real $thickness, Str $colour) {
+sub draw-polygon-outline-names(Str $table, Str $column, Real $size, Real $thickness, Str $colour) {
   note "$table outline names..." if $debug >= 1;
   my $geomcol = %defaults{'linegeometry'};
   $geomcol = 'geom';
@@ -945,7 +948,7 @@ sub draw_polygon_outline_names(Str $table, Str $column, Real $size, Real $thickn
 
       my $name  = @row[0].Str;
       my $shape = @row[1].Str;
-      my @x = read_points($shape);
+      my @x = read-points($shape);
       my $centrex = (@x[0] + @x[4]) / 2;
       my $centrey = (@x[1] + @x[5]) / 2;
       note "Locality $name $centrex $centrey $shape" if $debug >= 1;
@@ -953,17 +956,17 @@ sub draw_polygon_outline_names(Str $table, Str $column, Real $size, Real $thickn
       my @text = $name.split: ' ';
       my $yoffset = (@text.end + 1)/2;
       for @text -> $text {
-			  put_outline $text, $cx, $cy+$yoffset, $size, $colour, $thickness;
+			  put-outline $text, $cx, $cy+$yoffset, $size, $colour, $thickness;
 			  $yoffset -= $size;
 			 }
-        ++$object_count;
+        ++$object-count;
     }
   } else {
     note "Table $table not found";
   }
 }
 
-sub draw_properties() {
+sub draw-properties() {
     note "property lines..." if $debug >= 1;
     my $geomcol = %defaults{'linegeometry'};
     $geomcol = 'shape';
@@ -977,18 +980,18 @@ sub draw_properties() {
     
         while my @row = $sth.fetchrow_array {
             my $shape = @row[0];
-            ++$object_count;
-            put_line($shape, 'line927', 0);
+            ++$object-count;
+            put-line($shape, 'line927', 0);
         }
     }
 }
 
 #`[
-  sub draw_ga_wlines -- draw lines (with width) from a Geosciences Australia table
+  sub draw-ga-wlines -- draw lines (with width) from a Geosciences Australia table
     $table          -- table name
 ]
 
-sub draw_ga_wlines(Str $table) {
+sub draw-ga-wlines(Str $table) {
     note "$table lines..." if $debug >= 1;
    my $sth = $dbh.prepare("SELECT symbol, st_astext(shape) AS shape, featurewidth
                            FROM $table
@@ -1004,7 +1007,7 @@ sub draw_ga_wlines(Str $table) {
 	$featurewidth = 0 unless $featurewidth.defined && $featurewidth;
 	
 	next unless $symbol > 0;
-	++$object_count;
+	++$object-count;
 	if ($symbol == 57) { # Depression contour (index)
 	} elsif ($symbol == 58) { # Depression contour (standard)
 	} elsif ($symbol == 31) { # Embankment
@@ -1015,7 +1018,7 @@ sub draw_ga_wlines(Str $table) {
 	} elsif ($symbol == 924) { # Cliff
 	} elsif ($symbol == 929) { # Razorback
 	} else {
-	    put_line($shape, "line$symbol", $featurewidth);
+	    put-line($shape, "line$symbol", $featurewidth);
 	}
     }
 }
@@ -1030,11 +1033,11 @@ sub draw_ga_wlines(Str $table) {
 ]
 
 #`[
-  sub draw_vm_roads -- draw roads from the Vicmap database table tr_road
+  sub draw-vm-roads -- draw roads from the Vicmap database table tr-road
     no parameters
 ]
 
-sub draw_vm_roads() {
+sub draw-vm-roads() {
     my @dual;
     my $featurewidth;
 
@@ -1059,7 +1062,7 @@ sub draw_vm_roads() {
     while @row = $sth.fetchrow_array {
 
 	my $objectid     = @row[0];
-	my $ftype_code   = @row[1];
+	my $ftype-code   = @row[1];
 	my $featurewidth = 0.9;
         my $class        = @row[2];
         my $dir          = @row[3];
@@ -1069,22 +1072,22 @@ sub draw_vm_roads() {
 	my $shape        = @row[7];
 	
         $sealed = $sealed == 1 ?? 's' !! 'u';
-        my $symbol = %roadsymbols{"{$ftype_code}:{$class}:{$sealed}"} //
-                     %roadsymbols{"{$ftype_code}::"}; # default
-	note "Unknown road type \"{$ftype_code}:{$class}:{$sealed}\"" unless $symbol;
+        my $symbol = %roadsymbols{"{$ftype-code}:{$class}:{$sealed}"} //
+                     %roadsymbols{"{$ftype-code}::"}; # default
+	note "Unknown road type \"{$ftype-code}:{$class}:{$sealed}\"" unless $symbol;
 	next unless $symbol > 0;
 	@dual.push: $objectid if $symbol == 250;
-	++$object_count;
+	++$object-count;
         put-comment($road-name);
         $symbol += 9000 if %emphasise-roads{$road-name}.defined;
-	put_line($shape, "line$symbol", $featurewidth);
+	put-line($shape, "line$symbol", $featurewidth);
     }
 
 # Now go back and draw the yellow centre line on dual carriageways
 
     note "Centre lines of roads..." if $debug >= 1;
 
-    $sth = $dbh.prepare("SELECT ftype_code, st_astext(geom) AS shape
+    $sth = $dbh.prepare("SELECT ftype-code, st_astext(geom) AS shape
                          FROM vm_tr_road
                          WHERE pfi = ?
                         ");
@@ -1095,17 +1098,17 @@ sub draw_vm_roads() {
 	    my $symbol = @row[0];
 	    my $shape = @row[1];
 	    
-	    put_line($shape, 'line250A', 0.6);
+	    put-line($shape, 'line250A', 0.6);
 	}
     }
 }
 
 #`[
-  sub draw_ga_roads -- draw roads from the Geoscience Australia database table roads
+  sub draw-ga-roads -- draw roads from the Geoscience Australia database table roads
     no parameters
 ]
 
-sub draw_ga_roads() {
+sub draw-ga-roads() {
     my @dual;
     my $featurewidth;
 
@@ -1129,8 +1132,8 @@ sub draw_ga_roads() {
 	
 	next unless so $symbol;
 	@dual.push: $objectid if $symbol == 250;
-	++$object_count;
-	put_line($shape, "line$symbol", $featurewidth);
+	++$object-count;
+	put-line($shape, "line$symbol", $featurewidth);
     }
 
 # Now go back and draw the yellow centre line on dual carriageways
@@ -1149,7 +1152,7 @@ sub draw_ga_roads() {
 	    my $shape        = @row[1];
 	    my $featurewidth = @row[2];
 	    
-	    put_line($shape, 'line250A', $featurewidth);
+	    put-line($shape, 'line250A', $featurewidth);
 	}
     }
 }
@@ -1176,13 +1179,13 @@ my %osmroads2ga = (
     );
 
 #`[
-  sub draw_osmroads -- draw roads from the OpensStreetMap database table planet_osm_line
+  sub draw-osmroads -- draw roads from the OpensStreetMap database table planet_osm_line
     no parameters
 
   roads in that table are lines where the highway column isn't empty
 ]
 
-sub draw_osmroads() {
+sub draw-osmroads() {
     my @dual;
     my $featurewidth = 0;
 
@@ -1205,8 +1208,8 @@ sub draw_osmroads() {
 	    
 	    next unless $symbol;
 	    @dual.push: $objectid if $symbol == 250;
-	    ++$object_count;
-	    put_line($shape, "line$symbol", $featurewidth);
+	    ++$object-count;
+	    put-line($shape, "line$symbol", $featurewidth);
 	} else {
 	    note "Unknown road type $type";
 	}
@@ -1224,7 +1227,7 @@ sub draw_osmroads() {
 	while (my @row = $sth.fetchrow_array) {
 	    my $shape = @row[0];
 	    
-	    put_line($shape, 'line250A', $featurewidth);
+	    put-line($shape, 'line250A', $featurewidth);
 	}
     }
 }
@@ -1236,13 +1239,13 @@ sub draw_osmroads() {
 ]
 
 #`[
-  sub draw_points -- draw points from a generic table
+  sub draw-points -- draw points from a generic table
     $table -- database table
 ]
 
 my %pointfeaturetypes;
 
-sub draw_points(Str $table, Str $columns, Str $geomcol, Str $orientcol, Str $widthcol) {
+sub draw-points(Str $table, Str $columns, Str $geomcol, Str $orientcol, Str $widthcol) {
   note "$table points..." if $debug >= 1;
 
   my @columns     = $columns.split: ':';
@@ -1303,26 +1306,26 @@ sub draw_points(Str $table, Str $columns, Str $geomcol, Str $orientcol, Str $wid
     if $featuretype ~~ /^\d+$/ {
       $symbol = $featuretype;
     } else {
-      $sth_symb.execute($table, $featuretype, 'point');
-      while my @syms = $sth_symb.fetchrow_array {
+      $sth-symb.execute($table, $featuretype, 'point');
+      while my @syms = $sth-symb.fetchrow_array {
         $symbol = @syms[0].Int;
       }
     }
 	
-    #next unless @display_feature[$featuretype]; ### TODO
+    #next unless @display-feature[$featuretype]; ### TODO
     next unless $symbol;
-    ++$object_count;
+    ++$object-count;
     %dependencies{"point$symbol"}++;
     $TMP.print: sprintf("$orientation %.6g %.6g $featurewidth point$symbol\n", $x, $y);
   }
 }
 
 #`[
-  sub draw_ga_points -- draw points from a Geoscience Australia table
+  sub draw-ga-points -- draw points from a Geoscience Australia table
     $table -- database table
 ]
 
-sub draw_ga_points(Str $table) {
+sub draw-ga-points(Str $table) {
     note "$table points..." if $debug >= 1;
   my $geomcol = %defaults{'pointgeometry'};
   $geomcol = 'position';
@@ -1342,7 +1345,7 @@ sub draw_ga_points(Str $table) {
 	$featurewidth = 0 unless $featurewidth.defined && $featurewidth;
 
 	next unless so $symbol;
-	++$object_count;
+	++$object-count;
 	$position ~~ / \( ( \-? <[\d\.]>+) \s+ ( \-? <[\d\.]>+ ) \) /;
 	my ($x, $y) = latlon2page +$0, +$1;
 	%dependencies{"point$symbol"}++;
@@ -1357,14 +1360,14 @@ sub draw_ga_points(Str $table) {
 ]
 
 #`[
-  sub draw_text -- draw text from a generic table
+  sub draw-text -- draw text from a generic table
     $table      -- database table
     $textcolumn -- the column which contains the text to be printed
     $geomcol    -- the column which specifies where the text should go (subject to an offset)
     $widthcols  -- the column(s) which will be used to determine font, pointsize etc.
 ]
 
-sub draw_text(Str $table, Str $textcolumn, Str $geomcol, Str $widthcols) {
+sub draw-text(Str $table, Str $textcolumn, Str $geomcol, Str $widthcols) {
   note "$table text..." if $debug >= 1;
 
   my $selectcolumns = $textcolumn;
@@ -1425,20 +1428,20 @@ sub draw_text(Str $table, Str $textcolumn, Str $geomcol, Str $widthcols) {
     if $widthtype ~~ /^\d+$/ {
       $width = $widthtype;
     } else {
-      $sth_symb.execute($table, $widthtype, 'text');
-      while my @syms = $sth_symb.fetchrow_array {
+      $sth-symb.execute($table, $widthtype, 'text');
+      while my @syms = $sth-symb.fetchrow_array {
         $width = @syms[0].Int;
       }
     }
 	
-    #next unless @display_feature[$featuretype]; ### TODO
+    #next unless @display-feature[$featuretype]; ### TODO
     next unless $width;
-    ++$object_count;
+    ++$object-count;
     $TMP.print: sprintf("0 0 0 1 setcmykcolor %.6g %.6g moveto /Arial findfont $width scalefont setfont ($text) show\n", $x, $y);
   }
 }
 
-sub draw_spot_heights() {
+sub draw-spot-heights() {
     note "spot heights..." if $debug >= 1;
   my $geomcol = %defaults{'pointgeometry'};
   $geomcol = 'geom';
@@ -1467,9 +1470,9 @@ sub draw_spot_heights() {
     }
 }
 
-my @road_widths = (.9, .9, .9, .6, .6, .6, .4, .4, .4, .4, .2, .2, .2);
+my @road-widths = (.9, .9, .9, .6, .6, .6, .4, .4, .4, .4, .2, .2, .2);
 
-sub draw_roadpoints() {
+sub draw-roadpoints() {
     note "vm_tr_road_infrastructure points..." if $debug >= 1;
     my $geomcol = %defaults{'pointgeometry'};
   $geomcol = 'geom';
@@ -1496,22 +1499,22 @@ sub draw_roadpoints() {
 	
 	my Str $ft = '';
         $ft ~= $ftype;
-        my $symbol = get_symbol('point', $ft);
+        my $symbol = get-symbol('point', $ft);
         
-        #next unless @display_feature[$featuretype]; ### TODO
+        #next unless @display-feature[$featuretype]; ### TODO
         next unless $symbol;
-        ++$object_count;
+        ++$object-count;
         $position ~~ / \( (\-? <[\d.]>+) \s+ (\-? <[\d.]>+) \) /;
         my ($x, $y) = latlon2page +$0, +$1;
         %dependencies{"point$symbol"}++;
         if $featurewidth <= 0 {
 	  # Find the width of the adjoining roads
-	  my $adjcode = 12; # largest real class_code
+	  my $adjcode = 12; # largest real class-code
 	  $sth2.execute($ufi, $ufi);
 	  while my @row = $sth2.fetchrow_array() {
 	    $adjcode = @row[1] if @row[1] < $adjcode;
 	  }
-	  $featurewidth = @road_widths[$adjcode];
+	  $featurewidth = @road-widths[$adjcode];
         }
 	  $TMP.print: sprintf "$orientation %.6g %.6g $featurewidth point$symbol\n", $x, $y;
       }
@@ -1611,7 +1614,7 @@ class Annotation {
 
 }
 
-sub draw_ga_annotations() {
+sub draw-ga-annotations() {
     note "Annotations...\n" if $debug >= 1;
     my $sth = $dbh.prepare("SELECT element, st_astext(shape) AS shape, objectid
                             FROM ga_annotations
@@ -1621,7 +1624,7 @@ sub draw_ga_annotations() {
     $sth.execute();
     
     for $sth.allrows -> @row {
-	++$object_count;
+	++$object-count;
 	my $element = @row[0];
 	my $shape = @row[1];
         my $objectid = @row[2].Int;
@@ -1641,7 +1644,7 @@ sub draw_ga_annotations() {
 	#{my $el = $element; while ($el) {$TMP.printf: "%02.2x ", ord(substr($el, 0, 1)); substr($el, 0, 1) = ''; } $TMP.print: "\n";}
 	$ann.skip(54);
 	$string2 = $ann.string;
-	note "draw_annotation: $string2" if $debug >= 10;
+	note "draw-annotation: $string2" if $debug >= 10;
 	$unknown1 = $ann.byte;
         $ann.skip(21);
 	$unknown1 = $ann.byte;
@@ -1768,118 +1771,116 @@ sub draw_ga_annotations() {
 
 my ($starteasting, $mineasting, $maxeasting, $startnorthing, $minnorthing, $maxnorthing);
 
-sub label_grid(Bool $left, Bool $right) {
-    my ($x, $y1, $y2);
-    my ($lat, $long, $z);
-    my $easting;
+sub label-grid(Bool $left, Bool $right) {
+  my ($x, $y1, $y2);
+  my ($lat, $long, $z);
+  my $easting;
 # Label grid lines
 # Eastings below and above
-    ($lat, $long, $z) = |utm-to-latlon('WGS-84', $zone, $starteasting, $minnorthing);
+  ($lat, $long, $z) = |utm-to-latlon('WGS-84', $zone, $starteasting, $minnorthing);
+  ($x, $y1) = latlon2page($long, $lllatitude);
+  $y1 -= 4;
+  ($lat, $long, $z) = |utm-to-latlon('WGS-84', $zone, $starteasting, $maxnorthing);
+  ($x, $y2) = latlon2page($long, $urlatitude);
+  $y2 += 1;
+  $TMP.print: "gsave $x $y1 translate ";
+  my $a = $starteasting / $grid-spacing;
+  my $b = ($a/10).Int;
+  $a -= $b*10;
+  sbsb($b.Int, $a.Int, '0 000m ', 'E');
+  $TMP.say: " grestore";
+  $TMP.print: "gsave $x $y2 translate ";
+  sbsb($b.Int, $a.Int, '0 000m ', 'E');
+  $TMP.print: " grestore\n";
+  $easting = $starteasting + $grid-spacing;
+    
+  while ($easting <= $maxeasting) {
+    ($lat, $long, $z) = |utm-to-latlon('WGS-84', $zone, $easting, $minnorthing);
     ($x, $y1) = latlon2page($long, $lllatitude);
     $y1 -= 4;
-    ($lat, $long, $z) = |utm-to-latlon('WGS-84', $zone, $starteasting, $maxnorthing);
+    ($lat, $long, $z) = |utm-to-latlon('WGS-84', $zone, $easting, $maxnorthing);
     ($x, $y2) = latlon2page($long, $urlatitude);
     $y2 += 1;
-    $TMP.print: "gsave $x $y1 translate ";
-    my $a = $starteasting / $grid_spacing;
-    my $b = ($a/10).Int;
-    $a -= $b*10;
-    sbsb($b.Int, $a.Int, '0 000m ', 'E');
-    $TMP.say: " grestore";
-    $TMP.print: "gsave $x $y2 translate ";
-    sbsb($b.Int, $a.Int, '0 000m ', 'E');
-    $TMP.print: " grestore\n";
-    $easting = $starteasting + $grid_spacing;
-    
-    while ($easting <= $maxeasting) {
-	($lat, $long, $z) = |utm-to-latlon('WGS-84', $zone, $easting, $minnorthing);
-	($x, $y1) = latlon2page($long, $lllatitude);
-#	($x, $y1) = grid2page($easting, $minnorthing);
-	$y1 -= 4;
-	($lat, $long, $z) = |utm-to-latlon('WGS-84', $zone, $easting, $maxnorthing);
-	($x, $y2) = latlon2page($long, $urlatitude);
-#	($x, $y2) = grid2page($easting, $maxnorthing);
-	$y2 += 1;
-	$TMP.print: "gsave $x $y1 translate\n";
-	$a = $easting / $grid_spacing;
-	$b = ($a/10).Int;
-	$a -= $b*10;
-	sbsb($b, $a.Int, '', '');
-	$TMP.print: "grestore\n";
-	$TMP.print: "gsave $x $y2 translate\n";
-	sbsb($b, $a.Int, '', '');
-	$TMP.print: "grestore\n";
-	$easting += $grid_spacing;
+    if ! $bleedbottom {
+      $TMP.print: "gsave $x $y1 translate\n";
+      $a = $easting / $grid-spacing;
+      $b = ($a/10).Int;
+      $a -= $b*10;
+      sbsb($b, $a.Int, '', '');
+      $TMP.print: "grestore\n";
     }
+    if ! $bleedtop {
+      $TMP.print: "gsave $x $y2 translate\n";
+      sbsb($b, $a.Int, '', '');
+      $TMP.print: "grestore\n";
+    }
+    $easting += $grid-spacing;
+  }
     
 # Northings
-    if ($left) {
-	my ($lat, $long, $z) = |utm-to-latlon('WGS-84', $zone, $mineasting, $startnorthing);
-	my ($x, $y) = latlon2page($lllongitude, $lat);
-#	my ($x, $y) = grid2page($mineasting, $startnorthing);
-	$x -= 1;
-	my $a = $startnorthing / $grid_spacing;
-	my $b = ($a/10).Int;
-	$a -= $b * 10;
-	$TMP.print: "gsave $x $y translate 90 rotate\n";
-	sbsb($b, $a.Int, '0 000m ', 'N');
-	$TMP.print: "grestore\n";
-	my $northing = $startnorthing + $grid_spacing;
+  if $left and ! $bleedleft {
+    my ($lat, $long, $z) = |utm-to-latlon('WGS-84', $zone, $mineasting, $startnorthing);
+    my ($x, $y) = latlon2page($lllongitude, $lat);
+    $x -= 1;
+    my $a = $startnorthing / $grid-spacing;
+    my $b = ($a/10).Int;
+    $a -= $b * 10;
+    $TMP.print: "gsave $x $y translate 90 rotate\n";
+    sbsb($b, $a.Int, '0 000m ', 'N');
+    $TMP.print: "grestore\n";
+    my $northing = $startnorthing + $grid-spacing;
 	
-	while ($northing <= $maxnorthing) {
-	    ($lat, $long, $z) = |utm-to-latlon('WGS-84', $zone, $mineasting, $northing);
-	    ($x, $y) = latlon2page($lllongitude, $lat);
-#	    ($x, $y) = grid2page($mineasting, $northing);
-	    $x -= 1;
-	    $y -= 2;
-	    $a = $northing / $grid_spacing;
-	    $b = ($a/10).Int;
-	    $a -= $b * 10;
-	    $TMP.print: "gsave $x $y translate\n";
-	    rsbsb($b, $a.Int, '', '');
-	    $TMP.print: "grestore\n";
-	    $northing += $grid_spacing;
-	}
-    }	
-    if ($right) {
-	my ($lat, $long, $z) = |utm-to-latlon('WGS-84', $zone, $maxeasting, $startnorthing);
-	my ($x, $y) = latlon2page($urlongitude, $lat);
-#	my ($x, $y) = grid2page($maxeasting, $startnorthing);
-	$x += 4;
-	my $a = $startnorthing / $grid_spacing;
-	my $b = ($a/10).Int;
-	$a -= $b * 10;
-	$TMP.print: "gsave $x $y translate 90 rotate\n";
-	sbsb($b, $a.Int, '0 000m ', 'N');
-	$TMP.print: "grestore\n";
-	my $northing = $startnorthing + $grid_spacing;
-	
-	while ($northing <= $maxnorthing) {
-	    ($lat, $long, $z) = |utm-to-latlon('WGS-84', $zone, $maxeasting, $northing);
-	    ($x, $y) = latlon2page($urlongitude, $lat);
-#	    ($x, $y) = grid2page($maxeasting, $northing);
-	    $x += 1;
-	    $y -= 2;
-	    $a = $northing / $grid_spacing;
-	    $b = ($a/10).Int;
-	    $a -= $b * 10;
-	    $TMP.print: "gsave $x $y translate\n";
-	    lsbsb($b, $a.Int, '', '');
-	    $TMP.print: "grestore\n";
-	    $northing += $grid_spacing;
-	}
+    while ($northing <= $maxnorthing) {
+      ($lat, $long, $z) = |utm-to-latlon('WGS-84', $zone, $mineasting, $northing);
+      ($x, $y) = latlon2page($lllongitude, $lat);
+      $x -= 1;
+      $y -= 2;
+      $a = $northing / $grid-spacing;
+      $b = ($a/10).Int;
+      $a -= $b * 10;
+      $TMP.print: "gsave $x $y translate\n";
+      rsbsb($b, $a.Int, '', '');
+      $TMP.print: "grestore\n";
+      $northing += $grid-spacing;
     }
+  }	
+  if $right and ! $bleedright {
+    my ($lat, $long, $z) = |utm-to-latlon('WGS-84', $zone, $maxeasting, $startnorthing);
+    my ($x, $y) = latlon2page($urlongitude, $lat);
+    $x += 4;
+    my $a = $startnorthing / $grid-spacing;
+    my $b = ($a/10).Int;
+    $a -= $b * 10;
+    $TMP.print: "gsave $x $y translate 90 rotate\n";
+    sbsb($b, $a.Int, '0 000m ', 'N');
+    $TMP.print: "grestore\n";
+    my $northing = $startnorthing + $grid-spacing;
+	
+    while ($northing <= $maxnorthing) {
+      ($lat, $long, $z) = |utm-to-latlon('WGS-84', $zone, $maxeasting, $northing);
+      ($x, $y) = latlon2page($urlongitude, $lat);
+      $x += 1;
+      $y -= 2;
+      $a = $northing / $grid-spacing;
+      $b = ($a/10).Int;
+      $a -= $b * 10;
+      $TMP.print: "gsave $x $y translate\n";
+      lsbsb($b, $a.Int, '', '');
+      $TMP.print: "grestore\n";
+      $northing += $grid-spacing;
+    }
+  }
 }
 
-sub label_graticule(Bool $left, Bool $right) {    
+sub label-graticule(Bool $left, Bool $right) {    
 # Now label the lines of longitude and latitude:
     
     $TMP.print: "0 0 0 1 setcmykcolor /Helvetica-Latin1 4 selectfont\n";
     
-    my $startlat = ($lllatitude/$graticule_spacing).Int * $graticule_spacing;
-    $startlat += $graticule_spacing if $startlat < $lllatitude;
-    my $startlong = ($lllongitude/$graticule_spacing).Int * $graticule_spacing;
-    $startlong += $graticule_spacing if $startlong < $lllongitude;
+    my $startlat = ($lllatitude/$graticule-spacing).Int * $graticule-spacing;
+    $startlat += $graticule-spacing if $startlat < $lllatitude;
+    my $startlong = ($lllongitude/$graticule-spacing).Int * $graticule-spacing;
+    $startlong += $graticule-spacing if $startlong < $lllongitude;
     
 # Longitude
     
@@ -1888,16 +1889,18 @@ sub label_graticule(Bool $left, Bool $right) {
     my $first = 1;
     while ($long < $urlongitude + .0001) {
 	my $lat = $lllatitude;
-	my ($x, $y) = latlon2page $long, $lllatitude;
-	$y -= 8;
-	my $string = latlon2string($long, "EW", $first);
-	$TMP.print: "$x $y moveto ($string) dup stringwidth pop 2 div neg 0 rmoveto show\n" unless ($first && ! $left);
+        my ($x, $y) = latlon2page $long, $lllatitude;
+        my $string = latlon2string($long, "EW", $first);
+        if ! $bleedbottom {
+	    $y -= 8;
+	    $TMP.print: "$x $y moveto ($string) dup stringwidth pop 2 div neg 0 rmoveto show\n" unless ($first && ! $left);
+	}
         if ! $bleedtop {
-          ($x, $y) = latlon2page $long, $urlatitude;
+          my ($x, $y) = latlon2page $long, $urlatitude;
           $y += 7;
           $TMP.print: "$x $y moveto ($string) dup stringwidth pop 2 div neg 0 rmoveto show\n" unless ($first && !$left);
         }
-	$long += $graticule_spacing;
+	$long += $graticule-spacing;
 	$first = 0;
     }
     
@@ -1915,7 +1918,7 @@ sub label_graticule(Bool $left, Bool $right) {
 	    $y -= 2;
 	    my $string = latlon2string $lat, "NS", $first;
 	    $TMP.print: "$x $y moveto ($string) dup stringwidth pop neg 0 rmoveto show\n";
-	    $lat += $graticule_spacing;
+	    $lat += $graticule-spacing;
 	    $first = 0;
 	}
     }
@@ -1934,7 +1937,7 @@ sub label_graticule(Bool $left, Bool $right) {
 	    $x += 7;
 	    $y -= 2;
 	    $TMP.print: "$x $y moveto ($string) show\n";
-	    $lat += $graticule_spacing;
+	    $lat += $graticule-spacing;
 	    $first = 0;
 	}
     }
@@ -1942,13 +1945,13 @@ sub label_graticule(Bool $left, Bool $right) {
 
 # Draw the lines of longitude and latitude:
 
-sub draw_graticule() {
+sub draw-graticule() {
     note "Drawing graticule..." if $debug >= 1;
 
-    my $minlat = ($lllatitude/$graticule_spacing).Int * $graticule_spacing;
-    $minlat += $graticule_spacing if $minlat < $lllatitude;
-    my $minlong = ($lllongitude/$graticule_spacing).Int * $graticule_spacing;
-    $minlong += $graticule_spacing if $minlong < $lllongitude;
+    my $minlat = ($lllatitude/$graticule-spacing).Int * $graticule-spacing;
+    $minlat += $graticule-spacing if $minlat < $lllatitude;
+    my $minlong = ($lllongitude/$graticule-spacing).Int * $graticule-spacing;
+    $minlong += $graticule-spacing if $minlong < $lllongitude;
     
 # Longitude
     
@@ -1967,7 +1970,7 @@ sub draw_graticule() {
 	    $lat += 1.0/60.0;
 	}
 	#$TMP.print: "stroke\n";
-	$long += $graticule_spacing;
+	$long += $graticule-spacing;
     }
     
 # Longitude ticks
@@ -1983,7 +1986,7 @@ sub draw_graticule() {
 	    $lat += 1.0/60.0; # FIX -- should relate to line spacing 
 	}
 	#$TMP.print: "stroke\n";
-	$long += $graticule_spacing;
+	$long += $graticule-spacing;
     }
     
     $long = $minlong;
@@ -1997,7 +2000,7 @@ sub draw_graticule() {
 	    $lat += 5.0/60.0; # FIX -- this is 1:250000 specific
 	}
 	#$TMP.print: "stroke\n";
-	$long += $graticule_spacing;
+	$long += $graticule-spacing;
     }
     
 # Latitude
@@ -2016,7 +2019,7 @@ sub draw_graticule() {
 	    $long += 1.0/60.0;
 	}
 	#$TMP.print: "stroke % latitude\n";
-	$lat += $graticule_spacing;
+	$lat += $graticule-spacing;
     }
     
 # Latitude ticks
@@ -2031,7 +2034,7 @@ sub draw_graticule() {
 	    $long += 1.0/60.0;
 	}
 	$TMP.print: "stroke\n";
-	$lat += $graticule_spacing;
+	$lat += $graticule-spacing;
     }
     
     $lat = $minlat;
@@ -2044,28 +2047,28 @@ sub draw_graticule() {
 	    $long += 5.0/60.0;
 	}
 	$TMP.print: "stroke\n";
-	$lat += $graticule_spacing;
+	$lat += $graticule-spacing;
     }
 }
     
-sub draw_grid() {
+sub draw-grid() {
     note "Displaying grid..." if $debug >= 1;
     $TMP.say: "1 .1 0 .1 setcmykcolor\ngsave";
 
     $minnorthing = min($llnorthing, $lrnorthing);
-    $startnorthing = (($minnorthing+($grid_spacing-1))/$grid_spacing).Int * $grid_spacing;
+    $startnorthing = (($minnorthing+($grid-spacing-1))/$grid-spacing).Int * $grid-spacing;
     $mineasting = min($lleasting, $uleasting);
-    $starteasting = (($mineasting+($grid_spacing-1))/$grid_spacing).Int * $grid_spacing;
+    $starteasting = (($mineasting+($grid-spacing-1))/$grid-spacing).Int * $grid-spacing;
     my $maxeasting = max($lreasting, $ureasting);
     my $maxnorthing = max($ulnorthing, $urnorthing);
     
-    $TMP.say: "% draw grid: $mineasting, $minnorthing to $maxeasting, $maxnorthing by $grid_spacing";
+    $TMP.say: "% draw grid: $mineasting, $minnorthing to $maxeasting, $maxnorthing by $grid-spacing";
     my $easting = $starteasting;
     while ($easting <= $maxeasting) {
 	my ($x1, $y1) = grid2page($easting, $minnorthing);
 	my ($x2, $y2) = grid2page($easting, $maxnorthing);
 	$TMP.print: "$x1 $y1 moveto $x2 $y2 lineto stroke\n";
-	$easting += $grid_spacing;
+	$easting += $grid-spacing;
     }
     
     my $northing = $startnorthing;
@@ -2073,12 +2076,12 @@ sub draw_grid() {
 	my ($x1, $y1) = grid2page($mineasting, $northing);
 	my ($x2, $y2) = grid2page($maxeasting, $northing);
 	$TMP.print: "$x1 $y1 moveto $x2 $y2 lineto stroke\n";
-	$northing += $grid_spacing;
+	$northing += $grid-spacing;
     }
     $TMP.print: "grestore\n";
 }
 
-sub format_dms(Real $lat is copy, Str $pos, Str $neg) {
+sub format-dms(Real $lat is copy, Str $pos, Str $neg) {
     my $string = '';
     my $hemisphere = $lat >= 0 ?? $pos !! $neg;
     $lat = - $lat if $lat < 0;
@@ -2098,17 +2101,17 @@ sub format_dms(Real $lat is copy, Str $pos, Str $neg) {
     $string;
 }
 
-sub format_lat(Real $lat) {
-    format_dms($lat, 'N', 'S');
+sub format-lat(Real $lat) {
+    format-dms($lat, 'N', 'S');
 }
 
-sub format_long(Real $long) {
-    format_dms($long, 'E', 'W');
+sub format-long(Real $long) {
+    format-dms($long, 'E', 'W');
 }
 
-sub put_annotation(Real $pagex, Real $pagey, Real $long, Real $lat, Real $x1, Real $y1, Str $string is copy) {
-    my $longstr = format_long($long);
-    my $latstr = format_lat($lat);
+sub put-annotation(Real $pagex, Real $pagey, Real $long, Real $lat, Real $x1, Real $y1, Str $string is copy) {
+    my $longstr = format-long($long);
+    my $latstr = format-lat($lat);
     $string.subst(/\$LONG/, $longstr);
     $string.subst(/\$LAT/, $latstr);
     $string ~~ s/\$LONG/{$longstr}/;
@@ -2135,12 +2138,12 @@ sub put_annotation(Real $pagex, Real $pagey, Real $long, Real $lat, Real $x1, Re
 
 my @ann;
 
-sub draw_userannotations(Real $xoff, Real $yoff, Real $slopedeg) {
+sub draw-userannotations(Real $xoff, Real $yoff, Real $slopedeg) {
     my $slope = $slopedeg * π / 180;
     my $c = cos($slope);
     my $s = sin($slope);
     #note "cos theta: $c, sin theta: $s";
-    #note "Draw_userannotation: $zone $xoff $yoff $slope";
+    #note "Draw-userannotation: $zone $xoff $yoff $slope";
     for @annotations -> $ann {
 	next if %($ann)<long> < $lllongitude;
         next if %($ann)<long> > $urlongitude;
@@ -2156,9 +2159,9 @@ sub draw_userannotations(Real $xoff, Real $yoff, Real $slopedeg) {
     }
 }
 
-sub put_userannotations {
+sub put-userannotations {
     for @ann -> $ann {
-	put_annotation(%($ann)<pagex>,
+	put-annotation(%($ann)<pagex>,
 	               %($ann)<pagey>,
 		       %($ann)<long>,
                        %($ann)<lat>,
@@ -2170,7 +2173,7 @@ sub put_userannotations {
 }
 
 #`[
-  sub draw_margins
+  sub draw-margins
     Bool $left  -- draw left hand side  (and map will be at left of page)
     Bool $right -- draw right hand side (and map will be at right of page)
 
@@ -2185,7 +2188,7 @@ sub put_userannotations {
     including the labels along the relevant edge
 ]
 
-sub draw_margins(Bool $left, Bool $right) {
+sub draw-margins(Bool $left, Bool $right) {
     my ($xoff, $yoff, $slope);
 
     (*, $xoffset, $yoffset)
@@ -2201,9 +2204,9 @@ sub draw_margins(Bool $left, Bool $right) {
     $mineasting  = min($lleasting,  $lreasting);
     $maxeasting  = max($uleasting,  $ureasting);
     $startnorthing
-	= (($minnorthing+($grid_spacing-1))/$grid_spacing).Int * $grid_spacing;
+	= (($minnorthing+($grid-spacing-1))/$grid-spacing).Int * $grid-spacing;
     $starteasting
-	= (($mineasting+($grid_spacing-1))/$grid_spacing).Int * $grid_spacing;
+	= (($mineasting+($grid-spacing-1))/$grid-spacing).Int * $grid-spacing;
     if ($ongraticule) {
 	if ($left) { # Calculate slope and position of right hand side
 	    my ($x1, $y1) = latlon2page($urlongitude, $lllatitude);
@@ -2226,15 +2229,15 @@ sub draw_margins(Bool $left, Bool $right) {
 	}
     }
     
-    label_grid($left, $right)      if %drawobjects<grid>.defined;
-    label_graticule($left, $right) if %drawobjects<graticule>.defined;
+    label-grid($left, $right)      if %drawobjects<grid>.defined;
+    label-graticule($left, $right) if %drawobjects<graticule>.defined;
 
     |($xoff, $yoff, $slope); # return a slip
 }
 
 # Draw the bounding box, remembering the path which then becomes the clip path
     
-sub draw_bbox() {
+sub draw-bbox() {
     if ($ongraticule) {
 	my $long = $lllongitude;
 	my $lat = $lllatitude;
@@ -2292,17 +2295,17 @@ sub draw_bbox() {
     
 # perl6 ./drawvic.pl6 db-newmap250k scale=250000 long=127.7 lat=-15.75 grid=10km display=homesteads display=yards >x.ps
 
-sub draw_objects(Real $xoff, Real $yoff, Real $slope) {
-    my $geometry_point = %defaults{'pointgeometry'};
-    my $geometry_line  = %defaults{'linegeometry'};
-    my $geometry_area  = %defaults{'pointgeometry'};
-    my $sth_draw = $dbh.prepare("SELECT featurename, drawtype, tablename, featurecolumn, geomcol,
+sub draw-objects(Real $xoff, Real $yoff, Real $slope) {
+    my $geometry-point = %defaults{'pointgeometry'};
+    my $geometry-line  = %defaults{'linegeometry'};
+    my $geometry-area  = %defaults{'pointgeometry'};
+    my $sth-draw = $dbh.prepare("SELECT featurename, drawtype, tablename, featurecolumn, geomcol,
                                         orientcol, widthcol, defaultsymbol, displayorder
                                  FROM displayorder
                                  ORDER BY displayorder
                                 ");
-    $sth_draw.execute;
-    while my @row     = $sth_draw.fetchrow_array {
+    $sth-draw.execute;
+    while my @row     = $sth-draw.fetchrow_array {
       my $feature     = @row.shift // '';
       my $draw        = @row.shift;
       my $table       = @row.shift // '';
@@ -2316,26 +2319,26 @@ sub draw_objects(Real $xoff, Real $yoff, Real $slope) {
       note "Drawing $feature: '$draw' '$table' '$typecolumn' ($order)" if $debug >= 5;
       if $order > 0 && %drawobjects{$feature.lc} {
         given $draw {
-          when 'ga_area'        { draw_ga_areas\            ($table                                               ); }
-          when 'outline'        { draw_polygon_outline_names($table, $typecolumn, 8, 0.2, '1 0 .86 0'             ); }
-          when 'vm_road'        { draw_vm_roads\            (                                                     ); }
-          when 'ga_road'        { draw_ga_roads\            (                                                     ); }
-          when 'osm_road'       { draw_osmroads\            (                                                     ); }
-          when 'ga_wline'       { draw_ga_wlines\           ($table,                                              ); }
-          when 'property'       { draw_properties\          (                                                     ); }
-          when 'point'          { draw_points\              ($table, $typecolumn, $geomcol, $orientcol, $widthcol ); }
-          when 'contour'        { draw_contours\            ($table, $typecolumn, $geomcol,             $widthcol ); } # widthcol is contour elevation
-          when 'line'           { draw_lines\               ($table, $typecolumn, $geomcol,             $widthcol ); }
-          when 'area'           { draw_areas\               ($table, $typecolumn, $geomcol,                       ); }
-          when 'ga_point'       { draw_ga_points\           ($table,                                              ); }
-          when 'spotheight'     { draw_spot_heights\        (                                                     ); }
-          when 'roadpoint'      { draw_roadpoints\          (                                                     ); }
-          when 'treeden'        { draw_treeden\             (                                                     ); }
-          when 'graticule'      { draw_graticule\           (                                                     ); }
-          when 'grid'           { draw_grid\                (                                                     ); }
-          when 'text'           { draw_text\                ($table, $typecolumn, $geomcol,             $widthcol          ); }
-          when 'ga_annotation'  { draw_ga_annotations\      (                                                     ); }
-          when 'userannotation' { draw_userannotations\     ($xoff, $yoff, $slope                                 ); }
+          when 'ga_area'        { draw-ga-areas\            ($table                                               ); }
+          when 'outline'        { draw-polygon-outline-names($table, $typecolumn, 8, 0.2, '1 0 .86 0'             ); }
+          when 'vm_road'        { draw-vm-roads\            (                                                     ); }
+          when 'ga_road'        { draw-ga-roads\            (                                                     ); }
+          when 'osm_road'       { draw-osmroads\            (                                                     ); }
+          when 'ga_wline'       { draw-ga-wlines\           ($table,                                              ); }
+          when 'property'       { draw-properties\          (                                                     ); }
+          when 'point'          { draw-points\              ($table, $typecolumn, $geomcol, $orientcol, $widthcol ); }
+          when 'contour'        { draw-contours\            ($table, $typecolumn, $geomcol,             $widthcol ); } # widthcol is contour elevation
+          when 'line'           { draw-lines\               ($table, $typecolumn, $geomcol,             $widthcol ); }
+          when 'area'           { draw-areas\               ($table, $typecolumn, $geomcol,                       ); }
+          when 'ga_point'       { draw-ga-points\           ($table,                                              ); }
+          when 'spotheight'     { draw-spot-heights\        (                                                     ); }
+          when 'roadpoint'      { draw-roadpoints\          (                                                     ); }
+          when 'treeden'        { draw-treeden\             (                                                     ); }
+          when 'graticule'      { draw-graticule\           (                                                     ); }
+          when 'grid'           { draw-grid\                (                                                     ); }
+          when 'text'           { draw-text\                ($table, $typecolumn, $geomcol,             $widthcol          ); }
+          when 'ga_annotation'  { draw-ga-annotations\      (                                                     ); }
+          when 'userannotation' { draw-userannotations\     ($xoff, $yoff, $slope                                 ); }
           default               { note "Unknown draw type $draw for feature $feature: objects ignored"; }
         }
       }
@@ -2343,12 +2346,12 @@ sub draw_objects(Real $xoff, Real $yoff, Real $slope) {
 }
 
 
-sub drawit(Str $drawzone, Real $d_lllong, Real $d_lllat, Real $d_urlong, Real $d_urlat, Bool $left, Bool $right) {
+sub drawit(Str $drawzone, Real $d-lllong, Real $d-lllat, Real $d-urlong, Real $d-urlat, Bool $left, Bool $right) {
     $zone = $drawzone;
     my ($tlllong, $turlong, $tlllat, $turlat)
 	= ($lllongitude, $urlongitude, $lllatitude, $urlatitude);
     ($lllongitude, $urlongitude, $lllatitude, $urlatitude)
-	= ($d_lllong, $d_urlong, $d_lllat, $d_urlat);
+	= ($d-lllong, $d-urlong, $d-lllat, $d-urlat);
     note "drawit: $zone $lllongitude $lllatitude $urlongitude $urlatitude $left $right";
 
     ($lllong, $lllat, $urlong, $urlat) = ($lllongitude - 0.01,
@@ -2359,14 +2362,14 @@ sub drawit(Str $drawzone, Real $d_lllong, Real $d_lllat, Real $d_urlong, Real $d
 
     $rect = "ST_GeometryFromText('POLYGON(($lllong $lllat, $urlong $lllat, $urlong $urlat, $lllong $urlat, $lllong $lllat))', 4326)"; # 4283)";
 
-    my ($xoff, $yoff, $slope) = draw_margins($left, $right);
-    draw_bbox();
+    my ($xoff, $yoff, $slope) = draw-margins($left, $right);
+    draw-bbox();
 
     $TMP.say: 'closepath';
     $TMP.say: '.1 setlinewidth 0 0 0 1 setcmykcolor gsave stroke grestore' if %drawobjects<graticule>;
     $TMP.say: 'clip newpath';
     
-    draw_objects($xoff, $yoff, $slope);
+    draw-objects($xoff, $yoff, $slope);
 
     $TMP.say: 'restore'; # undo the clip path
     ($lllongitude, $urlongitude, $lllatitude, $urlatitude) = ($tlllong, $turlong, $tlllat, $turlat);
@@ -2376,17 +2379,17 @@ sub drawit(Str $drawzone, Real $d_lllong, Real $d_lllat, Real $d_urlong, Real $d
 
 my %done-deps = ();
 
-sub do_dependencies() {
+sub do-dependencies() {
   my $sth = $dbh.prepare("SELECT dependencies, body
                           FROM $symbols
                           WHERE name = ?
                          ");
   for keys %dependencies -> $dep {
-    do_dependency($sth, $dep);
+    do-dependency($sth, $dep);
   }
 }
 
-sub do_dependency($sth is copy, Str $dependency) {
+sub do-dependency($sth is copy, Str $dependency) {
     return if %done-deps{$dependency}.defined;
 
     note "Dependency: $dependency";    
@@ -2398,7 +2401,7 @@ sub do_dependency($sth is copy, Str $dependency) {
 	if ($deps) {
 	    my @deps = $deps.words;
 	    for @deps -> $dep {
-		do_dependency($sth, $dep) unless %done-deps{$dep}.defined;
+		do-dependency($sth, $dep) unless %done-deps{$dep}.defined;
 	    }
 	}
 	print $body;
@@ -2408,7 +2411,7 @@ sub do_dependency($sth is copy, Str $dependency) {
 
 # START RUNNING HERE -- everything is defined
 
-set_papersizes();
+set-papersizes();
 
 for %*ENV<HOME> ~ '/.mkmap.rc', '.mkmap.rc' -> $cfgfile {
   note "Handling config file $cfgfile";
@@ -2431,6 +2434,11 @@ for @*ARGS -> $arg {
 sub draw-map {
 # Calculate various things which depend on the options
 
+  my $leftmargin   = $bleedleft   ?? -10 !! $leftmarginwidth;
+  my $rightmargin  = $bleedright  ?? -10 !! $rightmarginwidth;
+  my $topmargin    = $bleedtop    ?? -10 !! $uppermarginwidth;
+  my $bottommargin = $bleedbottom ?? -10 !! $lowermarginwidth;
+
 #FIX for multiple pages
   fail 'Must use either grid coordinates or lat/lon; not a mixture' if $ongrid && $ongraticule;
   fail "Unknown paper size $papersize" unless %papersizes{$papersize}.defined;
@@ -2447,8 +2455,10 @@ sub draw-map {
       { fail "Unknown paper orientation $orientation\n"; }
   }
   note "Page width: $paperwidth, height $paperheight";
-  $imagewidth  = ($paperwidth  - $leftmarginwidth  - $rightmarginwidth) * $scale/1000;
-  $imageheight = ($paperheight - $lowermarginwidth - $uppermarginwidth) * $scale/1000;
+  note "Margins (tblr): $topmargin, $bottommargin, $leftmargin, $rightmargin";
+  note "Bleed top/bottom/left/right: $bleedtop, $bleedbottom, $bleedleft, $bleedright";
+  my $imagewidth  = ($paperwidth  - $leftmargin   - $rightmargin) * $scale/1000;
+  my $imageheight = ($paperheight - $bottommargin - $topmargin)   * $scale/1000;
 
 # Work out where the lower left corner is
 
@@ -2505,15 +2515,15 @@ sub draw-map {
     note "$lllatitude $lllongitude $urlatitude $urlongitude\n";
   }
 
-  if ($bleedright) {
-    my ($d1, $teast, $tnorth) = |latlon-to-utm('WGS-84', :zone($zone), $urlatitude.Real, $lllongitude.Real);
-    my ($d2, $urlatitude, $urlongitude)  = |utm-to-latlon('WGS-84', $zone, $teast+$imagewidth, $tnorth);
-  }
+#  if $bleedright {
+#    my (*, $teast, $tnorth) = |latlon-to-utm('WGS-84', :zone($zone), $urlatitude.Real, $lllongitude.Real);
+#    my (*, $urlatitude, $urlongitude)  = |utm-to-latlon('WGS-84', $zone, $teast+$imagewidth, $tnorth);
+#  }
 
-  if ($bleedtop) {
-    my ($d1, $teast, $tnorth) = |latlon-to-utm('WGS-84', :$zone, $lllatitude.Real, $urlongitude.Real);
-    my ($d2, $urlatitude, $urlongitude)  = |utm-to-latlon('WGS-84', $zone, $teast+$imagewidth, $tnorth);
-  }
+#  if $bleedtop {
+#    my ($d1, $teast, $tnorth) = |latlon-to-utm('WGS-84', :$zone, $lllatitude.Real, $urlongitude.Real);
+#    my ($d2, $urlatitude, $urlongitude)  = |utm-to-latlon('WGS-84', $zone, $teast+$imagewidth, $tnorth);
+#  }
 
   note qq:to 'EOF';
 Grid corners:
@@ -2524,8 +2534,8 @@ EOF
   my $tmpfile = '/tmp/' ~ $*PID.Str;
   $TMP = $tmpfile.IO.open(:a) or fail "Could not open /tmp/$*PID: $!";
 
-  $xmin = $leftmarginwidth;
-  $ymin = $lowermarginwidth;
+  $xmin = $leftmargin;
+  $ymin = $bottommargin;
   # The following four variables are used to do rough clipping during drawing
   $minx = $lllongitude - .001;
   $maxx = $urlongitude + .001;
@@ -2543,32 +2553,32 @@ EOF
   note "Connecting to database $db";
   $dbh = DBIish.connect("Pg", dbname => $db, RaiseError => False) or die $DBIish::errstr;
 
-  $sth_symb = $dbh.prepare("SELECT symbol
+  $sth-symb = $dbh.prepare("SELECT symbol
                             FROM   symbols
                             WHERE  dbtable = ?
                               AND  featuretype = ?
                               AND  type = ?
                            ");
 
-  my $sth_def = $dbh.prepare('SELECT name, value
+  my $sth-def = $dbh.prepare('SELECT name, value
                               FROM defaults
                              ');
-  $sth_def.execute();
-  while (my @row = $sth_def.fetchrow_array()) {
+  $sth-def.execute();
+  while (my @row = $sth-def.fetchrow_array()) {
     my ($name, $value) = @row;
     %defaults{$name} = $value;
   }
   note "Defaults are {%defaults}";
   $copyright = %defaults<copyright>;
 
-  postscript_prefix();
+  postscript-prefix();
 
   # Set up lists of object types (for use by display/nodisplay arguments)
-  $sth_def = $dbh.prepare('SELECT featurename
+  $sth-def = $dbh.prepare('SELECT featurename
                            FROM displayorder
                           ');
-  $sth_def.execute();
-  while @row = $sth_def.fetchrow_array() {
+  $sth-def.execute();
+  while @row = $sth-def.fetchrow_array() {
     %allobjects{@row[0].lc} = 1;
   }
   %drawobjects = %allobjects;
@@ -2609,7 +2619,7 @@ EOF
       }
   }
 
-  $sth_sym = $dbh.prepare("SELECT symbol_ga
+  $sth-sym = $dbh.prepare("SELECT symbol_ga
                            FROM {%defaults{'symbols'}}
                            WHERE type = ?
                            AND ftype = ?
@@ -2632,9 +2642,9 @@ EOF
     drawit($rightzone, $boundary, $lllatitude, $urlongitude, $urlatitude, False, True);
   }
 
-  put_userannotations();
+  put-userannotations();
 
-  do_dependencies();
+  do-dependencies();
 
   $dbh.dispose();
 
@@ -2646,7 +2656,7 @@ EOF
 
   say "showpage";
 
-  note "$object_count objects, $point_count points\n";
+  note "$object-count objects, $point-count points\n";
 
   note :areas:;
   for %areafeaturetypes.keys -> $k {
@@ -2667,6 +2677,7 @@ EOF
       note "$k:$f";
     }
   }
+  $*OUT.close if $outputfile.defined;
 }
 
 # If we ever get to here, we need to draw a map -- all the options should be set
