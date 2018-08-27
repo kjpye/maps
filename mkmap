@@ -2360,7 +2360,7 @@ sub drawit(Str $drawzone, Real $d-lllong, Real $d-lllat, Real $d-urlong, Real $d
                                           $urlatitude + 0.01
 	            );
 
-
+    $rect = "ST_GeometryFromText('POLYGON(($lllong $lllat, $urlong $lllat, $urlong $urlat, $lllong $urlat, $lllong $lllat))', 4326)"; # 4283)";
 
     my ($xoff, $yoff, $slope) = draw-margins($left, $right);
     draw-bbox();
