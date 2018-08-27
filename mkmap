@@ -2360,7 +2360,7 @@ sub drawit(Str $drawzone, Real $d-lllong, Real $d-lllat, Real $d-urlong, Real $d
                                           $urlatitude + 0.01
 	            );
 
-    $rect = "ST_GeometryFromText('POLYGON(($lllong $lllat, $urlong $lllat, $urlong $urlat, $lllong $urlat, $lllong $lllat))', 4326)"; # 4283)";
+
 
     my ($xoff, $yoff, $slope) = draw-margins($left, $right);
     draw-bbox();
@@ -2438,6 +2438,8 @@ sub draw-map {
   my $rightmargin  = $bleedright  ?? -10 !! $rightmarginwidth;
   my $topmargin    = $bleedtop    ?? -10 !! $uppermarginwidth;
   my $bottommargin = $bleedbottom ?? -10 !! $lowermarginwidth;
+  my $gratheight   = $graticuleheight;
+  my $gratwidth    = $graticulewidth;
 
 #FIX for multiple pages
   fail 'Must use either grid coordinates or lat/lon; not a mixture' if $ongrid && $ongraticule;
@@ -2460,7 +2462,7 @@ sub draw-map {
   my $imagewidth  = ($paperwidth  - $leftmargin   - $rightmargin) * $scale/1000;
   my $imageheight = ($paperheight - $bottommargin - $topmargin)   * $scale/1000;
 
-# Work out where the lower left corner is
+# Work out where the corners are
 
   if ($ongraticule) {
     fail "No location specified" unless $lllongitude.defined && $lllatitude.defined;
@@ -2473,22 +2475,22 @@ sub draw-map {
 	      = |latlon-to-utm('WGS-84', $lllatitude, $lllongitude);
       note "Calculated grid as $lleasting:$llnorthing from lat $lllatitude long $lllongitude calculated zone $zone";
     }
-    if (! $graticulewidth.defined) {
+    if (! $gratwidth.defined) {
       my ($tlat, $tlong, Nil)
 	      = |utm-to-latlon('WGS-84', $zone, $lleasting+$imagewidth, $llnorthing);
-      $graticulewidth = $tlong - $lllongitude;
+      $gratwidth = $tlong - $lllongitude;
       note "Calculated graticule width as $tlong - $lllongitude ($lleasting $llnorthing $imagewidth) tlat = $tlat";
     }
-    if (! $graticuleheight.defined) {
+    if (! $gratheight.defined) {
       my ($tlat, $tlong, Nil)
 	      = |utm-to-latlon('WGS-84', $zone, $lleasting, $llnorthing+$imageheight);
-      $graticuleheight = $tlat - $lllatitude;
+      $gratheight = $tlat - $lllatitude;
     }
-    $lrlongitude = $urlongitude = $lllongitude + $graticulewidth;
-    $ullatitude = $urlatitude = $lllatitude + $graticuleheight;
+    $lrlongitude = $urlongitude = $lllongitude + $gratwidth;
+    $ullatitude = $urlatitude = $lllatitude + $gratheight;
     $ullongitude = $lllongitude;
     $lrlatitude = $lllatitude;
-    note "$graticulewidth: $lrlongitude $ullatitude $ullongitude $lrlatitude";
+    note "$gratwidth, $gratheight: $lrlongitude $ullatitude $ullongitude $lrlatitude";
     (*, $lleasting, $llnorthing) = |latlon-to-utm('WGS-84', :$zone, $lllatitude, $lllongitude);
     (*, $lreasting, $lrnorthing) = |latlon-to-utm('WGS-84', :$zone, $lrlatitude, $lrlongitude);
     (*, $uleasting, $ulnorthing) = |latlon-to-utm('WGS-84', :$zone, $ullatitude, $ullongitude);
