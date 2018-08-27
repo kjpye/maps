@@ -673,7 +673,7 @@ my %funnylines = ();
 
 my %linefeaturetypes;
 
-sub draw-lines(Str $table, Str $columns, Str $geomcol, Str $widthcol) {
+sub draw-lines(Str $table, Str $columns, Str $geomcol, $default, Str $widthcol) {
   note "$table lines..." if $debug >= 1;
 
   my @columns     = $columns.split: ':';
@@ -697,14 +697,16 @@ sub draw-lines(Str $table, Str $columns, Str $geomcol, Str $widthcol) {
       }
       $featuretype ~~ s/\:$//;
     
-      my $symbol = 0;
+      my $symbol = $default // 0;
     %linefeaturetypes{$table}{$featuretype}++;
-    if $featuretype ~~ /^\d+$/ {
-      $symbol = $featuretype;
-    } else {
-      $sth-symb.execute($table, $featuretype, 'line');
-      while my @syms = $sth-symb.fetchrow_array {
-        $symbol = @syms[0].Int;
+      if ! $symbol {
+        if $featuretype ~~ /^\d+$/ {
+          $symbol = $featuretype;
+        } else {
+          $sth-symb.execute($table, $featuretype, 'line');
+          while my @syms = $sth-symb.fetchrow_array {
+          $symbol = @syms[0].Int;
+        }
       }
     }
     note "draw-line: $table $featuretype $symbol" if $debug >= 10;
@@ -943,23 +945,23 @@ sub draw-polygon-outline-names(Str $table, Str $column, Real $size, Real $thickn
   
   if $sth.execute {
     
-    while my @row = $sth.fetchrow_array {
-      last unless @row[0].defined;
+    for $sth.allrows(:arrayofhash) -> $row {
+      last unless $row<column>.defined;
 
-      my $name  = @row[0].Str;
-      my $shape = @row[1].Str;
-      my @x = read-points($shape);
-      my $centrex = (@x[0] + @x[4]) / 2;
-      my $centrey = (@x[1] + @x[5]) / 2;
-      note "Locality $name $centrex $centrey $shape" if $debug >= 1;
-      my ($cx, $cy) = latlon2page($centrex, $centrey);
-      my @text = $name.split: ' ';
-      my $yoffset = (@text.end + 1)/2;
-      for @text -> $text {
-			  put-outline $text, $cx, $cy+$yoffset, $size, $colour, $thickness;
-			  $yoffset -= $size;
-			 }
-        ++$object-count;
+       my $name  = $row<column>.Str;
+       my $shape = $row<bbox>.Str;
+       my @x = read-points($shape);
+       my $centrex = (@x[0] + @x[4]) / 2;
+       my $centrey = (@x[1] + @x[5]) / 2;
+       note "Locality $name $centrex $centrey $shape" if $debug >= 1;
+       my ($cx, $cy) = latlon2page($centrex, $centrey);
+       my @text = $name.split: ' ';
+       my $yoffset = (@text.end + 1)/2;
+       for @text -> $text {
+ 			  put-outline $text, $cx, $cy+$yoffset, $size, $colour, $thickness;
+ 			  $yoffset -= $size;
+ 			 }
+       ++$object-count;
     }
   } else {
     note "Table $table not found";
@@ -2328,7 +2330,7 @@ sub draw-objects(Real $xoff, Real $yoff, Real $slope) {
           when 'property'       { draw-properties\          (                                                     ); }
           when 'point'          { draw-points\              ($table, $typecolumn, $geomcol, $orientcol, $widthcol ); }
           when 'contour'        { draw-contours\            ($table, $typecolumn, $geomcol,             $widthcol ); } # widthcol is contour elevation
-          when 'line'           { draw-lines\               ($table, $typecolumn, $geomcol,             $widthcol ); }
+          when 'line'           { draw-lines\               ($table, $typecolumn, $geomcol, $default,   $widthcol ); }
           when 'area'           { draw-areas\               ($table, $typecolumn, $geomcol,                       ); }
           when 'ga_point'       { draw-ga-points\           ($table,                                              ); }
           when 'spotheight'     { draw-spot-heights\        (                                                     ); }

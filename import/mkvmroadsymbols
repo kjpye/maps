@@ -36,6 +36,10 @@ insert into vm_road_types (function, class, sealed, symbol, dual, comment) value
 insert into vm_road_types (function, class, sealed, symbol, dual, comment) values ('road',          '12', 'u',  22, 0, 'foot track');
 insert into vm_road_types (function, class, sealed, symbol, dual, comment) values ('footbridge',    '11', 's', 268, 0, 'foot bridge');
 insert into vm_road_types (function, class, sealed, symbol, dual, comment) values ('footbridge',    '11', 'u', 268, 0, 'foot bridge');
+insert into vm_road_types (function, class, sealed, symbol, dual, comment) values ('foot_bridge',   '11', 's', 268, 0, 'foot bridge');
+insert into vm_road_types (function, class, sealed, symbol, dual, comment) values ('foot_bridge',   '11', 'u', 268, 0, 'foot bridge');
+insert into vm_road_types (function, class, sealed, symbol, dual, comment) values ('foot_bridge',   '12', 's', 268, 0, 'foot bridge');
+insert into vm_road_types (function, class, sealed, symbol, dual, comment) values ('foot_bridge',   '12', 'u', 268, 0, 'foot bridge');
 insert into vm_road_types (function, class, sealed, symbol, dual, comment) values ('ford',           '',   '', 253, 0, '');
 insert into vm_road_types (function, class, sealed, symbol, dual, comment) values ('bridge',         '',   '', 260, 0, 'bridge');
 insert into vm_road_types (function, class, sealed, symbol, dual, comment) values ('connector',      '',   '',   0, 0, '');
