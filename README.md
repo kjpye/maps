@@ -48,6 +48,14 @@ To download the data, try getting an extract fromn the osm database from somewhe
 
 I have used http://download.geofabrik.de/australia-oceania-latest.osm.pbf to get all of Australia.
 
+## Symbols ##
+
+You will need a set of symbols for the map. These are stored in a database table. Which table to use is specified at run time.
+
+A default set of symbols is supplied. These are based on the symbols used for Australian 1:250000 and 1:100000 mapping, as described in "Symbol Dictionary for Topographic Map Production" produced by the National Mapping Division of Geoscience Australia in 2006 (currently available at http://www.ga.gov.au/mapspecs/250k100k/pdfs/v4nmdtoposymdicwww2.pdf).
+
+These symbols are supplemented by some code in the mkmap script, particularly for asymmetric line symbology. A few symbols are not rendered correctly. Updates are welcome.
+
 ## Usage ##
 
 `mkmap lat=dd.ddd long=ddd.ddd`
