@@ -1087,7 +1087,7 @@ sub draw-vm-roads() {
 
     note "Centre lines of roads..." if $debug >= 1;
 
-    $sth = $dbh.prepare("SELECT ftype-code, st_astext(geom) AS shape
+    $sth = $dbh.prepare("SELECT ftype_code, st_astext(geom) AS shape
                          FROM vm_tr_road
                          WHERE pfi = ?
                         ");
