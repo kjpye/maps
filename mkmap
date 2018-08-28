@@ -95,6 +95,7 @@ my (Bool $ongrid, Bool $ongraticule) = (False, False);
 my (Bool $bleedright, Bool $bleedleft, Bool $bleedtop, Bool $bleedbottom) = (False, False, False, False);
 my %emphasise-roads;
 my $outputfile;
+my $title;
 
 sub process-option($arg is copy) {
     note "Processing option $arg" if $debug >= 1;
@@ -111,6 +112,10 @@ sub process-option($arg is copy) {
     if $arg ~~ m:i/ ^ emph '=' (.*)/ {
         %emphasise-roads{$0} = 1;
         return;
+    }
+    if $arg ~~ m:i/^title '=' (.*)/ {
+      $title = $0;
+      return;
     }
 # ignore whitespace in all remaining options
     $arg ~~ s:g/\s+//;
@@ -280,6 +285,8 @@ EOF
       8 8 moveto
       ($copyright) show
       $paperwidth 8 sub 8 moveto (1:$scale) dup stringwidth pop neg 0 rmoveto show
+      /Helvetica-Narrow-Latin1 8 selectfont
+      $paperwidth 2 div 8 moveto ($title) dup stringwidth pop neg 2 div 0 rmoveto show
     EOF
   }
 }
@@ -697,9 +704,9 @@ sub draw-lines(Str $table, Str $columns, Str $geomcol, $default, Str $widthcol) 
       }
       $featuretype ~~ s/\:$//;
     
-      my $symbol = $default // 0;
+      my $symbol = $default;
     %linefeaturetypes{$table}{$featuretype}++;
-      if ! $symbol {
+      if ! $symbol || $symbol eq '0' {
         if $featuretype ~~ /^\d+$/ {
           $symbol = $featuretype;
         } else {
@@ -936,19 +943,19 @@ sub put-outline(Str $text, Real $x, Real $y, Real $size, Str $colour, Real $thic
 
 sub draw-polygon-outline-names(Str $table, Str $column, Real $size, Real $thickness, Str $colour) {
   note "$table outline names..." if $debug >= 1;
-  my $geomcol = %defaults{'linegeometry'};
-  $geomcol = 'geom';
-  my $sth = $dbh.prepare("SELECT $column, st_astext(st_envelope($geomcol)) AS bbox
+#  my $geomcol = %defaults{'areageometry'};
+  my $geomcol = 'geom';
+  my $sth = $dbh.prepare("SELECT $column AS name, st_astext(st_envelope($geomcol)) AS bbox
                           FROM $table
                           WHERE $geomcol && $rect
                          ");
   
   if $sth.execute {
     
-    for $sth.allrows(:arrayofhash) -> $row {
-      last unless $row<column>.defined;
+    for $sth.allrows(:array-of-hash) -> $row {
+      last unless $row<name>.defined;
 
-       my $name  = $row<column>.Str;
+       my $name  = $row<name>.Str;
        my $shape = $row<bbox>.Str;
        my @x = read-points($shape);
        my $centrex = (@x[0] + @x[4]) / 2;
@@ -2323,27 +2330,27 @@ sub draw-objects(Real $xoff, Real $yoff, Real $slope) {
       note "Drawing $feature: '$draw' '$table' '$typecolumn' ($order)" if $debug >= 5;
       if $order > 0 && %drawobjects{$feature.lc} {
         given $draw {
-          when 'ga_area'        { draw-ga-areas\            ($table                                               ); }
-          when 'outline'        { draw-polygon-outline-names($table, $typecolumn, 8, 0.2, '1 0 .86 0'             ); }
-          when 'vm_road'        { draw-vm-roads\            (                                                     ); }
-          when 'ga_road'        { draw-ga-roads\            (                                                     ); }
-          when 'osm_road'       { draw-osmroads\            (                                                     ); }
-          when 'ga_wline'       { draw-ga-wlines\           ($table,                                              ); }
-          when 'property'       { draw-properties\          (                                                     ); }
           when 'point'          { draw-points\              ($table, $typecolumn, $geomcol, $orientcol, $widthcol ); }
-          when 'contour'        { draw-contours\            ($table, $typecolumn, $geomcol,             $widthcol ); } # widthcol is contour elevation
           when 'line'           { draw-lines\               ($table, $typecolumn, $geomcol, $default,   $widthcol ); }
           when 'area'           { draw-areas\               ($table, $typecolumn, $geomcol,                       ); }
-          when 'ga_point'       { draw-ga-points\           ($table,                                              ); }
+          when 'text'           { draw-text\                ($table, $typecolumn, $geomcol,             $widthcol ); }
+          when 'contour'        { draw-contours\            ($table, $typecolumn, $geomcol,             $widthcol ); } # widthcol is contour elevation
+          when 'outline'        { draw-polygon-outline-names($table, $typecolumn, 8, 0.2, '1 0 .86 0'             ); } # typecolumn is text to print
+          when 'property'       { draw-properties\          (                                                     ); }
           when 'spotheight'     { draw-spot-heights\        (                                                     ); }
           when 'roadpoint'      { draw-roadpoints\          (                                                     ); }
           when 'treeden'        { draw-treeden\             (                                                     ); }
           when 'graticule'      { draw-graticule\           (                                                     ); }
           when 'grid'           { draw-grid\                (                                                     ); }
-          when 'text'           { draw-text\                ($table, $typecolumn, $geomcol,             $widthcol          ); }
           when 'ga_annotation'  { draw-ga-annotations\      (                                                     ); }
           when 'userannotation' { draw-userannotations\     ($xoff, $yoff, $slope                                 ); }
-          default               { note "Unknown draw type $draw for feature $feature: objects ignored"; }
+          when 'ga_area'        { draw-ga-areas\            ($table                                               ); }
+          when 'vm_road'        { draw-vm-roads\            (                                                     ); }
+          when 'ga_road'        { draw-ga-roads\            (                                                     ); }
+          when 'osm_road'       { draw-osmroads\            (                                                     ); }
+          when 'ga_wline'       { draw-ga-wlines\           ($table,                                              ); }
+          when 'ga_point'       { draw-ga-points\           ($table,                                              ); }
+          default               { note "Unknown draw type $draw for feature $feature: object ignored"; }
         }
       }
     }
