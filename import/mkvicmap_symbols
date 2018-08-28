@@ -1,4 +1,4 @@
-DROP TABLE vicmap_symbols;
+DROP TABLE IF EXISTS vicmap_symbols;
 
 CREATE TABLE vicmap_symbols (
   type      text,
@@ -103,7 +103,7 @@ INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('text',  'place:2', 
 INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('text',  'place:1',                    14);
 
 
-DROP   TABLE vicmap_roadsymbols;
+DROP   TABLE IF EXISTS vicmap_roadsymbols;
 
 CREATE TABLE vicmap_roadsymbols (
   ftype     text,
