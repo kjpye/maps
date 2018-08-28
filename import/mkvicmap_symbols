@@ -74,7 +74,7 @@ INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('point', 'int_signal
 INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('point', 'road_end',                    0);
 INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('point', 'level_crossing',              0);
 INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('point', 'int_locality',                0);
-INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('point', 'gate',                        26);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('point', 'gate',                       26);
 INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('point', 'bridge',                    260);
 INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('point', 'tunnel',                      0);
 INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('point', 'barrier',                  1002);
@@ -82,7 +82,28 @@ INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('point', 'int_attrib
 INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('area',  'forest_medium',             200);
 INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('area',  'forest_scattered',          201);
 INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('area',  'forest_dense',                2);
-INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('point', 'spot_height',                   52);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('point', 'spot_height',                52);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('point', 'place:9',                   420);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('point', 'place:8',                   421);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('point', 'place:7',                   422);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('point', 'place:6',                   423);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('point', 'place:5',                   424);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('point', 'place:4',                   424);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('point', 'place:3',                   424);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('point', 'place:2',                   424);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('point', 'place:1',                   424);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('text',  'place:9',                     8);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('text',  'place:8',                     8);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('text',  'place:7',                     8);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('text',  'place:6',                     9);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('text',  'place:5',                    10);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('text',  'place:4',                    11);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('text',  'place:3',                    12);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('text',  'place:2',                    13);
+INSERT INTO vicmap_symbols (type, ftype, symbol_ga) VALUES ('text',  'place:1',                    14);
+
+
+DROP   TABLE vicmap_roadsymbols;
 
 CREATE TABLE vicmap_roadsymbols (
   ftype     text,

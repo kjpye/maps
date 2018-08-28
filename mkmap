@@ -1430,10 +1430,12 @@ sub draw-text(Str $table, Str $textcolumn, Str $geomcol, Str $widthcols) {
     if $widthtype ~~ /^\d+$/ {
       $width = $widthtype;
     } else {
+note "Getting text height for $table, $widthtype";
       $sth-symb.execute($table, $widthtype, 'text');
       while my @syms = $sth-symb.fetchrow_array {
         $width = @syms[0].Int;
       }
+note "Got $width";
     }
 	
     #next unless @display-feature[$featuretype]; ### TODO
