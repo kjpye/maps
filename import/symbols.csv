@@ -1,102 +1,14 @@
 featuretype,symbol,type,dbtable
-watercourse_area_river,10,area,vm_hy_water_area_polygon
-wb_lake,10,area,vm_hy_water_area_polygon
-runway,703,line,vm_tr_airport_infrastructure
-runway,703,point,vm_tr_airport_infrastructure
-runway,700,area,vm_tr_airport_infra_area_polygon
-OPEN,206,line,sa_railways
-CLOSED,210,line,sa_railways
-ART:SEAL,251,line,sa_roads
-ART:UNKN,251,line,sa_roads
-ART:UNSE,201,line,sa_roads
-ART:,251,line,sa_roads
-int_nosignal,0,point,vm_tr_road_infrastructure
-bridge_rail_o,260,point,vm_tr_rail_infrastructure
-wb_dam,82,point,vm_hy_water_point
-rail_station,222,point,vm_tr_rail_infrastructure
-tank_water,86,point,vm_hy_water_struct_point
-road_end,0,point,vm_tr_road_infrastructure
-dam_wall,925,line,vm_hy_water_struct_line
-contour_index,55,line,vm_el_contour
-contour,56,line,vm_el_contour
-contour_dep,58,line,vm_el_contour
-watercourse_channel_drain,940,line,vm_hy_watercourse
-connector_stream,0,line,vm_hy_watercourse
-connector_river,0,line,vm_hy_watercourse
-watercourse_river,92,line,vm_hy_watercourse
-watercourse_stream,940,line,vm_hy_watercourse
-connector_channel_drain,0,line,vm_hy_watercourse
-wb_lake,114,line,vm_hy_water_area_polygon
-watercourse_area_river,114,line,vm_hy_water_area_polygon
-BUS:SEAL,251,line,sa_roads
-COLL:SEAL,256,line,sa_roads
-COLL:UNKN,256,line,sa_roads
-COLL:UNSE,259,line,sa_roads
-FREE:SEAL,250,line,sa_roads
-FREE:UNKN,250,line,sa_roads
-HWY:SEAL,251,line,sa_roads
-HWY:UNKN,251,line,sa_roads
-HWY:UNSE,258,line,sa_roads
-LOCL:SEAL,257,line,sa_roads
-LOCL:UNKN,257,line,sa_roads
-LOCL:UNSE,253,line,sa_roads
-LOCL:,253,line,sa_roads
-SUBA:SEAL,256,line,sa_roads
-SUBA:UNKN,256,line,sa_roads
-SUBA:UNSE,259,line,sa_roads
-SUBA:,259,line,sa_roads
-TRK2:SEAL,257,line,sa_roads
-TRK2:UNKN,253,line,sa_roads
-TRK2:UNSE,253,line,sa_roads
-TRK2:,253,line,sa_roads
-TRK4:NONE,254,line,sa_roads
-TRK4:UNSE,254,line,sa_roads
-UND:SEAL,257,line,sa_roads
-UND:UNKN,259,line,sa_roads
-UND:,259,line,sa_roads
-:SEAL,257,line,sa_roads
-:UNKN,253,line,sa_roads
-:UNSE,253,line,sa_roads
+11:0,92,line,sa_topo_watercourses
+12:0,0,line,sa_topo_watercourses
+13:0,92,line,sa_topo_watercourses
 26:0,10,area,sa_topo_waterbodies
-27:0,908,area,sa_topo_waterbodies
 26:0,114,line,sa_topo_waterbodies
 27:0,114,line,sa_topo_waterbodies
-31:0,114,line,sa_topo_waterbodies
+27:0,908,area,sa_topo_waterbodies
 31:0,10,area,sa_topo_waterbodies
+31:0,114,line,sa_topo_waterbodies
 56:0,23,area,sa_topo_waterbodies
-11:0,92,line,sa_topo_watercourses
-13:0,92,line,sa_topo_watercourses
-12:0,0,line,sa_topo_watercourses
-GR,65,line,sa_conservation_npwsareserves
-NP,65,line,sa_conservation_npwsareserves
-RP,65,line,sa_conservation_npwsareserves
-CR,65,line,sa_conservation_npwsareserves
-CP,65,line,sa_conservation_npwsareserves
-RR,65,line,sa_conservation_npwsareserves
-WA,65,line,sa_conservation_npwsareserves
-storage facility:woolshed,40,point,vm_building_point
-storage facility:shed,40,point,vm_building_point
-storage facility:hay shed,40,point,vm_building_point
-building:undefined_building,40,point,vm_building_point
-building:house,40,point,vm_building_point
-place:1,424,point,vm_locality_point
-place:2,424,point,vm_locality_point
-place:3,424,point,vm_locality_point
-place:4,423,point,vm_locality_point
-place:5,423,point,vm_locality_point
-place:6,422,point,vm_locality_point
-place:7,422,point,vm_locality_point
-place:8,421,point,vm_locality_point
-place:9,421,point,vm_locality_point
-place:1,5,text,vm_locality_point
-place:2,5,text,vm_locality_point
-place:3,4,text,vm_locality_point
-place:4,4,text,vm_locality_point
-place:5,4,text,vm_locality_point
-place:6,4,text,vm_locality_point
-place:7,3,text,vm_locality_point
-place:8,3,text,vm_locality_point
-place:9,3,text,vm_locality_point
 admin facility:custodial service,0,point,foi_point
 admin facility:customer service centre,0,point,foi_point
 admin facility:law court,0,point,foi_point
@@ -107,32 +19,73 @@ admin facility:research station,0,point,foi_point
 admin facility:sheriffs office,0,point,foi_point
 admin facility:tourist information centre,0,point,foi_point
 admin facility:weather station,0,point,foi_point
+agricultural area:farm,0,polygon,foi_polygon
+agricultural area:vineyard,0,polygon,foi_polygon
+ART:,251,line,sa_roads
+ART:SEAL,251,line,sa_roads
+ART:UNKN,251,line,sa_roads
+ART:UNSE,201,line,sa_roads
+bridge_rail_o,260,point,vm_tr_rail_infrastructure
+building:house,40,point,vm_building_point
 building:ruin,0,point,foi_point
+building:undefined_building,40,point,vm_building_point
+BUS:SEAL,251,line,sa_roads
 cableway:cableway terminal,0,point,foi_point
+cableway:chairlift,0,line,foi_line
+cableway:poma tow,0,line,foi_line
+cableway:t-bar tow,0,line,foi_line
 care facility:aged care,0,point,foi_point
 care facility:child care,0,point,foi_point
 care facility:disability support centre,0,point,foi_point
+CLOSED,210,line,sa_railways
+COLL:SEAL,256,line,sa_roads
+COLL:UNKN,256,line,sa_roads
+COLL:UNSE,259,line,sa_roads
+commercial facility:business park,0,polygon,foi_polygon
 commercial facility:entertainment centre,0,point,foi_point
+commercial facility:shopping centre,0,polygon,foi_polygon
+commercial facility:shopping precinct,0,polygon,foi_polygon
 communication service:broadcast radio facility,0,point,foi_point
 communication service:broadcast television facility,0,point,foi_point
 communication service:radio communication facility,0,point,foi_point
 communication service:telephone exchange,0,point,foi_point
 community space:camp ground,0,point,foi_point
+community space:camp ground,0,polygon,foi_polygon
+community space:caravan park,0,polygon,foi_polygon
+community space:parking area,0,polygon,foi_polygon
 community space:rest area,0,point,foi_point
+community space:showground,0,polygon,foi_polygon
 community venue:community centre,0,point,foi_point
 community venue:hall,0,point,foi_point
 community venue:neighbourhood house,0,point,foi_point
 community venue:senior citizens,0,point,foi_point
+connector_channel_drain,0,line,vm_hy_watercourse
+connector_river,0,line,vm_hy_watercourse
+connector_stream,0,line,vm_hy_watercourse
+contour,56,line,vm_el_contour
+contour_dep,58,line,vm_el_contour
+contour_index,55,line,vm_el_contour
 control point:survey monument,0,point,foi_point
 control point:trig station,0,point,foi_point
+CP,65,line,sa_conservation_npwsareserves
+CR,65,line,sa_conservation_npwsareserves
 cultural centre:aquarium,0,point,foi_point
 cultural centre:arboretum,0,point,foi_point
 cultural centre:art gallery,0,point,foi_point
 cultural centre:library,0,point,foi_point
 cultural centre:museum,0,point,foi_point
 cultural centre:observatory,0,point,foi_point
+dam_wall,925,line,vm_hy_water_struct_line
+defence site:airforce base,0,polygon,foi_polygon
 defence site:barracks,0,point,foi_point
+defence site:military area,0,polygon,foi_polygon
+defence site:naval base,0,polygon,foi_polygon
+dumping ground:landfill,0,polygon,foi_polygon
+dumping ground:scrap yard,0,polygon,foi_polygon
+dumping ground:spoil banks,0,polygon,foi_polygon
+dumping ground:tailings,0,polygon,foi_polygon
 dumping ground:transfer station,0,point,foi_point
+education centre:education complex,0,polygon,foi_polygon
 education centre:further education,0,point,foi_point
 education centre:primary school,0,point,foi_point
 education centre:primary/secondary school,0,point,foi_point
@@ -142,111 +95,118 @@ education centre:special school,0,point,foi_point
 education centre:tertiary institution,0,point,foi_point
 education centre:university,0,point,foi_point
 emergency facility:ambulance station,0,point,foi_point
+emergency facility:ambulance station,401,point,vm_foi_point
 emergency facility:coast guard,0,point,foi_point
+emergency facility:emergency complex,0,polygon,foi_polygon
 emergency facility:emergency coordination centre,0,point,foi_point
 emergency facility:fire lookout,0,point,foi_point
 emergency facility:fire station,0,point,foi_point
+emergency facility:fire station,404,point,vm_foi_point
 emergency facility:fire station (forest industry),0,point,foi_point
 emergency facility:lifesaving club,0,point,foi_point
 emergency facility:neighbourhood safer place,0,point,foi_point
 emergency facility:police station,0,point,foi_point
+emergency facility:police station,406,point,vm_foi_point
 emergency facility:refuge,0,point,foi_point
 emergency facility:ses unit,0,point,foi_point
+excavation site:abandoned mine,0,polygon,foi_polygon
 excavation site:abandoned quarry,0,point,foi_point
+excavation site:abandoned quarry,0,polygon,foi_polygon
 excavation site:adit,0,point,foi_point
 excavation site:mine,0,point,foi_point
+excavation site:mine,0,polygon,foi_polygon
 excavation site:quarry,0,point,foi_point
+excavation site:quarry,0,polygon,foi_polygon
+FREE:SEAL,250,line,sa_roads
+FREE:UNKN,250,line,sa_roads
+GR,65,line,sa_conservation_npwsareserves
 health facility:community health centre,0,point,foi_point
 health facility:maternal/child health centre,0,point,foi_point
 hospital:bush nursing hospital,0,point,foi_point
 hospital:day procedure centre,0,point,foi_point
 hospital:general hospital,0,point,foi_point
 hospital:general hospital (emergency),0,point,foi_point
+hospital:hospital complex,0,polygon,foi_polygon
+HWY:SEAL,251,line,sa_roads
+HWY:UNKN,251,line,sa_roads
+HWY:UNSE,258,line,sa_roads
 industrial facility:abattoir,0,point,foi_point
 industrial facility:brickworks,0,point,foi_point
 industrial facility:dairy,0,point,foi_point
 industrial facility:factory,0,point,foi_point
 industrial facility:mill/timber operations,0,point,foi_point
+industrial facility:proving ground,0,polygon,foi_polygon
+int_nosignal,0,point,vm_tr_road_infrastructure
 landmark:cairn,0,point,foi_point
 landmark:flag pole,0,point,foi_point
 landmark:fountain,0,point,foi_point
 landmark:lookout,0,point,foi_point
 landmark:monument,0,point,foi_point
 landmark:tourist attraction,0,point,foi_point
+landmark:tourist attraction,0,polygon,foi_polygon
 landmark:tower,0,point,foi_point
+LOCL:,253,line,sa_roads
+LOCL:SEAL,257,line,sa_roads
+LOCL:UNKN,257,line,sa_roads
+LOCL:UNSE,253,line,sa_roads
+NP,65,line,sa_conservation_npwsareserves
+OPEN,206,line,sa_railways
+physiographic:lava flow,0,line,foi_line
+pipeline facility:gas plant,0,polygon,foi_polygon
+pipeline facility:oil refinery,0,polygon,foi_polygon
+pipeline facility:oil terminal,0,polygon,foi_polygon
 pipeline facility:pumping station,0,point,foi_point
+pipeline facility:treatment plant,0,polygon,foi_polygon
+pipeline:gas pipeline,0,line,foi_line
+pipeline:oil pipeline,0,line,foi_line
+place:1,424,point,vm_locality_point
+place:1,5,text,vm_locality_point
+place:2,424,point,vm_locality_point
+place:2,5,text,vm_locality_point
+place:3,424,point,vm_locality_point
+place:3,4,text,vm_locality_point
+place:4,423,point,vm_locality_point
+place:4,4,text,vm_locality_point
+place:5,423,point,vm_locality_point
+place:5,4,text,vm_locality_point
+place:6,422,point,vm_locality_point
+place:6,4,text,vm_locality_point
+place:7,3,text,vm_locality_point
+place:7,422,point,vm_locality_point
+place:8,3,text,vm_locality_point
+place:8,421,point,vm_locality_point
+place:9,3,text,vm_locality_point
+place:9,421,point,vm_locality_point
 place:historic site,0,point,foi_point
+place:historic site,0,polygon,foi_polygon
+place of worship:church,1007,point,vm_foi_point
 place of worship:gurdwara (sikh),0,point,foi_point
 place of worship:monastry,0,point,foi_point
 place of worship:mondir (hindu),0,point,foi_point
 place of worship:mosque,0,point,foi_point
 place of worship:synagogue,0,point,foi_point
 place of worship:vihara (buddhist),0,point,foi_point
-power facility:cooling tower,0,point,foi_point
-power facility:wind farm,0,point,foi_point
-power facility:wind turbine,0,point,foi_point
-recreational resource:amphitheatre,0,point,foi_point
-recreational resource:club house,0,point,foi_point
-recreational resource:grandstand,0,point,foi_point
-recreational resource:hut,0,point,foi_point
-recreational resource:picnic site,0,point,foi_point
-recreational resource:playground,0,point,foi_point
-recreational resource:rotunda,0,point,foi_point
-residential building:retirement village,0,point,foi_point
-sign:emergency marker,0,point,foi_point
-sign:snow pole,0,point,foi_point
-sport facility:boating club,0,point,foi_point
-sport facility:swimming pool,0,point,foi_point
-storage facility:boathouse,0,point,foi_point
-storage facility:depot,0,point,foi_point
-storage facility:silo,0,point,foi_point
-storage facility:tank,0,point,foi_point
-cableway:chairlift,0,line,foi_line
-cableway:poma tow,0,line,foi_line
-cableway:t-bar tow,0,line,foi_line
-physiographic:lava flow,0,line,foi_line
-pipeline:gas pipeline,0,line,foi_line
-pipeline:oil pipeline,0,line,foi_line
-power line:power sub transmission,0,line,foi_line
-power line:power transmission,0,line,foi_line
-agricultural area:farm,0,polygon,foi_polygon
-agricultural area:vineyard,0,polygon,foi_polygon
-commercial facility:business park,0,polygon,foi_polygon
-commercial facility:shopping centre,0,polygon,foi_polygon
-commercial facility:shopping precinct,0,polygon,foi_polygon
-community space:camp ground,0,polygon,foi_polygon
-community space:caravan park,0,polygon,foi_polygon
-community space:parking area,0,polygon,foi_polygon
-community space:showground,0,polygon,foi_polygon
-defence site:airforce base,0,polygon,foi_polygon
-defence site:military area,0,polygon,foi_polygon
-defence site:naval base,0,polygon,foi_polygon
-dumping ground:landfill,0,polygon,foi_polygon
-dumping ground:scrap yard,0,polygon,foi_polygon
-dumping ground:spoil banks,0,polygon,foi_polygon
-dumping ground:tailings,0,polygon,foi_polygon
-education centre:education complex,0,polygon,foi_polygon
-emergency facility:emergency complex,0,polygon,foi_polygon
-excavation site:abandoned mine,0,polygon,foi_polygon
-excavation site:abandoned quarry,0,polygon,foi_polygon
-excavation site:mine,0,polygon,foi_polygon
-excavation site:quarry,0,polygon,foi_polygon
-hospital:hospital complex,0,polygon,foi_polygon
-industrial facility:proving ground,0,polygon,foi_polygon
-landmark:tourist attraction,0,polygon,foi_polygon
-pipeline facility:gas plant,0,polygon,foi_polygon
-pipeline facility:oil refinery,0,polygon,foi_polygon
-pipeline facility:oil terminal,0,polygon,foi_polygon
-pipeline facility:treatment plant,0,polygon,foi_polygon
-place:historic site,0,polygon,foi_polygon
 power facility:biomass power station,0,polygon,foi_polygon
 power facility:coal power station,0,polygon,foi_polygon
+power facility:cooling tower,0,point,foi_point
 power facility:gas power station,0,polygon,foi_polygon
 power facility:hydro power station,0,polygon,foi_polygon
 power facility:power sub station,0,polygon,foi_polygon
 power facility:power terminal station,0,polygon,foi_polygon
+power facility:wind farm,0,point,foi_point
+power facility:wind turbine,0,point,foi_point
+power line:power sub transmission,0,line,foi_line
+power line:power transmission,0,line,foi_line
+rail_station,222,point,vm_tr_rail_infrastructure
+recreational resource:amphitheatre,0,point,foi_point
 recreational resource:bmx track,0,polygon,foi_polygon
+recreational resource:club house,0,point,foi_point
+recreational resource:grandstand,0,point,foi_point
 recreational resource:group camp,0,polygon,foi_polygon
+recreational resource:hut,0,point,foi_point
+recreational resource:picnic site,0,point,foi_point
+recreational resource:playground,0,point,foi_point
+recreational resource:rotunda,0,point,foi_point
 recreational resource:skate park,0,polygon,foi_polygon
 reserve:amusement centre,0,polygon,foi_polygon
 reserve:cemetery,0,polygon,foi_polygon
@@ -256,9 +216,20 @@ reserve:gardens,0,polygon,foi_polygon
 reserve:national park,0,polygon,foi_polygon
 reserve:park,0,polygon,foi_polygon
 reserve:zoo,0,polygon,foi_polygon
+residential building:retirement village,0,point,foi_point
+road_end,0,point,vm_tr_road_infrastructure
+RP,65,line,sa_conservation_npwsareserves
+RR,65,line,sa_conservation_npwsareserves
+runway,700,area,vm_tr_airport_infra_area_polygon
+runway,703,line,vm_tr_airport_infrastructure
+runway,703,point,vm_tr_airport_infrastructure
+:SEAL,257,line,sa_roads
+sign:emergency marker,0,point,foi_point
+sign:snow pole,0,point,foi_point
 sport facility:athletic field,0,polygon,foi_polygon
 sport facility:baseball field,0,polygon,foi_polygon
 sport facility:basketball court,0,polygon,foi_polygon
+sport facility:boating club,0,point,foi_point
 sport facility:bowling green,0,polygon,foi_polygon
 sport facility:croquet green,0,polygon,foi_polygon
 sport facility:equestrian facility,0,polygon,foi_polygon
@@ -273,18 +244,51 @@ sport facility:netball court,0,polygon,foi_polygon
 sport facility:racecourse,0,polygon,foi_polygon
 sport facility:sports complex,0,polygon,foi_polygon
 sport facility:sports ground,0,polygon,foi_polygon
+sport facility:swimming pool,0,point,foi_point
 sport facility:target range,0,polygon,foi_polygon
 sport facility:tennis court,0,polygon,foi_polygon
 sport facility:training track,0,polygon,foi_polygon
 sport facility:velodrome,0,polygon,foi_polygon
 stockpile:over burden pile,0,polygon,foi_polygon
+storage facility:boathouse,0,point,foi_point
+storage facility:depot,0,point,foi_point
 storage facility:gas tank,0,polygon,foi_polygon
 storage facility:grain bunker,0,polygon,foi_polygon
 storage facility:hangar,0,polygon,foi_polygon
+storage facility:hay shed,40,point,vm_building_point
 storage facility:oil tank,0,polygon,foi_polygon
 storage facility:petroleum tank,0,polygon,foi_polygon
+storage facility:shed,40,point,vm_building_point
+storage facility:silo,0,point,foi_point
 storage facility:stockyard,0,polygon,foi_polygon
-place of worship:church,1007,point,vm_foi_point
-emergency facility:ambulance station,401,point,vm_foi_point
-emergency facility:fire station,404,point,vm_foi_point
-emergency facility:police station,406,point,vm_foi_point
+storage facility:tank,0,point,foi_point
+storage facility:woolshed,40,point,vm_building_point
+SUBA:,259,line,sa_roads
+SUBA:SEAL,256,line,sa_roads
+SUBA:UNKN,256,line,sa_roads
+SUBA:UNSE,259,line,sa_roads
+tank_water,86,point,vm_hy_water_struct_point
+TRK2:,253,line,sa_roads
+TRK2:SEAL,257,line,sa_roads
+TRK2:UNKN,253,line,sa_roads
+TRK2:UNSE,253,line,sa_roads
+TRK4:NONE,254,line,sa_roads
+TRK4:UNSE,254,line,sa_roads
+UND:,259,line,sa_roads
+UND:SEAL,257,line,sa_roads
+UND:UNKN,259,line,sa_roads
+:UNKN,253,line,sa_roads
+:UNSE,253,line,sa_roads
+WA,65,line,sa_conservation_npwsareserves
+flat_sti,11,area,vm_hy_water_area_polygon
+flat_sti,114,line,vm_hy_water_area_polygon
+wetland_swamp,908,area,vm_hy_water_area_polygon
+wetland_swamp,114,line,vm_hy_water_area_polygon
+watercourse_area_river,10,area,vm_hy_water_area_polygon
+watercourse_area_river,114,line,vm_hy_water_area_polygon
+watercourse_channel_drain,940,line,vm_hy_watercourse
+watercourse_river,92,line,vm_hy_watercourse
+watercourse_stream,940,line,vm_hy_watercourse
+wb_dam,82,point,vm_hy_water_point
+wb_lake,10,area,vm_hy_water_area_polygon
+wb_lake,114,line,vm_hy_water_area_polygon

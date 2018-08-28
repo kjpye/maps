@@ -113,7 +113,7 @@ sub process-option($arg is copy) {
         %emphasise-roads{$0} = 1;
         return;
     }
-    if $arg ~~ m:i/^title '=' (.*)/ {
+    if $arg ~~ m:i/^title <.ws> '=' <.ws> (.*)/ {
       $title = $0;
       return;
     }
