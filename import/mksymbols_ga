@@ -1067,6 +1067,7 @@ INSERT INTO Symbols_GA (name, dependencies, body)
 VALUES ('filledcircle', '', '
 /filledcircle {
   gsave
+    newpath
     setcmykcolor 4 1 roll translate rotate 0 0 3 -1 roll 0 360 arc
     closepath fill
   grestore
@@ -2668,6 +2669,7 @@ INSERT INTO Symbols_GA (name, dependencies, body)
 VALUES ('point103', 'filledcircle', '
 /point103 {% Petroleum Well
   /featurewidth exch def
+  newpath
   .3 % radius
   0 0 0 1 % color
   filledcircle
@@ -2731,6 +2733,7 @@ VALUES ('point222', 'filledcircle', '
 /point222 { % Railway station
   /featurewidth exch def
   gsave
+    newpath
     .5
     0 0 0 1
     filledcircle
@@ -3134,6 +3137,7 @@ INSERT INTO Symbols_GA (name, dependencies, body)
 VALUES ('point50', 'filledcircle', '
 /point50 { % Benchmark 
   /featurewidth exch def
+  newpath
   .5
   0 0 0 1
   filledcircle
@@ -3307,6 +3311,7 @@ VALUES ('point51', 'filledcircle', '
   /featurewidth exch def
   gsave
     translate
+    newpath
     0 0
     .075
     0 0 0 1
@@ -3353,6 +3358,7 @@ INSERT INTO Symbols_GA (name, dependencies, body)
 VALUES ('point52', 'filledcircle', '
 /point52 { % Spot Elevation
   /featurewidth exch def
+  newpath
   .1825
   0 0 0 1
   filledcircle
@@ -3364,6 +3370,7 @@ VALUES ('point520', 'filledcircle', '
 /point520 { % Spot Elevation (WAC maximum)
   /featurewidth exch def
   gsave
+    newpath
     .35
     0 0 0 1
     filledcircle
@@ -3502,7 +3509,7 @@ VALUES ('point719', 'aero_start aero_outer aero_inner aero_pass aero_anchor aero
 ');
 
 INSERT INTO Symbols_GA (name, dependencies, body)
-VALUES ('point72', 'filledcircle', '
+VALUES ('point72', '', '
 /point72 { % Lighthouse
   /featurewidth exch def
   gsave
@@ -3528,6 +3535,7 @@ VALUES ('point73', 'filledcircle', '
   /featurewidth exch def
   gsave
     translate rotate
+    newpath
     0 0 0
     .375 1 .1 0 .1
     filledcircle 
@@ -3772,6 +3780,7 @@ INSERT INTO Symbols_GA (name, dependencies, body)
 VALUES ('point1003', 'filledcircle', '
 /point1003 { % Roundabout
   /featurewidth exch def
+  newpath
   1.0 0 1 1 0
   filledcircle 
 } bind def
@@ -3781,6 +3790,7 @@ INSERT INTO Symbols_GA (name, dependencies, body)
 VALUES ('point1004', 'filledcircle', '
 /point1004 { % Intersection -- signal
   /featurewidth exch def
+  newpath
   1.0 .70 .9 0 0
   filledcircle 
 } bind def
