@@ -6,7 +6,7 @@ CREATE TABLE Symbols_GA (
   dependencies text
 );
 
-GRANT select ON Symbols_GA TO ro;
+-- GRANT select ON Symbols_GA TO ro;
 
 INSERT INTO Symbols_GA (name, dependencies, body)
 VALUES ('draw_dot', '', '
@@ -659,7 +659,7 @@ VALUES ('pattern200', 'draw_dw10_dots', '
   /PaintProc
   {
     begin
-      .15 0 .43 0 setcmykcolor
+      0 0 0 0 setcmykcolor
       draw_dw10_dots
     end
   } bind
@@ -680,7 +680,7 @@ VALUES ('pattern201', 'draw_dw10_dots', '
   /PaintProc
   {
     begin
-      0 0 0 0 setcmykcolor
+      .15 0 .43 0 setcmykcolor
       draw_dw10_dots
     end
   } bind
@@ -1139,6 +1139,7 @@ VALUES ('area2', 'cmykfill', '
 INSERT INTO Symbols_GA (name, dependencies, body)
 VALUES ('area200', 'pattern200 pattfill', '
 /area200 { % Forest or shrub (dense) -- should be patterned
+  gsave .15 0 .43 0 cmykfill grestore
   pattern200 pattfill
 } bind def
 ');
@@ -1146,7 +1147,6 @@ VALUES ('area200', 'pattern200 pattfill', '
 INSERT INTO Symbols_GA (name, dependencies, body)
 VALUES ('area201', 'pattern201 pattfill cmykfill', '
 /area201 { % Forest or shrub (sparse) -- should be patterned
-  gsave .15 0 .43 0 cmykfill grestore
   pattern201 pattfill
 } bind def
 ');
@@ -3559,11 +3559,14 @@ VALUES ('point754', '', '
 } bind def
 ');
 
+-- actual location of top left point should be (-0.83796822, 0.96841815)
+
 INSERT INTO Symbols_GA (name, dependencies, body)
 VALUES ('point756', '', '
 /point756 { % Wreck -- bare or tidal
   /featurewidth exch def
   gsave
+    0 0 0 1 setcmykcolor
     translate rotate
     .1 setlinewidth
     0 0 0.25 0 360 arc

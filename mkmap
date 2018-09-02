@@ -95,7 +95,7 @@ my (Bool $ongrid, Bool $ongraticule) = (False, False);
 my (Bool $bleedright, Bool $bleedleft, Bool $bleedtop, Bool $bleedbottom) = (False, False, False, False);
 my %emphasise-roads;
 my $outputfile;
-my $title;
+my $title = '';
 
 sub process-option($arg is copy) {
     note "Processing option $arg" if $debug >= 1;
