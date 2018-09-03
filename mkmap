@@ -100,13 +100,12 @@ my $title = '';
 sub process-option-file($file, $error) {
   if $file.IO.e and $file.IO.f and $file.IO.r {
 note "process-option-file: $file ($error)";
-    for $file.lines {
-.say;
-      s/'#' .*//;
-      s/^\s+//;
-      s/\s+$//;
-      next unless $_;
-      process-option($_);
+    for $file.IO.lines -> $line is copy;{
+      $line ~~ s/'#' .*//;
+      $line ~~ s/^\s+//;
+      $line ~~ s/\s+$//;
+      next unless $line;
+      process-option($line);
     }
   } else {
     fail "Could not open $file" if $error;
