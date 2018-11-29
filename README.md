@@ -32,7 +32,7 @@ How to populate the VicMap database.
   * Work out where the .shp files have been put.
   * Create a postgresql database: "createdb maps".
   * Ensure that postgis has been installed in that database.
-  * For each shp file (except for things like EXTRACT_POLYGON which simply contains the boundary of the data you have), run "shp2pqsql -a -D -s 4326 <shapefile> [<tablename>] | psql maps", except, the first time you use a particular table, use "-c" instead of "-a". The tablename is optional, but I usually create the tables as vm_<name> to avoid conflicts. Some of the other code assumes this.
+  * For each shp file (except for things like EXTRACT_POLYGON which simply contains the boundary of the data you have), run "shp2pqsql -a -D -s 4326 \<shapefile\> [\<tablename\>] | psql maps", except, the first time you use a particular table, use "-c" instead of "-a". The tablename is optional, but I usually create the tables as vm_<name> to avoid conflicts. Some of the other code assumes this.
   * Fix up some database tables. The code assumes that certain types of tables have certain columns, and they don't always exist, so you need to create those columns with a default value, usually zero: "psql maps -c 'alter table tr_road_infrastructure add column width float default 0'". [Currently unnecessary]
   * You will also need to populate the database with the postscript definitions of all the symbols (the symbols_ga table) and the mapping from Vicmap objects to those symbols (the vicmap.symbols table): "psql -d maps -f mksymbols_ga" and "psql -d maps -f mkvicmap_symbols". These will both give errors the first time they are run as they delete and then recreate tables.
 
