@@ -234,7 +234,7 @@ sub process-option($arg is copy) {
 	$grid-spacing = $0;
 	$grid-spacing *= 1000 if $1.defined && $1.lc eq 'k';
     }
-    when m:i/^ graticule[spacing]? \= (\d+) (<[dDmM]>?) $/ {
+    when m:i/^ graticule[spacing]? \= ([\d*\.]?\d+) (<[dDmM]>?) $/ {
 	$graticule-spacing = $0;
 	$graticule-spacing /= 60 unless $1.lc eq 'd';
     }

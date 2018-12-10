@@ -1,4 +1,4 @@
-file /home/kevin/Downloads/latest-csv-export.csv
+file /home/kevinp/tmp/ToiletmapExport_180901_090000.csv
 table PublicToilets
 columns {
   ToiletID integer
@@ -32,6 +32,7 @@ columns {
   LHTransfer boolean
   RHTransfer boolean
   AdultChange boolean
+  ChangingPlaces boolean
   IsOpen text
   OpeningHoursSchedule text
   OpeningHoursNote text
