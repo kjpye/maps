@@ -526,7 +526,7 @@ print_row(int p, int number, struct table *table)
 			{
 			  char *bb;
 			  print_shape(&bb, NULL, pointer);
-			  printf("\nBBOX: %s\n", bb);
+			  // printf("\nBBOX: %s\n", bb);
 			} else {
 			  if(debug)printf("pointer %x ", pointer);
 			  find_lval(&ptr, &length, pointer);
@@ -540,7 +540,7 @@ print_row(int p, int number, struct table *table)
 		      if (strcmp("SHAPE", columnp->name)==0)
 			{
 			  print_shape2(&bb, NULL, str);
-			  printf("\nBBOX: %s\n", bb);
+			  // printf("\nBBOX: %s\n", bb);
 			} else {
 			  put_rbytes(str, length);
 			}

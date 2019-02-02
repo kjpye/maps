@@ -4,9 +4,6 @@ use v6;
 
 use DBIish;
 
-my $db = shift() // 'maps';
-my $prefix = shift() // 'ga_';
-
 my %table = (AerialCableway => 'line',
              AircraftFacilityPoints => 'point',
              Annotations => 'area',
@@ -137,8 +134,8 @@ my %columndesc = (
                RELATION => 'relation text',
                RETIRED => 'retired timestamp',
                SEANAME => 'seaname text',
-               SHAPE_Area => 'shape_area float',
-               SHAPE_Length => 'shape_length float',
+               SHAPE_AREA => 'shape_area float',
+               SHAPE_LENGTH => 'shape_length float',
                SHAPE => 'shape geometry',
                SOURCE => 'source source',
                SRN => 'srn text',
@@ -154,28 +151,18 @@ my %columndesc = (
 my %tables;
 my $debug = 0;
 $debug = 1;
-
-my $dbh = DBI.connect("dbi:Pg:dbname=$db", "", "", {AutoCommit => 1});
-my $sth = $dbh.prepare("SELECT name, type FROM ${prefix}FeatureType");
-$sth.execute();
-
 my @row;
 my $max-featuretype = 0;
-while @row = $sth.fetchrow_array {
-  my $name = @row[0];
-  my $type = @row[1];
-  %featuretype{$name} = $type;
-  $max-featuretype = $type if $type > $max-featuretype;
-}
+my $dbh;
 
-sub get-featuretype($name) {
+sub get-featuretype($name, $prefix) {
     return %featuretype{$name} if defined %featuretype{$name};
     my $type = ++$max-featuretype;
     %featuretype{$name} = $type;
     $name ~~ s:g/\'/\\'/;
     my $sth = $dbh.prepare("INSERT INTO {$prefix}FeatureType (name, type) VALUES (?, ?);");
     $sth.execute($name, $type);
-    print STDERR "Added featuretype $type ($name) to database\n"if $debug;
+    $*ERR.say: "Added featuretype $type ($name) to database\n" if $debug;
     $type;
 }
 
@@ -183,20 +170,128 @@ sub get-featuretype($name) {
 my $objects = 0;
 my $columns = '';
 my $columnvalues = '';
-my $table-type = 0;
+my $table-type = '';
 my $table-name;
 
-sub do-insert {
-    if $columns && $table_type {
+sub do-insert($prefix){
+    if $columns && $table-type {
 	$columns ~~ s/\,\s*$//;
 	$columnvalues ~~ s/\,\s*$//;
-	my $sth = $dbh.prepare("INSERT INTO {$prefix ~ $table-name} ($columns) VALUES {$columnvalues);");
+	my $sth = $dbh.prepare("INSERT INTO {$prefix ~ $table-name} ($columns) VALUES ({$columnvalues});");
         $*ERR.print: "INSERT INTO {$prefix ~ $table-name} ($columns) VALUES ($columnvalues);\n" unless $sth.execute;
     }
     $columns = '';
     $columnvalues = '';
 }
 
-do-insert;
+sub MAIN(:$db = 'maps', :$prefix = 'ga_') {
+  $dbh = DBIish.connect('Pg', dbname => $db, RaiseError => False);
+  my $sth = $dbh.prepare("SELECT name, type FROM {$prefix}FeatureType");
+  $sth.execute();
 
-$dbh.disconnect();
+  while @row = $sth.fetchrow_array {
+    my $name = @row[0];
+    my $type = @row[1];
+    %featuretype{$name} = $type;
+    $max-featuretype = $type if $type > $max-featuretype;
+  }
+
+for lines() {
+  when /Processing ' ' table ' ' \" (.*) \" / {
+#    do-insert $prefix;
+      $columns = '';
+      $columnvalues = '';
+    $table-name = ~$0;
+    dd $table-name;
+    $table-type = %table{~$table-name} // 0;
+  }
+  when /^BBOX\: (.*)/ {
+    $columns ~= 'bbox, ';
+    $columnvalues ~= "'$0', ";
+  }
+  when /^Column \s* (\d+) \s* \( (\w+) \) \: (.*) / {
+    my $columnnumber = +$0;
+    my $columnname   = ~$1;
+    my $columnvalue  = ~$2;
+    dd $columnnumber;
+    dd $columnname;
+    dd $columnvalue;
+    do-insert $prefix if $columnnumber == 0;
+    next unless %columndesc{$columnname.uc}.defined;
+    $columnvalue ~~ s/ ^ \s+   //;
+    $columnvalue ~~ s/   \s+ $ //;
+    next unless $columnvalue;
+    my ($name, $type) = %columndesc{$columnname.uc}.split: ' ';
+    $*ERR.say: "Line: column $name, type $type" if $debug;
+    given $type {
+	when 'int' | 'smallint' {
+	    $columnvalue ~~ / ^ \s* (\d+)/;
+	    if $0.defined {
+		$columnvalues ~= $0 ~ ', ';
+		$columns ~= $name ~ ',';
+	    }
+	}
+	when 'featuretype' {
+	    my $ftype = get-featuretype($columnvalue, $prefix);
+	    $columnvalues ~= $ftype ~ ', ';
+	    $columns      ~= $name  ~ ', ';
+	}
+	when 'date' {
+            $columnvalue ~~ /^\s*[\S+]\s+(\S+)\s*(\d+)\s*[\S+]\s*(\d+)$/;
+	    $columnvalues ~= "'$0 $1 $2', ";
+	    $columns      ~= $name ~ ', ';
+	}
+	when 'source' {
+            $columnvalues ~= '1, '; # FIX
+	    $columns      ~= $name ~ ', ';
+	}
+	when 'timestamp' {
+	    $columnvalues ~= "'$columnvalue', ";
+	    $columns      ~= $name ~ ', ';
+	}
+	when 'float' {
+            $columnvalues ~= $columnvalue ~ ', ';
+	    $columns      ~= $name ~ ', ';
+	}
+	when 'text' {
+            $columnvalue ~~ s:g/ \\ /\\\\/;
+            $columnvalue ~~ s:g/ \' /\'\'/;
+	    $columnvalues ~= "E'{$columnvalue}', ";
+	    $columns      ~= $name ~ ', ';
+	}
+	when 'geometry' {
+	    $*ERR.say: "shape (type {$table-type}): {$columnvalue}" if $debug;
+	    if $table-type eq 'point' {
+	      $columnvalue ~~ /Long ' ' (\S+) ' ' Lat ' ' (.*)/;
+              my ($long, $lat) = (~$0, ~$1);
+              $long ~~ s/\,$//;
+              $columnvalues ~= "ST_GeomFromText('POINT($long $lat)', 4326), ";
+              $columns      ~= 'position, ';
+	    } else {
+              $columnvalue ~~ s:g/\,//;
+              $columnvalue ~~ s:g/ \) \s+ \( /, /;
+              $columnvalue ~~ s:g/ \s* Segment \s+ \d+ \: \s*/) (/;
+              $columnvalue ~~ s/^\) //;
+              $columnvalue ~~ s/[\,\s\(]? $//;
+              $columnvalue ~~ s:g/ \) \) \s+ \( \( /), (/;
+              $columnvalues ~= "ST_GeomFromText('MULTILINESTRING $columnvalue)', 4326), ";
+              $columns      ~= 'shape, ';
+	    }
+	}
+	when 'bytea' {
+	    $*ERR.say: "BYTEA: {$columnvalue}" if $debug;
+            $columns      ~= $name ~ ', ';
+            $columnvalues ~= "E'";
+            for $columnvalue.split: ' ' -> $byte {
+              $columnvalues ~= sprintf "\\\\%03o", :16($byte) if $byte;
+            }
+            $columnvalues ~= "', ";
+	}
+    }
+  }
+}
+
+do-insert $prefix;
+
+$dbh.dispose();
+}
