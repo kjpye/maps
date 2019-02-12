@@ -3,7 +3,7 @@
 ## VicMap ##
 How to populate the VicMap database.
 
-1. Download the needed data for the area of concern.
+### Download the data ###
 
   * Go to https://service.land.vic.gov.au/SpatialDatamart and create an account for yourself. (This is not necessary, but useful.)
   * Goto Search, and enter what you want in the "what" field. Useful things are "tr_road", tr_rail", "hy_water", "el_ground", "el_contour".
@@ -15,7 +15,7 @@ How to populate the VicMap database.
   * Now click "Submit", and "Submit" again.
   * When your order is ready, you will receive an email with the link to the data, which is valid for ten days. When the servers are busy this might take up to an hour or two. For very large database (Tree density for the whole state for example) you will be given a link to an ftp site which contains the files. Make sure you download data in the correct format.
 
-2. Unpack the data, and populate the database.
+### Unpack the data, and populate the database ###
 
   * Find a convenient directory and download the zip files to that directory.
   * Unzip the data.
@@ -27,13 +27,23 @@ How to populate the VicMap database.
   * You will also need to populate the database with the postscript definitions of all the symbols (the symbols_ga table) and the mapping from Vicmap objects to those symbols (the vicmap.symbols table): "psql -d maps -f mksymbols_ga" and "psql -d maps -f mkvicmap_symbols". These will both give errors the first time they are run as they delete and then recreate tables.
 
 ## GeoScience Australia 1:250000 ##
-Data can be retrieved from data.gov.au by searching for the name of the map and selecting the correct map: '\<name\> 1:250000 GIS Dataset'. Click on "Download the file (pGDB). (You can also click on "Link to Map Product" and "Go to resource". This enables you to download the geoPDF version which can be displayed using any PDF viewer.
 
-You can unzip the resulting file and then process the data. The make_gis script show one way of doing this.
+### Download the data ###
+1. If you want data for the whole country, the easiest way is to search for "geoscience australia digital topographic data". This will give you options for various scales. The 1:250000 data is best handled at the moment, but the others should also work. The 1:100000 data has certainly worked in the past.
+Selecting the 1:250000 option gives a set of download links. (Usually. Refresh if necessary.) Open the "esri pgdb" link. This will download a zip file about 1.3Gb in size. Unzip it, and process the files in the Vector_data directory as below.
+2. If you want data for only a small part of the country, you can download data for individual 1:250000 map sheets from data.gov.au by searching for the name of the map and selecting the correct map: '\<name\> 1:250000 GIS Dataset'. The search engine on data.gov.au has recently changed, and you will find the data most easily by searching for something like "mount young 1:250 000 gis dataset", including the double quotes. Otherwise you will need to scroll through a lot of irrelevant data before finding what you want.  An index of the maps is available on data.gov.au as "Map Sheet / Data indexes 2012 (for 1:100 000, 1:250 000 and 1:1,000,000 scale maps)". Click on "Download the file (pGDB).
+
+If you also search for "mount young 1:250 000 topographic map" you will be able to download an image of the map. I generally use the PDF version.
+
+### Unpack the data and populate the database ###
+
+You can unzip the resulting file and then process the data.
+
+There are various scripts in the import directory which can be used to process the data, which is in Microsoft's JET database format. The make_gis script show one way of doing this.
 
 ## OpenStreetMap ##
 The script can utilise OSM for displaying roads.
 
-To download the data, try getting an extract fromn the osm database from somewhere, and running something like "osm2pgsql -l -d \<database\> ~/Downloads.australia.extract.osm.pbf".
+To download the data, try getting an extract fromn the osm database from somewhere, and running something like "osm2pgsql -l -d \<database\> ~/Downloads/australia.extract.osm.pbf".
 
 I have used http://download.geofabrik.de/australia-oceania-latest.osm.pbf to get all of Australia.
