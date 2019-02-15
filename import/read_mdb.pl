@@ -13,7 +13,7 @@ my $debug = 1;
 sub read-rshort($offset)
 {
   my $ret = ($pages[$offset] +& 0xff) +| (($pages[$offset + 1] +& 0xff) +< 8);
-  note "read-rshort from {$offset.base(16)}: $ret ({$ret.base(16)})" if $debug;
+#  note "read-rshort from {$offset.base(16)}: $ret ({$ret.base(16)})" if $debug;
   $ret;
 }
 
@@ -22,19 +22,19 @@ sub read-sshort($offset)
   my $ret;
   
   $ret = ($pages[$offset] +& 0xff) +| (($pages[$offset + 1] +& 0xff) +<8);
-  note "read-sshort from {$offset.base(16)}: $ret ({$ret.base(16)})" if $debug;
+#  note "read-sshort from {$offset.base(16)}: $ret ({$ret.base(16)})" if $debug;
   $ret +& 0x8000 ?? $ret - 65536 !! $ret;
 }
 
 sub read-rint($offset)
 {
-note "read-rint at $offset" if $debug;
+#note "read-rint at $offset" if $debug;
   my $ret = 
   ($pages[$offset] +& 0xff)
     +| (($pages[$offset + 1] +& 0xff) +<  8)
     +| (($pages[$offset + 2] +& 0xff) +< 16)
     +| (($pages[$offset + 3] +& 0xff) +< 24);
-  note "read-rint @ {$offset.base(16)}: $ret ({$ret.base(16)})" if $debug;
+#  note "read-rint @ {$offset.base(16)}: $ret ({$ret.base(16)})" if $debug;
   $ret;
 }
 
@@ -83,7 +83,9 @@ note "read-rint at $offset" if $debug;
 # }
 
 sub read-byte($page, $offset) {
-  $pages[$page * PGSIZE + $offset];
+  my $ret = $pages[$page * PGSIZE + $offset] +& 0xff;
+#  note "Read byte {$ret.base(16)} from page $page, offset $offset";
+  $ret;
 }
 
 sub read-short($page, $offset) {
@@ -287,107 +289,85 @@ class Table {
 my $tables;
 
 # void read_table(unsigned int id);
-# 
-# void
-# print_row(int p, int number, struct table *table)
-# {
-#   long long nullflags = 0;
-#   int end;
+
+sub print-row($p is copy, $number is copy, $table) {
+  note "print-row: $p $number $table";
+  my $nullflags = 0;
+  my $end;
 #   int j;
 #   struct column * columnp;
 #   int ivalue;
 #   double fvalue;
 #   unsigned char *r;
 #   int table_id;
-#   int offset;
 #   char *string, *stringp, *table_name=0;
-#   
-#   if(debug)printf("print_row:\n");
-#   offset = read_rshort(pages + p*PGSIZE + 14 + number*2);
-#   if ((offset & 0xc000) == 0xc000)
-#     {
-#       if(debug)printf("Deleted object\n");
-#       return;
-#     }
-#   if (offset & 0x4000)
-#     {
-#       unsigned int indirect;
-#       if(debug)printf("Row indirect %4.4x\n", offset & 0x0fff);
-#       indirect = read_rint(pages + p * PGSIZE +(offset & 0x0fff));
-#       number = indirect & 0xff;
-#       p = indirect >> 8;
-#       if(debug)printf("Redirecting to page %d (%x), number %d\n", p, p, number);
-#       offset = read_rshort(pages + p * PGSIZE + 14 + number * 2);
-#     }
-#   if(number)
-#     {
-#       end = read_rshort(pages + p * PGSIZE + 14 + (number - 1) * 2) - 1;
-#     } else {
-#       end = PGSIZE - 1;
-#     }
-#   if(debug)printf("  Row: start %x, end %x\n", offset, end);
-# #if 0
-#   if (offset & 0x8000)
-#     {
-#       if(debug)printf("offset has msb set; ignoring row\n");
-#       return;
-#     }
-# #endif
-#   offset &= 0x0fff;
-#   end &= 0x0fff;
-#   if(debug)printf("  Row: start %d, end %d\n", offset, end);
-#   r = pages + p * PGSIZE + offset;
-#   if(debug)printf("Row pointer: %p\n", r);
-#   for(j = table->num_columns; j > 0; j -= 8)
-#     {
-#       nullflags <<= 8;
-#       nullflags |= read_byte(p, end--);
-#     }
-#   if(debug)printf("  Nullflags: %8.8x\n", (unsigned int)nullflags);
-#   
-#   /* fix offsets and lengths for variable objects */
-#   int num_var_cols = read_short(p, end-1);
-#   end -= 2;
-#   if(debug)printf("  %d variable columns\n", num_var_cols);
+  
+  note "print-row:";
+  my $offset = read-rshort($p*PGSIZE + 14 + $number*2);
+  if ($offset +& 0xc000) == 0xc000 {
+      note "Deleted object";
+      return;
+  }
+  if $offset +& 0x4000 {
+      $*ERR.printf: "Row redirect %4.4x\n", $offset +& 0x0fff if $debug;
+      my $indirect = read-rint($p * PGSIZE +($offset +& 0x0fff));
+      $number = $indirect +& 0xff;
+      $p = $indirect +> 8;
+      $*ERR.printf: "Redirecting to page %d (%x), number %d\n", $p, $p, $number if $debug;
+      $offset = read-rshort($p * PGSIZE + 14 + $number * 2);
+  }
+  if $number {
+      $end = read-rshort($p * PGSIZE + 14 + ($number - 1) * 2) - 1;
+  } else {
+      $end = PGSIZE - 1;
+    }
+  $*ERR.printf: "  Row: start %x, end %x\n", $offset, $end if $debug;
+  $offset +&= 0x0fff;
+  $end    +&= 0x0fff;
+  $*ERR.printf: "Row: start %x, end %x\n", $offset, $end if $debug;
+  my $r = $p * PGSIZE + $offset; # offset into file
+  $*ERR.printf("Row position: %x\n", $r);
+  my $j = $table.num-columns;
+  while $j > 0 {
+      $nullflags +<= 8;
+      $nullflags +|= read-byte($p, $end--);
+      $j -= 8;
+  }
+  $*ERR.printf: "Nullflags: %8.8x\n", $nullflags if $debug;
+
+  # fix offsets and lengths for variable objects */
+  my $num-var-cols = read-short($p, $end-1);
+  $end -= 2;
+  $*ERR.printf: "%d variable columns\n", $num-var-cols if $debug;
+  for ^$table.num-columns -> $j {
+      my $column = $table.columns[$j];
+#dd $column;
+      if not $column.bitmask +& 1 {
+	  $column.offset = read-short($p, $end-1) - 2; # WHY -2 ?
+	  $*ERR.printf: "Read offset as %x from %x\n", $column.offset, ($end - 1) if $debug;
+	  $end -= 2;
+      }
+  }
+  $end = (read-short($p, $end - 1) +& 0x0fff) - 2; # WHY -2 ?
+  $*ERR.printf: "Read end as %x\n", $end if $debug;
+  for 1 .. $table.num-columns -> $j {
+      my $column = $tables.columns[* - $j];
+      if not $column.bitmask +& 1 {
+	  $column.length = $end - $column.offset;
+	  $*ERR.printf: "VAR: offset %x, length %x\n", $column.offset, $column.length if $debug;
+	  $end = $column.offset +& 0x0fff;
+    }
+}
+  
 #   columnp = table->columns;
-#   for(j = table->num_columns;
-#       j;
-#       --j, ++columnp)
-#     {
-#       if(columnp->bitmask & 1)
-# 	continue; /* fixed length object */
-#       columnp->offset = read_short(p, end-1) - 2; /* WHY -2 ? */
-#       if(debug)printf("Read offset as %x\n", columnp->offset);
-#       end -= 2;
-#     }
-#     end = (read_short(p, end - 1) & 0x0fff) - 2; /* WHY -2 ? */
-#   if(debug)printf("Read end as %x\n", end);
-#   columnp = table->columns + table->num_columns - 1;
-#   for(j = table->num_columns;
-#       j;
-#       --j, --columnp)
-#     {
-#       if(columnp->bitmask & 1)
-# 	continue; /* fixed length object */
-#       columnp->length = end - columnp->offset;
-#       if(debug)printf("VAR: offset %x, length %x\n", columnp->offset, columnp->length);
-#       end = columnp->offset & 0x0fff;
-#     }
-#   
-#   columnp = table->columns;
-#   table_id = 0;
-#   for(j = table->num_columns;
-#       j;
-#       --j, ++columnp)
-#     {
-#       time_t tvalue;
-#       int nullq;
-#       printf("Column %d (%s): ", columnp->number, columnp->name);
-#       nullq = nullflags & 1;
-#       nullflags >>= 1;
-#       if (columnp->bitmask & 1)
-# 	{
-# 	  /* if(debug)printf("fixed "); */
+  my $table-id = 0;
+  for ^$table.num-columns -> $j {
+      my $column = $table.columns[$j];
+      $*ERR.printf: "Column %d (%s): ", $column.number, $column.name;
+      my $nullq = $nullflags +& 1;
+      $nullflags +>= 1;
+      if $column.bitmask +& 1 {
+	  $*ERR.printf: "fixed " if $debug;
 # 	  if (nullq)
 # 	    {
 # 	      if(debug)printf("type %d ", columnp->type);
@@ -437,9 +417,9 @@ my $tables;
 # 	    } else {
 # 	      if(debug)printf("(null)");
 # 	    }
-# 	} else {
+	} else {
 # 	  unsigned int length, bitmask, pointer;
-# 	  /* if(debug)printf("variable "); */
+	  $*ERR.printf: "variable ";
 # 	  if (nullq)
 # 	    {
 # 	      int count;
@@ -523,80 +503,60 @@ my $tables;
 # 	    } else {
 # 	      if(debug)printf("(null)");
 # 	    }
-# 	}
-#       printf("\n");
-#     }
+	}
+      $*ERR.printf: "\n";
+    }
 #   if(table_id)
 #     {
 #       printf("Processing table \"%s\"\n", table_name);
 #       read_table(table_id);
 #     }
-# }
-# 
-# void
-# process_data_page(unsigned int page)
-# {
-#   int unknown_byte;
-#   int tablep;
-#   int numrec;
-#   int i;
-#   int roffset;
-#   int *rowp;
-#   int *r;
-#   struct table *table;
-#   unsigned int ptr;
-#   
-#   if(debug)printf("Data page\n");
-#   unknown_byte = read_byte(page, 1);
-#   if(debug)printf("  Unknown: %2.2x\n", unknown_byte);
-#   if(debug)printf("  Free space: %4.4x\n", read_short(page, 2));
-#   tablep = read_int(page, 4);
-#   if (tablep == 0x4c41564c) /* "LVAL" */
-#     {
-#       if(debug)printf("Found unexpected LVAL page\n");
-#       exit(5);
-#     }
-#   
-#   if(debug)printf("  Table Description pointer: %d\n", tablep);
-#   table = tables;
-#   while(table)
-#     {
-#       if(debug)printf("table pointer is %d\n", table->page);
-#       if (table->page == tablep)
-# 	break;
-#       table = table->next;
-#     }
-#   if (table)
-#     {
-#       if(debug)printf("Found table definition\n");
-#     } else {
-#       if(debug)printf("No table definition found\n");
-#       return;
-#     }
-#   
-#   
-#   if(debug)printf("  Unknown: %8.8x\n", read_int(page, 8));
-#   numrec = read_short(page, 12);
-#   if(debug)printf("  %d records in this page\n", numrec);
-#   rowp = malloc ((numrec+2) * sizeof (int));
-#   r = rowp;
-#   *r++ = PGSIZE;
-#   ptr = 14;
-#   for (i = 0; i < numrec; ++i)
-#     {
-#       roffset = read_short(page, ptr);
-#       ptr += 2;
-#       if(debug)printf("    %4.4x\n", roffset);
-#       *r++ = roffset;
-#     }
-#   *r++ = 0;
-#   
-#   /* Now try to interpret the rows */
-#   for(i = 0, r = rowp+1; i < numrec; ++i, ++r)
-#     {
-#       print_row(page, i, table);
-#     }
-# }
+}
+
+sub process-data-page($page) {
+  note "Data page\n" if $debug;
+  my $unknown-byte = read-byte($page, 1);
+  $*ERR.printf: "Unknown: %2.2x\n", $unknown-byte if $debug;
+  $*ERR.printf: "Free space: %4.4x\n", read-short($page, 2);
+  my $tablep = read-int($page, 4);
+  if $tablep == 0x4c41564c { # "LVAL"
+      note "Found unexpected LVAL page" if $debug;
+      exit(5);
+    }
+  
+  $*ERR.printf: "Table Description pointer: %d\n", $tablep if $debug;
+  my $table = $tables;
+  while $table {
+      $*ERR.printf: "table pointer is %d\n", $table.page if $debug;
+      if $table.page == $tablep {
+	  last;
+      }
+      $table = $table.next;
+  }
+  if $table {
+      note "Found table definition" if $debug;
+  } else {
+      note "No table definition found" if $debug;
+      return;
+  }
+  
+  
+  $*ERR.printf: "Unknown: %8.8x\n", read-int($page, 8) if $debug;
+  my $numrec = read-short($page, 12);
+  $*ERR.printf: "%d records in this page", $numrec if $debug;
+  my @row = (PGSIZE,);
+  my $ptr = 14;
+  for ^$numrec -> $i {
+      my $roffset = read-short($page, $ptr);     $ptr += 2;
+      $*ERR.printf: "    %4.4x\n", $roffset if $debug;
+      @row.push: $roffset;
+  }
+  
+  # Now try to interpret the rows
+  for ^$numrec -> $i {
+      print-row($page, $i, $table);
+  }
+}
 
 sub process-table-page($page) {
 #   struct table *table;
@@ -611,86 +571,86 @@ sub process-table-page($page) {
   my $table = Table.new(next => $tables, :$page);
   $tables = $table;
   my $ptr = 1;
-   printf("  unknown: %2.2x\n", read-byte($page, $ptr))       if $debug; $ptr++;
-   printf("  unknown: %4.4x\n", read-short($page, $ptr))      if $debug; $ptr += 2;
-   printf("  next page: %8.8x\n", read-int($page, $ptr))      if $debug; $ptr += 4;
-   printf("  length of data: %8.8x\n", read-int($page, $ptr)) if $debug; $ptr += 4;
-   printf("  unknown: %8.8x\n", read-int($page, $ptr));                    $ptr += 4;
+  note "unknown: {read-byte($page, $ptr).base(16)}"       if $debug; $ptr++;
+  note "Free space - 8: {read-short($page, $ptr).base(16)}"      if $debug; $ptr += 2;
+  note "next page: {read-int($page, $ptr).base(16)}"      if $debug; $ptr += 4;
+  note "length of data: {read-int($page, $ptr).base(16)}" if $debug; $ptr += 4;
+  note "unknown: {read-int($page, $ptr).base(16)}";   $ptr += 4;
   $table.num-rows = read-int($page, $ptr); $ptr += 4;
-  printf("  %d records\n", $table.num-rows) if $debug;
+  note "{$table.num-rows} records" if $debug;
   $table.auto-number = read-int($page, $ptr); $ptr += 4;
-  printf("  next autonumber value: %d\n", $table.auto-number) if $debug;
-  printf("  unknown: %8.8x\n", read-int($page, $ptr))         if $debug; $ptr += 4;
-  printf("  unknown: %8.8x\n", read-int($page, $ptr))         if $debug; $ptr += 4;
-  printf("  unknown: %8.8x\n", read-int($page, $ptr))         if $debug; $ptr += 4;
-  printf("  unknown: %8.8x\n", read-int($page, $ptr))         if $debug; $ptr += 4;
+  note "next autonumber value: {$table.auto-number}" if $debug;
+  note "auto-number flag: {read-int($page, $ptr).base(16)}"         if $debug; $ptr += 4;
+  note "autonumber for complex columns: {read-int($page, $ptr).base(16)}"         if $debug; $ptr += 4;
+  note "unknown: {read-int($page, $ptr).base(16)}"         if $debug; $ptr += 4;
+  note "unknown: {read-int($page, $ptr).base(16)}"         if $debug; $ptr += 4;
   $table.type = read-byte($page, $ptr++);
-  printf("  table type: %2.2x\n", $table.type)                      if $debug;
-  printf("  max columns: %d\n", read-short($page, $ptr))            if $debug; $ptr += 2;
+  note "table type: {$table.type.base(16)}"                      if $debug;
+  note "max columns: {read-short($page, $ptr)}"            if $debug; $ptr += 2;
   $table.num-var-columns = read-short($page, $ptr);                      $ptr += 2;
-  printf("  number of variable columns: %d\n", $table.num-var-columns) if $debug;
+  note "number of variable columns: {$table.num-var-columns}" if $debug;
   $table.num-columns = read-short($page, $ptr);                                $ptr += 2;
-  printf("  number of columns: %d\n", $table.num-columns)           if $debug;
-  printf("  %d indexes\n", read-int($page, $ptr))                   if $debug; $ptr += 4;
+  note "number of columns: {$table.num-columns}"           if $debug;
+  note "{read-int($page, $ptr)} indexes"                   if $debug; $ptr += 4;
   my $num-real-index = read-int($page, $ptr);                                  $ptr += 4;
-  printf("  %d real indexes\n", $num-real-index)                    if $debug;
+  note "{$num-real-index} index entries"                    if $debug;
   $table.usage-bitmask = read-int($page, $ptr);                                $ptr += 4;
-  printf("  Usage bitmask: %8.8x\n", $table.usage-bitmask)          if $debug;
-  printf("  Free pages: %8.8x\n", read-int($page, $ptr))            if $debug; $ptr+= 4;
+  note "Usage bitmask: {$table.usage-bitmask.base(16)}"          if $debug;
+  note "Free pages: {read-int($page, $ptr).base(16)}"            if $debug; $ptr+= 4;
    
   for ^$num-real-index -> $i {
-      printf("  index %d:\n", $i+1)                                 if $debug;
-      printf("    unknown %8.8x\n", read-int($page, $ptr))          if $debug; $ptr += 4;
-      printf("    %d index rows\n", read-int($page, $ptr))          if $debug; $ptr += 4;
-      printf("    unknown %8.8x\n", read-int($page, $ptr))          if $debug; $ptr += 4;
+      note "index {$i+1}"                                 if $debug;
+      note "unknown {read-int($page, $ptr).base(16)}"          if $debug; $ptr += 4;
+      note "{read-int($page, $ptr)} index rows"          if $debug; $ptr += 4;
+      note "unknown {read-int($page, $ptr)}"          if $debug; $ptr += 4;
     }
   
   my $columns;
 #  $table.columns = malloc(table->num_columns * sizeof (struct column));
    for ^$table.num-columns -> $i {
-      printf("  column %d:\n", $i+1)     if $debug;
+       note "column {$i+1}" if $debug;
       $columns[$i] = Column.new(type => read-byte($page, $ptr++));
 #      $columns[$i].type = read_byte(page, ptr++);
-      printf("    column type %2.2x (", $columns[$i].type) if $debug;
+      $*ERR.printf("    column type %2.2x (", $columns[$i].type) if $debug;
       given $columns[$i].type {
-	when  1 { printf "boolean)\n"              if $debug; }
-	when  2 { printf("byte)\n")                if $debug; }
-	when  3 { printf("short)\n")               if $debug; }
-	when  4 { printf("int)\n")                 if $debug; }
-	when  5 { printf("currency)\n")            if $debug; }
-	when  6 { printf("float)\n")               if $debug; }
-	when  7 { printf("double)\n")              if $debug; }
-	when  8 { printf("short date/time)\n")     if $debug; }
-	when  9 { printf("binary -- 255 bytes)\n") if $debug; }
-	when 10 { printf("text -- 255 bytes)\n")   if $debug; }
-	when 11 { printf("OLE)\n")                 if $debug; }
-	when 12 { printf("memo)\n")                if $debug; }
-	when 15 { printf("GUID)\n")                if $debug; }
-	default { printf("unknown)\n")             if $debug; }
+	when  1 { note "boolean)"             if $debug; }
+	when  2 { note "byte)"                if $debug; }
+	when  3 { note "short)"               if $debug; }
+	when  4 { note "int)"                 if $debug; }
+	when  5 { note "currency)"            if $debug; }
+	when  6 { note "float)"               if $debug; }
+	when  7 { note "double)"              if $debug; }
+	when  8 { note "short date/time)"     if $debug; }
+	when  9 { note "binary -- 255 bytes)" if $debug; }
+	when 10 { note "text -- 255 bytes)"   if $debug; }
+	when 11 { note "OLE)"                 if $debug; }
+	when 12 { note "memo)"                if $debug; }
+	when 15 { note "GUID)"                if $debug; }
+	default { note "unknown)"             if $debug; }
       }
-      printf("    unknown %8.8x\n", read-int($page, $ptr))        if $debug; $ptr += 4;
+      $*ERR.printf("    unknown %8.8x\n", read-int($page, $ptr))        if $debug; $ptr += 4;
       $columns[$i].number = read-short($page, $ptr);                         $ptr += 2;
-      printf("    column number %d\n", $columns[$i].number)       if $debug;
+      $*ERR.printf("    column number %d\n", $columns[$i].number)       if $debug;
       $columns[$i].offset = read-short($page, $ptr);                         $ptr += 2;
-      printf("    variable offset: %4.4x\n", $columns[$i].offset) if $debug;
-      printf("    column number %d\n", read-short($page, $ptr))   if $debug; $ptr += 2;
-      printf("    unknown %8.8x\n",    read-int($page, $ptr))     if $debug; $ptr += 4;
+      $*ERR.printf("    variable offset: %4.4x\n", $columns[$i].offset) if $debug;
+      $*ERR.printf("    column number %d\n", read-short($page, $ptr))   if $debug; $ptr += 2;
+      $*ERR.printf("    unknown %8.8x\n",    read-int($page, $ptr))     if $debug; $ptr += 4;
       $columns[$i].bitmask = read-byte($page, $ptr++);
-      printf("    bitmask: %2.2x\n", $columns[$i].bitmask)        if $debug;
-      printf("    unknown: %2.2x\n", read-byte($page, $ptr))      if $debug; $ptr++;
-      printf("    unknown %8.8x\n", read-int($page, $ptr))        if $debug; $ptr += 4;
+      $*ERR.printf("    bitmask: %2.2x\n", $columns[$i].bitmask)        if $debug;
+      $*ERR.printf("    misc_flags: %2.2x\n", read-byte($page, $ptr))      if $debug; $ptr++;
+      $*ERR.printf("    unknown %8.8x\n", read-int($page, $ptr))        if $debug; $ptr += 4;
       $columns[$i].offset = read-short($page, $ptr);                         $ptr += 2;
-      printf("    fixed offset: %4.4x\n", $columns[$i].offset)    if $debug;
+      $*ERR.printf("    fixed offset: %4.4x\n", $columns[$i].offset)    if $debug;
       $columns[$i].length = read-short($page, $ptr);                         $ptr += 2;
-      printf("    column length: %d\n", $columns[$i].length)      if $debug;
+      $*ERR.printf("    column length: %d\n", $columns[$i].length)      if $debug;
     }
   for ^$table.num-columns -> $i {
       my $c;
       my $namep;
       
-# FIX -- this is really reading a little-endian UTF16 string, and assumes only ASCII is used
+# FIX -- this is really reading a little-endian UCS-2 string, and assumes only ASCII is used
       my $len = read-short($page, $ptr); $ptr += 2;
-      printf("   Column %d (%d) label (%d chars): \"",
+      $*ERR.printf("   Column %d (%d) label (%d chars): \"",
 	     $i, $columns[$i].number, $len/2) if $debug;
       my $name;
       while $len > 0 {
@@ -698,16 +658,17 @@ sub process-table-page($page) {
 	  $len -= 2;
           $name ~= $c.chr;
       }
-      printf("$name\"\n") if $debug;
+      $*ERR.printf("$name\"\n") if $debug;
       $columns[$i].name = $name;
     }
   # now put the column definitions into the table structure in order
   for ^$table.num-columns -> $i {
       $table.columns[$columns[$i].number] = $columns[$i];
   }
+dd $table;
   
   for ^$num-real-index -> $i {
-      printf("  index %d: %8.8x\n", $i+1, read-int($page, $ptr)) if $debug;
+      $*ERR.printf("  index %d: %8.8x\n", $i+1, read-int($page, $ptr)) if $debug;
       $ptr += 4;
   }
   $table;
@@ -725,9 +686,9 @@ sub read-bitmask($ptr) {
     my $bytes;
     my $end;
 #   
-  printf("read-bitmask: %x\n", $ptr) if $debug;
-  my $entry = $ptr & 0xff;
-  my $p = ($ptr +> 8) * PGSIZE + 14 + ($ptr +& 0xff) * 2;
+  $*ERR.printf("read-bitmask: %x\n", $ptr) if $debug;
+  my $entry = $ptr +& 0xff;
+  my $p = ($ptr +> 8) * PGSIZE + 14 + $entry   * 2;
   my $offset = read-rshort($p);
   if $entry == 0 {
       $bytes = PGSIZE - $offset - 5;
@@ -737,7 +698,7 @@ note "Entry is 0, offset $offset" if $debug;
 note "Entry is 1, end: $end, offset: $offset" if $debug;
       $bytes = $end - $offset - 5;
     }
-  printf("read-bitmask: offset %d\n", $offset) if $debug;
+  $*ERR.printf("read-bitmask: offset %04.4x, length %d\n", $offset, $bytes) if $debug;
   $p = ($ptr +> 8) * PGSIZE + $offset;
   if $pages[$p] == 0x00 {
       ++$p;
@@ -749,20 +710,20 @@ note "Entry is 1, end: $end, offset: $offset" if $debug;
       $p = $next-page * PGSIZE + 4;
       $bytes = PGSIZE - 4;
     } else {
-      note sprintf "Unknown bit map page type %d\n", $pages[$p];
+      $*ERR.printf: "Unknown bit map page type %d\n", $pages[$p];
       exit(3);
     }
   my $count;
-note "Reading bitmap ($bytes bytes) from position $p" if $debug;
+note "Reading bitmap ($bytes bytes) from position {$p.base(16)}" if $debug;
   for ^$bytes -> $i {
       my $x = $pages[$p + $i];
-      printf("%2.2x ", $x) if $debug;
+      $*ERR.printf("%2.2x ", $x) if $debug;
       while $x {
 	  $x +&= $x-1;
 	  ++$count;
 	}
     }
-  printf("read-bitmask: %d pages, page offset %d\n", $count, $page-offset) if $debug;
+  $*ERR.printf("\nread-bitmask: %d pages, page offset %d\n", $count, $page-offset) if $debug;
   my @pgs;
   my $page = 0;
   for ^$bytes -> $i {
@@ -771,7 +732,7 @@ note "Reading bitmap ($bytes bytes) from position $p" if $debug;
           for ^8 {
 	      if $x +& 1 {
                   @pgs.push: $page + $page-offset;
-		  printf("%d ", $page + $page-offset) if $debug;
+		  $*ERR.printf("%d ", $page + $page-offset) if $debug;
 		}
 	      $page++;
 	      $x +>= 1;
@@ -784,27 +745,24 @@ note "Reading bitmap ($bytes bytes) from position $p" if $debug;
 }
 
 sub read-data-page($id) {
-#   int type;
-# 
-#   if(debug)printf("read_data_page: reading page %d (%x)\n", id, id);
-#   type = read_byte(id, 0);
-#   if(debug)printf("read_data_page: type %d\n", type);
-#   if(type != 0x01)
-#     {
-#       if(debug)printf("Pointer to data page does not point to data page\n");
-#       exit(4);
-#     }
-#   process_data_page(id);
+  $*ERR.printf: "read_data_page: reading page %d (%x)\n", $id, $id if $debug;
+  my $type = read-byte($id, 0);
+  $*ERR.printf: "read_data_page: type %d\n", $type if $debug;
+  if $type != 0x01 {
+      note "Pointer to data page does not point to data page" if $debug;
+      exit(4);
+  }
+  process-data-page($id);
 }
 
 sub print-data-pages($p) {
-#   if(debug)printf("Remaining data pages:");
-#   while (*p)
-#     {
-#       if(debug)printf(" %d", *p);
-#       ++p;
-#     }
-#   if(debug)printf("\n");
+#  $*ERR.printf: "Remaining data pages:" if $debug;
+#  while (*p)
+#    {
+#      if(debug)printf(" %d", *p);
+#      ++p;
+#    }
+#  if(debug)printf("\n");
 }
 
 sub read-table($id) {
@@ -813,13 +771,12 @@ sub read-table($id) {
   printf("table bitmask: %x\n", $table.usage-bitmask) if $debug;
   my $pgs = read-bitmask($table.usage-bitmask);
 dd $pgs;
-  my $pp = $pgs;
-   while $pp {
-       print-data-pages($pp);
-#       printf("Data page %d\n", *pp) if $debug;
-       read-data-page($pp++);
-     }
-     printf("No more data pages\n") if $debug;
+  for @$pgs -> $pp {
+      print-data-pages($pp);
+#      $*ERR.printf("Data page %d\n", $pp) if $debug;
+      read-data-page($pp);
+  }
+  printf("No more data pages\n") if $debug;
 }
 
 sub mmap(Pointer $addr, int32 $length, int32 $prot, int32 $flags, int32 $fd, int32 $offset) returns CArray[uint8] is native {*}
@@ -836,7 +793,7 @@ note "Opening $file";
 
   #$pages = mmap(0, statbuf.st_size, PROT_READ, MAP_SHARED, 0, 0);
   $pages = mmap(Pointer, 1_000_000_000, 1, 1, $fh.native-descriptor, 0); # FIX
-dd $pages;
+
   read-table 2;
   exit 0;
 }

@@ -601,9 +601,9 @@ process_data_page(unsigned int page)
     {
       if(debug)printf("Found table definition\n");
     } else {
-      if(debug)printf("No table definition found\n");
-      return;
-    }
+    if(debug)printf("No table definition found\n");
+    return;
+  }
   
   
   if(debug)printf("  Unknown: %8.8x\n", read_int(page, 8));
