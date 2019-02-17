@@ -4,8 +4,6 @@ use NativeCall;
 
 constant PGSIZE = 4096;
 
-# sub mmap(Pointer $addr, int32 $length, int32 $prot, int32 $flags, int32 $fd, int32 $offset) returns CArray[int32] is native {*}
-
 my $pages; # The memory-mapped mdb file
 
 my $debug = 1;
@@ -38,41 +36,41 @@ sub read-rint($offset)
   $ret;
 }
 
-# void
-# find_lval(unsigned char **ptr, int *length, int pointer)
-#      
-# {
-#   int page = pointer >> 8;
-#   int row = pointer & 0xff;
-#   unsigned char *p;
-#   
-#   p = pages + page*PGSIZE;
-#   
-#   *ptr = pages + page*PGSIZE + read_rshort(p+14+row*2);
-#   if(row == 0)
-#     {
-#       *length = (p + PGSIZE) - *ptr;
-#     } else {
-#     *length = (read_rshort(p+14+(row-1)*2)&0x3fff)
-# 	- (read_rshort(p+14+row*2)&0x3fff);
-#     }
-# }
-# 
-# void
-# put_rbytes(unsigned char *p, int count)
-# {
-#   while(count--)
-#     {
-#       printf("%2.2x ", *p++);
-#     }
-# }
-# 
-# unsigned int
-# read_rbyte(unsigned char *offset)
-# {
-#   return *offset;
-# }
-# 
+sub find-lval($pointer) {
+    my $ptr;
+    my $length;
+    my $page = $pointer +> 8;
+    my $row  = $pointer +& 0xff;
+  
+    my $p = $page * PGSIZE;
+  
+    $ptr = $p + read-rshort($p+14 + $row*2);
+    if $row == 0 {
+      $length = ($p + PGSIZE) - $ptr;
+    } else {
+	$length = (read-rshort($p+14 + ($row-1) * 2) & 0x3fff) - (read-rshort($p+14 + $row*2) +& 0x3fff);
+    }
+    ($ptr, $length);
+}
+
+multi sub put-rbytes(Str $s, $count) {
+    my $buffer = $s.encode: :enc='latin1';
+    for ^$count -> $i {
+	printf '%2.2x ', $buffer[$i];
+    }
+}
+
+multi sub put-rbytes(Int $p is copy, $count is copy)
+{
+    while $count-- {
+      printf "%2.2x ", $pages[$p++];
+    }
+}
+
+sub read-rbyte($offset) {
+    $pages[$offset];
+}
+
 # unsigned int
 # sread_short(unsigned char *p)
 # {
@@ -96,174 +94,122 @@ sub read-int($page, $offset) {
   read-rint($page * PGSIZE + $offset);
 }
 
-# float
-# read_rfloat(unsigned char *p)
-# {
-#   union {
-#     unsigned char b[4];
-#     float f;
-#   } ret;
-#   
-#   ret.b[0] = *p++;
-#   ret.b[1] = *p++;
-#   ret.b[2] = *p++;
-#   ret.b[3] = *p;
-#   return ret.f;
-# }
-# 
-# double
-# read_rdouble(unsigned char *p)
-# {
-#   union {
-#     unsigned char b[8];
-#     double f;
-#   } ret;
-#   
-#   ret.b[0] = *p++;
-#   ret.b[1] = *p++;
-#   ret.b[2] = *p++;
-#   ret.b[3] = *p++;
-#   ret.b[4] = *p++;
-#   ret.b[5] = *p++;
-#   ret.b[6] = *p++;
-#   ret.b[7] = *p;
-#   return ret.f;
-# }
-# 
-# char *
-# read_long_page(int pointer, int *len)
-# {
-#   char *str = NULL;
-#   int length = 0;
-# 
-#   while(pointer)
-#     {
-#       int p = (pointer >> 8) * PGSIZE;
-#       int offset = read_rshort(pages + p + 14);
-#       int nlength;
-#       pointer = read_rint(pages+p+offset); offset += 4;
-#       nlength = PGSIZE - offset;
-#       if (str)
-# 	{
-# 	  str = realloc(str, length+nlength);
-# 	} else {
-# 	  str = malloc(nlength);
-# 	}
-#       memcpy(str+length, &pages[p+offset], nlength);
-#       length += nlength;
-#     }
-#   *len = length;
-#   return str;
-# }
-# 
-# void
-# print_shape(char **bb, char **shape, unsigned int pointer)
-# {
-#   int count;
-#   int segments;
-#   double xmin, xmax, ymin, ymax, x, y;
-#   unsigned char *ptr;
-#   int length;
-#   unsigned char *segptr;
-#   int segstart, segment, point;
-#   char bbox[60];
-# 
-#   find_lval(&ptr, &length, pointer);
-#   count = read_rint(ptr);
-#   ptr += 4;
-#   if(debug)printf("%d points, Bounding Box: ", count);
-#   xmin = read_rdouble(ptr);
-#   ymin = read_rdouble(ptr+8);
-#   xmax = read_rdouble(ptr+16);
-#   ymax = read_rdouble(ptr+24);
-#   ptr += 32;
-#   if(debug)printf("(%g,%g) to (%g,%g) ", xmin, ymin, xmax, ymax);
-#   if(bb)
-#     {
-#       sprintf(bbox, "((%.9g,%.9g) (%.9g,%.9g))", xmin, ymin, xmax, ymax);
-#       *bb = bbox;
-#     }
-#   segments = read_rint(ptr);
-#   ptr += 4;
-#   count = read_rint(ptr);
-#   segstart = read_rint(ptr+4);
-#   ptr += 8;
-#   if(debug)printf("%d segments, %d points, 1st segment at point %d ", segments, count, segstart);
-#   segptr = ptr + segments * 4 - 4; /* where the actual points start */
-#   segment = 0;
-#   for(point = 0; point < count; ++point)
-#     {
-#       if(point == segstart)
-# 	{
-# 	  printf("Segment %d: ", segment);
-# 	  ++segment;
-# 	  if(segment < segments)
-# 	    {
-# 	      segstart = read_rint(ptr);
-# 	      ptr += 4;
-# 	    }
-# 	}
-#       x = read_rdouble(segptr);
-#       y = read_rdouble(segptr+8);
-#       printf("(%.9g, %.9g) ", x, y);
-#       /* TODO: add point to shape */
-#       segptr += 16;
-#     }
-# }
-# 
-# void
-# print_shape2(char **bb, char **shape, char *p)
-# {
-#   int count;
-#   int segments;
-#   double xmin, xmax, ymin, ymax, x, y;
-#   unsigned char *ptr;
-#   int length;
-#   unsigned char *segptr;
-#   int segstart, segment, point;
-#   char bbox[60];
-# 
-#   count = read_rint(p);
-#   p += 4;
-#   if(debug)printf("%d points, Bounding Box: ", count);
-#   xmin = read_rdouble(p);
-#   ymin = read_rdouble(p+8);
-#   xmax = read_rdouble(p+16);
-#   ymax = read_rdouble(p+24);
-#   p += 32;
-#   if(debug)printf("(%g,%g) to (%g,%g) ", xmin, ymin, xmax, ymax);
-#   if(bb)
-#     {
-#       sprintf(bbox, "((%.5g,%.5g),(%.5g,%.5g))", xmin, ymin, xmax, ymax);
-#       *bb = bbox;
-#     }
-#   segments = read_rint(p);
-#   p += 4;
-#   count = read_rint(p);
-#   segstart = read_rint(p+4);
-#   p += 8;
-#   if(debug)printf("%d segments, %d points, 1st segment at point %d ", segments, count, segstart);
-#   segptr = p + segments * 4 - 4; /* where the actual points start */
-#   segment = 0;
-#   for(point = 0; point < count; ++point)
-#     {
-#       if(point == segstart)
-# 	{
-# 	  printf("Segment %d: ", segment);
-# 	  ++segment;
-# 	  if(segment < segments)
-# 	    {
-# 	      segstart = read_rint(p);
-# 	      p += 4;
-# 	    }
-# 	}
-#       x = read_rdouble(segptr);
-#       y = read_rdouble(segptr+8);
-#       printf("(%g, %g) ", x, y);
-#       /* TODO: add point to shape */
-#       segptr += 16;
-#     }
-# }
+sub read-rfloat($p) {
+    my $buffer = Blob.new($pages[$p],
+			  $pages[$p + 1],
+			  $pages[$p + 2],
+			  $pages[$p + 3]
+	);
+    $buffer.read-num32(0);
+}
+
+sub read-rdouble($p) {
+    my $buffer = Blob.new($pages[$p],
+			  $pages[$p + 1],
+			  $pages[$p + 2],
+			  $pages[$p + 3],
+			  $pages[$p + 4],
+			  $pages[$p + 5],
+			  $pages[$p + 6],
+			  $pages[$p + 7]
+	);
+    $buffer.read-num64(0);
+}
+
+sub read-long-page($pointer) {
+    my $str = '';
+    my $length = 0;
+
+    while $pointer {
+      my $p = ($pointer +> 8) * PGSIZE;
+      my $offset = read-rshort($p + 14);
+      $pointer = read-rint($p+$offset); $offset += 4;
+      my $nlength = PGSIZE - $offset;
+      $length += $nlength;
+      while $nlength-- {
+	  $str ~= $pages[$p + $offset++].chr;
+      }
+    }
+    ($str, $length);
+}
+
+sub print-shape($pointer) {
+    my $bb;
+    my $shape;
+
+  my ($ptr, $length) = |find-lval($pointer);
+  my $count = read-rint($ptr);
+  $ptr += 4;
+  $*ERR.printf: "%d points, Bounding Box: ", $count if $debug;
+  my $xmin = read-rdouble($ptr);
+  my $ymin = read-rdouble($ptr+8);
+  my $xmax = read-rdouble($ptr+16);
+  my $ymax = read-rdouble($ptr+24);
+  $ptr += 32;
+    $*ERR.printf: "(%g,%g) to (%g,%g) ", $xmin, $ymin, $xmax, $ymax;
+    $bb = sprintf "((%.9g,%.9g) (%.9g,%.9g))", $xmin, $ymin, $xmax, $ymax;
+    my $segments = read-rint($ptr);    $ptr += 4;
+    $count = read-rint($ptr);       $ptr += 4;
+    my $segstart = read-rint($ptr+4);  $ptr += 4;
+  $*ERR.printf: "%d segments, %d points, 1st segment at point %d ", $segments, $count, $segstart;
+  my $segptr = $ptr + $segments * 4 - 4; # where the actual points start
+  my $segment = 0;
+for ^$count -> $point {
+    if $point == $segstart {
+	  printf "Segment %d: ", $segment;
+	  ++$segment;
+	  if $segment < $segments {
+	      $segstart = read-rint($ptr);   $ptr += 4;
+	    }
+	}
+      my $x = read-rdouble($segptr);
+      my $y = read-rdouble($segptr+8);
+      printf "(%.9g, %.9g) ", $x, $y;
+      # TODO: add point to shape
+      $segptr += 16;
+    }
+    ($bb, $shape);
+}
+
+sub print-shape2($p) {
+    my $bb;
+    my $shape;
+
+  my $count = read-rint($p);
+  $p += 4;
+  $*ERR.printf: "%d points, Bounding Box: ", $count if $debug;
+  my $xmin = read-rdouble($p);
+  my $ymin = read-rdouble($p+8);
+  my $xmax = read-rdouble($p+16);
+  my $ymax = read-rdouble($p+24);
+  $p += 32;
+  $*ERR.printf: "(%g,%g) to (%g,%g) ", $xmin, $ymin, $xmax, $ymax if $debug;
+      $bb = sprintf "((%.5g,%.5g),(%.5g,%.5g))", $xmin, $ymin, $xmax, $ymax;
+  my $segments = read-rint($p);
+  $p += 4;
+  $count = read-rint($p);
+  my $segstart = read-rint($p+4);
+  $p += 8;
+  $*ERR.printf: "%d segments, %d points, 1st segment at point %d ", $segments, $count, $segstart if $debug;
+  my $segptr = $p + $segments * 4 - 4; # where the actual points start
+  my $segment = 0;
+    for ^$count -> $point {
+	if $point == $segstart {
+	  printf "Segment %d: ", $segment;
+	  ++$segment;
+	  if $segment < $segments {
+	      $segstart = read-rint($p);
+	      $p += 4;
+	  }
+	}
+      my $x = read-rdouble($segptr);
+      my $y = read-rdouble($segptr+8);
+      printf "(%g, %g) ", $x, $y;
+      # TODO: add point to shape
+	$segptr += 16;
+    }
+    ($bb, $shape);
+}
 
 class Column {
   has $.number  is rw;
@@ -294,13 +240,7 @@ sub print-row($p is copy, $number is copy, $table) {
   note "print-row: $p $number $table";
   my $nullflags = 0;
   my $end;
-#   int j;
-#   struct column * columnp;
-#   int ivalue;
-#   double fvalue;
-#   unsigned char *r;
-#   int table_id;
-#   char *string, *stringp, *table_name=0;
+  my $table-name;
   
   note "print-row:";
   my $offset = read-rshort($p*PGSIZE + 14 + $number*2);
@@ -368,149 +308,127 @@ sub print-row($p is copy, $number is copy, $table) {
       $nullflags +>= 1;
       if $column.bitmask +& 1 {
 	  $*ERR.printf: "fixed " if $debug;
-# 	  if (nullq)
-# 	    {
-# 	      if(debug)printf("type %d ", columnp->type);
-# 	      switch(columnp->type)
-# 		{
-# 		case 1: /* boolean */
-# 		  printf(nullq?"true":"false");
-# 		  break;
-# 		case 2: /* byte */
-# 		  ivalue = read_rbyte(r+columnp->offset + 2);
-# 		  printf("%d %2.2x", ivalue, ivalue);
-# 		  break;
-# 		case 3: /* short */
-# 		  ivalue = read_sshort(r+columnp->offset + 2);
-# 		  printf("%d %4.4x", ivalue, ivalue);
-# 		  break;
-# 		case 4: /* int */
-# 		  ivalue = read_rint(r+columnp->offset + 2);
-# 		  printf("%d %8.8x", ivalue, ivalue);
-# 		  if(strcmp(columnp->name, "Id") == 0 && ivalue < 0x1000000 && ivalue >= 15)
-# 		    {
-# 		      table_id = ivalue;
-# 		      /* if(debug)printf("Looking through table %d next\n", table_id); */
-# 		    }
-# 		  break;
-# 		case 5: /* money */
-# 		  put_rbytes(r+columnp->offset + 2, 8);
-# 		  break;
-# 		case 6: /* float */
-# 		  fvalue = read_rfloat(r+columnp->offset + 2);
-# 		  printf("%g", fvalue);
-# 		  break;
-# 		case 7: /* double */
-# 		  fvalue = read_rdouble(r+columnp->offset + 2);
-# 		  printf("%g", fvalue);
-# 		  break;
-# 		case 8: /* date/time */
-# 		  fvalue = read_rdouble(r+columnp->offset + 2);
-# 		  fvalue -= 25569;
-# 		  fvalue *= 86400;
-# 		  tvalue = fvalue;
-# 		  printf("%s", ctime(&tvalue));
-# 		  break;
-# 		default:
-# 		  if(debug)printf("unknown type %2.2x", columnp->type);
-# 		}
-# 	    } else {
-# 	      if(debug)printf("(null)");
-# 	    }
+ 	  if $nullq {
+	      $*ERR.printf: "type %d ", $column.type if $debug;
+              given $column.type {
+		when 1 { # boolean
+		    $*ERR.printf: $nullq ?? "true" !! "false";
+                }
+		when 2 { # byte
+		  my $ivalue = read-rbyte($r+$column.offset + 2);
+		  printf "%d %2.2x", $ivalue, $ivalue;
+		}
+		when 3 { # short
+		  my $ivalue = read-sshort($r+$column.offset + 2);
+		  printf "%d %4.4x", $ivalue, $ivalue;
+		}
+		when 4 { # int
+		  my $ivalue = read-rint($r+$column.offset + 2);
+		  printf "%d %8.8x", $ivalue, $ivalue;
+		  if $column.name eq  'Id' && $ivalue < 0x1000000 && $ivalue >= 15 {
+		      $table-id = $ivalue;
+		      $*ERR.printf: "Looking through table %d next\n", $table-id if $debug;
+		    }
+		}
+		when 5 { # money
+		  put-rbytes($r+$column.offset + 2, 8);
+		}
+		when 6 { # float
+		  my $fvalue = read-rfloat($r+$column.offset + 2);
+		  printf "%g", $fvalue;
+		}
+		when 7 { # double
+		  my $fvalue = read-rdouble($r+$column.offset + 2);
+		  printf "%g", $fvalue;
+		}
+		when 8 { # date/time
+		  my $fvalue = read-rdouble($r+$column.offset + 2);
+		  $fvalue -= 25569;
+		  $fvalue *= 86400;
+		  my $tvalue = $fvalue;
+# TODO		  printf "%s", ctime($tvalue);
+		}
+		default {
+		  $*ERR.printf: "unknown type %2.2x", $column.type if $debug;
+		}
+	      }
+	    } else {
+	      $*ERR.printf: "(null)" if $debug;
+	    }
 	} else {
 # 	  unsigned int length, bitmask, pointer;
 	  $*ERR.printf: "variable ";
-# 	  if (nullq)
-# 	    {
+	  if $nullq {
 # 	      int count;
 # 	      unsigned char *voffset;
-# 	      switch(columnp->type)
-# 		{
-# 		case 10: /* text */
-# 		  count = columnp->length / 2;
-# 		  string = malloc(count+1);
-# 		  stringp = string;
-# 		  voffset = r + columnp->offset + 2;
-# 		  while(count--)
-# 		    {
-# 		      int c = read_rbyte(voffset);
-# 		      *stringp++ = c;
-# 		      voffset += 2;
-# 		    }
-# 		  *stringp = '\0';
-# 		  /* printf("column name: %s, value: %s\n", columnp->name, string); */
-# 		  printf("%s\n", string);
-# 		  if(strcmp(columnp->name, "Name") == 0)
-# 		    table_name = string;
-# 		  else
-# 		    free(string);
-# 		  break;
-# 		case 11: /* OLE */
-# 		  voffset = r + columnp->offset + 2;
-# 		  if(debug)printf("voffset = %p\n", voffset);
-# 		  length = read_rshort(voffset);
-# 		  if(debug)printf("length: %d\n", length);
-# 		  bitmask = read_rshort(voffset+2);
-# 		  if(debug)printf("bitmask: %d\n", bitmask);
-# 		  pointer = read_rint(voffset+4);
-# 		  if(debug)printf("OLE: pointer %x\n", pointer);
-# 		  if(bitmask & 0x8000)
-# 		    {
-# 		      /* data is here */
-# 		      voffset += 12;
-# 		      if(strcmp("SHAPE", columnp->name)==0)
-# 			{
-# 			  count = read_rint(voffset);
-# 			  if(count == 1)
-# 			    {
-# 			      printf("Long %g, Lat %g ", read_rdouble(voffset+4), read_rdouble(voffset+12));
-# 			    }
-# 			} else {
-# 			  put_rbytes(voffset, length);
-# 			}
-# 		    } else if(bitmask&0x4000) {
-# 		      unsigned char *ptr;
-# 		      int length;
-# 		      if(strcmp("SHAPE", columnp->name)==0)
-# 			{
-# 			  char *bb;
-# 			  print_shape(&bb, NULL, pointer);
-# 			  printf("\nBBOX: %s\n", bb);
-# 			} else {
-# 			  if(debug)printf("pointer %x ", pointer);
-# 			  find_lval(&ptr, &length, pointer);
-# 			  put_rbytes(ptr, length);
-# 			}
-# 		    } else {
-# 		      char *bb;
-# 		      char *str;
-# 		      int length;
-# 		      str = read_long_page(pointer, &length);
-# 		      if (strcmp("SHAPE", columnp->name)==0)
-# 			{
-# 			  print_shape2(&bb, NULL, str);
-# 			  printf("\nBBOX: %s\n", bb);
-# 			} else {
-# 			  put_rbytes(str, length);
-# 			}
-# 		      free(str);
-# 		    }
-# 		  break;
-# 		default:
-# 		  put_rbytes(r+columnp->offset + 2, columnp->length);
-# 		  break;
-# 		}
-# 	    } else {
-# 	      if(debug)printf("(null)");
-# 	    }
+	      given $column.type {
+		when 10 { # text
+		  my $count = $column.length / 2;
+		  my $string = '';
+		  my $voffset = $r + $column.offset + 2;
+		while $count-- {
+		      $string ~= read-rbyte($voffset).chr;
+		      $voffset += 2;
+		    }
+		  $*ERR.printf: "column name: %s, value: %s\n", $column.name, $string if $debug;
+		  printf "%s\n", $string;
+		  if $column.name eq 'Name' {
+		    $table-name = $string;
+		  }
+	      }
+		when 11 { # OLE
+		  my $voffset = $r + $column.offset + 2;
+		  $*ERR.printf: "voffset = %x\n", $voffset if $debug;
+		  my $length = read-rshort($voffset);
+		  $*ERR.printf: "length: %d\n", $length if $debug;
+		  my $bitmask = read-rshort($voffset+2);
+		  $*ERR.printf: "bitmask: %x\n", $bitmask;
+		  my $pointer = read-rint($voffset+4);
+		  $*ERR.printf: "OLE: pointer %x\n", $pointer;
+		  if $bitmask +& 0x8000 {
+		      # data is here
+		      $voffset += 12;
+		      if 'SHAPE' eq $column.name {
+			  my $count = read-rint($voffset);
+			  if $count == 1 {
+			      printf "Long %g, Lat %g ", read-rdouble($voffset+4), read-rdouble($voffset+12);
+			    }
+			} else {
+			  put-rbytes($voffset, $length);
+			}
+		    } elsif $bitmask +& 0x4000 {
+                      if $column.name eq 'SHAPE' {
+			  my $bb = print-shape($pointer);
+			  printf "\nBBOX: %s\n", $bb;
+			} else {
+			    $*ERR.printf: "pointer %x ", $pointer if $debug;
+			  my ($ptr, $length) = |find-lval($pointer);
+			  put-rbytes($ptr, $length);
+			}
+		    } else {
+		      my ($str, $length) = |read-long-page($pointer);
+		      if $column.name eq 'SHAPE' {
+			  my $bb = print-shape2($str);
+			  printf "\nBBOX: %s\n", $bb;
+			} else {
+			  put-rbytes($str, $length);
+			}
+		    }
+	      }
+	      default {
+		  put-rbytes($r+$column.offset + 2, $column.length);
+	      }
+	      }
+	    } else {
+	      printf "(null)";
+	    }
 	}
       $*ERR.printf: "\n";
     }
-#   if(table_id)
-#     {
-#       printf("Processing table \"%s\"\n", table_name);
-#       read_table(table_id);
-#     }
+  if $table-id {
+      printf "Processing table \"%s\"\n", $table-name;
+      read-table($table-id);
+    }
 }
 
 sub process-data-page($page) {
@@ -559,14 +477,6 @@ sub process-data-page($page) {
 }
 
 sub process-table-page($page) {
-#   struct table *table;
-#   int num_real_index;
-#   int i;
-#   struct column *columns;
-#   struct column *columnp;
-#   unsigned int ptr;
-#   
-#   /* debug = 1; */
   note "Table definitioni ($page)\n" if $debug;
   my $table = Table.new(next => $tables, :$page);
   $tables = $table;
@@ -675,17 +585,10 @@ dd $table;
 }
 
 sub read-bitmask($ptr) {
-#   int entry;
-#   unsigned char *p;
-#   int *pgs, *pg;
   my $page-offset;
-#   int count = 0;
-#   int page;
-#   int i, j;
-#   int offset;
     my $bytes;
     my $end;
-#   
+
   $*ERR.printf("read-bitmask: %x\n", $ptr) if $debug;
   my $entry = $ptr +& 0xff;
   my $p = ($ptr +> 8) * PGSIZE + 14 + $entry   * 2;
@@ -713,7 +616,7 @@ note "Entry is 1, end: $end, offset: $offset" if $debug;
       $*ERR.printf: "Unknown bit map page type %d\n", $pages[$p];
       exit(3);
     }
-  my $count;
+  my $count = 0;
 note "Reading bitmap ($bytes bytes) from position {$p.base(16)}" if $debug;
   for ^$bytes -> $i {
       my $x = $pages[$p + $i];
@@ -783,15 +686,9 @@ sub mmap(Pointer $addr, int32 $length, int32 $prot, int32 $flags, int32 $fd, int
 
 sub MAIN($file) {
  
-#   struct stat statbuf;
-#   
-#   setvbuf(stdout, 0, _IONBF, 0);
-#   fstat (0,&statbuf);
-
-note "Opening $file";
+    note "Opening $file";
   my $fh = $file.IO.open or fail "Could not open $file\n";
 
-  #$pages = mmap(0, statbuf.st_size, PROT_READ, MAP_SHARED, 0, 0);
   $pages = mmap(Pointer, 1_000_000_000, 1, 1, $fh.native-descriptor, 0); # FIX
 
   read-table 2;
