@@ -178,6 +178,7 @@ sub do-insert($prefix){
 	$columns ~~ s/\,\s*$//;
 	$columnvalues ~~ s/\,\s*$//;
 	my $sth = $dbh.prepare("INSERT INTO {$prefix ~ $table-name} ($columns) VALUES ({$columnvalues});");
+        $*ERR.print: "INSERT INTO {$prefix ~ $table-name} ($columns) VALUES ($columnvalues);\n";
         $*ERR.print: "INSERT INTO {$prefix ~ $table-name} ($columns) VALUES ($columnvalues);\n" unless $sth.execute;
     }
     $columns = '';
@@ -205,10 +206,10 @@ for lines() {
     dd $table-name;
     $table-type = %table{~$table-name} // 0;
   }
-  when /^BBOX\: (.*)/ {
-    $columns ~= 'bbox, ';
-    $columnvalues ~= "'$0', ";
-  }
+#  when /^BBOX\: (.*)/ {
+#    $columns ~= 'bbox, ';
+#    $columnvalues ~= "'$0', ";
+#  }
   when /^Column \s* (\d+) \s* \( (\w+) \) \: (.*) / {
     my $columnnumber = +$0;
     my $columnname   = ~$1;
@@ -237,7 +238,8 @@ for lines() {
 	    $columns      ~= $name  ~ ', ';
 	}
 	when 'date' {
-            $columnvalue ~~ /^\s*[\S+]\s+(\S+)\s*(\d+)\s*[\S+]\s*(\d+)$/;
+#            $columnvalue ~~ /^\s*[\S+]\s+(\S+)\s*(\d+)\s*[\S+]\s*(\d+)$/;
+            $columnvalue ~~ /^\s*(....)\-(..)\-(..).*/;
 	    $columnvalues ~= "'$0 $1 $2', ";
 	    $columns      ~= $name ~ ', ';
 	}
@@ -270,11 +272,14 @@ for lines() {
 	    } else {
               $columnvalue ~~ s:g/\,//;
               $columnvalue ~~ s:g/ \) \s+ \( /, /;
+              $columnvalue ~~ s/^/(/;
               $columnvalue ~~ s:g/ \s* Segment \s+ \d+ \: \s*/) (/;
-              $columnvalue ~~ s/^\) //;
+              $columnvalue ~~ s/^\(\) //;
               $columnvalue ~~ s/[\,\s\(]? $//;
               $columnvalue ~~ s:g/ \) \) \s+ \( \( /), (/;
-              $columnvalues ~= "ST_GeomFromText('MULTILINESTRING $columnvalue)', 4326), ";
+              $columnvalue ~~ s/^\s+//;
+say $columnvalue;
+              $columnvalues ~= "ST_GeomFromText('MULTILINESTRING$columnvalue)', 4326), ";
               $columns      ~= 'shape, ';
 	    }
 	}
