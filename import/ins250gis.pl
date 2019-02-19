@@ -178,7 +178,6 @@ sub do-insert($prefix){
 	$columns ~~ s/\,\s*$//;
 	$columnvalues ~~ s/\,\s*$//;
 	my $sth = $dbh.prepare("INSERT INTO {$prefix ~ $table-name} ($columns) VALUES ({$columnvalues});");
-        $*ERR.print: "INSERT INTO {$prefix ~ $table-name} ($columns) VALUES ($columnvalues);\n";
         $*ERR.print: "INSERT INTO {$prefix ~ $table-name} ($columns) VALUES ($columnvalues);\n" unless $sth.execute;
     }
     $columns = '';
@@ -203,7 +202,7 @@ for lines() {
       $columns = '';
       $columnvalues = '';
     $table-name = ~$0;
-    dd $table-name;
+    #dd $table-name;
     $table-type = %table{~$table-name} // 0;
   }
 #  when /^BBOX\: (.*)/ {
@@ -214,9 +213,9 @@ for lines() {
     my $columnnumber = +$0;
     my $columnname   = ~$1;
     my $columnvalue  = ~$2;
-    dd $columnnumber;
-    dd $columnname;
-    dd $columnvalue;
+    #dd $columnnumber;
+    #dd $columnname;
+    #dd $columnvalue;
     do-insert $prefix if $columnnumber == 0;
     next unless %columndesc{$columnname.uc}.defined;
     $columnvalue ~~ s/ ^ \s+   //;

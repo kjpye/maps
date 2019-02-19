@@ -70,7 +70,7 @@ multi sub put-rbytes(Str $s, $count) {
 multi sub put-rbytes(Int $p is copy, $count is copy) {
     note "put-rbytes(int): {$count} bytes from {$p.base(16)}" if $debug;
     while $count-- {
-      printf "%2.2x ", $pages[$p++];
+      printf "%2.2x ", $pages[$p++] +& 0xff;
     }
     printf "\n";
 }
@@ -84,7 +84,7 @@ multi sub put-rbytes(Buf $p is copy, $count is copy) {
 }
 
 sub read-rbyte($offset) {
-    $pages[$offset];
+    $pages[$offset] +& 0xff;
 }
 
 sub read-byte($page, $offset) {

@@ -1,0 +1,33 @@
+#!/usr/bin/env perl6
+
+my $prefix        = '';
+my $current-table = '';
+my %geom-type     = (
+   lines => 'MULTILINESTRING',
+   point => 'POINT',
+);
+
+for lines() -> $line {
+  given $line {
+    when /^\#prefix \s+ (\w+)/ {
+      $prefix = $0;
+    }
+    when /^\#create <.ws> table <.ws> (\w+)/ {
+      # create new table
+      $current-table = $0;
+      say "CREATE TABLE {$prefix}{$current-table} (";
+    }
+    when /^\#add <.ws> geometrycolumn <.ws> (\w+) <.ws> (\w+)/ {
+      say "SELECT AddGeometryColumn('', '{$prefix}{$current-table}', '$0', 4326, '{%geom-type{$1}}', 2);";
+    }
+    when /^\#add <.ws> index <.ws> (\w+)/ {
+      say "CREATE INDEX {$prefix}{$current-table}_index on {$prefix}$current-table using gist ($0);";
+    }
+    when /^\#/ {
+      # comment -- ignore
+    }
+    default {
+      .say;
+    }
+  }
+}
