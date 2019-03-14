@@ -35,7 +35,7 @@ sub MAIN($dbname, $prefix?) {
     given %row<source> {
       when 'data'|'auto' {
         given %row<type> {
-          when 'lines' {
+          when 'line'|'area' {
             %table<geometry>.push: %row<dbcolumn> => 'MULTILINESTRING';
           }
           when 'point' {
