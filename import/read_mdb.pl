@@ -1,5 +1,7 @@
 #!/usr/bin/env perl6
 
+use v6.c+;
+
 use NativeCall;
 
 constant PGSIZE = 4096;
@@ -710,10 +712,11 @@ sub mmap(Pointer $addr, int32 $length, int32 $prot, int32 $flags, int32 $fd, int
 sub MAIN($file) {
  
     note "Opening $file" if $debug;
-  my $fh = $file.IO.open or fail "Could not open $file\n";
-
-  $pages = mmap(Pointer, 1_000_000_000, 1, 1, $fh.native-descriptor, 0); # FIX
-
-  read-table 2;
-  exit 0;
+    my $fh = $file.IO.open or fail "Could not open $file\n";
+    my $file-length = $file.IO.s;
+    
+    $pages = mmap(Pointer, $file-length, 1, 1, $fh.native-descriptor, 0); # FIX
+    
+    read-table 2;
+    exit 0;
 }
