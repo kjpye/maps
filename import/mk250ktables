@@ -1,0 +1,63 @@
+#!/usr/bin/env perl6
+
+use DB::Pg;
+
+my $currenttable = '';
+my %table;
+my $table-prefix = 'ga_';
+
+sub dumptable($table) {
+  say "CREATE TABLE {$table-prefix}{$table} (";
+  my @columns;
+  my $geometry;
+  my $geometry-type;
+  say %table<columns>.values.join(",\n");
+  say ");";
+  for %table<geometry> -> $geometry {
+    my ($column, $type) = $geometry[0].kv;
+    say "SELECT AddGeometryColumn('', '{$table-prefix}{$table.lc}', '$column', 4326, '$type', 2);";
+  }
+  for %table<index> -> $column {
+    say "CREATE INDEX {$table-prefix}{$table}_index on {$table-prefix}{$table} using gist ($column);";
+  }
+  %table = ();
+}
+
+sub MAIN($dbname, $prefix?) {
+  $table-prefix = $prefix if $prefix.defined;
+  my $db = DB::Pg.new(conninfo => "dbname=$dbname");
+  my $results = $db.query('select dbtable, dbcolumn, source, type, canbenull, columnreferences, setdefault, isprimary from def250k order by dbtable, dbcolumn');
+  for $results.hashes -> %row {
+    if %row<dbtable> ne $currenttable {
+      dumptable($currenttable) if $currenttable ne '';
+      $currenttable = %row<dbtable>;
+    }
+    given %row<source> {
+      when 'data'|'auto' {
+        given %row<type> {
+          when 'lines' {
+            %table<geometry>.push: %row<dbcolumn> => 'MULTILINESTRING';
+          }
+          when 'point' {
+            %table<geometry>.push: %row<dbcolumn> => 'POINT';
+          }
+          default {
+            my $entry = "  %row<dbcolumn> %row<type>";
+            $entry ~= " NOT NULL" unless %row<canbenull>;
+            $entry ~= " REFERENCES %row<columnreferences>" if %row<columnreferences>;
+            $entry ~= " DEFAULT %row<setdefault>" if %row<setdefault>;
+            $entry ~= " PRIMARY KEY" if %row<isprimary>;
+            %table<columns>.push: $entry;
+          }
+        }
+      }
+      when 'index' {
+        %table<index>.push: %row<dbcolumn>;
+      }
+      default {
+        note "Unknown entry type %row<source> for %row<dbtable>:%row<dbcolumn>";
+      }
+    }
+  }
+  dumptable($currenttable) if $currenttable;
+}

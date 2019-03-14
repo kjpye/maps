@@ -1,0 +1,6 @@
+#!/bin/bash
+
+dropdb mapdb
+createdb mapdb
+psql mapdb -f schema.new
+./mk250ktables mapdb | psql mapdb
