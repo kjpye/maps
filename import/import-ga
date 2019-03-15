@@ -819,8 +819,7 @@ sub do-insert($prefix){
 	my $sth = $dbh.prepare("INSERT INTO {$prefix ~ $table-name} ($columns) VALUES ({$columnvalues});");
         $*ERR.print: "INSERT INTO {$prefix ~ $table-name} ($columns) VALUES ($columnvalues);\n" unless $sth.execute;
     }
-    $columns = '';
-    $columnvalues = '';
+    %row = ();
 }
 
 
@@ -849,37 +848,30 @@ sub process-data {
 	    when 'int' | 'smallint' {
 	        $columnvalue ~~ / ^ \s* (\d+)/;
 	        if $0.defined {
-		    $columnvalues ~= $0 ~ ', ';
-		    $columns ~= $name ~ ',';
+                    %row{$name} = $0;
 	        }
 	    }
 	    when 'featuretype' {
 	        my $ftype = get-featuretype($columnvalue, $prefix);
-	        $columnvalues ~= $ftype ~ ', ';
-	        $columns      ~= $name  ~ ', ';
+                %row<$name> = $ftype;
 	    }
 	    when 'date' {
                 $columnvalue ~~ /^\s*(....)\-(..)\-(..).*/;
-	        $columnvalues ~= "'$0 $1 $2', ";
-	        $columns      ~= $name ~ ', ';
+                %row{$name} = "'$0 $1 $2'";
 	    }
 	    when 'source' {
-                $columnvalues ~= '1, '; # FIX
-	        $columns      ~= $name ~ ', ';
+                %row{$name} = 1; # FIX
 	    }
 	    when 'timestamp' {
-	        $columnvalues ~= "'$columnvalue', ";
-	        $columns      ~= $name ~ ', ';
+                %row{$name} = $columnvalue;
 	    }
 	    when 'float' {
-                $columnvalues ~= $columnvalue ~ ', ';
-	        $columns      ~= $name ~ ', ';
+                %row{$name} = $columnvalue;
 	    }
 	    when 'text' {
                 $columnvalue ~~ s:g/ \\ /\\\\/;
                 $columnvalue ~~ s:g/ \' /\'\'/;
-	        $columnvalues ~= "E'{$columnvalue}', ";
-	        $columns      ~= $name ~ ', ';
+	        %row{$name} = "E'{$columnvalueo'";
 	    }
 	    when 'geometry' {
 	        $*ERR.say: "shape (type {$table-type}): {$columnvalue}" if $debug;
@@ -887,8 +879,7 @@ sub process-data {
 	          $columnvalue ~~ /Long ' ' (\S+) ' ' Lat ' ' (.*)/;
                   my ($long, $lat) = (~$0, ~$1);
                   $long ~~ s/\,$//;
-                  $columnvalues ~= "ST_GeomFromText('POINT($long $lat)', 4326), ";
-                  $columns      ~= 'position, ';
+                  %row{$name} = "ST_GeomFromText('POINT($long $lat)', 4326), ";
 	        } else {
                   $columnvalue ~~ s:g/\,//;
                   $columnvalue ~~ s:g/ \) \s+ \( /, /;
@@ -898,18 +889,17 @@ sub process-data {
                   $columnvalue ~~ s/[\,\s\(]? $//;
                   $columnvalue ~~ s:g/ \) \) \s+ \( \( /), (/;
                   $columnvalue ~~ s/^\s+//;
-                  $columnvalues ~= "ST_GeomFromText('MULTILINESTRING$columnvalue)', 4326), ";
-                  $columns      ~= 'shape, ';
+                  %row<shape> = "ST_GeomFromText('MULTILINESTRING$columnvalueo', 4326)";
 	        }
 	    }
 	    when 'bytea' {
 	        $*ERR.say: "BYTEA: {$columnvalue}" if $debug;
-                $columns      ~= $name ~ ', ';
                 $columnvalues ~= "E'";
                 for $columnvalue.split: ' ' -> $byte {
                   $columnvalues ~= sprintf "\\\\%03o", :16($byte) if $byte;
                 }
-                $columnvalues ~= "', ";
+                $columnvalues ~= "'";
+                %row{$name} = $columnvalues;
 	    }
         }
       }
