@@ -32,6 +32,7 @@ my Str $zone;
 
 my @properties;
 my %dependencies;
+my $roadnames;
 
 my @displays; # temporary storage for [no]display options
 my %allobjects;
@@ -136,6 +137,9 @@ sub process-option($arg is copy) {
     if $arg ~~ m:i/^title <.ws> '=' <.ws> (.*)/ {
       $title = $0;
       return;
+    }
+    if $arg ~~ m:i/^roadname[s]? <.ws> '=' <.ws> (.*)/ {
+      $roadnames = $0.IO.open: :w;
     }
 # ignore whitespace in all remaining options
     $arg ~~ s:g/\s+//;
@@ -535,7 +539,7 @@ sub draw-areas(Str $table, Str $columns, Str $geomcol) {
 
 sub draw-ga-areas(Str $table) {
   note "$table areas..." if $debug >= 1;
-  my $geomcol = %defaults<areageometry>;
+  my $geomcol; # = %defaults<areageometry>;
   $geomcol = 'shape';
   my $sth = $dbh.prepare("SELECT symbol, st_astext($geomcol) as shape
                           FROM $table
@@ -559,7 +563,7 @@ sub draw-ga-areas(Str $table) {
 
 sub draw-treeden() {
   note "tree-density areas..." if $debug >= 1;
-  my $geomcol = %defaults{'areageometry'};
+  my $geomcol; # = %defaults{'areageometry'};
   $geomcol = 'geom';
   my $sth = $dbh.prepare("SELECT ftype_code, tree_den, st_astext($geomcol) as shape
                           FROM vm_tree_density
@@ -812,7 +816,7 @@ sub draw-contours(Str $table, Str $columns, Str $geomcol, Str $elevcol) {
 
 sub draw-vm-lines(Str $table, Str $typecolumn, $default-symbol = 0) {
   note "$table lines..." if $debug >= 1;
-  my $geomcol = %defaults{'linegeometry'};
+  my $geomcol; # = %defaults{'linegeometry'};
   $geomcol = 'geom';
   my $sth = $dbh.prepare("SELECT $typecolumn, st_astext($geomcol) as shape
                           FROM $table
@@ -887,7 +891,7 @@ sub draw-vm-lines(Str $table, Str $typecolumn, $default-symbol = 0) {
 
 sub draw-ga-lines(Str $table, Str $typecolumn, $default-symbol = 0) {
   note "$table ($default-symbol) lines..." if $debug >= 1;
-  my $geomcol = %defaults{'linegeometry'};
+  my $geomcol; # = %defaults{'linegeometry'};
   $geomcol = 'shape';
   note "Reading column $geomcol ($rect)" if $debug >= 1;
   my $sth = $dbh.prepare("SELECT symbol, st_astext($geomcol) AS shape
@@ -990,7 +994,7 @@ sub draw-polygon-outline-names(Str $table, Str $column, Real $size, Real $thickn
 
 sub draw-properties() {
     note "property lines..." if $debug >= 1;
-    my $geomcol = %defaults{'linegeometry'};
+    my $geomcol; # = %defaults{'linegeometry'};
     $geomcol = 'shape';
     my $sth = $dbh.prepare("SELECT st_astext($geomcol) AS shape
                             FROM vm_property_view 
@@ -1093,6 +1097,7 @@ sub draw-vm-roads() {
 	my $road-name    = @row[6];
 	my $shape        = @row[7];
 	
+        $roadnames.say: "VM{$objectid} $road-name" if $roadnames;
         $sealed = $sealed == 1 ?? 's' !! 'u';
         my $symbol = %roadsymbols{"{$ftype-code}:{$class}:{$sealed}"} //
                      %roadsymbols{"{$ftype-code}::"}; # default
@@ -1135,7 +1140,7 @@ sub draw-ga-roads() {
     my $featurewidth;
 
     note "Roads..." if $debug >= 1;
-    my $geomcol = %defaults{'linegeometry'};
+    my $geomcol; # = %defaults{'linegeometry'};
   $geomcol = 'shape';
     my $sth = $dbh.prepare("SELECT objectid, symbol, featurewidth, st_astext($geomcol) AS shape
                             FROM ga_roads
@@ -1349,7 +1354,7 @@ sub draw-points(Str $table, Str $columns, Str $geomcol, Str $orientcol, Str $wid
 
 sub draw-ga-points(Str $table) {
     note "$table points..." if $debug >= 1;
-  my $geomcol = %defaults{'pointgeometry'};
+  my $geomcol; # = %defaults{'pointgeometry'};
   $geomcol = 'position';
 
   my $sth = $dbh.prepare("SELECT symbol, st_astext($geomcol) AS position, orientation, featurewidth
@@ -1467,7 +1472,7 @@ note "Got $width";
 
 sub draw-spot-heights() {
     note "spot heights..." if $debug >= 1;
-  my $geomcol = %defaults{'pointgeometry'};
+  my $geomcol; # = %defaults{'pointgeometry'};
   $geomcol = 'geom';
     my $sth = $dbh.prepare("SELECT ftype_code, st_astext($geomcol) AS position, altitude
                             FROM vm_el_grnd_surface_point
@@ -1498,7 +1503,7 @@ my @road-widths = (.9, .9, .9, .6, .6, .6, .4, .4, .4, .4, .2, .2, .2);
 
 sub draw-roadpoints() {
     note "vm_tr_road_infrastructure points..." if $debug >= 1;
-    my $geomcol = %defaults{'pointgeometry'};
+    my $geomcol; # = %defaults{'pointgeometry'};
   $geomcol = 'geom';
     my $sth = $dbh.prepare("SELECT ftype_code, st_astext($geomcol) AS position, rotation, ufi
                             FROM vm_tr_road_infrastructure
@@ -2320,9 +2325,9 @@ sub draw-bbox() {
 # perl6 ./drawvic.pl6 db-newmap250k scale=250000 long=127.7 lat=-15.75 grid=10km display=homesteads display=yards >x.ps
 
 sub draw-objects(Real $xoff, Real $yoff, Real $slope) {
-    my $geometry-point = %defaults{'pointgeometry'};
-    my $geometry-line  = %defaults{'linegeometry'};
-    my $geometry-area  = %defaults{'pointgeometry'};
+#    my $geometry-point = %defaults{'pointgeometry'};
+#    my $geometry-line  = %defaults{'linegeometry'};
+#    my $geometry-area  = %defaults{'pointgeometry'};
     my $sth-draw = $dbh.prepare("SELECT featurename, drawtype, tablename, featurecolumn, geomcol,
                                         orientcol, widthcol, defaultsymbol, displayorder
                                  FROM displayorder
@@ -2577,25 +2582,25 @@ EOF
                               AND  type = ?
                            ");
 
-  my $sth-def = $dbh.prepare('SELECT name, value
-                              FROM defaults
-                             ');
-  $sth-def.execute();
-  while (my @row = $sth-def.fetchrow_array()) {
-    my ($name, $value) = @row;
-    %defaults{$name} = $value;
-  }
-  note "Defaults are {%defaults}";
-  $copyright = %defaults<copyright>;
+#  my $sth-def = $dbh.prepare('SELECT name, value
+#                              FROM defaults
+#                             ');
+#  $sth-def.execute();
+#  while (my @row = $sth-def.fetchrow_array()) {
+#    my ($name, $value) = @row;
+#    %defaults{$name} = $value;
+#  }
+#  note "Defaults are {%defaults}";
+  $copyright = 'copright'; # %defaults<copyright>;
 
   postscript-prefix();
 
   # Set up lists of object types (for use by display/nodisplay arguments)
-  $sth-def = $dbh.prepare('SELECT featurename
+  my $sth-def = $dbh.prepare('SELECT featurename
                            FROM displayorder
                           ');
   $sth-def.execute();
-  while @row = $sth-def.fetchrow_array() {
+  while my @row = $sth-def.fetchrow_array() {
     %allobjects{@row[0].lc} = 1;
   }
   %drawobjects = %allobjects;
@@ -2636,8 +2641,13 @@ EOF
       }
   }
 
+#  $sth-sym = $dbh.prepare("SELECT symbol_ga
+#                           FROM {%defaults{'symbols'}}
+#                           WHERE type = ?
+#                           AND ftype = ?
+#                          ");
   $sth-sym = $dbh.prepare("SELECT symbol_ga
-                           FROM {%defaults{'symbols'}}
+                           FROM vicmap_symbols
                            WHERE type = ?
                            AND ftype = ?
                           ");

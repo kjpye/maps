@@ -1,3 +1,4 @@
+featuretype,symbol,type,dbtable
 11:0,92,line,sa_topo_watercourses
 12:0,0,line,sa_topo_watercourses
 13:0,92,line,sa_topo_watercourses
@@ -119,7 +120,6 @@ excavation site:mine,0,area,vm_foi_polygon
 excavation site:mine,0,point,vm_foi_point
 excavation site:quarry,0,area,vm_foi_polygon
 excavation site:quarry,0,point,vm_foi_point
-featuretype,symbol,type,dbtable
 flat_sti,114,line,vm_hy_water_area_polygon
 flat_sti,11,area,vm_hy_water_area_polygon
 FREE:SEAL,250,line,sa_roads
