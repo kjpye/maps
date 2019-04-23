@@ -25,6 +25,7 @@ $*OUT.out-buffer = Nil if $debug;
 my $dbname = 'mapdb';
 my $dbprefix = 'ga_';
 my %tables;
+my $pg; # Database handle
 
 sub mmap(Pointer $addr, int32 $length, int32 $prot, int32 $flags, int32 $fd, int32 $offset) returns CArray[uint8] is native {*}
 
@@ -34,7 +35,7 @@ sub MAIN($file, :$db, :$prefix) {
     $dbprefix = $prefix if $prefix.defined;
 
     # read database table definitions
-    my $pg = DB::Pg.new(conninfo => "dbname=$dbname");
+    $pg = DB::Pg.new(conninfo => "dbname=$dbname");
     my $results = $pg.query("SELECT dbtable, dbcolumn, type FROM def250k WHERE source = 'data'");
     for $results.hash -> %row {
         %tables{%row<$dbtable>}{%row<dbcolumn>} = %row<type>;
@@ -53,7 +54,7 @@ sub MAIN($file, :$db, :$prefix) {
       read-table 2;
     }
 
-    my $result = $pg.query("SELECT name, type FROM {$prefix}FeatureType");
+    my $result = $pg.query("SELECT name, type FROM {$dbprefix}FeatureType");
     for $result.hashes -> $entry {
       %featuretype{$entry<name>} = $entry<type>;
     }
@@ -782,12 +783,9 @@ sub read-table($id) {
 #################################
 
 
-my %tables;
-my $debug = 0;
 #$debug = 1;
 my @row;
 my $max-featuretype = 0;
-my $dbh;
 
 sub get-featuretype($name, $prefix) {
     return %featuretype{$name} if defined %featuretype{$name};
@@ -806,72 +804,78 @@ sub get-featuretype($name, $prefix) {
 
 
 my $objects = 0;
-my $columns = '';
-my $columnvalues = '';
 my $table-type = '';
 my $table-name;
 my %row;
 
 sub do-insert($prefix){
-    if $columns && $table-type {
-	$columns ~~ s/\,\s*$//;
-	$columnvalues ~~ s/\,\s*$//;
-	my $sth = $dbh.prepare("INSERT INTO {$prefix ~ $table-name} ($columns) VALUES ({$columnvalues});");
-        $*ERR.print: "INSERT INTO {$prefix ~ $table-name} ($columns) VALUES ($columnvalues);\n" unless $sth.execute;
+    my @values;
+    my @columns = %tables{$table-name}.keys.sort;
+    for @columns -> $column {
+        my $value = %row{$column} // '';
+        $value ~~ s:g/\\/\\\\/;
+        $value ~~ s:g/\n/\\n/;
+        $value ~~ s:g/\r/\\r/;
+        $value ~~ s:g/\t/\\t/;
+        $value = '\N' unless $value;
+        @values.push: $value;
     }
+    $db.copy-data @values.join("\t");
     %row = ();
 }
-
 
 sub process-data {
     for $c.list -> $line {
     given $line {
       when /Processing ' ' table ' ' \" (.*) \" / {
-          $columns = '';
-          $columnvalues = '';
+        if $table-name {
+          $pg.copy-end;
+        }
         $table-name = ~$0;
+        my $columns = %tables{$table-name}.keys.sort.join(', ');
+        if ($table-name) {
+          $pg.query('copy $table-name from stdin ($columns)');
+        }
         #dd $table-name;
-        $table-type = %table{~$table-name} // 0;
+        $table-type = %tables{~$table-name} // 0;
       }
       when /^Column \s* (\d+) \s* \( (\w+) \) \: (.*) / {
         my $columnnumber = +$0;
-        my $columnname   = ~$1;
+        my $columnname   = ~$1.lc;
         my $columnvalue  = ~$2;
-        do-insert $prefix if $columnnumber == 0;
-        next unless %columndesc{$columnname.uc}.defined;
+        do-insert $dbprefix if $columnnumber == 0;
+        next unless %tables{$table-name}{$columnname}.defined;
         $columnvalue ~~ s/ ^ \s+   //;
         $columnvalue ~~ s/   \s+ $ //;
         next unless $columnvalue;
-        my ($name, $type) = %columndesc{$columnname.uc}.split: ' ';
-        $*ERR.say: "Line: column $name, type $type" if $debug;
-        given $type {
+        given %tables{$table-name}{$columnname} {
 	    when 'int' | 'smallint' {
 	        $columnvalue ~~ / ^ \s* (\d+)/;
 	        if $0.defined {
-                    %row{$name} = $0;
+                    %row{$columnname} = $0;
 	        }
 	    }
 	    when 'featuretype' {
-	        my $ftype = get-featuretype($columnvalue, $prefix);
-                %row<$name> = $ftype;
+	        my $ftype = get-featuretype($columnvalue, $dbprefix);
+                %row<$columnname> = $ftype;
 	    }
 	    when 'date' {
                 $columnvalue ~~ /^\s*(....)\-(..)\-(..).*/;
-                %row{$name} = "'$0 $1 $2'";
+                %row{$columnname} = "'$0 $1 $2'";
 	    }
 	    when 'source' {
-                %row{$name} = 1; # FIX
+                %row{$columnname} = 1; # FIX
 	    }
 	    when 'timestamp' {
-                %row{$name} = $columnvalue;
+                %row{$columnname} = $columnvalue;
 	    }
 	    when 'float' {
-                %row{$name} = $columnvalue;
+                %row{$columnname} = $columnvalue;
 	    }
 	    when 'text' {
                 $columnvalue ~~ s:g/ \\ /\\\\/;
                 $columnvalue ~~ s:g/ \' /\'\'/;
-	        %row{$name} = "E'{$columnvalueo'";
+	        %row{$columnname} = "E'{$columnvalue}'";
 	    }
 	    when 'geometry' {
 	        $*ERR.say: "shape (type {$table-type}): {$columnvalue}" if $debug;
@@ -879,7 +883,7 @@ sub process-data {
 	          $columnvalue ~~ /Long ' ' (\S+) ' ' Lat ' ' (.*)/;
                   my ($long, $lat) = (~$0, ~$1);
                   $long ~~ s/\,$//;
-                  %row{$name} = "ST_GeomFromText('POINT($long $lat)', 4326), ";
+                  %row{$columnname} = "ST_GeomFromText('POINT($long $lat)', 4326), ";
 	        } else {
                   $columnvalue ~~ s:g/\,//;
                   $columnvalue ~~ s:g/ \) \s+ \( /, /;
@@ -889,20 +893,22 @@ sub process-data {
                   $columnvalue ~~ s/[\,\s\(]? $//;
                   $columnvalue ~~ s:g/ \) \) \s+ \( \( /), (/;
                   $columnvalue ~~ s/^\s+//;
-                  %row<shape> = "ST_GeomFromText('MULTILINESTRING$columnvalueo', 4326)";
+                  %row<shape> = "ST_GeomFromText('MULTILINESTRING{$columnvalue}', 4326)";
 	        }
 	    }
 	    when 'bytea' {
 	        $*ERR.say: "BYTEA: {$columnvalue}" if $debug;
-                $columnvalues ~= "E'";
+                my $columnvalues = '';
+                $columnvalue ~~ s/^E\'//;
+                $columnvalue ~~ s/\'$//;
                 for $columnvalue.split: ' ' -> $byte {
                   $columnvalues ~= sprintf "\\\\%03o", :16($byte) if $byte;
                 }
-                $columnvalues ~= "'";
-                %row{$name} = $columnvalues;
+                %row{$columnname} = $columnvalues;
 	    }
         }
       }
     }
-    do-insert $prefix;
+    do-insert $dbprefix;
+  }
 }
