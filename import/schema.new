@@ -63,7 +63,8 @@ CREATE TABLE Def250k (
   canbenull        text,
   columnreferences text,
   setdefault       text,
-  isprimary        text
+  isprimary        text,
+  sourcecolumn     text
 );
 
 \COPY Def250k FROM 'def250k.csv' CSV HEADER;

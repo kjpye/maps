@@ -36,9 +36,15 @@ sub MAIN($file, :$db, :$prefix) {
 
     # read database table definitions
     $pg = DB::Pg.new(conninfo => "dbname=$dbname");
-    my $results = $pg.query("SELECT dbtable, dbcolumn, type FROM def250k WHERE source = 'data'");
-    for $results.hash -> %row {
-        %tables{%row<$dbtable>}{%row<dbcolumn>} = %row<type>;
+    my $results = $pg.query("SELECT dbtable, dbcolumn, type, sourcecolumn FROM def250k WHERE source = 'data'");
+    for $results.hashes -> %row {
+        my $table  = %row<dbtable>;
+        my $column = %row<dbcolumn>;
+        my $type   = %row<type>;
+        my $source = %row<sourcecolumn>;
+        my $target = %row<dbcolumn>;
+        %tables{$table}{$source}<type> = $type;
+        %tables{$table}{$source}<target> = $target;
     }
     $pg.finish;
 
@@ -808,51 +814,68 @@ my $table-type = '';
 my $table-name;
 my %row;
 
-sub do-insert($prefix){
+sub do-insert{
+dd %row;
     my @values;
     my @columns = %tables{$table-name}.keys.sort;
     for @columns -> $column {
+        my $target = %tables{$table-name}{$column}<target> || $column;
+note "Reading $target from $column";
         my $value = %row{$column} // '';
+note $value;
         $value ~~ s:g/\\/\\\\/;
         $value ~~ s:g/\n/\\n/;
         $value ~~ s:g/\r/\\r/;
         $value ~~ s:g/\t/\\t/;
         $value = '\N' unless $value;
+note $value;
         @values.push: $value;
     }
-    $db.copy-data @values.join("\t");
+note @values.join("\t");
+    $pg.copy-data: @values.join("\t");
     %row = ();
 }
 
 sub process-data {
+    my $insert-data = 0;
     for $c.list -> $line {
     given $line {
       when /Processing ' ' table ' ' \" (.*) \" / {
+        do-insert if $insert-data;
+        $insert-data = 0;
         if $table-name {
           $pg.copy-end;
         }
         $table-name = ~$0;
-        my $columns = %tables{$table-name}.keys.sort.join(', ');
-        if ($table-name) {
-          $pg.query('copy $table-name from stdin ($columns)');
+        my @columns;
+        for %tables{$table-name}.keys -> $column {
+          @columns.push: %tables{$table-name}{$column}<target>;
         }
-        #dd $table-name;
+        my $columns = @columns.sort.join: ', ';
+        if ($table-name) {
+note "copy {$dbprefix ~ $table-name} ($columns) from stdin";
+          $pg.query("copy {$dbprefix ~ $table-name} ($columns) from stdin");
+        }
         $table-type = %tables{~$table-name} // 0;
       }
+note $line;
+#Column 0 (Id): 15 0000000f
       when /^Column \s* (\d+) \s* \( (\w+) \) \: (.*) / {
         my $columnnumber = +$0;
         my $columnname   = ~$1.lc;
         my $columnvalue  = ~$2;
-        do-insert $dbprefix if $columnnumber == 0;
-        next unless %tables{$table-name}{$columnname}.defined;
+note "do-insert into \"$table-name\"" if $columnnumber == 0 && $table-name;
+        do-insert if $columnnumber == 0 && $insert-data;
+        next unless $table-name && %tables{$table-name}{$columnname}.defined;
         $columnvalue ~~ s/ ^ \s+   //;
         $columnvalue ~~ s/   \s+ $ //;
         next unless $columnvalue;
-        given %tables{$table-name}{$columnname} {
+        $insert-data = 1;
+        given %tables{$table-name}{$columnname}<type> {
 	    when 'int' | 'smallint' {
 	        $columnvalue ~~ / ^ \s* (\d+)/;
 	        if $0.defined {
-                    %row{$columnname} = $0;
+                    %row{$columnname} = +$0;
 	        }
 	    }
 	    when 'featuretype' {
@@ -870,7 +893,7 @@ sub process-data {
                 %row{$columnname} = $columnvalue;
 	    }
 	    when 'float' {
-                %row{$columnname} = $columnvalue;
+                %row{$columnname} = +$columnvalue;
 	    }
 	    when 'text' {
                 $columnvalue ~~ s:g/ \\ /\\\\/;
@@ -909,6 +932,8 @@ sub process-data {
         }
       }
     }
-    do-insert $dbprefix;
   }
+note "trailing do-insert";
+  do-insert;
+  $pg.copy-end;
 }
