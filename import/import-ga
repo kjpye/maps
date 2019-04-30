@@ -813,26 +813,32 @@ my $objects = 0;
 my $table-type = '';
 my $table-name;
 my %row;
+my $dbh;
 
 sub do-insert{
-dd %row;
+#dd %row;
     my @values;
     my @columns = %tables{$table-name}.keys.sort;
+dd @columns;
     for @columns -> $column {
         my $target = %tables{$table-name}{$column}<target> || $column;
 note "Reading $target from $column";
-        my $value = %row{$column} // '';
-note $value;
-        $value ~~ s:g/\\/\\\\/;
-        $value ~~ s:g/\n/\\n/;
-        $value ~~ s:g/\r/\\r/;
-        $value ~~ s:g/\t/\\t/;
-        $value = '\N' unless $value;
-note $value;
+        my $value;
+        if %row{$column}.defined {
+            $value = ~%row{$column};
+            $value ~~ s:g/\\/\\\\/;
+            $value ~~ s:g/\n/\\n/;
+            $value ~~ s:g/\r/\\r/;
+            $value ~~ s:g/\t/\\t/;
+        } else {
+            $value = '\N' unless $value;
+        }
+dd $value;
         @values.push: $value;
     }
-note @values.join("\t");
-    $pg.copy-data: @values.join("\t");
+    my $values = @values.join: "\t";
+dd $values;
+    $dbh.copy-data: @values.join("\t");
     %row = ();
 }
 
@@ -844,17 +850,19 @@ sub process-data {
         do-insert if $insert-data;
         $insert-data = 0;
         if $table-name {
-          $pg.copy-end;
+          $dbh.copy-end;
+          $dbh.finish;
         }
         $table-name = ~$0;
         my @columns;
-        for %tables{$table-name}.keys -> $column {
+        for %tables{$table-name}.keys.sort -> $column {
           @columns.push: %tables{$table-name}{$column}<target>;
         }
-        my $columns = @columns.sort.join: ', ';
+        my $columns = @columns.join: ', ';
         if ($table-name) {
 note "copy {$dbprefix ~ $table-name} ($columns) from stdin";
-          $pg.query("copy {$dbprefix ~ $table-name} ($columns) from stdin");
+          $dbh = $pg.db;
+          $dbh.query("copy {$dbprefix ~ $table-name} ($columns) from stdin");
         }
         $table-type = %tables{~$table-name} // 0;
       }
@@ -864,13 +872,17 @@ note $line;
         my $columnnumber = +$0;
         my $columnname   = ~$1.lc;
         my $columnvalue  = ~$2;
-note "do-insert into \"$table-name\"" if $columnnumber == 0 && $table-name;
+#note "do-insert into \"$table-name\"" if $columnnumber == 0 && $table-name;
         do-insert if $columnnumber == 0 && $insert-data;
         next unless $table-name && %tables{$table-name}{$columnname}.defined;
         $columnvalue ~~ s/ ^ \s+   //;
         $columnvalue ~~ s/   \s+ $ //;
         next unless $columnvalue;
         $insert-data = 1;
+# Need to handle feattype specially - translate the string to a number based on the featuretype table
+        if $columnname eq 'feattype' {
+            $columnvalue = 0; #### FIX
+        }
         given %tables{$table-name}{$columnname}<type> {
 	    when 'int' | 'smallint' {
 	        $columnvalue ~~ / ^ \s* (\d+)/;
@@ -890,7 +902,7 @@ note "do-insert into \"$table-name\"" if $columnnumber == 0 && $table-name;
                 %row{$columnname} = 1; # FIX
 	    }
 	    when 'timestamp' {
-                %row{$columnname} = $columnvalue;
+                %row{$columnname} = "'" ~ $columnvalue ~ "'";
 	    }
 	    when 'float' {
                 %row{$columnname} = +$columnvalue;
@@ -900,6 +912,23 @@ note "do-insert into \"$table-name\"" if $columnnumber == 0 && $table-name;
                 $columnvalue ~~ s:g/ \' /\'\'/;
 	        %row{$columnname} = "E'{$columnvalue}'";
 	    }
+            when 'point' {
+                  $columnvalue ~~ /Long ' ' (\S+) ' ' Lat ' ' (.*)/;
+                  my ($long, $lat) = (~$0, ~$1);
+                  $long ~~ s/\,$//;
+                  %row{$columnname} = "ST_GeomFromText('POINT($long $lat)', 4326)";
+            }
+            when 'line' {
+                  $columnvalue ~~ s:g/\,//;
+                  $columnvalue ~~ s:g/ \) \s+ \( /, /;
+                  $columnvalue ~~ s/^/(/;
+                  $columnvalue ~~ s:g/ \s* Segment \s+ \d+ \: \s*/) (/;
+                  $columnvalue ~~ s/^\(\) //;
+                  $columnvalue ~~ s/[\,\s\(]? $//;
+                  $columnvalue ~~ s:g/ \) \) \s+ \( \( /), (/;
+                  $columnvalue ~~ s/^\s+//;
+                  %row<shape> = "ST_GeomFromText('MULTILINESTRING{$columnvalue}', 4326)";
+            }
 	    when 'geometry' {
 	        $*ERR.say: "shape (type {$table-type}): {$columnvalue}" if $debug;
 	        if $table-type eq 'point' {
