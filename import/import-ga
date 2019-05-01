@@ -57,7 +57,7 @@ sub MAIN($file, :$db, :$prefix) {
     $c = Channel.new;
 
     start {
-      read-table 2;
+      read-table 2, '';
     }
 
     my $result = $pg.query("SELECT name, type FROM {$dbprefix}FeatureType");
@@ -520,12 +520,12 @@ note "Default case for OLE" if $debug;
   }
   if $table-id {
       add-mess sprintf("Processing table \"%s\" (id: %d)\n", $table-name, $table-id);
-      read-table($table-id);
+      read-table($table-id, $table-name);
   }
 note "Returning from print-row" if $debug;
 }
 
-sub process-data-page($page) {
+sub process-data-page($page, $dbh) {
   note "Data page\n" if $debug;
   my $unknown-byte = read-byte($page, 1);
   $*ERR.printf: "Unknown: %2.2x\n", $unknown-byte if $debug;
@@ -746,7 +746,7 @@ note "Reading bitmap ($bytes bytes) from position {$p.base(16)}" if $debug;
   @pgs;
 }
 
-sub read-data-page($id) {
+sub read-data-page($id, $table-type, $db) {
   $*ERR.printf: "read_data_page: reading page %d (%x)\n", $id, $id if $debug;
   my $type = read-byte($id, 0);
   $*ERR.printf: "read_data_page: type %d\n", $type if $debug;
@@ -754,7 +754,7 @@ sub read-data-page($id) {
       note "Pointer to data page does not point to data page" if $debug;
       exit(4);
   }
-  process-data-page($id);
+  process-data-page($id, $table-type, $db);
 }
 
 sub print-data-pages($p) {
@@ -767,19 +767,37 @@ sub print-data-pages($p) {
 #  if(debug)printf("\n");
 }
 
-sub read-table($id) {
-  $*ERR.printf: "Reading table on page %d (%x)\n", $id, $id if $debug;
-  my $table = process-table-page($id);
-  $*ERR.printf: "table bitmask: %x\n", $table.usage-bitmask if $debug;
-  my @pgs = read-bitmask($table.usage-bitmask);
-  dd @pgs if $debug;
-  for @pgs -> $pp {
-      note "Reading data page $pp" if $debug;
-      print-data-pages($pp);
-      $*ERR.printf("Data page %d\n", $pp) if $debug;
-      read-data-page($pp);
-  }
-  note "No more data pages" if $debug;
+sub read-table($id, $name) {
+
+    return if $name and not %tables{$name}.exists; # return unless we actually want this table
+    
+    my @columns;
+    my $dbh;
+    if $name {
+	for %tables{$name}.keys.sort -> $column {
+	    @columns.push: %tables{$name}{$column}<target>;
+	}
+	my $columns = @columns.join: ', ';
+	if $name {
+	    note "copy {$dbprefix ~ $name} ($columns) from stdin";
+	    $dbh = $pg.db;
+	    $dbh.query("copy {$dbprefix ~ $name} ($columns) from stdin");
+	}
+    }
+    my $table-type = %tables{$name} // 0;
+
+    $*ERR.printf: "Reading table on page %d (%x)\n", $id, $id if $debug;
+    my $table = process-table-page($id);
+    $*ERR.printf: "table bitmask: %x\n", $table.usage-bitmask if $debug;
+    my @pgs = read-bitmask($table.usage-bitmask);
+    dd @pgs if $debug;
+    for @pgs -> $pp {
+	note "Reading data page $pp" if $debug;
+	print-data-pages($pp);
+	$*ERR.printf("Data page %d\n", $pp) if $debug;
+	read-data-page($pp, $table-type, $dbh);
+    }
+    note "No more data pages" if $debug;
 }
 
 #################################
@@ -810,12 +828,10 @@ sub get-featuretype($name, $prefix) {
 
 
 my $objects = 0;
-my $table-type = '';
 my $table-name;
 my %row;
-my $dbh;
 
-sub do-insert{
+sub do-insert(%row, $dbh) {
 #dd %row;
     my @values;
     my @columns = %tables{$table-name}.keys.sort;
@@ -833,90 +849,71 @@ note "Reading $target from $column";
         } else {
             $value = '\N' unless $value;
         }
-dd $value;
+#dd $value;
         @values.push: $value;
     }
     my $values = @values.join: "\t";
 dd $values;
-    $dbh.copy-data: @values.join("\t");
+    $dbh.copy-data: $values;
     %row = ();
 }
 
 sub process-data {
     my $insert-data = 0;
     for $c.list -> $line {
-    given $line {
-      when /Processing ' ' table ' ' \" (.*) \" / {
-        do-insert if $insert-data;
-        $insert-data = 0;
-        if $table-name {
-          $dbh.copy-end;
-          $dbh.finish;
-        }
-        $table-name = ~$0;
-        my @columns;
-        for %tables{$table-name}.keys.sort -> $column {
-          @columns.push: %tables{$table-name}{$column}<target>;
-        }
-        my $columns = @columns.join: ', ';
-        if ($table-name) {
-note "copy {$dbprefix ~ $table-name} ($columns) from stdin";
-          $dbh = $pg.db;
-          $dbh.query("copy {$dbprefix ~ $table-name} ($columns) from stdin");
-        }
-        $table-type = %tables{~$table-name} // 0;
-      }
-note $line;
-#Column 0 (Id): 15 0000000f
-      when /^Column \s* (\d+) \s* \( (\w+) \) \: (.*) / {
-        my $columnnumber = +$0;
-        my $columnname   = ~$1.lc;
-        my $columnvalue  = ~$2;
-#note "do-insert into \"$table-name\"" if $columnnumber == 0 && $table-name;
-        do-insert if $columnnumber == 0 && $insert-data;
-        next unless $table-name && %tables{$table-name}{$columnname}.defined;
-        $columnvalue ~~ s/ ^ \s+   //;
-        $columnvalue ~~ s/   \s+ $ //;
-        next unless $columnvalue;
-        $insert-data = 1;
-# Need to handle feattype specially - translate the string to a number based on the featuretype table
-        if $columnname eq 'feattype' {
-            $columnvalue = 0; #### FIX
-        }
-        given %tables{$table-name}{$columnname}<type> {
-	    when 'int' | 'smallint' {
-	        $columnvalue ~~ / ^ \s* (\d+)/;
-	        if $0.defined {
-                    %row{$columnname} = +$0;
-	        }
-	    }
-	    when 'featuretype' {
-	        my $ftype = get-featuretype($columnvalue, $dbprefix);
-                %row<$columnname> = $ftype;
-	    }
-	    when 'date' {
-                $columnvalue ~~ /^\s*(....)\-(..)\-(..).*/;
-                %row{$columnname} = "'$0 $1 $2'";
-	    }
-	    when 'source' {
-                %row{$columnname} = 1; # FIX
-	    }
-	    when 'timestamp' {
-                %row{$columnname} = "'" ~ $columnvalue ~ "'";
-	    }
-	    when 'float' {
-                %row{$columnname} = +$columnvalue;
-	    }
-	    when 'text' {
-                $columnvalue ~~ s:g/ \\ /\\\\/;
-                $columnvalue ~~ s:g/ \' /\'\'/;
-	        %row{$columnname} = "E'{$columnvalue}'";
-	    }
+	given $line {
+	    note $line;
+	    #Column 0 (Id): 15 0000000f
+	    when /^Column \s* (\d+) \s* \( (\w+) \) \: (.*) / {
+		my $columnnumber = +$0;
+		my $columnname   = ~$1.lc;
+		my $columnvalue  = ~$2;
+		#note "do-insert into \"$table-name\"" if $columnnumber == 0 && $table-name;
+		do-insert %row, $dbh if $columnnumber == 0 && $insert-data;
+		next unless $table-name && %tables{$table-name}{$columnname}.defined;
+		$columnvalue ~~ s/ ^ \s+   //;
+		$columnvalue ~~ s/   \s+ $ //;
+		next unless $columnvalue;
+		$insert-data = 1;
+		# Need to handle feattype specially - translate the string to a number based on the featuretype table
+		if $columnname eq 'feattype' {
+		    $columnvalue = 0; #### FIX
+		}
+		given %tables{$table-name}{$columnname}<type> {
+		    when 'int' | 'smallint' {
+			$columnvalue ~~ / ^ \s* (\d+)/;
+			if $0.defined {
+			    %row{$columnname} = +$0;
+			}
+		    }
+		    when 'featuretype' {
+			my $ftype = get-featuretype($columnvalue, $dbprefix);
+			%row<$columnname> = $ftype;
+		    }
+		    when 'date' {
+			$columnvalue ~~ /^\s*(....)\-(..)\-(..).*/;
+			%row{$columnname} = "'$0 $1 $2'";
+		    }
+		    when 'source' {
+			%row{$columnname} = 1; # FIX
+		    }
+		    when 'timestamp' {
+			%row{$columnname} = "'" ~ $columnvalue ~ "'";
+		    }
+		    when 'float' {
+			%row{$columnname} = +$columnvalue;
+		    }
+		    when 'text' {
+			$columnvalue ~~ s:g/ \\ /\\\\/;
+			$columnvalue ~~ s:g/ \' /\'\'/;
+                        %row{$columnname} = "E'{$columnvalue}'";
+                    }
             when 'point' {
                   $columnvalue ~~ /Long ' ' (\S+) ' ' Lat ' ' (.*)/;
                   my ($long, $lat) = (~$0, ~$1);
                   $long ~~ s/\,$//;
-                  %row{$columnname} = "ST_GeomFromText('POINT($long $lat)', 4326)";
+ #                %row{$columnname} = "ST_GeomFromText('POINT($long $lat)', 4326)";
+                  %row{$columnname} = "SRID=4326;POINT($long $lat)";
             }
             when 'line' {
                   $columnvalue ~~ s:g/\,//;
@@ -927,7 +924,8 @@ note $line;
                   $columnvalue ~~ s/[\,\s\(]? $//;
                   $columnvalue ~~ s:g/ \) \) \s+ \( \( /), (/;
                   $columnvalue ~~ s/^\s+//;
-                  %row<shape> = "ST_GeomFromText('MULTILINESTRING{$columnvalue}', 4326)";
+#                 %row<shape> = "ST_GeomFromText('MULTILINESTRING{$columnvalue}', 4326)";
+                  %row<shape> = "SRID=4326;MULTILINESTRING{$columnvalue}";
             }
 	    when 'geometry' {
 	        $*ERR.say: "shape (type {$table-type}): {$columnvalue}" if $debug;
@@ -958,11 +956,11 @@ note $line;
                 }
                 %row{$columnname} = $columnvalues;
 	    }
+            default {
+                # ignore other rows
+            }
         }
       }
     }
   }
-note "trailing do-insert";
-  do-insert;
-  $pg.copy-end;
 }

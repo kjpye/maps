@@ -43,7 +43,7 @@ sub MAIN($dbname, $prefix?) {
           }
           default {
             my $entry = "  %row<dbcolumn> %row<type>";
-            $entry ~= " NOT NULL" unless %row<canbenull>;
+            $entry ~= " NOT NULL" if %row<canbenull>;
             $entry ~= " REFERENCES %row<columnreferences>" if %row<columnreferences>;
             $entry ~= " DEFAULT %row<setdefault>" if %row<setdefault>;
             $entry ~= " PRIMARY KEY" if %row<isprimary>;
