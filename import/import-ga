@@ -513,11 +513,12 @@ sub read-row($p is copy, $number is copy, $table) {
 			    note "0x8000" if $debug;
 			    # data is here
 			    $voffset += 12;
-			    if 'SHAPE' eq $column.name {
+			    if 'shape' eq $column.name.lc {
 				my $count = read-rint($voffset);
+note "Got shape; count is $count" if $debug;
 				if $count == 1 {
 #				    add-mess sprintf("Long %g, Lat %g\n", read-rdouble($voffset+4), read-rdouble($voffset+12));
-				    %row{$column.name.lc} = "SRID=4326;POINT({read-rdouble($voffset+4)}, {read-rdouble($voffset+12)})";
+				    %row{$column.name.lc} = "SRID=4326;POINT({read-rdouble($voffset+4)} {read-rdouble($voffset+12)})";
 				}
 			    } else {
 #				put-rbytes($voffset, $length);
@@ -942,7 +943,7 @@ sub do-insert(%row, $dbh, @columns, $table-name) {
 #dd $value;
         @values.push: $value;
     }
-    my $values = @values.join: "\t";
+    my $values = (@values.join: "	") ~ "\n"; # That's a tab folks
 dd $values;
     $dbh.copy-data: $values;
     %row = ();
