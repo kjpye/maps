@@ -515,11 +515,21 @@ sub read-row($p is copy, $number is copy, $table) {
 			    $voffset += 12;
 			    if 'shape' eq $column.name.lc {
 				my $count = read-rint($voffset);
-note "Got shape; count is $count" if $debug;
+                                note "Got shape; count is $count" if $debug;
 				if $count == 1 {
-#				    add-mess sprintf("Long %g, Lat %g\n", read-rdouble($voffset+4), read-rdouble($voffset+12));
+                                    #				    add-mess sprintf("Long %g, Lat %g\n", read-rdouble($voffset+4), read-rdouble($voffset+12));
 				    %row{$column.name.lc} = "SRID=4326;POINT({read-rdouble($voffset+4)} {read-rdouble($voffset+12)})";
-				}
+				} else {
+                                    my $offset = $voffset+4;
+                                    my @points;
+                                    while $count-- {
+                                        my $lat = read-rdouble($offset);
+                                        my $long = read-rdouble($offset+8);
+                                        @points.push: "$long $lat";
+                                        $offset += 8;
+                                    }
+                                    %row<shape> = "SRID=4326;MULTILINESTRING(" ~ @points.join(',') ~ ')';
+                               }
 			    } else {
 #				put-rbytes($voffset, $length);
 				%row{$column.name.lc} = get-rbytes($voffset, $length);
