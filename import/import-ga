@@ -526,11 +526,13 @@ sub read-row($p is copy, $number is copy, $table) {
                                         my $lat = read-rdouble($offset);
                                         my $long = read-rdouble($offset+8);
                                         @points.push: "$long $lat";
+note "Adding point $long $lat" if $debug;
                                         $offset += 8;
                                     }
                                     %row<shape> = "SRID=4326;MULTILINESTRING(" ~ @points.join(',') ~ ')';
                                }
 			    } else {
+note "Unknown OLE column {$column.name}" if $debug;
 #				put-rbytes($voffset, $length);
 				%row{$column.name.lc} = get-rbytes($voffset, $length);
 			    }
