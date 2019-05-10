@@ -241,9 +241,32 @@ note "Read-long-page: {$pointer.base(16)}" if $debug;
     (Buf.new(|@bytes), $length);
 }
 
+#`[
+  print-shape analyses the structure pointed to by its argument:
+
+  At that position and a length. The structure at that position is...
+
+  offset type purpose
+    0    int  count of points (ignored)
+    4    double X-min
+   12    double Y-min
+   20    double X-max
+   24    double Y-max
+   32    int    number of segments
+   36    int    count
+   40    int    segment offsets (array)
+   40_segcount*4
+         double X
+         double Y
+   ...
+]
+
 sub print-shape($pointer) {
     my $bb;
     my $shape;
+    my @segments;
+    my @segoffset;
+    my $segno = -1; # Will be incremented before first access
 
 note "print-shape {$pointer.base(16)}" if $debug;
   my ($ptr, $length) = |find-lval($pointer);
@@ -259,25 +282,26 @@ note "print-shape {$pointer.base(16)}" if $debug;
     $bb = sprintf "((%.9g,%.9g) (%.9g,%.9g))", $xmin, $ymin, $xmax, $ymax;
     my $segments = read-rint($ptr);    $ptr += 4;
     $count       = read-rint($ptr);    $ptr += 4;
-    my $segstart = read-rint($ptr+4);  $ptr += 4;
-  $*ERR.printf: "%d segments, %d points, 1st segment at point %d ", $segments, $count, $segstart if $debug;
-  my $segptr = $ptr + $segments * 4 - 4; # where the actual points start
-  my $segment = 0;
-for ^$count -> $point {
-    if $point == $segstart {
-	  add-mess sprintf "Segment %d: ", $segment;
-	  ++$segment;
-	  if $segment < $segments {
-	      $segstart = read-rint($ptr);   $ptr += 4;
-	    }
-	}
-      my $x = read-rdouble($segptr);
-      my $y = read-rdouble($segptr+8);
-      add-mess sprintf "(%.9g, %.9g) ", $x, $y;
-      # TODO: add point to shape
-      $segptr += 16;
+    for ^$segments { # Read segment offsets
+        @segoffset[++$segno] = read-rint($ptr); $ptr += 4; # read-rint($ptr+4) ???
     }
-    ($bb, $shape);
+    $segno = -1;
+  $*ERR.printf: "%d segments, %d points, 1st segment at point %d ", $segments, $count, @segoffset[0] if $debug;
+  for ^$count -> $point {
+      if $point == @segoffset[$segno + 1] {
+          note sprintf "Segment %d: ", $segno;
+	  ++$segno;
+      }
+      my $x = read-rdouble($ptr);
+      my $y = read-rdouble($ptr+8);
+#     add-mess sprintf "(%.9g, %.9g) ", $x, $y;
+      @segments[$segno].push: "$x $y";
+      $ptr += 16;
+  }
+  $shape = "SRID=4326;MULTILINESTRING((" ~
+           (@segments>>.join(",")).join("),(") ~
+           "))";
+  ($bb, $shape);
 }
 
 sub print-shape2(Buf $p) {
@@ -541,6 +565,7 @@ note "Unknown OLE column {$column.name}" if $debug;
 			    if $column.name eq 'SHAPE' {
 				my ($bb, $shape) = |print-shape($pointer);
 #				add-mess sprintf("\nBBOX: %s\n", $bb);
+                                %row{$column.name.lc} = $shape;
 			    } else {
 				$*ERR.printf: "pointer %x\n", $pointer if $debug;
 				my ($ptr, $length) = |find-lval($pointer);
@@ -555,6 +580,7 @@ note "Unknown OLE column {$column.name}" if $debug;
 			    if $column.name eq 'SHAPE' {
 				my ($bb, $shape) = print-shape2($str);
 #				add-mess sprintf("\nBBOX: %s\n", $bb);
+                                %row{$column.name.lc} = $shape;
 			    } else {
 #				put-rbytes($str, $length);
 				%row{$column.name.lc} = get-rbytes($str, $length);

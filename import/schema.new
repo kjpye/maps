@@ -22,6 +22,7 @@ CREATE TABLE ga_Source (
 	name text UNIQUE
 );
 
+INSERT INTO ga_Source (name, source) VALUES ('unknown', 0);
 INSERT INTO ga_Source (name) VALUES ('GEOSCIENCE AUSTRALIA');
 INSERT INTO ga_Source (name) VALUES ('Kevin Pye');
 
