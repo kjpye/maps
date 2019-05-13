@@ -238,7 +238,7 @@ note "Read-long-page: {$pointer.base(16)}" if $debug;
 	  @bytes.push: $pages[$p + $offset++] +& 0xff;
       }
     }
-    (Buf.new(|@bytes), $length);
+    (Buf.new(@bytes), $length);
 }
 
 #`[
