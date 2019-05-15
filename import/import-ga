@@ -601,6 +601,7 @@ note "Unknown OLE column {$column.name}" if $debug;
     }
     if $table-id {
 #	add-mess sprintf("Processing table \"%s\" (id: %d)\n", $table-name, $table-id);
+        note "Found table {%row<name>}" if $debug;
 	read-table($table-id, %row<name>) if %tables{%row<name>}.defined;
     }
     note "Returning from read-row" if $debug;
@@ -634,7 +635,7 @@ sub process-data-page($page, $table-type, $dbh, @columns, $table-name) {
   } else {
       note "No table definition found" if $debug;
       return;
-  }
+   }
   
   
   $*ERR.printf: "Unknown: %8.8x\n", read-int($page, 8) if $debug;
