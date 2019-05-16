@@ -35,7 +35,7 @@ sub MAIN($file, :$db, :$prefix) {
     $dbname = $db if $db.defined;
     $dbprefix = $prefix if $prefix.defined;
 
-    # read database table definitions
+# read database table definitions
     $pg = DB::Pg.new(conninfo => "dbname=$dbname");
     my $results = $pg.query("SELECT dbtable, dbcolumn, type, sourcecolumn FROM def250k WHERE source = 'data'");
     for $results.hashes -> %row {
@@ -50,7 +50,7 @@ sub MAIN($file, :$db, :$prefix) {
     }
     $pg.finish;
 
-    # Read in the featuretype table
+# Read in the featuretype table
     {
 	my $result = $pg.query("SELECT name, type FROM {$dbprefix}FeatureType");
 	for $result.hashes -> $entry {
@@ -59,7 +59,7 @@ sub MAIN($file, :$db, :$prefix) {
 	$pg.finish;
     }
 
-    # Read in the source table
+# Read in the source table
     {
 	my $result = $pg.query("SELECT name, source FROM {$dbprefix}Source");
 	for $result.hashes -> $entry {
@@ -357,7 +357,7 @@ class Column {
 
 class Table {
   has $.next             is rw; # linked list
-  has $.page;  # page this table was defined on
+  has $.page;                   # page this table was defined on
   has $.type             is rw;
   has $.num-columns      is rw;
   has $.num-var-columns  is rw;
@@ -609,6 +609,8 @@ dd %row;
     %row;
 }
 
+my %tableptr;
+
 sub process-data-page($page, $table-type, $dbh, @columns, $table-name) {
   note "process-data-page:" if $debug;
   my $unknown-byte = read-byte($page, 1);
@@ -621,14 +623,15 @@ sub process-data-page($page, $table-type, $dbh, @columns, $table-name) {
     }
   
   $*ERR.printf: "Table Description pointer: %d\n", $tablep if $debug;
-  my $table = @tables[*-1];
-  while $table {
-      $*ERR.printf: "table pointer is %d\n", $table.page if $debug;
-      if $table.page == $tablep {
-	  last;
-      }
-      $table = $table.next;
-  }
+#  my $table = @tables[*-1];
+#  while $table {
+#      $*ERR.printf: "table pointer is %d\n", $table.page if $debug;
+#      if $table.page == $tablep {
+#	  last;
+#      }
+#      $table = $table.next;
+#  }
+  my $table = %tableptr{$tablep};
   if $table {
       note "Found table definition" if $debug;
 #dd $table;
@@ -636,7 +639,6 @@ sub process-data-page($page, $table-type, $dbh, @columns, $table-name) {
       note "No table definition found" if $debug;
       return;
    }
-  
   
   $*ERR.printf: "Unknown: %8.8x\n", read-int($page, 8) if $debug;
   my $numrec = read-short($page, 12);
@@ -658,11 +660,12 @@ sub process-data-page($page, $table-type, $dbh, @columns, $table-name) {
   note "End process-data-page" if $debug;
 }
 
-sub process-table-page($page) {
+sub read-table-header($page) {
 #dd $page;
   note "Table definition ($page)\n" if $debug;
   my $table = Table.new(:$page);
   @tables.push: $table;
+  %tableptr{$page} := $table;
 #  dd $table if $debug;
 #  dd @tables if $debug;
   my $ptr = 1;
@@ -694,56 +697,56 @@ sub process-table-page($page) {
   note "Free pages: {read-int($page, $ptr).base(16)}"            if $debug; $ptr+= 4;
    
   for ^$num-real-index -> $i {
-      note "index {$i+1}"                                 if $debug;
-      note "unknown {read-int($page, $ptr).base(16)}"          if $debug; $ptr += 4;
-      note "{read-int($page, $ptr)} index rows"          if $debug; $ptr += 4;
-      note "unknown {read-int($page, $ptr)}"          if $debug; $ptr += 4;
+      note "index {$i+1}"                              if $debug;
+      note "unknown {read-int($page, $ptr).base(16)}"  if $debug; $ptr += 4;
+      note "{read-int($page, $ptr)} index rows"        if $debug; $ptr += 4;
+      note "unknown {read-int($page, $ptr)}"           if $debug; $ptr += 4;
     }
   
   my $columns;
-#  $table.columns = malloc(table->num_columns * sizeof (struct column));
    for ^$table.num-columns -> $i {
-       note "column {$i+1}" if $debug;
+      note "column {$i+1}" if $debug;
       $columns[$i] = Column.new(type => read-byte($page, $ptr++));
-#      $columns[$i].type = read_byte(page, ptr++);
       $*ERR.printf("    column type %2.2x (", $columns[$i].type) if $debug;
-      given $columns[$i].type {
-	when  1 { note "boolean)"             if $debug; }
-	when  2 { note "byte)"                if $debug; }
-	when  3 { note "short)"               if $debug; }
-	when  4 { note "int)"                 if $debug; }
-	when  5 { note "currency)"            if $debug; }
-	when  6 { note "float)"               if $debug; }
-	when  7 { note "double)"              if $debug; }
-	when  8 { note "short date/time)"     if $debug; }
-	when  9 { note "binary -- 255 bytes)" if $debug; }
-	when 10 { note "text -- 255 bytes)"   if $debug; }
-	when 11 { note "OLE)"                 if $debug; }
-	when 12 { note "memo)"                if $debug; }
-	when 15 { note "GUID)"                if $debug; }
-	default { note "unknown)"             if $debug; }
+      if $debug {
+          given $columns[$i].type {
+	      when  1 { note "boolean)"             }
+	      when  2 { note "byte)"                }
+	      when  3 { note "short)"               }
+	      when  4 { note "int)"                 }
+	      when  5 { note "currency)"            }
+	      when  6 { note "float)"               }
+	      when  7 { note "double)"              }
+	      when  8 { note "short date/time)"     }
+	      when  9 { note "binary -- 255 bytes)" }
+	      when 10 { note "text -- 255 bytes)"   }
+	      when 11 { note "OLE)"                 }
+	      when 12 { note "memo)"                }
+	      when 15 { note "GUID)"                }
+	      default { note "unknown)"             }
+          }
       }
       $*ERR.printf("    unknown %8.8x\n", read-int($page, $ptr))        if $debug; $ptr += 4;
-      $columns[$i].number = read-short($page, $ptr);                         $ptr += 2;
+      $columns[$i].number = read-short($page, $ptr);                               $ptr += 2;
       $*ERR.printf("    column number %d\n", $columns[$i].number)       if $debug;
-      $columns[$i].offset = read-short($page, $ptr);                         $ptr += 2;
+      $columns[$i].offset = read-short($page, $ptr);                               $ptr += 2;
       $*ERR.printf("    variable offset: %4.4x\n", $columns[$i].offset) if $debug;
       $*ERR.printf("    column number %d\n", read-short($page, $ptr))   if $debug; $ptr += 2;
       $*ERR.printf("    unknown %8.8x\n",    read-int($page, $ptr))     if $debug; $ptr += 4;
       $columns[$i].bitmask = read-byte($page, $ptr++);
       $*ERR.printf("    bitmask: %2.2x\n", $columns[$i].bitmask)        if $debug;
-      $*ERR.printf("    misc_flags: %2.2x\n", read-byte($page, $ptr))      if $debug; $ptr++;
+      $*ERR.printf("    misc_flags: %2.2x\n", read-byte($page, $ptr))   if $debug; $ptr++;
       $*ERR.printf("    unknown %8.8x\n", read-int($page, $ptr))        if $debug; $ptr += 4;
-      $columns[$i].offset = read-short($page, $ptr);                         $ptr += 2;
+      $columns[$i].offset = read-short($page, $ptr);                               $ptr += 2;
       $*ERR.printf("    fixed offset: %4.4x\n", $columns[$i].offset)    if $debug;
-      $columns[$i].length = read-short($page, $ptr);                         $ptr += 2;
+      $columns[$i].length = read-short($page, $ptr);                               $ptr += 2;
       $*ERR.printf("    column length: %d\n", $columns[$i].length)      if $debug;
     }
   for ^$table.num-columns -> $i {
       my $c;
       my $namep;
       
-# FIX -- this is really reading a little-endian UCS-2 string, and assumes only ASCII is used
+# Read a little-endian UCS-2 encoded string
       my $len = read-short($page, $ptr); $ptr += 2;
       $*ERR.printf: "   Column %d (%d) label (%d chars): \"",
 	     $i, $columns[$i].number, $len/2 if $debug;
@@ -884,14 +887,14 @@ sub read-table($id, $name) {
     my $table-type = %tables{$name};# // '';
     dd $table-type if $debug;
     $*ERR.printf: "Reading table on page %d (%x)\n", $id, $id if $debug;
-note "Calling process-table-page";
-    my $table = process-table-page($id);
+note "Calling read-table-header";
+    my $table = read-table-header($id);
     $*ERR.printf: "table bitmask: %x\n", $table.usage-bitmask if $debug;
     my @pgs = read-bitmask($table.usage-bitmask);
     dd @pgs if $debug;
     for @pgs -> $pp {
 	note "Reading data page $pp" if $debug;
-	print-data-pages($pp);
+	print-data-pages($pp) if $debug;
 	$*ERR.printf("Data page %d\n", $pp) if $debug;
 	read-data-page($pp, $table-type, $dbh, @columns, $name);
     }
