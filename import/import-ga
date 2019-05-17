@@ -10,6 +10,7 @@ constant PGSIZE = 4096;
 my $c;     # a channel for communicating between processes
 
 my $pages; # The memory-mapped mdb file
+my @threads; # the promises used for each table we actually read
 
 # Hash featuretype mirrors the featuretype table in the database. We
 # read it from there, and add new entries automatically when we find
@@ -19,7 +20,7 @@ my %featuretype = ( );
 my %source      = ( );
 
 my $debug = 0;
-$debug = 1;
+#$debug = 1;
 $*OUT.out-buffer = Nil if $debug;
 
 
@@ -77,7 +78,10 @@ sub MAIN($file, :$db, :$prefix) {
     $c = Channel.new;
 
     read-table 2, '';
-
+    # at this stage there should be lots of threads running, one for each table we want
+    # wait for them all to foinish
+    await Promise.allof: @threads;
+    note "Completed all tables";
 }
 
 my %outputfile;
@@ -602,7 +606,7 @@ note "Unknown OLE column {$column.name}" if $debug;
     if $table-id {
 #	add-mess sprintf("Processing table \"%s\" (id: %d)\n", $table-name, $table-id);
         note "Found table {%row<name>}" if $debug;
-	read-table($table-id, %row<name>) if %tables{%row<name>}.defined;
+	@threads.push: start { read-table($table-id, %row<name>) } if %tables{%row<name>}.defined;
     }
     note "Returning from read-row" if $debug;
 dd %row;
