@@ -291,7 +291,11 @@ note "print-shape {$pointer.base(16)}" if $debug;
     }
     $segno = -1;
   $*ERR.printf: "%d segments, %d points, 1st segment at point %d ", $segments, $count, @segoffset[0] if $debug;
+  dd $count;
+  dd $segno;
+  dd @segoffset;
   for ^$count -> $point {
+dd $point;
       if $point == @segoffset[$segno + 1] {
           note sprintf "Segment %d: ", $segno;
 	  ++$segno;
@@ -370,8 +374,6 @@ class Table {
   has $.auto-number      is rw;
   has @.columns          is rw;
 }
-
-my @tables;
 
 # void read_table(unsigned int id);
 
@@ -615,7 +617,7 @@ dd %row;
 
 my %tableptr;
 
-sub process-data-page($page, $table-type, $dbh, @columns, $table-name) {
+sub process-data-page($page, $table, $table-type, $dbh, @columns, $table-name) {
   note "process-data-page:" if $debug;
   my $unknown-byte = read-byte($page, 1);
   $*ERR.printf: "Unknown: %2.2x\n", $unknown-byte if $debug;
@@ -627,15 +629,7 @@ sub process-data-page($page, $table-type, $dbh, @columns, $table-name) {
     }
   
   $*ERR.printf: "Table Description pointer: %d\n", $tablep if $debug;
-#  my $table = @tables[*-1];
-#  while $table {
-#      $*ERR.printf: "table pointer is %d\n", $table.page if $debug;
-#      if $table.page == $tablep {
-#	  last;
-#      }
-#      $table = $table.next;
-#  }
-  my $table = %tableptr{$tablep};
+
   if $table {
       note "Found table definition" if $debug;
 #dd $table;
@@ -664,14 +658,14 @@ sub process-data-page($page, $table-type, $dbh, @columns, $table-name) {
   note "End process-data-page" if $debug;
 }
 
+# Runs simultaneously in multiple threads
+
 sub read-table-header($page) {
 #dd $page;
   note "Table definition ($page)\n" if $debug;
   my $table = Table.new(:$page);
-  @tables.push: $table;
-  %tableptr{$page} := $table;
+  %tableptr{$page} := $table; # ALSO DANGEROUS -- FIX (might not actually be necessary; we read this for each page, and it won't be used elsewhere!)
 #  dd $table if $debug;
-#  dd @tables if $debug;
   my $ptr = 1;
   note "unknown: {read-byte($page, $ptr).base(16)}"       if $debug; $ptr++;
   note "Free space - 8: {read-short($page, $ptr).base(16)}"      if $debug; $ptr += 2;
@@ -840,7 +834,7 @@ note "Reading bitmap ($bytes bytes) from position {$p.base(16)}" if $debug;
   @pgs;
 }
 
-sub read-data-page($id, $table-type, $db, @columns, $table-name) {
+sub read-data-page($id, $table, $table-type, $db, @columns, $table-name) {
   note "read-data-page:" if $debug;
   $*ERR.printf: "read_data_page: reading page %d (%x)\n", $id, $id if $debug;
   my $type = read-byte($id, 0);
@@ -849,7 +843,7 @@ sub read-data-page($id, $table-type, $db, @columns, $table-name) {
       note "Pointer to data page does not point to data page" if $debug;
       exit(4);
   }
-  process-data-page($id, $table-type, $db, @columns, $table-name);
+  process-data-page($id, $table, $table-type, $db, @columns, $table-name);
   note "end read-data-page" if $debug
 }
 
@@ -862,6 +856,8 @@ sub print-data-pages($p) {
 #    }
 #  if(debug)printf("\n");
 }
+
+# read-table is called in multiple threads -- it should alter nothing global
 
 sub read-table($id, $name) {
     note "read-table ($name):" if $debug;
@@ -888,7 +884,7 @@ sub read-table($id, $name) {
     } else {
 	note "No database connection" if $debug;
     }
-    my $table-type = %tables{$name};# // '';
+    my $table-type = %tables{$name};
     dd $table-type if $debug;
     $*ERR.printf: "Reading table on page %d (%x)\n", $id, $id if $debug;
 note "Calling read-table-header";
@@ -900,7 +896,7 @@ note "Calling read-table-header";
 	note "Reading data page $pp" if $debug;
 	print-data-pages($pp) if $debug;
 	$*ERR.printf("Data page %d\n", $pp) if $debug;
-	read-data-page($pp, $table-type, $dbh, @columns, $name);
+	read-data-page($pp, $table, $table-type, $dbh, @columns, $name);
     }
     note "No more data pages" if $debug;
     if $dbh {
