@@ -24,7 +24,7 @@ my $debug = 0;
 $*OUT.out-buffer = Nil if $debug;
 
 
-my $dbname = 'mapdb';
+my $dbname = 'newdb';
 my $dbprefix = 'ga_';
 my %tables;
 my $pg; # Database handle
@@ -860,8 +860,9 @@ sub print-data-pages($p) {
 # read-table is called in multiple threads -- it should alter nothing global
 
 sub read-table($id, $name) {
-    note "read-table ($name):" if $debug;
     my @columns;
+    note "read-table ($name)";
+    note "read-table ($name):" if $debug;
     my $dbh;
     if $name {
         note "Setting up db connection" if $debug;
@@ -903,7 +904,7 @@ note "Calling read-table-header";
         $dbh.copy-end;
 	$dbh.finish;
     }
-    note "end read-table" if $debug;
+    note "end read-table $name";
 }
 
 #################################
