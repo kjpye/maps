@@ -27,7 +27,7 @@ AircraftFacilityPoints,featurewidth,data,float,,,0,,featwidth
 AircraftFacilityPoints,orientation,data,smallint,,,0,,orientatn
 AircraftFacilityPoints,position,index,,,,,,position
 Annotations,objectid,auto,bigint,no,,nextval('object_id'),yes,objectid
-Annotations,featuretype,data,int,no,ga_FeatureType,,,feattype
+Annotations,featureid,data,int,,,,,featureid
 Annotations,zorder,data,int,,,,,zorder
 Annotations,annotationclassid,data,int,,,,,annotationclassid
 Annotations,element,data,bytea,,,,,element
@@ -861,7 +861,7 @@ RailwayTunnelLines,created,data,timestamp,,,now(),,created
 RailwayTunnelLines,retired,data,timestamp,,,,,retired
 RailwayTunnelLines,ga_pid,data,int,,,,,pid
 RailwayTunnelLines,symbol,data,smallint,no,,,,symbol
-RailwayTunnelLines,featurewidth,data,float,no,,,,featwidth
+RailwayTunnelLines,featurewidth,data,float,,,0,,featwidth
 RailwayTunnelLines,textnote,data,text,,,,,textnote
 RailwayTunnelLines,shape_length,data,float,no,,,,shape_length
 RailwayTunnelLines,shape,index,,,,,,shape
@@ -960,7 +960,7 @@ RoadCrossingLines,created,data,timestamp,,,now(),,created
 RoadCrossingLines,retired,data,timestamp,,,,,retired
 RoadCrossingLines,ga_pid,data,int,,,,,pid
 RoadCrossingLines,symbol,data,smallint,no,,,,symbol
-RoadCrossingLines,featurewidth,data,float,,,,0,featwidth
+RoadCrossingLines,featurewidth,data,float,,,0,,featwidth
 RoadCrossingLines,textnote,data,text,,,,,textnote
 RoadCrossingLines,shape_length,data,float,no,,,,shape_length
 RoadCrossingLines,shape,index,,,,,,shape
@@ -1006,7 +1006,7 @@ RoadTunnelLines,created,data,timestamp,,,now(),,created
 RoadTunnelLines,retired,data,timestamp,,,,,retired
 RoadTunnelLines,ga_pid,data,int,,,,,pid
 RoadTunnelLines,symbol,data,smallint,no,,,,symbol
-RoadTunnelLines,featurewidth,data,float,,,,0,featwidth
+RoadTunnelLines,featurewidth,data,float,,,0,,featwidth
 RoadTunnelLines,textnote,data,text,,,,,textnote
 RoadTunnelLines,shape_length,data,float,no,,,,shape_length
 RoadTunnelLines,shape,index,,,,,,shape

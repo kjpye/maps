@@ -20,11 +20,11 @@ my %featuretype = ( );
 my %source      = ( );
 
 my $debug = 0;
-#$debug = 1;
+$debug = 1;
 $*OUT.out-buffer = Nil if $debug;
 
 
-my $dbname = 'newdb';
+my $dbname = 'ntmap';
 my $dbprefix = 'ga_';
 my %tables;
 my $pg; # Database handle
@@ -36,6 +36,8 @@ sub MAIN($file, :$db, :$prefix) {
     $dbname = $db if $db.defined;
     $dbprefix = $prefix if $prefix.defined;
 
+    note "Updating database $db";
+    
 # read database table definitions
     $pg = DB::Pg.new(conninfo => "dbname=$dbname");
     my $results = $pg.query("SELECT dbtable, dbcolumn, type, sourcecolumn FROM def250k WHERE source = 'data'");
@@ -80,7 +82,7 @@ sub MAIN($file, :$db, :$prefix) {
     read-table 2, '';
     # at this stage there should be lots of threads running, one for each table we want
     # wait for them all to foinish
-    await Promise.allof: @threads;
+#    await Promise.allof: @threads;
     note "Completed all tables";
 }
 
@@ -289,16 +291,16 @@ note "print-shape {$pointer.base(16)}" if $debug;
     for ^$segments { # Read segment offsets
         @segoffset[++$segno] = read-rint($ptr); $ptr += 4; # read-rint($ptr+4) ???
     }
-    $segno = -1;
+    @segoffset[$segno] = 2**31;
+    $segno = 0;
   $*ERR.printf: "%d segments, %d points, 1st segment at point %d ", $segments, $count, @segoffset[0] if $debug;
   dd $count;
   dd $segno;
   dd @segoffset;
   for ^$count -> $point {
 dd $point;
-      if $point == @segoffset[$segno + 1] {
-          note sprintf "Segment %d: ", $segno;
-	  ++$segno;
+      if $point == @segoffset[$segno] {
+          note sprintf "Segment %d: ", ++$segno;
       }
       my $x = read-rdouble($ptr);
       my $y = read-rdouble($ptr+8);
@@ -608,7 +610,8 @@ note "Unknown OLE column {$column.name}" if $debug;
     if $table-id {
 #	add-mess sprintf("Processing table \"%s\" (id: %d)\n", $table-name, $table-id);
         note "Found table {%row<name>}" if $debug;
-	@threads.push: start { read-table($table-id, %row<name>) } if %tables{%row<name>}.defined;
+#	@threads.push: start
+			   { read-table($table-id, %row<name>) } if %tables{%row<name>}.defined;
     }
     note "Returning from read-row" if $debug;
 dd %row;
@@ -974,7 +977,12 @@ sub do-insert(%row, $dbh, @columns, $table-name) {
 
         my $value;
         if %row{$source}.defined {
-            $value = get-value(~%row{$source}, %tables{$table-name}{$source.lc});
+	    dd $source if $debug;
+	    dd $table-name if $debug;
+	    dd %tables{$table-name} if $debug;
+	    dd %tables{$table-name}{$source.lc} if $debug;
+	    dd %row{$source};
+            $value = get-value(%row{$source}, %tables{$table-name}{$source.lc});
             note "Got $value for $column" if $debug;
             $value ~~ s:g/\\/\\\\/;
             $value ~~ s:g/\n/\\n/;
@@ -992,12 +1000,16 @@ dd $values;
     %row = ();
 }
 
+sub hexbyte($byte) {
+    sprintf "\\%03o", $byte;
+}
+
 # Turn raw value into a string suitable for use in a copy command
 
 sub get-value($value is copy, %def) {
     dd %def if $debug;
     my $column = %def<target>;
-    note "get-value: $value for $column" if $debug;
+#    note "get-value: $value for $column" if $debug;
     if $column eq 'featuretype' {
 	$value = get-featuretype($value, $dbprefix);
     }
@@ -1016,10 +1028,17 @@ sub get-value($value is copy, %def) {
 	}
 	when 'point' {
 	}
-	when 'line' {
+	when 'line'|'area' {
+	}
+        when 'bytea' {
+            my $str = ''; # 'E' ~ "'" ~ '\x';
+	    for $value.list -> $byte {
+		$str ~= hexbyte($byte);
+	    }
+	    $value = $str;
 	}
 	default {
-#           fail "Unknown data type %def<type>";
+           fail "Unknown data type %def<type>";
 	}
     }
     $value;

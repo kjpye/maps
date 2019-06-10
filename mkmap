@@ -2,7 +2,8 @@
 
 use v6;
 
-use DBIish;
+#use DBIish;
+use DB::Pg;
 use Geo::Coordinates::UTM;
 use NativeCall; # only for floating point reading routines
 
@@ -467,7 +468,7 @@ $TMP.print: "% Segment ", $segno++, "\n";
     %dependencies{$func}++;
 }
 
-my $dbh;
+my $pg;
 my $sth-sym;
 my $sth-symb;
 
@@ -475,10 +476,9 @@ use experimental :cached;
 sub get-symbol (Str $type, Str $ftype) is cached {
   my $symbol = 0;
   note "Looking for {$ftype}({$type})" if $debug >= 10;
-  $sth-sym.execute($type, $ftype);
   my $sym = 0;
-  while my @row = $sth-sym.fetchrow_array {
-    $sym = @row[0].Int;
+  for $sth-sym.execute($type, $ftype).arrays -> $obj {
+    $sym = $obj[0].Int;
     next unless $sym;
     $symbol = $sym;
     note "Found $sym" if $debug >= 10;
@@ -501,39 +501,32 @@ sub draw-areas(Str $table, Str $columns, Str $geomcol) {
   my $selectcolumns = @columns.join: ', ';
   my $numfeatcols = +@columns;
 
-  my $sth = $dbh.prepare("SELECT $selectcolumns, st_astext($geomcol) as shape
-                          FROM $table
-                          WHERE $geomcol && $rect
-                         ");
-  
-  if $sth.execute {
-    
-    while my @row = $sth.fetchrow_array {
-       my $featuretype = '';
-      for ^$numfeatcols {
-        $featuretype ~= @row.shift ~ ':';
-      }
-      $featuretype ~~ s/\:$//;
+  my $results = $pg.query("SELECT $selectcolumns, st_astext($geomcol) as shape
+                             FROM $table
+                            WHERE $geomcol && $rect
+                          ");
 
-      my $symbol = 0;
-    %areafeaturetypes{$table}{$featuretype}++;
-    if $featuretype ~~ /^\d+$/ {
-      $symbol = $featuretype;
-    } else {
-      $sth-symb.execute($table, $featuretype, 'area');
-      while my @syms = $sth-symb.fetchrow_array {
-        $symbol = @syms[0].Int;
+  if $results {
+      for $results.arrays -> $object {
+	  my $shape = $object.pop;
+	  my $featuretype = $object.join: ':';
+	  
+	  my $symbol = 0;
+	  %areafeaturetypes{$table}{$featuretype}++;
+	  if $featuretype ~~ /^\d+$/ {
+	      $symbol = $featuretype;
+	  } else {
+	      for $sth-symb.execute($table, $featuretype, 'area').arrays -> $obj {
+		  $symbol = $obj[0].Int;
+	      }
+	  }
+	  
+	  next unless $symbol > 0;
+	  ++$object-count;
+	  put-line($shape.Str, "area$symbol", );
       }
-    }
-
-      my $shape = @row.shift;
-      
-      next unless $symbol > 0;
-      ++$object-count;
-      put-line($shape.Str, "area$symbol", );
-    }
   } else {
-    note "Table $table not found";
+      note "Table $table not found";
   }
 }
 
@@ -541,16 +534,16 @@ sub draw-ga-areas(Str $table) {
   note "$table areas..." if $debug >= 1;
   my $geomcol; # = %defaults<areageometry>;
   $geomcol = 'shape';
-  my $sth = $dbh.prepare("SELECT symbol, st_astext($geomcol) as shape
+  my $results = $pg.query("SELECT symbol, st_astext($geomcol) as shape
                           FROM $table
                           WHERE $geomcol && $rect
                          ");
   
-  if $sth.execute {
+  if $results {
     
-    while my @row = $sth.fetchrow_array {
-      my $symbol = @row[0].Int;
-      my $shape = @row[1];
+      for $results.arrays -> $object {
+      my $symbol = $object[0].Int;
+      my $shape = $object[1];
       
       next unless $symbol > 0;
       ++$object-count;
@@ -565,18 +558,18 @@ sub draw-treeden() {
   note "tree-density areas..." if $debug >= 1;
   my $geomcol; # = %defaults{'areageometry'};
   $geomcol = 'geom';
-  my $sth = $dbh.prepare("SELECT ftype_code, tree_den, st_astext($geomcol) as shape
+  my $results = $pg.query("SELECT ftype_code, tree_den, st_astext($geomcol) as shape
                           FROM vm_tree_density
                           WHERE $geomcol && $rect
                          ",
                          RaiseError => 0);
 
-  if $sth.execute {
+  if $results {
     
-    while my @row = $sth.fetchrow_array {
-      my $ftype = @row[0];
-      my $density = @row[1];
-      my $shape = @row[2];
+    for $results.arrays -> $object {
+      my $ftype = $object[0];
+      my $density = $object[1];
+      my $shape = $object[2];
    
       my $symbol = get-symbol('area', ([~] $ftype, '_', $density).Str.lc);
       
@@ -587,9 +580,6 @@ sub draw-treeden() {
   } else {
     note "Table tree_density not found";
   }
-
-
-
 }
 
 my $powerlinestart = 1;
@@ -698,6 +688,11 @@ my %funnylines = ();
 my %linefeaturetypes;
 
 sub draw-lines(Str $table, Str $columns, Str $geomcol, $default, Str $widthcol) {
+    dd $table;
+    dd $columns;
+    dd $geomcol;
+    dd $default,
+    dd $widthcol;
   note "$table lines..." if $debug >= 1;
 
   my @columns     = $columns.split: ':';
@@ -707,48 +702,43 @@ sub draw-lines(Str $table, Str $columns, Str $geomcol, $default, Str $widthcol) 
 
   my $featurewidth = 0;
 
-  my $sth = $dbh.prepare("SELECT $selectcolumns, st_astext($geomcol) as shape
+dd $selectcolumns;
+  my $results = $pg.query("SELECT $selectcolumns, st_astext($geomcol) as shape
                           FROM $table
                           WHERE $geomcol && $rect
                          ");
   
-  if $sth.execute {
-    
-    while my @row = $sth.fetchrow_array {
-      my $featuretype = '';
-      for ^$numfeatcols {
-        $featuretype ~= @row.shift ~ ':';
-      }
-      $featuretype ~~ s/\:$//;
-    
-      my $symbol = $default;
-    %linefeaturetypes{$table}{$featuretype}++;
-      if ! $symbol || $symbol eq '0' {
-        if $featuretype ~~ /^\d+$/ {
-          $symbol = $featuretype;
-        } else {
-          $sth-symb.execute($table, $featuretype, 'line');
-          while my @syms = $sth-symb.fetchrow_array {
-          $symbol = @syms[0].Int;
-        }
-      }
-    }
-    note "draw-line: $table $featuretype $symbol" if $debug >= 10;
-
-    $featurewidth = @row.shift if $widthcol;
-
-      my $shape = @row.shift;
+  if $results {
       
-      next unless $symbol > 0;
-      ++$object-count;
-      if %funnylines{$symbol}.defined {
-        %funnylines{$symbol}($shape);
-      } else {
-        put-line($shape.Str, "line$symbol", 0);
+      for $results.arrays -> $object {
+	  my $shape = $object.pop;
+	  $featurewidth = $object.pop if $widthcol;
+	  my $featuretype = $object.join: ':';
+	  
+	  my $symbol = $default;
+	  %linefeaturetypes{$table}{$featuretype}++;
+	  if ! $symbol || $symbol eq '0' {
+              if $featuretype ~~ /^\d+$/ {
+		  $symbol = $featuretype;
+              } else {
+		  for $sth-symb.execute($table, $featuretype, 'line').arrays -> $obj {
+		      $symbol = $obj[0].Int;
+		  }
+	      }
+	  }
+	  note "draw-line: $table $featuretype $symbol" if $debug >= 10;
+	  
+	  
+	  next unless $symbol > 0;
+	  ++$object-count;
+	  if %funnylines{$symbol}.defined {
+              %funnylines{$symbol}($shape);
+	  } else {
+              put-line($shape.Str, "line$symbol", 0);
+	  }
       }
-    }
   } else {
-    note "Table $table not found";
+      note "Table $table not found";
   }
 }
 
@@ -762,48 +752,42 @@ sub draw-contours(Str $table, Str $columns, Str $geomcol, Str $elevcol) {
 
   my $elevation = $contourinterval;
 
-  my $sth = $dbh.prepare("SELECT $selectcolumns, st_astext($geomcol) as shape
-                          FROM $table
-                          WHERE $geomcol && $rect
-                         ");
+  my $results = $pg.query("SELECT $selectcolumns, st_astext($geomcol) as shape
+                             FROM $table
+                            WHERE $geomcol && $rect
+                          ");
   
-  if $sth.execute {
+  if $results {
     
-    while my @row = $sth.fetchrow_array {
-      my $featuretype = '';
-      for ^$numfeatcols {
-        $featuretype ~= @row.shift ~ ':';
-      }
-      $featuretype ~~ s/\:$//;
-    
-      my $symbol = 0;
-      %linefeaturetypes{$table}{$featuretype}++;
-      if $featuretype ~~ /^\d+$/ {
-        $symbol = $featuretype;
-      } else {
-        $sth-symb.execute($table, $featuretype, 'line');
-        while my @syms = $sth-symb.fetchrow_array {
-          $symbol = @syms[0].Int;
-        }
-      }
-      note "draw_line: $table $featuretype $symbol" if $debug >= 10;
-  
-      $elevation = @row.shift if $elevcol;
-
-      next unless $elevation %% $contourinterval;
-
-      my $shape = @row.shift;
+      for $results.arrays -> $object {
+	  my $shape = $object.pop;
+	  my $featuretype = $object.join: ':';
+	  
+	  my $symbol = 0;
+	  %linefeaturetypes{$table}{$featuretype}++;
+	  if $featuretype ~~ /^\d+$/ {
+              $symbol = $featuretype;
+	  } else {
+              for $sth-symb.execute($table, $featuretype, 'line').arrays -> $obj {
+		  $symbol = $obj[0].Int;
+              }
+	  }
+	  note "draw_line: $table $featuretype $symbol" if $debug >= 10;
+	  
+	  $elevation = $object.shift if $elevcol;
+	  
+	  next unless $elevation %% $contourinterval;
       
-      next unless $symbol > 0;
-      ++$object-count;
-      if %funnylines{$symbol}.defined {
-        %funnylines{$symbol}($shape);
-      } else {
-        put-line($shape.Str, "line$symbol", 0);
+	  next unless $symbol > 0;
+	  ++$object-count;
+	  if %funnylines{$symbol}.defined {
+              %funnylines{$symbol}($shape);
+	  } else {
+              put-line($shape.Str, "line$symbol", 0);
+	  }
       }
-    }
   } else {
-    note "Table $table not found";
+      note "Table $table not found";
   }
 }
 
@@ -818,67 +802,67 @@ sub draw-vm-lines(Str $table, Str $typecolumn, $default-symbol = 0) {
   note "$table lines..." if $debug >= 1;
   my $geomcol; # = %defaults{'linegeometry'};
   $geomcol = 'geom';
-  my $sth = $dbh.prepare("SELECT $typecolumn, st_astext($geomcol) as shape
+  my $results = $pg.query("SELECT $typecolumn, st_astext($geomcol) as shape
                           FROM $table
                           WHERE $geomcol && $rect
                          ");
   
-  if $sth.execute {
+  if $results {
     
-    while my @row = $sth.fetchrow_array {
-      my $ftype = @row[0];
-      my $shape = @row[1];
-      
-      my $ft = '';
-      $ft ~= $ftype;
-      my $symbol = 0;
-      if ($default-symbol.defined and $default-symbol > 0) {
-	$symbol = $default-symbol;
-      } else {
-	$symbol = get-symbol('line', $ft);
+      for $results.arrays -> $object {
+	  my $ftype = $object[0];
+	  my $shape = $object[1];
+	  
+	  my $ft = '';
+	  $ft ~= $ftype;
+	  my $symbol = 0;
+	  if ($default-symbol.defined and $default-symbol > 0) {
+	      $symbol = $default-symbol;
+	  } else {
+	      $symbol = get-symbol('line', $ft);
+	  }
+	  next unless $symbol > 0;
+	  ++$object-count;
+	  given $symbol {
+              when  57 { # Depression contour (index)
+		  put-line($shape, "line57A", 0);
+		  follow-line($shape, 4, &leftticks, .3, .2, '0 .59 1 .18');
+              }
+              when  58 { # Depression contour (standard)
+		  put-line($shape, "line58A", 0);
+		  follow-line($shape, 4, &leftticks, .3, .15, '0 .59 1 .18');
+              }
+	      when  31 {} # Embankment
+              when 542 { # Powerline
+		  $powerlinestart = 1;
+		  follow-line($shape, .5, &powerline, .5, .2, '1 .73 0 0');
+		  $TMP.say: "1 .73 0 0 setcmykcolor .2 setlinewidth stroke";
+              }
+	      when 543 { # Powerline (WAC)
+		  $powerlinestart = 1;
+		  follow-line($shape, .5, &powerline, .5, .2, '.79 .9 0 0');
+		  $TMP.say: ".79 .9 0 0 setcmykcolor .2 setlinewidth stroke";
+              }
+	      when 920 { # Cliff (WAC)
+		  put-line($shape, "line920A", 0);
+		  follow-line($shape, 1, &leftticks, .4, .15, '0 .59 1 .18');
+              }
+	      when 923 {} # Cutting
+              when 924 { # Cliff
+		  put-line($shape, "line924A", 0);
+		  follow-line($shape, 1, &leftticks, .4, .15, '0 0 0 1');
+              }
+	      when 929 { # Razorback
+		  put-line($shape, "line929A", 0);
+		  follow-line($shape, 1, &altticks, .4, .15, '0 0 0 1');
+              }
+	      default {
+		  put-line($shape.Str, "line$symbol", 0);
+              }
+	  }
       }
-      next unless $symbol > 0;
-      ++$object-count;
-      given $symbol {
-        when  57 { # Depression contour (index)
-          put-line($shape, "line57A", 0);
-	  follow-line($shape, 4, &leftticks, .3, .2, '0 .59 1 .18');
-        }
-        when  58 { # Depression contour (standard)
-          put-line($shape, "line58A", 0);
-	  follow-line($shape, 4, &leftticks, .3, .15, '0 .59 1 .18');
-        }
-	when  31 {} # Embankment
-        when 542 { # Powerline
-          $powerlinestart = 1;
-          follow-line($shape, .5, &powerline, .5, .2, '1 .73 0 0');
-          $TMP.say: "1 .73 0 0 setcmykcolor .2 setlinewidth stroke";
-        }
-	when 543 { # Powerline (WAC)
-          $powerlinestart = 1;
-          follow-line($shape, .5, &powerline, .5, .2, '.79 .9 0 0');
-          $TMP.say: ".79 .9 0 0 setcmykcolor .2 setlinewidth stroke";
-        }
-	when 920 { # Cliff (WAC)
-          put-line($shape, "line920A", 0);
-          follow-line($shape, 1, &leftticks, .4, .15, '0 .59 1 .18');
-        }
-	when 923 {} # Cutting
-        when 924 { # Cliff
-          put-line($shape, "line924A", 0);
-          follow-line($shape, 1, &leftticks, .4, .15, '0 0 0 1');
-        }
-	when 929 { # Razorback
-          put-line($shape, "line929A", 0);
-          follow-line($shape, 1, &altticks, .4, .15, '0 0 0 1');
-        }
-	default {
-          put-line($shape.Str, "line$symbol", 0);
-        }
-      }
-    }
   } else {
-    note "Table $table not found";
+      note "Table $table not found";
   }
 }
 
@@ -894,63 +878,63 @@ sub draw-ga-lines(Str $table, Str $typecolumn, $default-symbol = 0) {
   my $geomcol; # = %defaults{'linegeometry'};
   $geomcol = 'shape';
   note "Reading column $geomcol ($rect)" if $debug >= 1;
-  my $sth = $dbh.prepare("SELECT symbol, st_astext($geomcol) AS shape
+  my $results = $pg.query("SELECT symbol, st_astext($geomcol) AS shape
                           FROM $table
                           WHERE $geomcol && $rect
                          ");
   
-  if $sth.execute {
+  if $results {
     
-    while my @row = $sth.fetchrow_array {
-      my $symbol = @row[0].Int;
-      my $shape = @row[1];
+      for $results.arrays -> $object {
+      my $symbol = $object[0].Int;
+      my $shape = $object[1];
       
       note $symbol if $debug >= 10;
       if $default-symbol > 0 {
-	$symbol = $default-symbol;
+	  $symbol = $default-symbol;
       }
       next unless $symbol > 0;
       ++$object-count;
       given $symbol {
-        when  57 { # Depression contour (index)
-          put-line($shape, "line57A", 0);
-	  follow-line($shape, 4, &leftticks, .3, .2, '0 .59 1 .18');
-        }
-        when  58 { # Depression contour (standard)
-          put-line($shape, "line58A", 0);
-	  follow-line($shape, 4, &leftticks, .3, .15, '0 .59 1 .18');
-        }
-	when  31 {} # Embankment
-        when 542 { # Powerline
-          $powerlinestart = 1;
-          follow-line($shape, .5, &powerline, .5, .2, '1 .73 0 0');
-          $TMP.say: "1 .73 0 0 setcmykcolor .2 setlinewidth stroke";
-        }
-	when 543 { # Powerline (WAC)
-          $powerlinestart = 1;
-          follow-line($shape, .5, &powerline, .5, .2, '.79 .9 0 0');
-          $TMP.say: ".79 .9 0 0 setcmykcolor .2 setlinewidth stroke";
-        }
-	when 920 { # Cliff (WAC)
-          put-line($shape, "line920A", 0);
-          follow-line($shape, 1, &leftticks, .4, .15, '0 .59 1 .18');
-        }
-	when 923 {} # Cutting
-        when 924 { # Cliff
-          put-line($shape, "line924A", 0);
-          follow-line($shape, 1, &leftticks, .4, .15, '0 0 0 1');
-        }
-	when 929 { # Razorback
-          put-line($shape, "line929A", 0);
-          follow-line($shape, 1, &altticks, .4, .15, '0 0 0 1');
-        }
-	default {
-          put-line($shape.Str, "line$symbol", 0);
-        }
+          when  57 { # Depression contour (index)
+              put-line($shape, "line57A", 0);
+	      follow-line($shape, 4, &leftticks, .3, .2, '0 .59 1 .18');
+          }
+          when  58 { # Depression contour (standard)
+              put-line($shape, "line58A", 0);
+	      follow-line($shape, 4, &leftticks, .3, .15, '0 .59 1 .18');
+          }
+	  when  31 {} # Embankment
+          when 542 { # Powerline
+              $powerlinestart = 1;
+              follow-line($shape, .5, &powerline, .5, .2, '1 .73 0 0');
+              $TMP.say: "1 .73 0 0 setcmykcolor .2 setlinewidth stroke";
+          }
+	  when 543 { # Powerline (WAC)
+              $powerlinestart = 1;
+              follow-line($shape, .5, &powerline, .5, .2, '.79 .9 0 0');
+              $TMP.say: ".79 .9 0 0 setcmykcolor .2 setlinewidth stroke";
+          }
+	  when 920 { # Cliff (WAC)
+              put-line($shape, "line920A", 0);
+              follow-line($shape, 1, &leftticks, .4, .15, '0 .59 1 .18');
+          }
+	  when 923 {} # Cutting
+          when 924 { # Cliff
+              put-line($shape, "line924A", 0);
+              follow-line($shape, 1, &leftticks, .4, .15, '0 0 0 1');
+          }
+	  when 929 { # Razorback
+              put-line($shape, "line929A", 0);
+              follow-line($shape, 1, &altticks, .4, .15, '0 0 0 1');
+          }
+	  default {
+              put-line($shape.Str, "line$symbol", 0);
+          }
       }
-    }
+      }
   } else {
-    note "Table $table not found";
+      note "Table $table not found";
   }
 }
 
@@ -962,33 +946,31 @@ sub draw-polygon-outline-names(Str $table, Str $column, Real $size, Real $thickn
   note "$table outline names..." if $debug >= 1;
 #  my $geomcol = %defaults{'areageometry'};
   my $geomcol = 'geom';
-  my $sth = $dbh.prepare("SELECT $column AS name, st_astext(st_envelope($geomcol)) AS bbox
+  my $results = $pg.query("SELECT $column AS name, st_astext(st_envelope($geomcol)) AS bbox
                           FROM $table
                           WHERE $geomcol && $rect
                          ");
   
-  if $sth.execute {
+  if $results {
     
-    for $sth.allrows(:array-of-hash) -> $row {
-      last unless $row<name>.defined;
-
-       my $name  = $row<name>.Str;
-       my $shape = $row<bbox>.Str;
-       my @x = read-points($shape);
-       my $centrex = (@x[0] + @x[4]) / 2;
-       my $centrey = (@x[1] + @x[5]) / 2;
-       note "Locality $name $centrex $centrey $shape" if $debug >= 1;
-       my ($cx, $cy) = latlon2page($centrex, $centrey);
-       my @text = $name.split: ' ';
-       my $yoffset = (@text.end + 1)/2;
-       for @text -> $text {
- 			  put-outline $text, $cx, $cy+$yoffset, $size, $colour, $thickness;
- 			  $yoffset -= $size;
- 			 }
-       ++$object-count;
+    for $results.hashes -> $row {
+	my $name  = $row<name>.Str;
+	my $shape = $row<bbox>.Str;
+	my @x = read-points($shape);
+	my $centrex = (@x[0] + @x[4]) / 2;
+	my $centrey = (@x[1] + @x[5]) / 2;
+	note "Locality $name $centrex $centrey $shape" if $debug >= 1;
+	my ($cx, $cy) = latlon2page($centrex, $centrey);
+	my @text = $name.split: ' ';
+	my $yoffset = (@text.end + 1)/2;
+	for @text -> $text {
+ 	    put-outline $text, $cx, $cy+$yoffset, $size, $colour, $thickness;
+ 	    $yoffset -= $size;
+ 	}
+	++$object-count;
     }
   } else {
-    note "Table $table not found";
+      note "Table $table not found";
   }
 }
 
@@ -996,16 +978,14 @@ sub draw-properties() {
     note "property lines..." if $debug >= 1;
     my $geomcol; # = %defaults{'linegeometry'};
     $geomcol = 'shape';
-    my $sth = $dbh.prepare("SELECT st_astext($geomcol) AS shape
+    my $sth = $pg.query('SELECT st_astext($geomcol) AS shape
                             FROM vm_property_view 
-                            WHERE pfi = ?
-                           ");
+                            WHERE pfi = $1
+                           ');
     
     for @properties -> $property {
-        $sth.execute($property);
-    
-        while my @row = $sth.fetchrow_array {
-            my $shape = @row[0];
+        for $sth.execute($property).arrays -> $object {
+            my $shape = $object[0];
             ++$object-count;
             put-line($shape, 'line927', 0);
         }
@@ -1019,17 +999,15 @@ sub draw-properties() {
 
 sub draw-ga-wlines(Str $table) {
     note "$table lines..." if $debug >= 1;
-   my $sth = $dbh.prepare("SELECT symbol, st_astext(shape) AS shape, featurewidth
-                           FROM $table
-                           WHERE shape && $rect
+   my $results = $pg.query("SELECT symbol, st_astext(shape) AS shape, featurewidth
+                              FROM $table
+                             WHERE shape && $rect
                           ");
     
-    $sth.execute();
-    
-    while ( my @row = $sth.fetchrow_array ) {
-	my $symbol = @row[0].Int;
-	my $shape = @row[1];
-	my $featurewidth = @row[3];
+   for $results.arrays -> $object {
+	my $symbol = $object[0].Int;
+	my $shape = $object[1];
+	my $featurewidth = $object[3];
 	$featurewidth = 0 unless $featurewidth.defined && $featurewidth;
 	
 	next unless $symbol > 0;
@@ -1069,33 +1047,30 @@ sub draw-vm-roads() {
 
 # Read in symbols
   my %roadsymbols;
-  my $sth = $dbh.prepare("SELECT function, class, sealed, symbol
+  my $results = $pg.query("SELECT function, class, sealed, symbol
                           FROM   vm_road_types
                          ");
-  $sth.execute();
-  while my @row = $sth.fetchrow_array {
-    %roadsymbols{"{@row[0]}:{@row[1]}:{@row[2]}"} = @row[3].Int;
+  for $results.arrays -> $sym {
+    %roadsymbols{"{$sym[0]}:{$sym[1]}:{$sym[2]}"} = $sym[3].Int;
   }
 
     note "Roads..." if $debug >= 1;
-     $sth = $dbh.prepare("SELECT pfi, ftype_code, class_code, dir_code, road_seal, div_rd, ezirdnmlbl, st_astext(geom) AS shape
+     $results = $pg.query("SELECT pfi, ftype_code, class_code, dir_code, road_seal, div_rd, ezirdnmlbl, st_astext(geom) AS shape
                           FROM vm_tr_road
                           WHERE geom && $rect
                          ");
     
-    $sth.execute();
-    
-    while @row = $sth.fetchrow_array {
+     for $results.arrays -> $object {
 
-	my $objectid     = @row[0];
-	my $ftype-code   = @row[1];
+	my $objectid     = $object[0];
+	my $ftype-code   = $object[1];
 	my $featurewidth = 0.9;
-        my $class        = @row[2];
-        my $dir          = @row[3];
-        my $sealed       = @row[4];
-        my $divided      = @row[5];
-	my $road-name    = @row[6];
-	my $shape        = @row[7];
+        my $class        = $object[2];
+        my $dir          = $object[3];
+        my $sealed       = $object[4];
+        my $divided      = $object[5];
+	my $road-name    = $object[6];
+	my $shape        = $object[7];
 	
         $roadnames.say: "VM{$objectid} $road-name" if $roadnames;
         $sealed = $sealed == 1 ?? 's' !! 'u';
@@ -1114,16 +1089,16 @@ sub draw-vm-roads() {
 
     note "Centre lines of roads..." if $debug >= 1;
 
-    $sth = $dbh.prepare("SELECT ftype_code, st_astext(geom) AS shape
-                         FROM vm_tr_road
-                         WHERE pfi = ?
-                        ");
+    my $sth = $pg.db.prepare('SELECT ftype_code, st_astext(geom) AS shape
+                             FROM vm_tr_road
+                            WHERE pfi = $1
+                          ');
     for @dual -> $objectid {
-	$sth.execute($objectid);
+	$results = $sth.execute($objectid);
 	
-	while my @row = $sth.fetchrow_array {
-	    my $symbol = @row[0];
-	    my $shape = @row[1];
+	for $results.arrays -> $object {
+	    my $symbol = $object[0];
+	    my $shape  = $object[1];
 	    
 	    put-line($shape, 'line250A', 0.6);
 	}
@@ -1142,19 +1117,16 @@ sub draw-ga-roads() {
     note "Roads..." if $debug >= 1;
     my $geomcol; # = %defaults{'linegeometry'};
   $geomcol = 'shape';
-    my $sth = $dbh.prepare("SELECT objectid, symbol, featurewidth, st_astext($geomcol) AS shape
+    my $results = $pg.query("SELECT objectid, symbol, featurewidth, st_astext($geomcol) AS shape
                             FROM ga_roads
                             WHERE $geomcol && $rect
                            ");
     
-    $sth.execute();
-    
-    while my @row = $sth.fetchrow_array {
-
-	my $objectid     = @row[0];
-	my $symbol       = @row[1].Int;
-        my $featurewidth = @row[2];
-	my $shape        = @row[3];
+    for $results.arrays -> $object {
+	my $objectid     = $object[0];
+	my $symbol       = $object[1].Int;
+        my $featurewidth = $object[2];
+	my $shape        = $object[3];
 	$featurewidth = 0 unless $featurewidth.defined && $featurewidth;
 	
 	next unless so $symbol;
@@ -1167,17 +1139,17 @@ sub draw-ga-roads() {
 
     note "Centre lines of roads..." if $debug >= 1;
 
-    $sth = $dbh.prepare("SELECT symbol, st_astext(shape), featurewidth
-                         FROM ga_Roads
-			 WHERE objectid = ?
-                        ");
+    my $sth = $pg.db.prepare('SELECT symbol, st_astext(shape), featurewidth
+                              FROM ga_Roads
+                             WHERE objectid = $1
+                           ');
     for @dual -> $objectid {
-	$sth.execute($objectid);
+	$results = $sth.execute($objectid);
 	
-	while my @row = $sth.fetchrow_array {
-	    my $symbol       = @row[0].Int;
-	    my $shape        = @row[1];
-	    my $featurewidth = @row[2];
+	for $results.arrays -> $object {
+	    my $symbol       = $object[0].Int;
+	    my $shape        = $object[1];
+	    my $featurewidth = $object[2];
 	    
 	    put-line($shape, 'line250A', $featurewidth);
 	}
@@ -1217,20 +1189,18 @@ sub draw-osmroads() {
     my $featurewidth = 0;
 
     note "OSMRoads..." if $debug >= 1;
-    my $sth = $dbh.prepare("SELECT osm_id, highway, st_astext(way) AS shape
+    my $results = $pg.query("SELECT osm_id, highway, st_astext(way) AS shape
                             FROM planet_osm_line
                             WHERE highway IS NOT NULL
                               AND way && $rect
                            ");
     
-    $sth.execute();
-    
-    while my @row = $sth.fetchrow_array {
-	my $objectid = @row[0].Int;
-	my $type = @row[1];
-	my $shape = @row[2];
+    for $results.arrays -> $object {
+	my $objectid = $object[0].Int;
+	my $type = $object[1];
+	my $shape = $object[2];
 	my $symbol = %osmroads2ga{$type};
-	if ($symbol.defined) {
+	if $symbol.defined {
 	    $featurewidth = 0 unless $featurewidth.defined && $featurewidth;
 	    
 	    next unless $symbol;
@@ -1244,15 +1214,15 @@ sub draw-osmroads() {
 
 # Now go back and draw the yellow centre line on dual carriageways
 
-    $sth = $dbh.prepare("SELECT st_astext(way) AS shape
+    my $sth = $pg.db.prepare("SELECT st_astext(way) AS shape
                          FROM planet_osm_line
                          WHERE osm_id = ?
                         ");
     for @dual -> $objectid {
-	$sth.execute($objectid);
+	$results = $sth.execute($objectid);
 	
-	while (my @row = $sth.fetchrow_array) {
-	    my $shape = @row[0];
+	for $results.arrays -> $object {
+	    my $shape = $object[0];
 	    
 	    put-line($shape, 'line250A', $featurewidth);
 	}
@@ -1284,12 +1254,12 @@ sub draw-points(Str $table, Str $columns, Str $geomcol, Str $orientcol, Str $wid
   my $featurewidth = 0;
   my $orientation  = 0;
 
-  my $sth;
+  my $results;
   my $latlong = False;
   if $geomcol.index(':') {
     $latlong = True;
     my ($longcol, $latcol) = $geomcol.split(':');
-    $sth = $dbh.prepare("SELECT $selectcolumns, $longcol, $latcol
+    $results = $pg.query("SELECT $selectcolumns, $longcol, $latcol
                             FROM $table
                             WHERE $longcol > $lllong
                               AND $longcol < $urlong
@@ -1297,31 +1267,29 @@ sub draw-points(Str $table, Str $columns, Str $geomcol, Str $orientcol, Str $wid
                               AND $latcol  < $urlat
                              ");
   } else {
-    $sth = $dbh.prepare("SELECT $selectcolumns, st_astext($geomcol) AS position
+    $results = $pg.query("SELECT $selectcolumns, st_astext($geomcol) AS position
                             FROM $table
 			    WHERE {$geomcol} && $rect
 			   ");
   }
     
-  $sth.execute();
-    
-  while my @row = $sth.fetchrow_array {
+  for $results.arrays -> $object {
     my $featuretype = '';
     for ^$numfeatcols {
-      $featuretype ~= @row.shift ~ ':';
+      $featuretype ~= $object.shift ~ ':';
     }
     $featuretype ~~ s/\:$//;
     
-    $featurewidth = @row.shift if $widthcol;
-    $orientation  = @row.shift if $orientcol;
+    $featurewidth = $object.shift if $widthcol;
+    $orientation  = $object.shift if $orientcol;
     
     my $long;
     my $lat;
     if $latlong {
-      $long = +@row.shift;
-      $lat  = +@row.shift;
+      $long = +$object.shift;
+      $lat  = +$object.shift;
     } else {
-      my $position     = @row.shift;
+      my $position     = $object.shift;
       $position ~~ / \( ( \-? <[\d\.]>+) \s+ ( \-? <[\d\.]>+ ) <[,)]> /;
       $long = +$0;
       $lat = +$1;
@@ -1333,9 +1301,8 @@ sub draw-points(Str $table, Str $columns, Str $geomcol, Str $orientcol, Str $wid
     if $featuretype ~~ /^\d+$/ {
       $symbol = $featuretype;
     } else {
-      $sth-symb.execute($table, $featuretype, 'point');
-      while my @syms = $sth-symb.fetchrow_array {
-        $symbol = @syms[0].Int;
+      for $sth-symb.execute($table, $featuretype, 'point').arrays -> $obj {
+        $symbol = $obj[0].Int;
       }
     }
 	
@@ -1357,18 +1324,16 @@ sub draw-ga-points(Str $table) {
   my $geomcol; # = %defaults{'pointgeometry'};
   $geomcol = 'position';
 
-  my $sth = $dbh.prepare("SELECT symbol, st_astext($geomcol) AS position, orientation, featurewidth
+  my $results = $pg.query("SELECT symbol, st_astext($geomcol) AS position, orientation, featurewidth
                             FROM $table
 			    WHERE $geomcol && $rect
 			   ");
     
-    $sth.execute();
-    
-      while my @row = $sth.fetchrow_array {
-	my $symbol       = @row[0].Int;
-	my $position     = @row[1];
-	my $orientation  = @row[2] || 0;
-	my $featurewidth = @row[3];
+  for $results.arrays -> $object {
+	my $symbol       = $object[0].Int;
+	my $position     = $object[1];
+	my $orientation  = $object[2] || 0;
+	my $featurewidth = $object[3];
 	$featurewidth = 0 unless $featurewidth.defined && $featurewidth;
 
 	next unless so $symbol;
@@ -1405,12 +1370,12 @@ sub draw-text(Str $table, Str $textcolumn, Str $geomcol, Str $widthcols) {
      $selectcolumns ~= @widthcols.join(', ');
   }
 
-  my $sth;
+  my $results;
   my $latlong = False;
   if $geomcol.index(':') {
     $latlong = True;
     my ($longcol, $latcol) = $geomcol.split(':');
-    $sth = $dbh.prepare("SELECT $selectcolumns, $longcol, $latcol
+    $results = $pg.query("SELECT $selectcolumns, $longcol, $latcol
                             FROM $table
                             WHERE $longcol > $lllong
                               AND $longcol < $urlong
@@ -1418,19 +1383,17 @@ sub draw-text(Str $table, Str $textcolumn, Str $geomcol, Str $widthcols) {
                               AND $latcol  < $urlat
                              ");
   } else {
-    $sth = $dbh.prepare("SELECT $selectcolumns, st_astext($geomcol) AS position
+    $results = $pg.query("SELECT $selectcolumns, st_astext($geomcol) AS position
                             FROM $table
 			    WHERE {$geomcol} && $rect
 			   ");
   }
     
-  $sth.execute();
-    
-  while my @row = $sth.fetchrow_array {
-    my $text  = @row.shift;
+  for $results.arrays -> $object {
+    my $text  = $object.shift;
     my $widthtype = '';
     for ^$numwidthcols {
-      $widthtype ~= @row.shift ~ ':';
+      $widthtype ~= $object.shift ~ ':';
     }
     $widthtype ~~ s/\:$//;
     
@@ -1438,10 +1401,10 @@ sub draw-text(Str $table, Str $textcolumn, Str $geomcol, Str $widthcols) {
     my $long;
     my $lat;
     if $latlong {
-      $long = +@row.shift;
-      $lat  = +@row.shift;
+      $long = +$object.shift;
+      $lat  = +$object.shift;
     } else {
-      my $position     = @row.shift;
+      my $position     = $object.shift;
 # TODO: generalise for line and polygon objects
       $position ~~ / \( ( \-? <[\d\.]>+) \s+ ( \-? <[\d\.]>+ ) \) /;
       $long = +$0;
@@ -1456,9 +1419,8 @@ sub draw-text(Str $table, Str $textcolumn, Str $geomcol, Str $widthcols) {
       $width = $widthtype;
     } else {
 note "Getting text height for $table, $widthtype";
-      $sth-symb.execute($table, $widthtype, 'text');
-      while my @syms = $sth-symb.fetchrow_array {
-        $width = @syms[0].Int;
+      for $sth-symb.execute($table, $widthtype, 'text').arrays -> $obj {
+        $width = $obj[0].Int;
       }
 note "Got $width";
     }
@@ -1474,19 +1436,17 @@ sub draw-spot-heights() {
     note "spot heights..." if $debug >= 1;
   my $geomcol; # = %defaults{'pointgeometry'};
   $geomcol = 'geom';
-    my $sth = $dbh.prepare("SELECT ftype_code, st_astext($geomcol) AS position, altitude
+    my $results = $pg.query("SELECT ftype_code, st_astext($geomcol) AS position, altitude
                             FROM vm_el_grnd_surface_point
                             WHERE $geomcol && $rect
                            ");
     
     $TMP.say: "/Helvetica-Latin1 2 selectfont 0 0 0 1 setcmykcolor";
 
-    $sth.execute();
-    
-      while my @row = $sth.fetchrow_array {
-        my $ftype    = @row[0];
-        my $position = @row[1];
-        my $altitude = @row[2] || 0;
+    for $results.arrays -> $object {
+        my $ftype    = $object[0];
+        my $position = $object[1];
+        my $altitude = $object[2] || 0;
         my $featuretype = $ftype;
 
         next unless $featuretype eq 'spot_height';
@@ -1505,24 +1465,24 @@ sub draw-roadpoints() {
     note "vm_tr_road_infrastructure points..." if $debug >= 1;
     my $geomcol; # = %defaults{'pointgeometry'};
   $geomcol = 'geom';
-    my $sth = $dbh.prepare("SELECT ftype_code, st_astext($geomcol) AS position, rotation, ufi
+    my $results = $pg.db.prepare("SELECT ftype_code, st_astext($geomcol) AS position, rotation, ufi
                             FROM vm_tr_road_infrastructure
                             WHERE $geomcol && $rect
                            ");
-    my $sth2 = $dbh.prepare("SELECT ftype_code, class_code
+    my $sth2 = $pg.db.prepare('SELECT ftype_code, class_code
                              FROM vm_tr_road
-                             WHERE from_ufi = ?
-                                OR to_ufi = ?
-                            ");
+                             WHERE from_ufi = $1
+                                OR to_ufi = $2
+                            ');
     
-    if $sth.execute {
+    if $results {
      
-      while my @row = $sth.fetchrow_array {
+	for $results.arrays -> $object {
 
-        my $ftype        = @row[0];
-        my $position     = @row[1];
-        my $orientation  = 90 - @row[2] || 0;
-        my $ufi          = @row[3].Int;
+        my $ftype        = $object[0];
+        my $position     = $object[1];
+        my $orientation  = 90 - $object[2] || 0;
+        my $ufi          = $object[3].Int;
         my $featurewidth  = 0;
         my $featuretype  = $ftype;
 	
@@ -1539,9 +1499,8 @@ sub draw-roadpoints() {
         if $featurewidth <= 0 {
 	  # Find the width of the adjoining roads
 	  my $adjcode = 12; # largest real class-code
-	  $sth2.execute($ufi, $ufi);
-	  while my @row = $sth2.fetchrow_array() {
-	    $adjcode = @row[1] if @row[1] < $adjcode;
+	  for $sth2.execute($ufi, $ufi).arrrays -> $obj {
+	    $adjcode = $obj[1] if $obj[1] < $adjcode;
 	  }
 	  $featurewidth = @road-widths[$adjcode];
         }
@@ -1645,18 +1604,16 @@ class Annotation {
 
 sub draw-ga-annotations() {
     note "Annotations...\n" if $debug >= 1;
-    my $sth = $dbh.prepare("SELECT element, st_astext(shape) AS shape, objectid
+    my $results = $pg.query("SELECT element, st_astext(shape) AS shape, objectid
                             FROM ga_annotations
                             WHERE shape && $rect
                            ");
     
-    $sth.execute();
-    
-    for $sth.allrows -> @row {
+    for $results.arrays -> $object {
 	++$object-count;
-	my $element = @row[0];
-	my $shape = @row[1];
-        my $objectid = @row[2].Int;
+	my $element  = $object[0];
+	my $shape    = $object[1];
+        my $objectid = $object[2].Int;
 	my ($string2, $string3, $font);
 	my ($x1, $y1, $x2, $y2);
 	my $unknown1;
@@ -2328,22 +2285,22 @@ sub draw-objects(Real $xoff, Real $yoff, Real $slope) {
 #    my $geometry-point = %defaults{'pointgeometry'};
 #    my $geometry-line  = %defaults{'linegeometry'};
 #    my $geometry-area  = %defaults{'pointgeometry'};
-    my $sth-draw = $dbh.prepare("SELECT featurename, drawtype, tablename, featurecolumn, geomcol,
+    my $results = $pg.query("SELECT featurename, drawtype, tablename, featurecolumn, geomcol,
                                         orientcol, widthcol, defaultsymbol, displayorder
                                  FROM displayorder
                                  ORDER BY displayorder
                                 ");
-    $sth-draw.execute;
-    while my @row     = $sth-draw.fetchrow_array {
-      my $feature     = @row.shift // '';
-      my $draw        = @row.shift;
-      my $table       = @row.shift // '';
-      my $typecolumn  = @row.shift // '';
-      my $geomcol     = @row.shift // '';
-      my $orientcol   = @row.shift // '';
-      my $widthcol    = @row.shift // '';
-      my $default     = @row.shift // '';
-      my $order       = @row.shift.Int;
+
+    for $results.arrays -> $object {
+      my $feature     = $object.shift // '';
+      my $draw        = $object.shift;
+      my $table       = $object.shift // '';
+      my $typecolumn  = $object.shift // '';
+      my $geomcol     = $object.shift // '';
+      my $orientcol   = $object.shift // '';
+      my $widthcol    = $object.shift // '';
+      my $default     = $object.shift // '';
+      my $order       = $object.shift.Int;
       $default        = 0 unless $default.defined && $default;
       note "Drawing $feature: '$draw' '$table' '$typecolumn' ($order)" if $debug >= 5;
       if $order > 0 && %drawobjects{$feature.lc} {
@@ -2409,9 +2366,9 @@ sub drawit(Str $drawzone, Real $d-lllong, Real $d-lllat, Real $d-urlong, Real $d
 my %done-deps = ();
 
 sub do-dependencies() {
-  my $sth = $dbh.prepare("SELECT dependencies, body
+  my $sth = $pg.db.prepare("SELECT dependencies, body
                           FROM $symbols
-                          WHERE name = ?
+                          WHERE name = \$1
                          ");
   for keys %dependencies -> $dep {
     do-dependency($sth, $dep);
@@ -2423,10 +2380,9 @@ sub do-dependency($sth is copy, Str $dependency) {
 
     note "Dependency: $dependency";    
     
-    $sth.execute($dependency);
-    while my @row = $sth.fetchrow_array {
-	my $deps = @row[0];
-	my $body = @row[1];
+    for $sth.execute($dependency).arrays -> $dep {;
+	my $deps = $dep[0];
+	my $body = $dep[1];
 	if ($deps) {
 	    my @deps = $deps.words;
 	    for @deps -> $dep {
@@ -2573,14 +2529,15 @@ EOF
   my $passwd = 'xyz123';
   #$dbh = DBIish.connect("Pg", user => 'ro', password => $passwd, dbname => $db, RaiseError => 0); # or die $DBIish::errstr;
   note "Connecting to database $db";
-  $dbh = DBIish.connect("Pg", dbname => $db, RaiseError => False) or die $DBIish::errstr;
+  $pg = DB::Pg.new(conninfo => "dbname=$db");
+#  $dbh = DBIish.connect("Pg", dbname => $db, RaiseError => False) or die $DBIish::errstr;
 
-  $sth-symb = $dbh.prepare("SELECT symbol
+  $sth-symb = $pg.db.prepare('SELECT symbol
                             FROM   symbols
-                            WHERE  dbtable = ?
-                              AND  featuretype = ?
-                              AND  type = ?
-                           ");
+                            WHERE  dbtable = $1
+                              AND  featuretype = $2
+                              AND  type = $3
+                           ');
 
 #  my $sth-def = $dbh.prepare('SELECT name, value
 #                              FROM defaults
@@ -2596,12 +2553,11 @@ EOF
   postscript-prefix();
 
   # Set up lists of object types (for use by display/nodisplay arguments)
-  my $sth-def = $dbh.prepare('SELECT featurename
+  my $results = $pg.query('SELECT featurename
                            FROM displayorder
                           ');
-  $sth-def.execute();
-  while my @row = $sth-def.fetchrow_array() {
-    %allobjects{@row[0].lc} = 1;
+  for $results.arrays -> $ftype {
+    %allobjects{$ftype[0].lc} = 1;
   }
   %drawobjects = %allobjects;
 
@@ -2646,11 +2602,11 @@ EOF
 #                           WHERE type = ?
 #                           AND ftype = ?
 #                          ");
-  $sth-sym = $dbh.prepare("SELECT symbol_ga
+  $sth-sym = $pg.db.prepare('SELECT symbol_ga
                            FROM vicmap_symbols
-                           WHERE type = ?
-                           AND ftype = ?
-                          ");
+                           WHERE type = $1
+                           AND ftype = $2
+                          ');
 
   my ($leftzone, $rightzone);
 
@@ -2673,7 +2629,7 @@ EOF
 
   do-dependencies();
 
-  $dbh.dispose();
+#  $pg.dispose();
 
   $TMP.close;
   $TMP = $tmpfile.IO.open(:r);
