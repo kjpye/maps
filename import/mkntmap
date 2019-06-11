@@ -1,0 +1,8 @@
+#!/bin/bash
+
+dropdb ntmap
+createdb ntmap
+psql ntmap -f schema.new
+./mk250ktables ntmap | psql ntmap
+psql ntmap -f mkvicmap_symbols
+psql ntmap -f mksymbols_ga
