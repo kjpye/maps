@@ -714,6 +714,7 @@ dd $selectcolumns;
 	  my $shape = $object.pop;
 	  $featurewidth = $object.pop if $widthcol;
 	  my $featuretype = $object.join: ':';
+dd $featuretype;
 	  
 	  my $symbol = $default;
 	  %linefeaturetypes{$table}{$featuretype}++;
@@ -1320,16 +1321,21 @@ sub draw-points(Str $table, Str $columns, Str $geomcol, Str $orientcol, Str $wid
 ]
 
 sub draw-ga-points(Str $table) {
-    note "$table points..." if $debug >= 1;
+    note "$table ga-points..." if $debug >= 1;
   my $geomcol; # = %defaults{'pointgeometry'};
   $geomcol = 'position';
 
+  note "SELECT symbol, st_astext($geomcol) AS position, orientation, featurewidth
+                            FROM $table
+			    WHERE $geomcol && $rect
+			   ";
   my $results = $pg.query("SELECT symbol, st_astext($geomcol) AS position, orientation, featurewidth
                             FROM $table
 			    WHERE $geomcol && $rect
 			   ");
     
   for $results.arrays -> $object {
+dd $object;
 	my $symbol       = $object[0].Int;
 	my $position     = $object[1];
 	my $orientation  = $object[2] || 0;
@@ -1511,7 +1517,7 @@ sub draw-roadpoints() {
     }
 }
 
-my $debugannotation = False;
+my $debugannotation = True;
 
 class Annotation {
   has $!length;
@@ -1610,6 +1616,8 @@ sub draw-ga-annotations() {
                            ");
     
     for $results.arrays -> $object {
+note "Start loop" if $debugannotation;
+        dd $object if $debugannotation;
 	++$object-count;
 	my $element  = $object[0];
 	my $shape    = $object[1];
@@ -1619,7 +1627,7 @@ sub draw-ga-annotations() {
 	my $unknown1;
 	my $justn = 0;
 	my ($rotangle, $xdiff, $ydiff);
-        note $objectid if $debug >= 10;
+        note "Object ID: $objectid" if $debug >= 10;
 	
     next if $objectid == 6651940;
 	my $ann = Annotation.new();
@@ -1630,7 +1638,7 @@ sub draw-ga-annotations() {
 	#{my $el = $element; while ($el) {$TMP.printf: "%02.2x ", ord(substr($el, 0, 1)); substr($el, 0, 1) = ''; } $TMP.print: "\n";}
 	$ann.skip(54);
 	$string2 = $ann.string;
-	note "draw-annotation: $string2" if $debug >= 10;
+	note "draw-ga-annotation: $string2" if $debug >= 10;
 	$unknown1 = $ann.byte;
         $ann.skip(21);
 	$unknown1 = $ann.byte;
@@ -1723,35 +1731,44 @@ sub draw-ga-annotations() {
 	$ann.lastring;
         $ann.skip(41);
 	
-        note "Drawing annotation" if $debugannotation;
+        note "Drawing annotation \"$string2\" at $x1, $y1" if $debugannotation;
 	# finished parsing; now print something
 	
 	# Check for valid location -- sometimes we get lat/lon with NaN values!
 	if ($x1 == $x1 and $y1 == $y1) {
 	    $font = ($font eq 'Zurich Cn BT') ?? 'Helvetica-Narrow-Latin1' !! 'Helvetica-Latin1';
+            note $font if $debugannotation;
 	    $TMP.print: sprintf "/$font %.4g selectfont\n", $pointsize;
 	    
 	    my $annotation = $string2;
 	    ($x1, $y1) = latlon2page $x1, $y1;
+            note "page position: ($x1, $y1)" if $debugannotation;
 	    my $angle;
 	    if ($y2.defined) {
 		($x2, $y2) = latlon2page $x2, $y2;
+                note "Final position: ($x2, $y2)";
 		$angle = atan2($y2 - $y1, $x2 - $x1) * 180 / π;
+                note "angle: $angle" if $debugannotation;
 	    } else {
 		$angle = 0;
 	    }
-            # $angle = $rotangle if $rotangle;
 	    $annotation ~~ s:g/\\/\\\\/;
 	    $annotation ~~ s:g/\(/\\\(/;
 	    $annotation ~~ s:g/\)/\\\)/;
+            note "Annotation string: \"$annotation\"" if $debugannotation;
 	    $TMP.print: sprintf "gsave %.6g %.6g translate %.6g rotate 0 0 moveto %.4g %.4g %.4g %.4g setcmykcolor ", $x1+$xdiff, $y1+$ydiff, $angle, $cyan, $magenta, $yellow, $black;
 	    if ($justn == 2) {
+                note "Right justified" if $debugannotation;
 		$TMP.print: "($annotation) stringwidth pop neg 0 rmoveto ";
 	    } elsif ($justn == 1) {
+                note "Centre justified" if $debugannotation;
 		$TMP.print: "($annotation) stringwidth pop 2 div neg 0 rmoveto ";
 	    }
 	    $TMP.print: "($annotation) show grestore\n";
-	}
+	} else {
+            note "Unknown position" if $debugannotation;
+        }
+        note "Next annotation" if $debugannotation;
     }
 }
 

@@ -417,7 +417,7 @@ GraticuleAnnotations,featuretype,data,int,no,ga_FeatureType,,,feattype
 GraticuleAnnotations,zorder,data,int,,,,,zorder
 GraticuleAnnotations,annotationclassid,data,int,,,,,annotationclassid
 GraticuleAnnotations,element,data,bytea,no,,,,element
-GraticuleAnnotations,featuretype,data,int,no,ga_FeatureType,,,feattype
+GraticuleAnnotations,featureid,data,int,,,,,featureid
 GraticuleAnnotations,mapnumber,???,text,,,,,mapnumber
 GraticuleAnnotations,created,data,timestamp,,,now(),,created
 GraticuleAnnotations,retired,data,timestamp,,,,,retired
@@ -439,7 +439,7 @@ GridAnnotations,featuretype,data,int,no,ga_FeatureType,,,feattype
 GridAnnotations,zorder,data,int,,,,,zorder
 GridAnnotations,annotationclassid,data,int,,,,,annotationclassid
 GridAnnotations,element,data,bytea,no,,,,element
-GridAnnotations,featuretype,data,int,no,ga_FeatureType,,,feattype
+GridAnnotations,featureid,data,int,,,,,featureid
 GridAnnotations,mapnumber,???,text,,,,,mapnumber
 GridAnnotations,created,data,timestamp,,,now(),,created
 GridAnnotations,retired,data,timestamp,,,,,retired
@@ -491,7 +491,7 @@ HorizontalControlPoints,position,index,,,,,,position
 Islands,objectid,auto,bigint,no,,nextval('object_id'),yes,objectid
 Islands,featuretype,data,int,no,ga_FeatureType,,,feattype
 Islands,name,data,text,,,,,name
-Islands,state,data,int,,ga_State,,,state
+Islands,state,data,text,,,,,state
 Islands,featrel,data,date,no,,,,featrel
 Islands,attrrel,data,date,no,,,,attrrel
 Islands,planacc,data,smallint,no,,,,planacc
@@ -561,7 +561,7 @@ Locks,textnote,data,text,,,,,textnote
 Locks,position,index,,,,,,position
 Mainlands,objectid,auto,bigint,,,nextval('object_id'),yes,objectid
 Mainlands,featuretype,data,int,no,ga_FeatureType,,,feattype
-Mainlands,state,data,int,,ga_State,,,state
+Mainlands,state,data,text,,,,,state
 Mainlands,featrel,data,date,no,,,,featrel
 Mainlands,attrrel,data,date,no,,,,attrrel
 Mainlands,planacc,data,smallint,no,,,,planacc

@@ -17,6 +17,9 @@ my @threads; # the promises used for each table we actually read
 # them!
 
 my %featuretype = ( );
+my %state       = ( );
+my %perennial   = ( );
+my %hierarchy   = ( );
 my %source      = ( );
 
 my $debug = 0;
@@ -273,45 +276,46 @@ sub print-shape($pointer) {
     my @segments;
     my @segoffset;
     my $segno = -1; # Will be incremented before first access
-
-note "print-shape {$pointer.base(16)}" if $debug;
-  my ($ptr, $length) = |find-lval($pointer);
-  my $count = read-rint($ptr);
-  $ptr += 4;
-  $*ERR.printf: "%d points, Bounding Box: ", $count if $debug;
-  my $xmin = read-rdouble($ptr);
-  my $ymin = read-rdouble($ptr+8);
-  my $xmax = read-rdouble($ptr+16);
-  my $ymax = read-rdouble($ptr+24);
-  $ptr += 32;
-    $*ERR.printf: "(%g,%g) to (%g,%g) ", $xmin, $ymin, $xmax, $ymax if $debug;
+    
+    note "print-shape {$pointer.base(16)}" if $debug;
+    my ($ptr, $length) = |find-lval($pointer);
+    my $count = read-rint($ptr);
+    $ptr += 4;
+    $*ERR.printf: "%d points, Bounding Box: ", $count if $debug;
+    my $xmin = read-rdouble($ptr);
+    my $ymin = read-rdouble($ptr+8);
+    my $xmax = read-rdouble($ptr+16);
+    my $ymax = read-rdouble($ptr+24);
+    $ptr += 32;
+    $*ERR.printf: "(%g,%g) to (%g,%g)\n", $xmin, $ymin, $xmax, $ymax if $debug;
     $bb = sprintf "((%.9g,%.9g) (%.9g,%.9g))", $xmin, $ymin, $xmax, $ymax;
     my $segments = read-rint($ptr);    $ptr += 4;
     $count       = read-rint($ptr);    $ptr += 4;
     for ^$segments { # Read segment offsets
         @segoffset[++$segno] = read-rint($ptr); $ptr += 4; # read-rint($ptr+4) ???
     }
-    @segoffset[$segno] = 2**31;
-    $segno = 0;
-  $*ERR.printf: "%d segments, %d points, 1st segment at point %d ", $segments, $count, @segoffset[0] if $debug;
-  dd $count;
-  dd $segno;
-  dd @segoffset;
-  for ^$count -> $point {
-dd $point;
-      if $point == @segoffset[$segno] {
-          note sprintf "Segment %d: ", ++$segno;
-      }
-      my $x = read-rdouble($ptr);
-      my $y = read-rdouble($ptr+8);
-#     add-mess sprintf "(%.9g, %.9g) ", $x, $y;
-      @segments[$segno].push: "$x $y";
-      $ptr += 16;
-  }
-  $shape = "SRID=4326;MULTILINESTRING((" ~
-           (@segments>>.join(",")).join("),(") ~
-           "))";
-  ($bb, $shape);
+    @segoffset[++$segno] = 2**31;
+    $segno = -1;
+    $*ERR.printf: "%d segments, %d points, 1st segment at point %d ", $segments, $count, @segoffset[0] if $debug;
+    dd $count;
+    dd $segno;
+    dd @segoffset;
+    for ^$count -> $point {
+        dd $point;
+        if $point == @segoffset[$segno+1] {
+            note sprintf "Segment %d: ", ++$segno;
+        }
+        my $x = read-rdouble($ptr);
+        my $y = read-rdouble($ptr+8);
+        #     add-mess sprintf "(%.9g, %.9g) ", $x, $y;
+        @segments[$segno].push: "$x $y";
+        $ptr += 16;
+    }
+    dd @segments if $debug;
+    $shape = "SRID=4326;MULTILINESTRING((" ~
+    (@segments>>.join(",")).join("),(") ~
+    "))";
+    ($bb, $shape);
 }
 
 sub print-shape2(Buf $p) {
@@ -939,6 +943,63 @@ sub get-featuretype($name, $prefix) {
 }
 
 
+sub get-state($name, $prefix) {
+    note "get-state($name, $prefix)" if $debug;
+    return %state{$name} if defined %state{$name};
+    note "new entry required" if $debug;
+    $name ~~ s:g/\'/\\'/;
+    my $result = $pg.query("INSERT INTO {$prefix}State (name)
+                                 VALUES (\$1)
+                            ON CONFLICT DO NOTHING
+                              RETURNING type
+                           ", $name).value;
+### FIX
+    dd $result if $debug;
+    my $type = $result;
+    %state{$name} = $type;
+    $*ERR.say: "Added state $type ($name) to database\n" if $debug;
+    $type;
+}
+
+
+sub get-perennial($name, $prefix) {
+    note "get-perennial($name, $prefix)" if $debug;
+    return %perennial{$name} if defined %perennial{$name};
+    note "new entry required" if $debug;
+    $name ~~ s:g/\'/\\'/;
+    my $result = $pg.query("INSERT INTO {$prefix}Perennial (perennial)
+                                 VALUES (\$1)
+                            ON CONFLICT DO NOTHING
+                              RETURNING perennial
+                           ", $name).value;
+### FIX
+    dd $result if $debug;
+    my $type = $result;
+    %perennial{$name} = $type;
+    $*ERR.say: "Added perennial type $type ($name) to database\n" if $debug;
+    $type;
+}
+
+
+sub get-hierarchy($name, $prefix) {
+    note "get-hierarchy($name, $prefix)" if $debug;
+    return %hierarchy{$name} if defined %hierarchy{$name};
+    note "new entry required" if $debug;
+    $name ~~ s:g/\'/\\'/;
+    my $result = $pg.query("INSERT INTO {$prefix}Hierarchy (hierarchy)
+                                 VALUES (\$1)
+                            ON CONFLICT DO NOTHING
+                              RETURNING hierarchy
+                           ", $name).value;
+### FIX
+    dd $result if $debug;
+    my $type = $result;
+    %hierarchy{$name} = $type;
+    $*ERR.say: "Added hierarchy type $type ($name) to database\n" if $debug;
+    $type;
+}
+
+
 sub get-source($name, $prefix) {
     note "get-source($name, $prefix)" if $debug;
     return %source{$name} if defined %source{$name};
@@ -1010,12 +1071,25 @@ sub get-value($value is copy, %def) {
     dd %def if $debug;
     my $column = %def<target>;
 #    note "get-value: $value for $column" if $debug;
-    if $column eq 'featuretype' {
-	$value = get-featuretype($value, $dbprefix);
+#### TODO generalise this using characteristics in def250k table
+    given $column {
+        when 'featuretype' {
+            $value = get-featuretype($value, $dbprefix);
+        }
+        when 'source' {
+            $value = get-source($value, $dbprefix);
+        }
+        when 'state' {
+            $value = get-state($value, $dbprefix);
+        }
+        when 'perennial' {
+            $value = get-perennial($value, $dbprefix);
+        }
+        when 'hierarchy' {
+            $value = get-hierarchy($value, $dbprefix);
+        }
     }
-    if $column eq 'source' {
-	$value = get-source($value, $dbprefix);
-    }
+
     given %def<type> {
 	when 'int' | 'smallint' | 'float' {
 	    $value = ~+$value;

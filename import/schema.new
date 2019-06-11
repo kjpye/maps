@@ -69,3 +69,26 @@ CREATE TABLE Def250k (
 );
 
 \COPY Def250k FROM 'def250k.csv' CSV HEADER;
+
+drop table if exists displayorder;
+create table displayorder (
+  source        text,
+  featurename   text,
+  drawtype      text,
+  tablename     text,
+  featurecolumn text,
+  defaultsymbol int,
+  displayorder  int,
+  geomcol       text,
+  orientcol     text,
+  widthcol      text
+);
+\COPY displayorder FROM 'displayorder.csv' CSV HEADER;
+
+CREATE TABLE symbols (
+  featuretype text,
+  symbol int,
+  type text,
+  dbtable text
+);
+\COPY symbols FROM 'symbols.csv' CSV HEADER;
