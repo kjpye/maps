@@ -951,7 +951,7 @@ sub get-state($name, $prefix) {
     my $result = $pg.query("INSERT INTO {$prefix}State (name)
                                  VALUES (\$1)
                             ON CONFLICT DO NOTHING
-                              RETURNING type
+                              RETURNING state
                            ", $name).value;
 ### FIX
     dd $result if $debug;
@@ -967,7 +967,7 @@ sub get-perennial($name, $prefix) {
     return %perennial{$name} if defined %perennial{$name};
     note "new entry required" if $debug;
     $name ~~ s:g/\'/\\'/;
-    my $result = $pg.query("INSERT INTO {$prefix}Perennial (perennial)
+    my $result = $pg.query("INSERT INTO {$prefix}Perennial (description)
                                  VALUES (\$1)
                             ON CONFLICT DO NOTHING
                               RETURNING perennial
@@ -986,7 +986,7 @@ sub get-hierarchy($name, $prefix) {
     return %hierarchy{$name} if defined %hierarchy{$name};
     note "new entry required" if $debug;
     $name ~~ s:g/\'/\\'/;
-    my $result = $pg.query("INSERT INTO {$prefix}Hierarchy (hierarchy)
+    my $result = $pg.query("INSERT INTO {$prefix}Hierarchy (description)
                                  VALUES (\$1)
                             ON CONFLICT DO NOTHING
                               RETURNING hierarchy
