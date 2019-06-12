@@ -2,7 +2,6 @@
 
 use v6;
 
-#use DBIish;
 use DB::Pg;
 use Geo::Coordinates::UTM;
 use NativeCall; # only for floating point reading routines
@@ -702,7 +701,6 @@ sub draw-lines(Str $table, Str $columns, Str $geomcol, $default, Str $widthcol) 
 
   my $featurewidth = 0;
 
-dd $selectcolumns;
   my $results = $pg.query("SELECT $selectcolumns, st_astext($geomcol) as shape
                           FROM $table
                           WHERE $geomcol && $rect
@@ -719,12 +717,11 @@ dd $featuretype;
 	  my $symbol = $default;
 	  %linefeaturetypes{$table}{$featuretype}++;
 	  if ! $symbol || $symbol eq '0' {
-              if $featuretype ~~ /^\d+$/ {
-		  $symbol = $featuretype;
-              } else {
-		  for $sth-symb.execute($table, $featuretype, 'line').arrays -> $obj {
-		      $symbol = $obj[0].Int;
-		  }
+note "Getting symbol: $table, $featuretype, line" if $debug > 15;
+dd $table;
+dd $featuretype;
+	      for $sth-symb.execute($table, $featuretype, 'line').arrays -> $obj {
+		  $symbol = $obj[0].Int;
 	      }
 	  }
 	  note "draw-line: $table $featuretype $symbol" if $debug >= 10;
@@ -2324,6 +2321,7 @@ sub draw-objects(Real $xoff, Real $yoff, Real $slope) {
         given $draw {
           when 'point'          { draw-points\              ($table, $typecolumn, $geomcol, $orientcol, $widthcol ); }
           when 'line'           { draw-lines\               ($table, $typecolumn, $geomcol, $default,   $widthcol ); }
+          when 'ga_line'        { draw-lines\               ($table, $typecolumn, $geomcol, $default,   $widthcol ); }
           when 'area'           { draw-areas\               ($table, $typecolumn, $geomcol,                       ); }
           when 'text'           { draw-text\                ($table, $typecolumn, $geomcol,             $widthcol ); }
           when 'contour'        { draw-contours\            ($table, $typecolumn, $geomcol,             $widthcol ); } # widthcol is contour elevation
@@ -2550,11 +2548,11 @@ EOF
 #  $dbh = DBIish.connect("Pg", dbname => $db, RaiseError => False) or die $DBIish::errstr;
 
   $sth-symb = $pg.db.prepare('SELECT symbol
-                            FROM   symbols
-                            WHERE  dbtable = $1
-                              AND  featuretype = $2
-                              AND  type = $3
-                           ');
+                                FROM   symbols
+                               WHERE  dbtable = $1
+                                 AND  featuretype = $2
+                                 AND  type = $3
+                             ');
 
 #  my $sth-def = $dbh.prepare('SELECT name, value
 #                              FROM defaults
@@ -2658,7 +2656,7 @@ EOF
 
   note "$object-count objects, $point-count points\n";
 
-  note :areas:;
+  note "areas:";
   for %areafeaturetypes.keys -> $k {
     for %areafeaturetypes{$k}.keys ->$f {
       note "$k:$f";

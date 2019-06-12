@@ -384,7 +384,8 @@ class Table {
 # void read_table(unsigned int id);
 
 sub read-row($p is copy, $number is copy, $table) {
-    my %row;
+    my Hash %row;
+dd %row;
     note "read-row: $p $number $table" if $debug;
     my $nullflags = 0;
     my $end;
@@ -428,6 +429,7 @@ sub read-row($p is copy, $number is copy, $table) {
     $end -= 2;
     $*ERR.printf: "%d variable columns\n", $num-var-cols if $debug;
     for ^$table.num-columns -> $j {
+dd %row;
 	my $column = $table.columns[$j];
 #dd $table;
 #	dd $column;
@@ -475,7 +477,9 @@ sub read-row($p is copy, $number is copy, $table) {
 		    }
 		    when 4 { # int
 			my $ivalue = read-rint($r+$column.offset + 2);
+note sprintf "Reading int value: %d %8.8x", $ivalue, $ivalue;
 #			add-mess sprintf("%d %8.8x\n", $ivalue, $ivalue);
+dd %row;
 			%row{$column.name.lc} = $ivalue;
                         if $column.name eq 'Id' {
                             note "Table Id $ivalue" if $debug;
@@ -484,6 +488,7 @@ sub read-row($p is copy, $number is copy, $table) {
 				$*ERR.printf: "Looking through table %d next\n", $table-id if $debug;
 			    }
 			}
+                        dd %row if $debug;
 		    }
 		    when 5 { # money
 #			put-rbytes($r+$column.offset + 2, 8);
@@ -972,7 +977,6 @@ sub get-perennial($name, $prefix) {
                             ON CONFLICT DO NOTHING
                               RETURNING perennial
                            ", $name).value;
-### FIX
     dd $result if $debug;
     my $type = $result;
     %perennial{$name} = $type;
@@ -991,12 +995,11 @@ sub get-hierarchy($name, $prefix) {
                             ON CONFLICT DO NOTHING
                               RETURNING hierarchy
                            ", $name).value;
-### FIX
     dd $result if $debug;
-    my $type = $result;
-    %hierarchy{$name} = $type;
-    $*ERR.say: "Added hierarchy type $type ($name) to database\n" if $debug;
-    $type;
+    my $hierarchy = $result;
+    %hierarchy{$name} = $hierarchy;
+    $*ERR.say: "Added hierarchy type $hierarchy ($name) to database\n" if $debug;
+    $hierarchy;
 }
 
 
@@ -1141,6 +1144,18 @@ sub process-data {
 		if $columnname eq 'feattype' {
 		    $columnvalue = get-featuretype($columnvalue, $dbprefix);
 		}
+		if $columnname eq 'source' {
+		    $columnvalue = get-source($columnvalue, $dbprefix);
+		}
+		if $columnname eq 'state' {
+		    $columnvalue = get-state($columnvalue, $dbprefix);
+		}
+		if $columnname eq 'perennial' {
+		    $columnvalue = get-perennial($columnvalue, $dbprefix);
+		}
+		if $columnname eq 'hierarchy' {
+		    $columnvalue = get-hierarchy($columnvalue, $dbprefix);
+		}
 		given %tables{$table-name}{$columnname}<type> {
 		    when 'int' | 'smallint' {
 			$columnvalue ~~ / ^ \s* (\d+)/;
@@ -1152,12 +1167,25 @@ sub process-data {
 			my $ftype = get-featuretype($columnvalue, $dbprefix);
 			%row<$columnname> = $ftype;
 		    }
+		    when 'source' {
+			my $source = get-source($columnvalue, $dbprefix);
+			%row<$columnname> = $source;
+		    }
+		    when 'state' {
+			my $state = get-state($columnvalue, $dbprefix);
+			%row<$columnname> = $state;
+		    }
+		    when 'perennial' {
+			my $perennial = get-perennial($columnvalue, $dbprefix);
+			%row<$columnname> = $perennial;
+		    }
+		    when 'hierarchy' {
+			my $hierarchy = get-hierarchy($columnvalue, $dbprefix);
+			%row<$columnname> = $hierarchy;
+		    }
 		    when 'date' {
 			$columnvalue ~~ /^\s*(....)\-(..)\-(..).*/;
 			%row{$columnname} = "'$0 $1 $2'";
-		    }
-		    when 'source' {
-			%row{$columnname} = 1; # FIX
 		    }
 		    when 'timestamp' {
 			%row{$columnname} = "'" ~ $columnvalue ~ "'";
