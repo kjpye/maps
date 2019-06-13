@@ -1,18 +1,18 @@
-#!/usr/bin/ksh
+#!/usr/bin/bash
 
 dropdb --if-exists map250k
-createdb map250k -T template_postgis
-#psql map250k -c 'create extension postgis'
-#psql map250k -c 'create extension postgis_topology'
+createdb map250k
+psql map250k -c 'create extension postgis'
+psql map250k -c 'create extension postgis_topology'
 psql map250k -f schema.gis250k | grep -v INSERT
 psql map250k -f mksymbols_ga | grep -v INSERT
 psql map250k -f mkdisptable.ga | grep -v INSERT
 
-for mdb in ../../Maps/mdb/?????.mdb
+for mdb in ~/Maps/mdb/?????.mdb
 do
 #  ./add_map.sh $mdb
 echo $mdb
-  ./read_mdb <$mdb | ./ins250gis.pl
+  ./read_mdb <$mdb | ./ins250gis.pl map250k
 done
 
 #psql map250k -f tracks.insertions | grep -v INSERT

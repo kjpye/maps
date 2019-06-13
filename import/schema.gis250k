@@ -2263,12 +2263,12 @@ CREATE TABLE ga_Tracks (
 SELECT AddGeometryColumn('', 'ga_tracks', 'shape', 4326, 'MULTILINESTRING', 2);
 CREATE INDEX ga_Tracks_index on ga_Tracks using gist (shape);
 
--- CREATE TABLE defaults (
---   name text,
---   value text
--- );
+CREATE TABLE defaults (
+  name text,
+  value text
+);
 
--- INSERT INTO defaults (name, value) VALUES ('pointgeometry', 'position');
--- INSERT INTO defaults (name, value) VALUES ('linegeometry', 'shape');
--- INSERT INTO defaults (name, value) VALUES ('areageometry', 'shape');
--- INSERT INTO defaults (name, value) VALUES ('copyright', 'copyright message');
+INSERT INTO defaults (name, value) VALUES ('pointgeometry', 'position');
+INSERT INTO defaults (name, value) VALUES ('linegeometry', 'shape');
+INSERT INTO defaults (name, value) VALUES ('areageometry', 'shape');
+INSERT INTO defaults (name, value) VALUES ('copyright', 'copyright message');

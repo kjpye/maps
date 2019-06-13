@@ -5,7 +5,7 @@ use strict;
 
 use POSIX;
 
-my $db = shift // 'maps';
+my $db = shift // 'map250k';
 my $prefix = shift // 'ga_';
 
 use vars qw(%table);
