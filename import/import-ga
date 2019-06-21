@@ -85,7 +85,7 @@ sub MAIN($file, :$db, :$prefix) {
     read-table 2, '';
     # at this stage there should be lots of threads running, one for each table we want
     # wait for them all to foinish
-#    await Promise.allof: @threads;
+    await Promise.allof: @threads;
     note "Completed all tables";
 }
 
@@ -617,9 +617,8 @@ note "Unknown OLE column {$column.name}" if $debug;
 	$*ERR.printf: "\n" if $debug;
     }
     if $table-id {
-#	add-mess sprintf("Processing table \"%s\" (id: %d)\n", $table-name, $table-id);
         note "Found table {%row<name>}" if $debug;
-#	@threads.push: start
+	@threads.push: start
 			   { read-table($table-id, %row<name>) } if %tables{%row<name>}.defined;
     }
     note "Returning from read-row" if $debug;
