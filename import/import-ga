@@ -23,12 +23,14 @@ my %hierarchy   = ( );
 my %source      = ( );
 
 my $debug = 0;
-$debug = 1;
+#$debug = 1;
 $*OUT.out-buffer = Nil if $debug;
 
 
 my $dbname = 'ntmap';
 my $dbprefix = 'ga_';
+my $tabledir = "/tmp/import-tables-$*PID";
+mkdir $tabledir;
 my %tables;
 my $pg; # Database handle
 
@@ -84,8 +86,12 @@ sub MAIN($file, :$db, :$prefix) {
 
     read-table 2, '';
     # at this stage there should be lots of threads running, one for each table we want
-    # wait for them all to foinish
+    # wait for them all to finish
+dd @threads;
+say "{+@threads} threads";
     await Promise.allof: @threads;
+dd @threads;
+say "{+@threads} threads";
     note "Completed all tables";
 }
 
@@ -99,14 +105,6 @@ sub get-fh($table) {
 }
 
 my $mess = '';
-
-sub add-mess($s) {
-  $mess ~= $s;
-  if $mess ~~ s/\n// {
-    $c.send: $mess;
-    $mess = '';
-  }
-}
 
 sub read-rshort($offset)
 {
@@ -160,24 +158,17 @@ multi sub get-rbytes(Str $s, $count) {
     note "put-rbytes(string): {$count} bytes from {$s}" if $debug;
 #    my $buffer = $s.encode: :enc='latin1';
 #    for ^$count -> $i {
-#	add-mess sprintf '%2.2x ', $buffer[$i];
 #    }
-#    add-mess "\n";
      $s.encode: :enc='latin1';
 }
 
 multi sub get-rbytes(Int $p is copy, $count is copy) {
     note "put-rbytes(int): {$count} bytes from {$p.base(16)}" if $debug;
-#    while $count-- {
-#      add-mess sprintf "%2.2x ", $pages[$p++] +& 0xff;
-#    }
-#    add-mess "\n";
     my @array;
     while $count-- {
         @array.push: $pages[$p++];
     }
     my $blob = Blob.new(@array);
-#    dd $blob;
     $blob;
     
 #     $pages.subbuf: $p, $count;
@@ -185,10 +176,6 @@ multi sub get-rbytes(Int $p is copy, $count is copy) {
 
 multi sub get-rbytes(Buf $p is copy, $count is copy) {
     note "put-rbytes(int): {$count} bytes from {$p.base(16)}" if $debug;
-#    for ^$count -> $i {
-#	add-mess sprintf '%2.2x ', $p[$i];
-#    }
-#    add-mess "\n";
      $p.subbuf: 0, $count;
 }
 
@@ -297,20 +284,17 @@ sub print-shape($pointer) {
     @segoffset[++$segno] = 2**31;
     $segno = -1;
     $*ERR.printf: "%d segments, %d points, 1st segment at point %d ", $segments, $count, @segoffset[0] if $debug;
-    dd $count;
-    dd $segno;
-    dd @segoffset;
     for ^$count -> $point {
-        dd $point;
         if $point == @segoffset[$segno+1] {
-            note sprintf "Segment %d: ", ++$segno;
+            ++$segno;
+            note sprintf "Segment %d: " if $debug;
         }
         my $x = read-rdouble($ptr);
         my $y = read-rdouble($ptr+8);
-        #     add-mess sprintf "(%.9g, %.9g) ", $x, $y;
         @segments[$segno].push: "$x $y";
         $ptr += 16;
     }
+    dd @segments;
     dd @segments if $debug;
     $shape = "SRID=4326;MULTILINESTRING((" ~
     (@segments>>.join(",")).join("),(") ~
@@ -323,7 +307,7 @@ sub print-shape2(Buf $p) {
     my $bb;
     my $shape;
 
-dd $p if $debug;
+  dd $p if $debug;
   my $count = $p.read-int32($offset);
   $offset += 4;
   $*ERR.printf: "%d points, Bounding Box: ", $count if $debug;
@@ -344,7 +328,6 @@ dd $p if $debug;
   my $segment = 0;
     for ^$count -> $point {
 	if $point == $segstart {
-	  add-mess sprintf "Segment %d: ", $segment;
 	  ++$segment;
 	  if $segment < $segments {
 	      $segstart = $p.read-int32($offset);
@@ -353,7 +336,6 @@ dd $p if $debug;
 	}
       my $x = $p.read-num64($segptr);
       my $y = $p.read-num64($segptr+8);
-      add-mess sprintf "(%g, %g) ", $x, $y;
       # TODO: add point to shape
 	$segptr += 16;
     }
@@ -384,8 +366,8 @@ class Table {
 # void read_table(unsigned int id);
 
 sub read-row($p is copy, $number is copy, $table) {
-    my Hash %row;
-dd %row;
+    #my $debug = 1;
+    my %row;
     note "read-row: $p $number $table" if $debug;
     my $nullflags = 0;
     my $end;
@@ -429,10 +411,8 @@ dd %row;
     $end -= 2;
     $*ERR.printf: "%d variable columns\n", $num-var-cols if $debug;
     for ^$table.num-columns -> $j {
-dd %row;
+        dd %row if $debug;
 	my $column = $table.columns[$j];
-#dd $table;
-#	dd $column;
 	if not $column.bitmask +& 1 {
 	    $column.offset = read-short($p, $end-1) - 2; # WHY -2 ?
 	    $*ERR.printf: "Read offset as %x from %x\n", $column.offset, ($end - 1) if $debug;
@@ -453,7 +433,6 @@ dd %row;
     my $table-id = 0;
     for ^$table.num-columns -> $j {
 	my $column = $table.columns[$j];
-#	add-mess sprintf("Column %d (%s): ", $column.number, $column.name);
 	my $nullq = $nullflags +& 1;
 	$nullflags +>= 1;
 	if $column.bitmask +& 1 {
@@ -462,24 +441,19 @@ dd %row;
 		$*ERR.printf: "type %d ", $column.type if $debug;
 		given $column.type {
 		    when 1 { # boolean
-#			add-mess $nullq ?? "true" !! "false";
 			%row{$column.name.lc} = $nullq ?? 'true' !! 'false';
                     }
 		    when 2 { # byte
 			my $ivalue = read-rbyte($r+$column.offset + 2);
-#			add-mess sprintf("%d %2.2x\n", $ivalue, $ivalue);
 			%row{$column.name.lc} = $ivalue;
 		    }
 		    when 3 { # short
 			my $ivalue = read-sshort($r+$column.offset + 2);
-#			add-mess sprintf("%d %4.4x\n", $ivalue, $ivalue);
 			%row{$column.name.lc} = $ivalue;
 		    }
 		    when 4 { # int
 			my $ivalue = read-rint($r+$column.offset + 2);
-note sprintf "Reading int value: %d %8.8x", $ivalue, $ivalue;
-#			add-mess sprintf("%d %8.8x\n", $ivalue, $ivalue);
-dd %row;
+                        note sprintf "Reading int value: %d %8.8x", $ivalue, $ivalue if $debug;
 			%row{$column.name.lc} = $ivalue;
                         if $column.name eq 'Id' {
                             note "Table Id $ivalue" if $debug;
@@ -491,17 +465,14 @@ dd %row;
                         dd %row if $debug;
 		    }
 		    when 5 { # money
-#			put-rbytes($r+$column.offset + 2, 8);
 			%row{$column.name.lc} = get-rbytes($r+$column.offset + 2, 8);
 		    }
 		    when 6 { # float
 			my $fvalue = read-rfloat($r+$column.offset + 2);
-#			add-mess sprintf("%g\n", $fvalue);
                         %row{$column.name.lc} = $fvalue;
 		    }
 		    when 7 { # double
 			my $fvalue = read-rdouble($r+$column.offset + 2);
-#			add-mess sprintf("%g\n", $fvalue);
                         %row{$column.name.lc} = $fvalue;
 		    }
 		    when 8 { # date/time
@@ -509,7 +480,6 @@ dd %row;
 			$fvalue -= 25569;
 			$fvalue *= 86400;
 			my $tvalue = $fvalue;
-#			add-mess sprintf("%s\n", DateTime.new($tvalue).Str);
 			%row{$column.name.lc} = "{~DateTime.new($tvalue)}";
 		    }
 		    default {
@@ -517,7 +487,6 @@ dd %row;
 		    }
 		}
 	    } else {
-#		add-mess "\n";
 	    }
 	} else {
 	    # 	  unsigned int length, bitmask, pointer;
@@ -535,7 +504,6 @@ dd %row;
 			    $voffset += 2;
 			}
 			$*ERR.printf: "column name: %s, value: %s\n", $column.name, $string if $debug;
-#			add-mess sprintf("%s\n", $string);
 			%row{$column.name.lc} = $string;
 			if $column.name eq 'Name' {
 			    $table-name = "E'{$string}";
@@ -558,7 +526,6 @@ dd %row;
 				my $count = read-rint($voffset);
                                 note "Got shape; count is $count" if $debug;
 				if $count == 1 {
-                                    #				    add-mess sprintf("Long %g, Lat %g\n", read-rdouble($voffset+4), read-rdouble($voffset+12));
 				    %row{$column.name.lc} = "SRID=4326;POINT({read-rdouble($voffset+4)} {read-rdouble($voffset+12)})";
 				} else {
                                     my $offset = $voffset+4;
@@ -567,26 +534,23 @@ dd %row;
                                         my $lat = read-rdouble($offset);
                                         my $long = read-rdouble($offset+8);
                                         @points.push: "$long $lat";
-note "Adding point $long $lat" if $debug;
+                                        note "Adding point $long $lat" if $debug;
                                         $offset += 8;
                                     }
                                     %row<shape> = "SRID=4326;MULTILINESTRING(" ~ @points.join(',') ~ ')';
                                }
 			    } else {
 note "Unknown OLE column {$column.name}" if $debug;
-#				put-rbytes($voffset, $length);
 				%row{$column.name.lc} = get-rbytes($voffset, $length);
 			    }
 			} elsif $bitmask +& 0x4000 {
 			    note "0x4000 Column {$column.name}" if $debug;
 			    if $column.name eq 'SHAPE' {
 				my ($bb, $shape) = |print-shape($pointer);
-#				add-mess sprintf("\nBBOX: %s\n", $bb);
                                 %row{$column.name.lc} = $shape;
 			    } else {
 				$*ERR.printf: "pointer %x\n", $pointer if $debug;
 				my ($ptr, $length) = |find-lval($pointer);
-#				put-rbytes($ptr, $length);
 				%row{$column.name.lc} = get-rbytes($ptr, $length);
 				note "Finished" if $debug;
 			    }
@@ -596,10 +560,8 @@ note "Unknown OLE column {$column.name}" if $debug;
 			    dd $str if $debug;
 			    if $column.name eq 'SHAPE' {
 				my ($bb, $shape) = print-shape2($str);
-#				add-mess sprintf("\nBBOX: %s\n", $bb);
                                 %row{$column.name.lc} = $shape;
 			    } else {
-#				put-rbytes($str, $length);
 				%row{$column.name.lc} = get-rbytes($str, $length);
 			    }
 			}
@@ -610,7 +572,6 @@ note "Unknown OLE column {$column.name}" if $debug;
 		    }
 		}
 	    } else {
-#		add-mess sprintf("(null)\n");
 		%row{$column.name.lc} = '(null)';
 	    }
 	}
@@ -622,13 +583,14 @@ note "Unknown OLE column {$column.name}" if $debug;
 			   { read-table($table-id, %row<name>) } if %tables{%row<name>}.defined;
     }
     note "Returning from read-row" if $debug;
-dd %row;
+    dd %row if $debug;
     %row;
 }
 
 my %tableptr;
 
-sub process-data-page($page, $table, $table-type, $dbh, @columns, $table-name) {
+sub process-data-page($page, $table, $table-type, $output, @columns, $table-name) {
+  #my $debug = 1;
   note "process-data-page:" if $debug;
   my $unknown-byte = read-byte($page, 1);
   $*ERR.printf: "Unknown: %2.2x\n", $unknown-byte if $debug;
@@ -643,7 +605,6 @@ sub process-data-page($page, $table, $table-type, $dbh, @columns, $table-name) {
 
   if $table {
       note "Found table definition" if $debug;
-#dd $table;
   } else {
       note "No table definition found" if $debug;
       return;
@@ -659,12 +620,12 @@ sub process-data-page($page, $table, $table-type, $dbh, @columns, $table-name) {
       $*ERR.printf: "    %4.4x\n", $roffset if $debug;
       @row.push: $roffset;
   }
+  dd @row if $debug;
   
   # Now try to interpret the rows
   for ^$numrec -> $i {
       my %row = read-row($page, $i, $table);
-#dd %row;
-      do-insert(%row, $dbh, @columns, $table-name);
+      do-insert(%row, $output, @columns, $table-name);
   }
   note "End process-data-page" if $debug;
 }
@@ -672,11 +633,10 @@ sub process-data-page($page, $table, $table-type, $dbh, @columns, $table-name) {
 # Runs simultaneously in multiple threads
 
 sub read-table-header($page) {
-#dd $page;
   note "Table definition ($page)\n" if $debug;
   my $table = Table.new(:$page);
   %tableptr{$page} := $table; # ALSO DANGEROUS -- FIX (might not actually be necessary; we read this for each page, and it won't be used elsewhere!)
-#  dd $table if $debug;
+  dd $table if $debug;
   my $ptr = 1;
   note "unknown: {read-byte($page, $ptr).base(16)}"       if $debug; $ptr++;
   note "Free space - 8: {read-short($page, $ptr).base(16)}"      if $debug; $ptr += 2;
@@ -845,7 +805,8 @@ note "Reading bitmap ($bytes bytes) from position {$p.base(16)}" if $debug;
   @pgs;
 }
 
-sub read-data-page($id, $table, $table-type, $db, @columns, $table-name) {
+sub read-data-page($id, $table, $table-type, $output, @columns, $table-name) {
+  #my $debug = 1;
   note "read-data-page:" if $debug;
   $*ERR.printf: "read_data_page: reading page %d (%x)\n", $id, $id if $debug;
   my $type = read-byte($id, 0);
@@ -854,7 +815,7 @@ sub read-data-page($id, $table, $table-type, $db, @columns, $table-name) {
       note "Pointer to data page does not point to data page" if $debug;
       exit(4);
   }
-  process-data-page($id, $table, $table-type, $db, @columns, $table-name);
+  process-data-page($id, $table, $table-type, $output, @columns, $table-name);
   note "end read-data-page" if $debug
 }
 
@@ -870,13 +831,16 @@ sub print-data-pages($p) {
 
 # read-table is called in multiple threads -- it should alter nothing global
 
-sub read-table($id, $name) {
+sub read-table($id is copy, $name is copy) {
+  #return if $name and $name ne 'Roads';
+    #my $debug = 1;
     my @columns;
     note "read-table ($name)";
     note "read-table ($name):" if $debug;
-    my $dbh;
+    my $output;
+    my $columns;
+    my $file = $tabledir ~ '/' ~ $name ~ '.sql';
     if $name {
-        note "Setting up db connection" if $debug;
 	dd %tables{$name} if $debug;
 	for %tables{$name}.keys.sort -> $column {
             note "column $column:" if $debug;
@@ -889,33 +853,36 @@ sub read-table($id, $name) {
             dd @columns if $debug;
 	}
 	dd @columns if $debug;
-	my $columns = @columns.join: ', ';
-	note "copy {$dbprefix ~ $name} ($columns) from stdin";
-	$dbh = $pg.db;
-	$dbh.query("copy {$dbprefix ~ $name} ($columns) from stdin");
+	$columns = @columns.join: ', ';
+        $output = $file.IO.open(:w);
+dd $output;
     } else {
-	note "No database connection" if $debug;
+	note "No database connection for $name";
     }
     my $table-type = %tables{$name};
     dd $table-type if $debug;
     $*ERR.printf: "Reading table on page %d (%x)\n", $id, $id if $debug;
 note "Calling read-table-header";
     my $table = read-table-header($id);
+dd $table;
     $*ERR.printf: "table bitmask: %x\n", $table.usage-bitmask if $debug;
     my @pgs = read-bitmask($table.usage-bitmask);
     dd @pgs if $debug;
     for @pgs -> $pp {
-	note "Reading data page $pp" if $debug;
+	note "Reading $name data page $pp" if $debug;
 	print-data-pages($pp) if $debug;
 	$*ERR.printf("Data page %d\n", $pp) if $debug;
-	read-data-page($pp, $table, $table-type, $dbh, @columns, $name);
+	read-data-page($pp, $table, $table-type, $output, @columns, $name);
     }
     note "No more data pages" if $debug;
-    if $dbh {
-        $dbh.copy-end;
-	$dbh.finish;
+    if $output {
+        $output.close;
+	note "copy {$dbprefix ~ $name} ($columns) from '$file';";
+	$pg.query("copy {$dbprefix ~ $name} ($columns) from '$file';");
     }
-    note "end read-table $name";
+    # $output.unlink;
+    note "end read-table \"$name\"";
+    1;
 }
 
 #################################
@@ -1025,9 +992,9 @@ my $objects = 0;
 my $table-name;
 my %row;
 
-sub do-insert(%row, $dbh, @columns, $table-name) {
+sub do-insert(%row, $output, @columns, $table-name) {
 
-    return unless $dbh;
+    return unless $output;
     
     my @values;
 
@@ -1044,7 +1011,7 @@ sub do-insert(%row, $dbh, @columns, $table-name) {
 	    dd $table-name if $debug;
 	    dd %tables{$table-name} if $debug;
 	    dd %tables{$table-name}{$source.lc} if $debug;
-	    dd %row{$source};
+	    dd %row{$source} if $debug;
             $value = get-value(%row{$source}, %tables{$table-name}{$source.lc});
             note "Got $value for $column" if $debug;
             $value ~~ s:g/\\/\\\\/;
@@ -1054,12 +1021,10 @@ sub do-insert(%row, $dbh, @columns, $table-name) {
         } else {
             $value = '\N' unless $value;
         }
-#dd $value;
         @values.push: $value;
     }
     my $values = (@values.join: "	") ~ "\n"; # That's a tab folks
-dd $values;
-    $dbh.copy-data: $values;
+    $output.print: $values;
     %row = ();
 }
 
