@@ -26,6 +26,7 @@ my $dbg = 0;
 $dbg = 1;
 $*OUT.out-buffer = Nil if $dbg;
 my $doparallel;
+my $justlist = 0;
 
 
 my $dbname = 'ntmap';
@@ -37,48 +38,51 @@ my $pg; # Database handle
 
 sub mmap(Pointer $addr, int32 $length, int32 $prot, int32 $flags, int32 $fd, int32 $offset) returns CArray[uint8] is native {*}
 
-sub MAIN($file, :$db, :$prefix, :$debug=0, Bool :$noparallel=False) {
+sub MAIN($file, :$db, :$prefix, :$debug=0, Bool :$noparallel=False, Bool :$list=False) {
  
     $dbname = $db if $db.defined;
     $dbprefix = $prefix if $prefix.defined;
     $dbg = $debug;
     $doparallel = not $noparallel;
+    $justlist = $list;
 
     note "Updating database $db";
     
+    unless $justlist {
 # read database table definitions
-    $pg = DB::Pg.new(conninfo => "dbname=$dbname");
-    my $results = $pg.query("SELECT dbtable, dbcolumn, type, sourcecolumn FROM def250k WHERE source = 'data'");
-    for $results.hashes -> %row {
-        my $table  = %row<dbtable>;
-        my $column = %row<dbcolumn>;
-        my $type   = %row<type>;
-        my $source = %row<sourcecolumn>;
-        my $target = %row<dbcolumn>;
-        %tables{$table}{$source}<type>   = $type;
-	%tables{$table}{$source}<target> = $target;
-        %tables{$table}{$target}<source> = $source;
-    }
-    $pg.finish;
+      $pg = DB::Pg.new(conninfo => "dbname=$dbname");
+      my $results = $pg.query("SELECT dbtable, dbcolumn, type, sourcecolumn FROM def250k WHERE source = 'data'");
+      for $results.hashes -> %row {
+          my $table  = %row<dbtable>;
+          my $column = %row<dbcolumn>;
+          my $type   = %row<type>;
+          my $source = %row<sourcecolumn>;
+          my $target = %row<dbcolumn>;
+          %tables{$table}{$source}<type>   = $type;
+	  %tables{$table}{$source}<target> = $target;
+          %tables{$table}{$target}<source> = $source;
+      }
+      $pg.finish;
 
 # Read in the featuretype table
-    {
-	my $result = $pg.query("SELECT name, type FROM {$dbprefix}FeatureType");
-	for $result.hashes -> $entry {
-	    %featuretype{$entry<name>} = $entry<type>;
-	}
-	$pg.finish;
-    }
+      {
+	  my $result = $pg.query("SELECT name, type FROM {$dbprefix}FeatureType");
+	  for $result.hashes -> $entry {
+	      %featuretype{$entry<name>} = $entry<type>;
+	  }
+	  $pg.finish;
+      }
 
 # Read in the source table
-    {
-	my $result = $pg.query("SELECT name, source FROM {$dbprefix}Source");
-	for $result.hashes -> $entry {
-	    %source{$entry<name>} = $entry<source>;
-	}
-	$pg.finish;
-    }
+      {
+	  my $result = $pg.query("SELECT name, source FROM {$dbprefix}Source");
+	  for $result.hashes -> $entry {
+	      %source{$entry<name>} = $entry<source>;
+	  }
+	  $pg.finish;
+      }
 
+    } # $justlist
     note "Opening $file" if $dbg;
     my $fh = $file.IO.open or fail "Could not open $file\n";
     my $file-length = $file.IO.s;
@@ -92,6 +96,7 @@ sub MAIN($file, :$db, :$prefix, :$debug=0, Bool :$noparallel=False) {
     # wait for them all to finish
 
     return unless $doparallel;
+    return if $justlist;
 
     dd @threads;
     say "{+@threads} threads";
@@ -585,11 +590,14 @@ $*ERR.printf: "\n" if $dbg;
 }
 if $table-id {
 note "Found table {%row<name>}" if $dbg;
-dd $doparallel;
-if $doparallel {
-  @threads.push: start { read-table($table-id, %row<name>) } if %tables{%row<name>}.defined;
+if $justlist {
+  say %row<name>;
 } else {
-  read-table($table-id, %row<name>) if %tables{%row<name>}.defined;
+  if $doparallel {
+    @threads.push: start { read-table($table-id, %row<name>) } if %tables{%row<name>}.defined;
+  } else {
+    read-table($table-id, %row<name>) if %tables{%row<name>}.defined;
+  }
 }
 }
 note "Returning from read-row" if $dbg;
