@@ -32,7 +32,6 @@ my $justlist = 0;
 my $dbname = 'ntmap';
 my $dbprefix = 'ga_';
 my $tabledir = "/tmp/import-tables-$*PID";
-mkdir $tabledir;
 my %tables;
 my %loadtable;
 my $pg; # Database handle
@@ -56,6 +55,7 @@ sub MAIN(      $file,             #= mdb database file to load
     note "Updating database $db";
     
     unless $justlist {
+      mkdir $tabledir;
 # read database table definitions
       $pg = DB::Pg.new(conninfo => "dbname=$dbname");
       my $results = $pg.query("SELECT dbtable, dbcolumn, type, sourcecolumn FROM def250k WHERE source = 'data'");
