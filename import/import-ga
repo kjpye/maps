@@ -34,11 +34,18 @@ my $dbprefix = 'ga_';
 my $tabledir = "/tmp/import-tables-$*PID";
 mkdir $tabledir;
 my %tables;
+my %loadtable;
 my $pg; # Database handle
 
 sub mmap(Pointer $addr, int32 $length, int32 $prot, int32 $flags, int32 $fd, int32 $offset) returns CArray[uint8] is native {*}
 
-sub MAIN($file, :$db, :$prefix, :$debug=0, Bool :$noparallel=False, Bool :$list=False) {
+sub MAIN(      $file,             #= mdb database file to load
+              :$db,               #= database to update
+              :$prefix,           #= prefix to prepend to table names in database
+              :$debug=0,          #= print (very verbose) debugging information
+         Bool :$noparallel=False, #= don't read tables in parallel
+         Bool :$list=False        #= just list table names
+        ) {
  
     $dbname = $db if $db.defined;
     $dbprefix = $prefix if $prefix.defined;
@@ -61,6 +68,7 @@ sub MAIN($file, :$db, :$prefix, :$debug=0, Bool :$noparallel=False, Bool :$list=
           %tables{$table}{$source}<type>   = $type;
 	  %tables{$table}{$source}<target> = $target;
           %tables{$table}{$target}<source> = $source;
+          %loadtable{$table} = 1; # by default, load all tables we know about.
       }
       $pg.finish;
 
@@ -91,7 +99,7 @@ sub MAIN($file, :$db, :$prefix, :$debug=0, Bool :$noparallel=False, Bool :$list=
     
     $c = Channel.new;
 
-    read-table 2, '';
+    read-table 2, ''; # read the top-level table, which will recursively read other tables
     # at this stage there should be lots of threads running, one for each table we want
     # wait for them all to finish
 
@@ -588,17 +596,21 @@ note "Unknown OLE column {$column.name}" if $dbg;
 }
 $*ERR.printf: "\n" if $dbg;
 }
+
+# We've found a pointer to a table; should we read it?
 if $table-id {
-note "Found table {%row<name>}" if $dbg;
-if $justlist {
-  say %row<name>;
-} else {
-  if $doparallel {
-    @threads.push: start { read-table($table-id, %row<name>) } if %tables{%row<name>}.defined;
+  note "Found table {%row<name>}" if $dbg;
+  if $justlist {
+    say %row<name>;
   } else {
-    read-table($table-id, %row<name>) if %tables{%row<name>}.defined;
+    if %tables{%row<name>}.defined && %loadtable{%row<name>} {
+      if $doparallel {
+        @threads.push: start { read-table($table-id, %row<name>) }
+      } else {
+        read-table($table-id, %row<name>);
+      }
+    }
   }
-}
 }
 note "Returning from read-row" if $dbg;
 dd %row if $dbg;
