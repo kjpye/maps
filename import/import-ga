@@ -29,7 +29,7 @@ sub hex-dump(@bytes, $start, $count) {
     $*ERR.print: "\n";
 }
 
-sub dump-blob($blob, $start is copy, $width) {
+sub dump-blob($blob, $start is copy, $width = 16) {
     my $bytes = $blob.elems;
     my $offset = 0;
     while $bytes > 0 {
@@ -40,10 +40,6 @@ sub dump-blob($blob, $start is copy, $width) {
         $bytes -= $width;
     }
 }
-
-my $testblob = Blob.new(12,22,32,43,52,62,72,82,92,102,112,122,132,142,152,162,172,182,192,202,212,222,232,242,252);
-
-dump-blob($testblob, 0x4000, 16);
 
 constant PGSIZE = 4096;
 
@@ -83,6 +79,7 @@ $*OUT.out-buffer = Nil if $dbg;
 $*ERR.out-buffer = Nil if $dbg;
 my $doparallel;
 my $justlist = 0;
+my $count-only = 0;
 
 
 my $dbname = 'ntmap';
@@ -96,27 +93,29 @@ sub mmap(Pointer $addr, int32 $length, int32 $prot, int32 $flags, int32 $fd, int
 
 sub MAIN(
           $file,          #= mdb database file to load
+         :@noload,        #= don't load table
+         :@load,          #= load table
          :$db,            #= database to update
          :$prefix,        #= prefix to prepend to table names in database
          :$debug=0,       #= print (very verbose) debugging information
          :$parallel=True, #= read tables in parallel
          :$list=False,    #= just list table names
-         :@noload,        #= don't load table
-         :@load,          #= load table
+         :$count=False,   #= count number of rows in each table
         ) {
  
     $dbname = $db if $db.defined;
     $dbprefix = $prefix if $prefix.defined;
     $dbg = $debug;
-    $doparallel = $parallel;
+    $doparallel = so $parallel;
     $justlist = $list;
+    $count-only = $count;
 
-    say "Database: $dbname";
-    say "Debug: {$debug??'Yes'!!'No'}";
-    say "File: $file";
-    say "Prefix: $dbprefix";
-    say "Parallel: {$doparallel??'Yes'!!'No'}";
-    say "List: {$list??'Yes'!!'No'}";
+    note "Database: $dbname";
+    note "Debug: {$debug??'Yes'!!'No'}";
+    note "File: $file";
+    note "Prefix: $dbprefix";
+    note "Parallel: {$doparallel??'Yes'!!'No'}";
+    note "List: {$list??'Yes'!!'No'}";
     
     unless $justlist {
       mkdir $tabledir;
@@ -975,6 +974,10 @@ return unless !$name or $name ne 'Bores';
     note "Calling read-table-header";
     my $table = read-table-header($id);
     note "Back from read-table-header" if $dbg;
+    if $name && $count-only {
+        say "$name: {$table.num-rows}";
+        return;
+    }
     dd $table if $dbg;
     $*ERR.printf: "table bitmask: %x\n", $table.usage-bitmask if $dbg;
     my @pgs = read-bitmask($table.usage-bitmask);
