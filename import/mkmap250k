@@ -1,0 +1,8 @@
+#!/bin/bash
+
+dropdb --if-exists map250k
+createdb map250k
+psql map250k -f schema.new
+./mk250ktables map250k | psql map250k
+psql map250k -f mkvicmap_symbols
+psql map250k -f mksymbols_ga

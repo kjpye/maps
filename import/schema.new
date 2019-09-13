@@ -71,6 +71,7 @@ CREATE TABLE Def250k (
 \COPY Def250k FROM 'def250k.csv' CSV HEADER;
 
 drop table if exists displayorder;
+
 create table displayorder (
   source        text,
   featurename   text,
