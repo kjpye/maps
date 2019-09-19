@@ -85,6 +85,7 @@ my $count-only = 0;
 my $dbname = 'ntmap';
 my $dbprefix = 'ga_';
 my $tabledir = "/tmp/import-tables-$*PID";
+my $commandsfile;
 my %tables;
 my %loadtable;
 my $pg; # Database handle
@@ -119,6 +120,7 @@ sub MAIN(
     
     unless $justlist {
       mkdir $tabledir;
+      $commandsfile = "$tabledir/commands".IO.open(:w);
 # read database table definitions
       note "Updating database $db";
       $pg = DB::Pg.new(conninfo => "dbname=$dbname");
@@ -991,8 +993,10 @@ return unless !$name or $name ne 'Bores';
     note "No more data pages" if $dbg;
     if $output {
         $output.close;
-	note "copy {$dbprefix ~ $name} ($columns) from '$file';";
-	$pg.query("copy {$dbprefix ~ $name} ($columns) from '$file';");
+        my $copycmd = "copy {$dbprefix ~ $name} ($columns) from '$file';";
+	note $copycmd;
+        $commandsfile.put: $copycmd ~ "\n";
+	$pg.query: $copycmd;
     }
     # $output.unlink;
     note "end read-table \"$name\"";
