@@ -104,8 +104,17 @@ sub MAIN(
          :$count=False,   #= count number of rows in each table
         ) {
  
-    $dbname = $db if $db.defined;
-    $dbprefix = $prefix if $prefix.defined;
+# Workarounds for MAIN handling bug in rakudo
+    $file     = $file[0]     if $file     ~~ Positional;
+    $db       = $db[0]       if $db       ~~ Positional;
+    $prefix   = $prefix[0]   if $prefix   ~~ Positional;
+    $debug    = $debug[0]    if $debug    ~~ Positional;
+    $parallel = $parallel[0] if $parallel ~~ Positional;
+    $list     = $list[0]     if $list     ~~ Positional;
+    $count    = $count[0]    if $count    ~~ Positional;
+
+    $dbname   = $db          if $db.defined;
+    $dbprefix = $prefix      if $prefix.defined;
     $dbg = $debug;
     $doparallel = so $parallel;
     $justlist = $list;
