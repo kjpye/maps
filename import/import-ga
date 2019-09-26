@@ -129,7 +129,8 @@ sub MAIN(
     
     unless $justlist {
       mkdir $tabledir;
-      $commandsfile = "$tabledir/commands".IO.open(:w);
+      $commandsfile = "$tabledir/commands".IO.open(:w, :append, :0out-buffer);
+      $commandsfile.out-buffer = 0;
 # read database table definitions
       note "Updating database $db";
       $pg = DB::Pg.new(conninfo => "dbname=$dbname");
@@ -702,7 +703,6 @@ if $doparallel {
 my %tableptr;
 
 sub process-data-page($page, $table, $table-type, $output, @columns, $table-name) {
-    #my $dbg = 1;
     note "process-data-page:" if $dbg;
     my $unknown-byte = read-byte($page, 1);
     $*ERR.printf: "Unknown: %2.2x\n", $unknown-byte if $dbg;
@@ -710,6 +710,7 @@ sub process-data-page($page, $table, $table-type, $output, @columns, $table-name
     my $tablep = read-int($page, 4);
     if $tablep == 0x4c41564c { # "LVAL"
         note "Found unexpected LVAL page" if $dbg;
+return;
         exit(5);
     }
     
