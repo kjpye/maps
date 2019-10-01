@@ -58,8 +58,8 @@ sub dump-from-page($p, $count) {
 }
 
 sub dump-page($p) {
-    my $page-start = $p +& ~(PGSIZE - 1);
-note "Dumping page containing $p";
+    my $page-start = $p +& +^(PGSIZE - 1);
+note "Dumping page containing $p ({$page-start.base(16)})";
     dump-from-page($page-start, PGSIZE);
 }
 
@@ -889,9 +889,9 @@ sub read-bitmask($ptr) {
         note "Entry is 1, end: $end, offset: $offset" if $dbg;
         $bytes = $end - $offset - 5;
     }
-    $*ERR.printf("read-bitmask: offset %04.4x, length %d\n", $offset, $bytes) if $dbg;
+    $*ERR.printf("read-bitmask: offset %04.4x, length %d\n", $offset, $bytes + 5) if $dbg;
     $p = ($ptr +> 8) * PGSIZE + $offset;
-    dump-from-page($p, $bytes) if $dbg;
+    dump-from-page($p, $bytes + 5) if $dbg;
     if $pages[$p] == 0x00 {
         note "bitmap type 0" if $dbg;
         ++$p;
@@ -901,6 +901,7 @@ sub read-bitmask($ptr) {
     } elsif $pages[$p] == 0x01 {
         note "bitmap type 1 ($bytes)" if $dbg;
         $p++;
+        $bytes += 4;
         while $bytes > 3 {
             note "Reading bitmask pages" if $dbg;
             my $next-page = read-rint($p);
@@ -913,6 +914,7 @@ sub read-bitmask($ptr) {
                 note "Incorrect bitmask page $p ({$magic.base(16)})" unless $magic == 0x0105;
                 read-bits $next-page + 4, 4092, $page-offset, @pgs; # Fix for Jet 3
             }
+            $page-offset += 4092 * 8;
             $bytes -= 4;
             $p += 4;
         }
@@ -922,6 +924,7 @@ sub read-bitmask($ptr) {
     }
     my $count = 0;
     note "Reading bitmap ($bytes bytes) from position {$p.base(16)}" if $dbg;
+    note "{+@pgs} pages of data";
     dd @pgs if $dbg;
     @pgs;
 }
