@@ -1017,8 +1017,9 @@ return unless !$name or $name ne 'Bores';
     dd $table if $dbg;
     $*ERR.printf: "table bitmask: %x\n", $table.usage-bitmask if $dbg;
     my @pgs = read-bitmask($table.usage-bitmask);
-    dd @pgs if $dbg;
-    for @pgs.race -> $pp {
+#    dd @pgs if $dbg;
+note "Reading data";
+    for @pgs -> $pp {
 	note "Reading $name data page $pp" if $dbg;
 	print-data-pages($pp) if $dbg;
 	$*ERR.printf("Data page %d\n", $pp) if $dbg;
