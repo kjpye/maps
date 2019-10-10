@@ -43,6 +43,16 @@ sub dump-blob($blob, $start is copy, $width = 16) {
 
 constant PGSIZE = 4096;
 
+my $inputfh;
+my $input-lock = Lock.new();
+
+sub read-page($page-num) {
+    $input-lock.protect: {
+        $inputfh.seek($page-num * PGSIZE);
+        $inputfh.read(PGSIZE);
+    }
+}
+
 my $c;     # a channel for communicating between processes
 
 my $pages; # The memory-mapped mdb file
@@ -175,10 +185,10 @@ sub MAIN(
 
     } # $justlist
     note "Opening $file" if $dbg;
-    my $fh = $file.IO.open or fail "Could not open $file\n";
+    $inputfh = $file.IO.open(:bin) or fail "Could not open $file\n";
     my $file-length = $file.IO.s;
     
-    $pages = mmap(Pointer, $file-length, 1, 1, $fh.native-descriptor, 0); # FIX
+    $pages = mmap(Pointer, $file-length, 1, 1, $inputfh.native-descriptor, 0); # FIX
     
     $c = Channel.new;
 
@@ -237,7 +247,7 @@ note "read-rint at {$offset.base(16)}" if $dbg;
 }
 
 sub find-lval($pointer) {
-note "find-lval" if $dbg;
+note "find-lval {$pointer.base(16)}" if $dbg;
     my $ptr;
     my $length;
     my $page = $pointer +> 8;
@@ -249,7 +259,11 @@ note "find-lval" if $dbg;
     if $row == 0 {
       $length = ($p + PGSIZE) - $ptr;
     } else {
-	$length = (read-rshort($p+14 + ($row-1) * 2) +& 0x3fff) - (read-rshort($p+14 + $row*2) +& 0x3fff);
+        my $start = read-rshort($p+14 + $row*2);
+        my $end   = read-rshort($p + 14 + ($row - 1)*2);
+	#$length = (read-rshort($p+14 + ($row-1) * 2) +& 0x3fff) - ($ptr +& 0x3fff);
+        $length = $end - $start;
+note "find-lval: start = {$start.base(16)}, $end = {$end.base(16)}, length = {$length.base(16)}" if $dbg;
     }
 note "find-lval returning \"{$ptr.base(16)}, $length\"" if $dbg;
     my $x = 0;
@@ -257,7 +271,7 @@ note "find-lval returning \"{$ptr.base(16)}, $length\"" if $dbg;
 }
 
 multi sub get-rbytes(Str $s, $count) {
-    note "put-rbytes(string): {$count} bytes from {$s}" if $dbg;
+    note "get-rbytes(string): {$count} bytes from {$s}" if $dbg;
 #    my $buffer = $s.encode: :enc='latin1';
 #    for ^$count -> $i {
 #    }
@@ -265,20 +279,26 @@ multi sub get-rbytes(Str $s, $count) {
 }
 
 multi sub get-rbytes(Int $p is copy, $count is copy) {
-    note "put-rbytes(int): {$count} bytes from {$p.base(16)}" if $dbg;
+    note "get-rbytes(int): {$count} bytes from {$p.base(16)}" if $dbg;
     my @array;
     while $count-- {
         @array.push: $pages[$p++];
     }
-    my $blob = Blob.new(@array);
-    $blob;
-    
-#     $pages.subbuf: $p, $count;
+    Blob.new(@array);
+}
+
+multi sub get-rbytes($page, $p is copy, $count is copy) {
+    note "get-rbytes(int): {$count} bytes from current page: {$p.base(16)}" if $dbg;
+    my @array;
+    while $count-- {
+        @array.push: $page[$p++];
+    }
+    Blob.new(@array);
 }
 
 multi sub get-rbytes(Buf $p is copy, $count is copy) {
-    note "put-rbytes(int): {$count} bytes from {$p.base(16)}" if $dbg;
-     $p.subbuf: 0, $count;
+    note "get-rbytes(int): {$count} bytes from {$p.base(16)}" if $dbg;
+    $p.subbuf: 0, $count;
 }
 
 sub read-rbyte($offset) {
@@ -305,7 +325,7 @@ sub read-rfloat($p) {
 			  $pages[$p + 2],
 			  $pages[$p + 3]
 	);
-    $buffer.read-num32(0);
+    $buffer.read-num32(0, LittleEndian);
 }
 
 sub read-rdouble($p) {
@@ -318,7 +338,7 @@ sub read-rdouble($p) {
 			  $pages[$p + 6],
 			  $pages[$p + 7]
 	);
-    $buffer.read-num64(0);
+    $buffer.read-num64(0, LittleEndian);
 }
 
 sub read-long-page($pointer is copy) {
@@ -396,7 +416,7 @@ sub print-shape($pointer) {
         @segments[$segno].push: "$x $y";
         $ptr += 16;
     }
-    dd @segments;
+    dd @segments if $dbg;
     dd @segments if $dbg;
     $shape = "SRID=4326;MULTILINESTRING((" ~
     (@segments>>.join(",")).join("),(") ~
@@ -410,20 +430,20 @@ sub print-shape2(Buf $p) {
     my $shape;
     
     dd $p if $dbg;
-    my $count = $p.read-int32($offset);
+    my $count = $p.read-int32($offset, LittleEndian);
     $offset += 4;
     $*ERR.printf: "%d points, Bounding Box: ", $count if $dbg;
-    my $xmin = $p.read-num64($offset);
-    my $ymin = $p.read-num64($offset+8);
-    my $xmax = $p.read-num64($offset+16);
-    my $ymax = $p.read-num64($offset+24);
+    my $xmin = $p.read-num64($offset,    LittleEndian);
+    my $ymin = $p.read-num64($offset+8,  LittleEndian);
+    my $xmax = $p.read-num64($offset+16, LittleEndian);
+    my $ymax = $p.read-num64($offset+24, LittleEndian);
     $offset += 32;
     $*ERR.printf: "(%g,%g) to (%g,%g) ", $xmin, $ymin, $xmax, $ymax if $dbg;
     $bb = sprintf "((%.5g,%.5g),(%.5g,%.5g))", $xmin, $ymin, $xmax, $ymax;
-    my $segments = $p.read-int32($offset);
+    my $segments = $p.read-int32($offset, LittleEndian);
     $offset += 4;
-    $count = $p.read-int32($offset);
-    my $segstart = $p.read-int32($offset+4);
+    $count = $p.read-int32($offset, LittleEndian);
+    my $segstart = $p.read-int32($offset+4, LittleEndian);
     $offset += 8;
     $*ERR.printf: "%d segments, %d points, 1st segment at point %d ", $segments, $count, $segstart if $dbg;
     my $segptr = $offset + $segments * 4 - 4; # where the actual points start
@@ -432,12 +452,12 @@ sub print-shape2(Buf $p) {
 	if $point == $segstart {
 	    ++$segment;
 	    if $segment < $segments {
-	        $segstart = $p.read-int32($offset);
+	        $segstart = $p.read-int32($offset, LittleEndian);
 	        $offset += 4;
 	    }
 	}
-        my $x = $p.read-num64($segptr);
-        my $y = $p.read-num64($segptr+8);
+        my $x = $p.read-num64($segptr,   LittleEndian);
+        my $y = $p.read-num64($segptr+8, LittleEndian);
         # TODO: add point to shape
 	$segptr += 16;
     }
@@ -467,8 +487,8 @@ class Table {
 
 # void read_table(unsigned int id);
 
-sub read-row($p is copy, $number is copy, $table) {
-    #my $dbg = 1;
+sub read-row($page is copy, $number is copy, $table) {
+    my $p = 0;       # pointer into page
     my %row;
     note "read-row: $p $number $table" if $dbg;
     my $nullflags = 0;
@@ -476,21 +496,23 @@ sub read-row($p is copy, $number is copy, $table) {
     my $table-name;
     
     note "read-row:" if $dbg;
-    my $offset = read-rshort($p*PGSIZE + 14 + $number*2);
+    my $offset = $page.read-uint16(14 + $number*2, LittleEndian);
     if ($offset +& 0xc000) == 0xc000 {
         note "Deleted object" if $dbg;
         return;
     }
     if $offset +& 0x4000 {
+        $*ERR.printf: "Row redirect %4.4x\n", $offset +& 0x0fff;
         $*ERR.printf: "Row redirect %4.4x\n", $offset +& 0x0fff if $dbg;
-        my $indirect = read-rint($p * PGSIZE +($offset +& 0x0fff));
+        my $indirect = $page.read-uint32($offset +& 0x0fff, LittleEndian);
         $number = $indirect +& 0xff;
-        $p = $indirect +> 8;
+        my $p   = $indirect +> 8;
+        $page = read-page($p);
         $*ERR.printf: "Redirecting to page %d (%x), number %d\n", $p, $p, $number if $dbg;
-        $offset = read-rshort($p * PGSIZE + 14 + $number * 2);
+        $offset = $page.read-uint16(14 + $number * 2, LittleEndian);
     }
     if $number {
-        $end = read-rshort($p * PGSIZE + 14 + ($number - 1) * 2) - 1;
+        $end = $page.read-uint16(14 + ($number - 1) * 2, LittleEndian) - 1;
     } else {
         $end = PGSIZE - 1;
     }
@@ -498,30 +520,30 @@ sub read-row($p is copy, $number is copy, $table) {
     $offset +&= 0x0fff;
     $end    +&= 0x0fff;
     $*ERR.printf: "Row: start %x, end %x\n", $offset, $end if $dbg;
-    my $r = $p * PGSIZE + $offset; # offset into file
+    my $r = $offset; # offset into page
     $*ERR.printf("Row position: %x\n", $r) if $dbg;
     my $j = $table.num-columns;
     while $j > 0 {
         $nullflags +<= 8;
-        $nullflags +|= read-byte($p, $end--);
+        $nullflags +|= $page.read-uint8($end--);
         $j -= 8;
     }
     $*ERR.printf: "Nullflags: %8.8x\n", $nullflags if $dbg;
     
     # fix offsets and lengths for variable objects */
-    my $num-var-cols = read-short($p, $end-1);
+    my $num-var-cols = $page.read-uint16($end-1, LittleEndian);
     $end -= 2;
     $*ERR.printf: "%d variable columns\n", $num-var-cols if $dbg;
     for ^$table.num-columns -> $j {
         dd %row if $dbg;
         my $column = $table.columns[$j];
         if not $column.bitmask +& 1 {
-            $column.offset = read-short($p, $end-1) - 2; # WHY -2 ?
+            $column.offset = $page.read-uint16($end-1, LittleEndian) - 2; # WHY -2 ?
             $*ERR.printf: "Read offset as %x from %x\n", $column.offset, ($end - 1) if $dbg;
             $end -= 2;
         }
     }
-    $end = (read-short($p, $end - 1) +& 0x0fff) - 2; # WHY -2 ?
+    $end = ($page.read-uint16($end - 1, LittleEndian) +& 0x0fff) - 2; # WHY -2 ?
     $*ERR.printf: "Read end as %x\n", $end if $dbg;
     for 1 .. $table.num-columns -> $j {
         my $column = $table.columns[* - $j];
@@ -546,15 +568,15 @@ sub read-row($p is copy, $number is copy, $table) {
 		        %row{$column.name.lc} = $nullq ?? 'true' !! 'false';
 	            }
 	            when 2 { # byte
-		        my $ivalue = read-rbyte($r+$column.offset + 2);
+		        my $ivalue = $page.read-uint8($r+$column.offset + 2, LittleEndian);
 		        %row{$column.name.lc} = $ivalue;
 	            }
 	            when 3 { # short
-		        my $ivalue = read-sshort($r+$column.offset + 2);
+		        my $ivalue = $page.read-int16($r+$column.offset + 2, LittleEndian);
 		        %row{$column.name.lc} = $ivalue;
 	            }
 	            when 4 { # int
-		        my $ivalue = read-rint($r+$column.offset + 2);
+		        my $ivalue = $page.read-uint32($r+$column.offset + 2, LittleEndian);
 		        note sprintf "Reading int value: %d %8.8x", $ivalue, $ivalue if $dbg;
 		        %row{$column.name.lc} = $ivalue;
 		        if $column.name eq 'Id' {
@@ -567,18 +589,18 @@ sub read-row($p is copy, $number is copy, $table) {
 		        dd %row if $dbg;
 	            }
 	            when 5 { # money
-		        %row{$column.name.lc} = get-rbytes($r+$column.offset + 2, 8);
+		        %row{$column.name.lc} = get-rbytes($page,$r+$column.offset + 2, 8);
 	            }
 	            when 6 { # float
-		        my $fvalue = read-rfloat($r+$column.offset + 2);
+		        my $fvalue = $page.read-num32($r+$column.offset + 2, LittleEndian);
 		        %row{$column.name.lc} = $fvalue;
 	            }
 	            when 7 { # double
-		        my $fvalue = read-rdouble($r+$column.offset + 2);
+		        my $fvalue = $page.read-num64($r+$column.offset + 2, LittleEndian);
 		        %row{$column.name.lc} = $fvalue;
 	            }
 	            when 8 { # date/time
-		        my $fvalue = read-rdouble($r+$column.offset + 2);
+		        my $fvalue = $page.read-num64($r+$column.offset + 2, LittleEndian);
 		        $fvalue -= 25569;
 		        $fvalue *= 86400;
 		        my $tvalue = $fvalue;
@@ -591,7 +613,6 @@ sub read-row($p is copy, $number is copy, $table) {
             } else {
             }
         } else {
-            # 	  unsigned int length, bitmask, pointer;
             $*ERR.printf: "variable " if $dbg;
             if $nullq {
 	        # 	      int count;
@@ -602,7 +623,7 @@ sub read-row($p is copy, $number is copy, $table) {
 		        my $string = '';
 		        my $voffset = $r + $column.offset + 2;
 		        while $count-- {
-		            $string ~= read-rbyte($voffset).chr;
+		            $string ~= $page.read-uint8($voffset).chr;
 		            $voffset += 2;
 		        }
 		        $*ERR.printf: "column name: %s, value: %s\n", $column.name, $string if $dbg;
@@ -614,27 +635,27 @@ sub read-row($p is copy, $number is copy, $table) {
 	            when 11 { # OLE
 		        my $voffset = $r + $column.offset + 2;
 		        $*ERR.printf: "voffset = %x\n", $voffset if $dbg;
-		        my $length = read-rshort($voffset);
+		        my $length = $page.read-uint16($voffset, LittleEndian);
 		        $*ERR.printf: "length: %d\n", $length if $dbg;
-		        my $bitmask = read-rshort($voffset+2);
+		        my $bitmask = $page.read-uint16($voffset+2, LittleEndian);
 		        $*ERR.printf: "bitmask: %x\n", $bitmask if $dbg;
-		        my $pointer = read-rint($voffset+4);
+		        my $pointer = $page.read-uint32($voffset+4, LittleEndian);
 		        $*ERR.printf: "OLE: pointer %x\n", $pointer if $dbg;
 		        if $bitmask +& 0x8000 {
 		            note "0x8000" if $dbg;
 		            # data is here
 		            $voffset += 12;
 		            if 'shape' eq $column.name.lc {
-			        my $count = read-rint($voffset);
+			        my $count = $page.read-uint32($voffset, LittleEndian);
 			        note "Got shape; count is $count" if $dbg;
 			        if $count == 1 {
-			            %row{$column.name.lc} = "SRID=4326;POINT({read-rdouble($voffset+4)} {read-rdouble($voffset+12)})";
+			            %row{$column.name.lc} = "SRID=4326;POINT({read-rdouble($voffset+4)} {$page.read-num64($voffset+12, LittleEndian)})";
 			        } else {
 			            my $offset = $voffset+4;
 			            my @points;
 			            while $count-- {
-				        my $lat = read-rdouble($offset);
-				        my $long = read-rdouble($offset+8);
+				        my $lat = $page.read-num64($offset, LittleEndian);
+				        my $long = $page.read-num64($offset+8, LittleEndian);
 				        @points.push: "$long $lat";
 				        note "Adding point $long $lat" if $dbg;
 				        $offset += 8;
@@ -643,7 +664,7 @@ sub read-row($p is copy, $number is copy, $table) {
 		                }
 		            } else {
                                 note "Unknown OLE column {$column.name}" if $dbg;
-			        %row{$column.name.lc} = get-rbytes($voffset, $length);
+			        %row{$column.name.lc} = get-rbytes($page, $voffset, $length);
 		            }
 		        } elsif $bitmask +& 0x4000 {
 		            note "0x4000 Column {$column.name}" if $dbg;
@@ -653,7 +674,7 @@ sub read-row($p is copy, $number is copy, $table) {
 		            } else {
 			        $*ERR.printf: "pointer %x\n", $pointer if $dbg;
 			        my ($ptr, $length) = |find-lval($pointer);
-			        %row{$column.name.lc} = get-rbytes($ptr, $length);
+			        %row{$column.name.lc} = get-rbytes($page, $ptr, $length);
 			        note "Finished" if $dbg;
 		            }
 		        } else {
@@ -687,12 +708,13 @@ sub read-row($p is copy, $number is copy, $table) {
             say %row<name>;
         } else {
             if %tables{%row<name>}.defined && %loadtable{%row<name>}.defined && %loadtable{%row<name>} {
-if $doparallel {
-    @threads.push: start { read-table($table-id, %row<name>) }
-} else {
-    read-table($table-id, %row<name>);
-}
-}
+                %loadtable{%row<name>} = 0; # we're seeing some tables multiple times -- why?
+                if $doparallel {
+                    @threads.push: start { read-table($table-id, %row<name>) }
+                } else {
+                    read-table($table-id, %row<name>);
+                }
+            }
         }
     }
     note "Returning from read-row" if $dbg;
@@ -704,17 +726,12 @@ my %tableptr;
 
 sub process-data-page($page, $table, $table-type, $output, @columns, $table-name) {
     note "process-data-page:" if $dbg;
-    my $unknown-byte = read-byte($page, 1);
-    $*ERR.printf: "Unknown: %2.2x\n", $unknown-byte if $dbg;
-    $*ERR.printf: "Free space: %4.4x\n", read-short($page, 2) if $dbg;
-    my $tablep = read-int($page, 4);
-    if $tablep == 0x4c41564c { # "LVAL"
-        note "Found unexpected LVAL page" if $dbg;
-return;
-        exit(5);
-    }
+    $*ERR.printf: "Free space: %4.4x\n", $page.read-uint16(2, LittleEndian) if $dbg;
+    my $tablep = $page.read-uint32(4, LittleEndian);
+
+    fail 'Found unexpected LVAL page' if $tablep == 0x4c41564c; # 'LVAL'
     
-    $*ERR.printf: "Table Description pointer: %d\n", $tablep if $dbg;
+    $*ERR.printf: "Table Description pointer: %s\n", $tablep.base(16) if $dbg;
     
     if $table {
         note "Found table definition" if $dbg;
@@ -723,13 +740,13 @@ return;
         return;
     }
     
-    $*ERR.printf: "Unknown: %8.8x\n", read-int($page, 8) if $dbg;
-    my $numrec = read-short($page, 12);
+    $*ERR.printf: "Unknown: %8.8x\n", $page.read-uint32(8, LittleEndian) if $dbg;
+    my $numrec = $page.read-uint16(12, LittleEndian);
     $*ERR.printf: "%d records in this page", $numrec if $dbg;
     my @row = (PGSIZE,);
     my $ptr = 14;
     for ^$numrec -> $i {
-        my $roffset = read-short($page, $ptr);     $ptr += 2;
+        my $roffset = $page.read-uint16($ptr, LittleEndian);     $ptr += 2;
         $*ERR.printf: "    %4.4x\n", $roffset if $dbg;
         @row.push: $roffset;
     }
@@ -909,12 +926,14 @@ sub read-bitmask($ptr) {
             $next-page *= PGSIZE;
             note "read-bitmask: read page {$next-page.base(16)}" if $dbg;
             if $next-page {
-                dump-page($next-page);
+                dump-page($next-page) if $dbg;
+note "bitmask page {$next-page.base(16)}, page-offset: $page-offset";
                 my $magic = read-rshort($next-page);
                 note "Incorrect bitmask page $p ({$magic.base(16)})" unless $magic == 0x0105;
                 read-bits $next-page + 4, 4092, $page-offset, @pgs; # Fix for Jet 3
+            } else {
+              $page-offset += 4092 * 8;
             }
-            $page-offset += 4092 * 8;
             $bytes -= 4;
             $p += 4;
         }
@@ -926,20 +945,22 @@ sub read-bitmask($ptr) {
     note "Reading bitmap ($bytes bytes) from position {$p.base(16)}" if $dbg;
     note "{+@pgs} pages of data";
     dd @pgs if $dbg;
+dd @pgs;
     @pgs;
 }
 
 sub read-data-page($id, $table, $table-type, $output, @columns, $table-name) {
-  #my $dbg = 1;
   note "read-data-page:" if $dbg;
-  $*ERR.printf: "read_data_page: reading page %d (%x)\n", $id, $id if $dbg;
-  my $type = read-byte($id, 0);
-  $*ERR.printf: "read_data_page: type %d\n", $type if $dbg;
-  if $type != 0x01 {
-      note "Pointer to data page ($id) does not point to data page";
-      exit(4);
+  $*ERR.printf: "read-data-page: reading page %d (%x)\n", $id, $id;
+  $*ERR.printf: "read-data-page: reading page %d (%x)\n", $id, $id if $dbg;
+  my $page = read-page($id);
+  my $type = $page.read-uint16(0, LittleEndian);
+  $*ERR.printf: "read-data-page: type %d\n", $type;
+  $*ERR.printf: "read-data-page: type %d\n", $type if $dbg;
+  if $type != 0x0101 {
+      fail "Pointer to data page ($id) does not point to data page";
   }
-  process-data-page($id, $table, $table-type, $output, @columns, $table-name);
+  process-data-page($page, $table, $table-type, $output, @columns, $table-name);
   note "end read-data-page" if $dbg
 }
 
@@ -978,7 +999,7 @@ return unless !$name or $name ne 'Bores';
 	}
 	dd @columns if $dbg;
 	$columns = @columns.join: ', ';
-        $output = $file.IO.open(:w);
+        $output = $file.IO.open(:a, out-buffer => False);
         dd $output if $dbg;
     } else {
 	note "No database connection for $name";
@@ -997,7 +1018,7 @@ return unless !$name or $name ne 'Bores';
     $*ERR.printf: "table bitmask: %x\n", $table.usage-bitmask if $dbg;
     my @pgs = read-bitmask($table.usage-bitmask);
     dd @pgs if $dbg;
-    for @pgs -> $pp {
+    for @pgs.race -> $pp {
 	note "Reading $name data page $pp" if $dbg;
 	print-data-pages($pp) if $dbg;
 	$*ERR.printf("Data page %d\n", $pp) if $dbg;
