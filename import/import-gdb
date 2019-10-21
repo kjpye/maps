@@ -38,6 +38,8 @@ sub dump-blob($blob, $start is copy, $width = 16) {
     }
 }
 
+# Routines to read various data structures from the file
+
 sub read-varuint($buff, $offset is copy) {
     my $off = $offset;
     my $shift = 0;
@@ -93,6 +95,8 @@ sub opentablx($file) {
     }
 }
 
+# Classes for the various column types
+
 class Column {
     has $.name;
     has $.alt-name;
@@ -126,6 +130,10 @@ class Column::Int16 {
         note "Read int field: $value" if $dbg;
         %row{$name} = $value;
         2;
+    }
+
+    method put-desc() {
+	"$name int";
     }
 }
 
@@ -163,6 +171,10 @@ class Column::Int32 {
         %row{$name} = $value;
         4;
     }
+
+    method put-desc() {
+	"$name int";
+    }
 }
 
 class Column::Float32 {
@@ -190,6 +202,10 @@ class Column::Float32 {
             $offset += $default-value-length;
         }
         $offset - $off;
+    }
+
+    method put-desc() {
+	"$name float";
     }
 }
 
@@ -225,6 +241,10 @@ class Column::Float64 {
         note "Read float field: $value" if $dbg;
         %row{$name} = $value;
         8;
+    }
+
+    method put-desc() {
+	"$name double";
     }
 }
 
@@ -264,6 +284,10 @@ class Column::String {
         %row{$name} = $string;
         $bytes+$length;
     }
+
+    method put-desc() {
+	"$name text";
+    }
 }
 
 class Column::Datetime {
@@ -297,6 +321,10 @@ class Column::Datetime {
         %row{$name} = $datetime;
         8;
     }
+
+    method put-desc() {
+	"$name datetime";
+    }
 }
 
 class Column::ObjectID {
@@ -317,6 +345,10 @@ class Column::ObjectID {
     method read-field(%row, $name, $buffer, $offset) {
         # there is never any space allocated for this field
         0;
+    }
+
+    method put-desc() {
+	"$name int";
     }
 }
 
@@ -513,6 +545,10 @@ class Column::Geometry {
       }
       $offset - $off;
   }
+
+    method put-desc() {
+	"$name geometry";
+    }
 }
 
 class Column::Binary {
@@ -530,6 +566,10 @@ class Column::Binary {
     $!can-be-null = so $!flag +& 0x01;
     $offset - $off;
   }
+
+    method put-desc() {
+	"$name binary";
+    }
 }
 
 class Column::Raster {
@@ -591,6 +631,10 @@ class Column::Raster {
     my $unknown2        = $buff.read-uint8($offset++);
     $offset - $off;
   }
+
+    method put-desc() {
+	"$name raster";
+    }
 }
 
 class Column::UUID {
@@ -609,6 +653,10 @@ class Column::UUID {
     $!can-be-null = so $!flag +& 0x01;
     $offset - $off;
   }
+
+    method put-desc() {
+	"$name uuid";
+    }
 }
 
 class Column::XML {
@@ -627,6 +675,10 @@ class Column::XML {
     $!can-be-null = so $!flag +& 0x01;
     $offset - $off;
   }
+
+    method put-desc() {
+	"$name xml";
+    }
 }
 
 class Table {
