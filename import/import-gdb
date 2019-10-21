@@ -88,7 +88,7 @@ sub opentablx($file) {
             --$rows;
             my $buff = $fh.read($size);
             $buff.append(0 xx 4);
-            $buff.read-uint64(0, LittleEndian);
+            $buff.read-uint64(0, LittleEndian) || -1;
         } else {
             return (Int);
         }
@@ -133,7 +133,7 @@ class Column::Int16 {
     }
 
     method put-desc() {
-	"$name int";
+	"$!name int";
     }
 }
 
@@ -173,7 +173,7 @@ class Column::Int32 {
     }
 
     method put-desc() {
-	"$name int";
+	"$!name int";
     }
 }
 
@@ -205,7 +205,7 @@ class Column::Float32 {
     }
 
     method put-desc() {
-	"$name float";
+	"$!name float";
     }
 }
 
@@ -244,7 +244,7 @@ class Column::Float64 {
     }
 
     method put-desc() {
-	"$name double";
+	"$!name double";
     }
 }
 
@@ -286,7 +286,7 @@ class Column::String {
     }
 
     method put-desc() {
-	"$name text";
+	"$!name text";
     }
 }
 
@@ -323,7 +323,7 @@ class Column::Datetime {
     }
 
     method put-desc() {
-	"$name datetime";
+	"$!name datetime";
     }
 }
 
@@ -348,7 +348,7 @@ class Column::ObjectID {
     }
 
     method put-desc() {
-	"$name int";
+	"$!name int";
     }
 }
 
@@ -547,7 +547,7 @@ class Column::Geometry {
   }
 
     method put-desc() {
-	"$name geometry";
+	"$!name geometry";
     }
 }
 
@@ -568,7 +568,7 @@ class Column::Binary {
   }
 
     method put-desc() {
-	"$name binary";
+	"$!name binary";
     }
 }
 
@@ -633,7 +633,7 @@ class Column::Raster {
   }
 
     method put-desc() {
-	"$name raster";
+	"$!name raster";
     }
 }
 
@@ -655,7 +655,7 @@ class Column::UUID {
   }
 
     method put-desc() {
-	"$name uuid";
+	"$!name uuid";
     }
 }
 
@@ -677,35 +677,39 @@ class Column::XML {
   }
 
     method put-desc() {
-	"$name xml";
+	"$!name xml";
     }
 }
 
 class Table {
-  has $.magic;
-  has $.num-rows;
-  has $.file-size;
-  has $.version;
-  has $.layer-flags;
-  has $.num-columns;
-  has @.columns is rw;
-  has $.nullable-columns is rw = 0;
-  has $.nullable-bytes is rw = 0;
-
-  method read-header($header) {
-       $!magic      = $header.read-uint32( 0, LittleEndian);
-       $!num-rows   = $header.read-uint32( 4, LittleEndian);
-    #my $unknown1   = $header.read-uint32( 8, LittleEndian);
-    #my $unknown2   = $header.read-uint32(12, LittleEndian);
-    #my $unknown3   = $header.read-uint32(16, LittleEndian);
-    #my $unknown4   = $header.read-uint32(20, LittleEndian);
-       $!file-size  = $header.read-uint32(24, LittleEndian);
-    #my $unknown5   = $header.read-uint32(28, LittleEndian);
-                      $header.read-uint64(32, LittleEndian); # return pointer to field descriptors
-  }
-
-  method read-field-descriptors($field-desc-buff) {
-    my $field-desc-offset = 0;
+    has $.magic;
+    has $.num-rows;
+    has $.file-size;
+    has $.version;
+    has $.layer-flags;
+    has $.num-columns;
+    has @.columns is rw;
+    has $.nullable-columns is rw = 0;
+    has $.nullable-bytes is rw = 0;
+    
+    method list {
+        put "$.num-rows rows";
+    }
+    
+    method read-header($header) {
+        $!magic      = $header.read-uint32( 0, LittleEndian);
+        $!num-rows   = $header.read-uint32( 4, LittleEndian);
+        #my $unknown1   = $header.read-uint32( 8, LittleEndian);
+        #my $unknown2   = $header.read-uint32(12, LittleEndian);
+        #my $unknown3   = $header.read-uint32(16, LittleEndian);
+        #my $unknown4   = $header.read-uint32(20, LittleEndian);
+        $!file-size  = $header.read-uint32(24, LittleEndian);
+        #my $unknown5   = $header.read-uint32(28, LittleEndian);
+        $header.read-uint64(32, LittleEndian); # return pointer to field descriptors
+    }
+    
+    method read-field-descriptors($field-desc-buff) {
+        my $field-desc-offset = 0;
 
     my $version    = $field-desc-buff.read-uint32($field-desc-offset, LittleEndian); $field-desc-offset += 4;
       $!layer-flags = $field-desc-buff.read-uint32($field-desc-offset, LittleEndian); $field-desc-offset += 4;
@@ -802,7 +806,7 @@ class Table {
   }
 }
 
-sub MAIN($table-name, :$debug) {
+sub MAIN($table-name, :$debug, :$schema, :$list, :$output) {
 
     $dbg = $debug;
     
@@ -815,6 +819,10 @@ sub MAIN($table-name, :$debug) {
     my $table = Table.new();
     my $header-buff = $table-fh.read(40);
     $table.read-header($header-buff);
+    
+    if $list {
+        $table.list;
+    }
     
     ### Read field descriptions
     
@@ -840,6 +848,7 @@ sub MAIN($table-name, :$debug) {
     ### Read rows
     
     while $getoffset() -> $row-offset {
+        next if $row-offset < 0;
         note "reading row at $row-offset.base(16)" if $dbg;
         $table-fh.seek: $row-offset;
         my $row-bytes = $table-fh.read(4).read-uint32(0);
