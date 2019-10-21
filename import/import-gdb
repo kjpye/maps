@@ -72,366 +72,387 @@ sub read-varint($buff, $offset is copy) {
 }
 
 sub opentablx($file) {
-  my $fh = $file.IO.open(:bin);
+    my $fh = $file.IO.open(:bin);
 
-  my $header = $fh.read(16);
+    my $header = $fh.read(16);
 
-  my $magic  = $header.read-uint32(0,  LittleEndian);
-  my $blocks = $header.read-uint32(4,  LittleEndian);
-  my $rows   = $header.read-uint32(8,  LittleEndian);
-  my $size   = $header.read-uint32(12, LittleEndian);
+    my $magic  = $header.read-uint32(0,  LittleEndian);
+    my $blocks = $header.read-uint32(4,  LittleEndian);
+    my $rows   = $header.read-uint32(8,  LittleEndian);
+    my $size   = $header.read-uint32(12, LittleEndian);
 
-  return sub {
-    if $rows {
-      --$rows;
-      my $buff = $fh.read($size);
-      $buff.append(0 xx 4);
-      $buff.read-uint64(0, LittleEndian);
-    } else {
-      return (Int);
+    return sub {
+        if $rows {
+            --$rows;
+            my $buff = $fh.read($size);
+            $buff.append(0 xx 4);
+            $buff.read-uint64(0, LittleEndian);
+        } else {
+            return (Int);
+        }
     }
-  }
 }
 
 class Column {
-  has $.name;
-  has $.alt-name;
+    has $.name;
+    has $.alt-name;
 }
 
 class Column::Int16 {
-  has $.name;
-  has $.alt-name;
-  has $.width; # always 2
-  has $.flag;
-  has $.default-value;
-  has $.can-be-null is rw = 0;
+    has $.name;
+    has $.alt-name;
+    has $.width; # always 2
+    has $.flag;
+    has $.default-value;
+    has $.can-be-null is rw = 0;
 
-  method read-desc($name, $alt-name, $buff, $off) {
-    $!name = $name;
-    $!alt-name = $alt-name;
-    my $offset = $off;
-    my $width = $buff.read-uint8($offset++);
-    $!flag  = $buff.read-uint8($offset++);
-    $!can-be-null = so $!flag +& 0x01;
-    if $!flag +& 0x04 {
-      my $default-value-length = $buff.read-uint8($offset++);
-      $!default-value = $buff.subbuf($offset, $default-value-length);
-      $offset += $default-value-length;
+    method read-desc($name, $alt-name, $buff, $off) {
+        $!name = $name;
+        $!alt-name = $alt-name;
+        my $offset = $off;
+        my $width = $buff.read-uint8($offset++);
+        $!flag  = $buff.read-uint8($offset++);
+        $!can-be-null = so $!flag +& 0x01;
+        if $!flag +& 0x04 {
+            my $default-value-length = $buff.read-uint8($offset++);
+            $!default-value = $buff.subbuf($offset, $default-value-length);
+            $offset += $default-value-length;
+        }
+        $offset - $off;
     }
-    $offset - $off;
-  }
 
-  method read-field(%row, $name, $buff, $offset) {
-      my $value = $buff.read-int16($offset, LittleEndian);
-      note "Read int field: $value" if $dbg;
-      %row{$name} = $value;
-      2;
-  }
+    method read-field(%row, $name, $buff, $offset) {
+        my $value = $buff.read-int16($offset, LittleEndian);
+        note "Read int field: $value" if $dbg;
+        %row{$name} = $value;
+        2;
+    }
 }
 
 class Column::Int32 {
-  has $.name;
-  has $.alt-name;
-  has $.width; # always 4
-  has $.flag;
-  has $.default-value;
-  has $.can-be-null is rw = 0;
+    has $.name;
+    has $.alt-name;
+    has $.width; # always 4
+    has $.flag;
+    has $.default-value;
+    has $.can-be-null is rw = 0;
 
-  method read-desc($name, $alt-name, $buff, $off) {
-    $!name = $name;
-    $!alt-name = $alt-name;
-note "Field type Int32" if $dbg;
-    my $offset = $off;
-    $!width = $buff.read-uint8($offset++);
-note "width: $!width" if $dbg;
-    $!flag  = $buff.read-uint8($offset++);
-note "flag: {$!flag.base(16)}" if $dbg;
-    $!can-be-null = so $!flag +& 0x01;
-    if $!flag +& 0x04 {
-      my $default-value-length = $buff.read-uint8($offset++);
-note "default-length: $default-value-length" if $dbg;
-      $!default-value = $buff.subbuf($offset, $default-value-length);
-dd $!default-value if $dbg;
-      $offset += $default-value-length;
+    method read-desc($name, $alt-name, $buff, $off) {
+        $!name = $name;
+        $!alt-name = $alt-name;
+        note "Field type Int32" if $dbg;
+        my $offset = $off;
+        $!width = $buff.read-uint8($offset++);
+        note "width: $!width" if $dbg;
+        $!flag  = $buff.read-uint8($offset++);
+        note "flag: {$!flag.base(16)}" if $dbg;
+        $!can-be-null = so $!flag +& 0x01;
+        if $!flag +& 0x04 {
+            my $default-value-length = $buff.read-uint8($offset++);
+            note "default-length: $default-value-length" if $dbg;
+            $!default-value = $buff.subbuf($offset, $default-value-length);
+            dd $!default-value if $dbg;
+            $offset += $default-value-length;
+        }
+        $offset - $off;
     }
-    $offset - $off;
-  }
 
-  method read-field(%row, $name, $buff, $offset) {
-      my $value = $buff.read-int32($offset, LittleEndian);
-      note "Read int field: $value" if $dbg;
-      %row{$name} = $value;
-      4;
-  }
+    method read-field(%row, $name, $buff, $offset) {
+        my $value = $buff.read-int32($offset, LittleEndian);
+        note "Read int field: $value" if $dbg;
+        %row{$name} = $value;
+        4;
+    }
 }
 
 class Column::Float32 {
-  has $.name;
-  has $.alt-name;
-  has $.width; # always 4
-  has $.flag;
-  has $.default-value;
-  has $.can-be-null is rw = 0;
+    has $.name;
+    has $.alt-name;
+    has $.width; # always 4
+    has $.flag;
+    has $.default-value;
+    has $.can-be-null is rw = 0;
 
-  method read-desc($name, $alt-name, $buff, $off) {
-    $!name = $name;
-    $!alt-name = $alt-name;
-    my $offset = $off;
-    $!width = $buff.read-uint8($offset++);
-note "width: $!width" if $dbg;
-    $!flag  = $buff.read-uint8($offset++);
-note "flag: {$!flag.base(16)}" if $dbg;
-    $!can-be-null = so $!flag +& 0x01;
-    if $!flag +& 0x04 {
-      my $default-value-length = $buff.read-uint8($offset++);
-note "default-length: $default-value-length" if $dbg;
-      $!default-value = $buff.subbuf($offset, $default-value-length);
-dd $!default-value if $dbg;
-      $offset += $default-value-length;
+    method read-desc($name, $alt-name, $buff, $off) {
+        $!name = $name;
+        $!alt-name = $alt-name;
+        my $offset = $off;
+        $!width = $buff.read-uint8($offset++);
+        note "width: $!width" if $dbg;
+        $!flag  = $buff.read-uint8($offset++);
+        note "flag: {$!flag.base(16)}" if $dbg;
+        $!can-be-null = so $!flag +& 0x01;
+        if $!flag +& 0x04 {
+            my $default-value-length = $buff.read-uint8($offset++);
+            note "default-length: $default-value-length" if $dbg;
+            $!default-value = $buff.subbuf($offset, $default-value-length);
+            dd $!default-value if $dbg;
+            $offset += $default-value-length;
+        }
+        $offset - $off;
     }
-    $offset - $off;
-  }
 }
 
 class Column::Float64 {
-  has $.name;
-  has $.alt-name; 
-  has $.width; # always 8
-  has $.flag;
-  has $.default-value;
-  has $.can-be-null is rw = 0;
+    has $.name;
+    has $.alt-name; 
+    has $.width; # always 8
+    has $.flag;
+    has $.default-value;
+    has $.can-be-null is rw = 0;
 
-  method read-desc($name, $alt-name, $buff, $off) {
-    $!name = $name;
-    $!alt-name = $alt-name;
-    my $offset = $off;
-    $!width = $buff.read-uint8($offset++);
-note "width: $!width" if $dbg;
-    $!flag  = $buff.read-uint8($offset++);
-note "flag: {$!flag.base(16)}" if $dbg;
-    $!can-be-null = so $!flag +& 0x01;
-#    if $!flag +& 0x04 {
-      my $default-value-length = $buff.read-uint8($offset++);
-note "default-length: $default-value-length" if $dbg;
-      $!default-value = $buff.subbuf($offset, $default-value-length);
-dd $!default-value if $dbg;
-      $offset += $default-value-length;
-#    }
-    $offset - $off;
-  }
+    method read-desc($name, $alt-name, $buff, $off) {
+        $!name = $name;
+        $!alt-name = $alt-name;
+        my $offset = $off;
+        $!width = $buff.read-uint8($offset++);
+        note "width: $!width" if $dbg;
+        $!flag  = $buff.read-uint8($offset++);
+        note "flag: {$!flag.base(16)}" if $dbg;
+        $!can-be-null = so $!flag +& 0x01;
+        #    if $!flag +& 0x04 {
+        my $default-value-length = $buff.read-uint8($offset++);
+        note "default-length: $default-value-length" if $dbg;
+        $!default-value = $buff.subbuf($offset, $default-value-length);
+        dd $!default-value if $dbg;
+        $offset += $default-value-length;
+        #    }
+        $offset - $off;
+    }
 
-  method read-field(%row, $name, $buff, $offset) {
-      my $value = $buff.read-num64($offset, LittleEndian);
-      note "Read float field: $value" if $dbg;
-      %row{$name} = $value;
-      8;
-  }
+    method read-field(%row, $name, $buff, $offset) {
+        my $value = $buff.read-num64($offset, LittleEndian);
+        note "Read float field: $value" if $dbg;
+        %row{$name} = $value;
+        8;
+    }
 }
 
 class Column::String {
-  has $.name;
-  has $.alt-name;
-  has $.max-length;
-  has $.default;
-  has $.flag;
-  has $.can-be-null is rw = 0;
+    has $.name;
+    has $.alt-name;
+    has $.max-length;
+    has $.default;
+    has $.flag;
+    has $.can-be-null is rw = 0;
 
-  method read-desc($name, $alt-name, $buff, $off) {
-    $!name = $name;
-    $!alt-name = $alt-name;
-    my $offset = $off;
-    $!max-length = $buff.read-uint32($offset, LittleEndian); $offset += 4;
-    note "String maximum length: $!max-length" if $dbg;
-    $!flag = $buff.read-uint8($offset++);
-    note "flag is {$!flag.base(16)}" if $dbg;
-    $!can-be-null = so $!flag +& 0x01;
-    if $!flag +& 0x04 {
-        my $default-length = $buff.read-uint8($offset++);
-        note "default-length: $default-length" if $dbg;
-        $!default = $buff.subbuf($offset, $default-length);
-        $offset += $default-length;
-        dd $!default if $dbg;
+    method read-desc($name, $alt-name, $buff, $off) {
+        $!name = $name;
+        $!alt-name = $alt-name;
+        my $offset = $off;
+        $!max-length = $buff.read-uint32($offset, LittleEndian); $offset += 4;
+        note "String maximum length: $!max-length" if $dbg;
+        $!flag = $buff.read-uint8($offset++);
+        note "flag is {$!flag.base(16)}" if $dbg;
+        $!can-be-null = so $!flag +& 0x01;
+        if $!flag +& 0x04 {
+            my $default-length = $buff.read-uint8($offset++);
+            note "default-length: $default-length" if $dbg;
+            $!default = $buff.subbuf($offset, $default-length);
+            $offset += $default-length;
+            dd $!default if $dbg;
+        }
+        $offset - $off;
     }
-    $offset - $off;
-  }
 
-  method read-field(%row, $name, $buffer, $offset is copy) {
-      my ($length, $bytes) = read-varuint($buffer, $offset);
-      note "read string field of $bytes bytes" if $dbg;
-      dump-blob($buffer.subbuf($offset+$length, $bytes), 0) if $dbg;
-      my $string = $buffer.subbuf($offset+$length, $bytes).decode;
-      note "String is \"$string\"" if $dbg;
-      %row{$name} = $string;
-      $bytes+$length;
-  }
+    method read-field(%row, $name, $buffer, $offset is copy) {
+        my ($length, $bytes) = read-varuint($buffer, $offset);
+        note "read string field of $bytes bytes" if $dbg;
+        dump-blob($buffer.subbuf($offset+$length, $bytes), 0) if $dbg;
+        my $string = $buffer.subbuf($offset+$length, $bytes).decode;
+        note "String is \"$string\"" if $dbg;
+        %row{$name} = $string;
+        $bytes+$length;
+    }
 }
 
 class Column::Datetime {
-  has $.name;
-  has $.alt-name;
-  has $.width; # always 8
-  has $.flag;
-  has $.can-be-null is rw = 0;
+    has $.name;
+    has $.alt-name;
+    has $.width; # always 8
+    has $.flag;
+    has $.can-be-null is rw = 0;
 
-  method read-desc($name, $alt-name, $buff, $off) {
-    $!name = $name;
-    $!alt-name = $alt-name;
-    my $offset = $off;
-    my $width = $buff.read-uint8($offset++);
-    $!flag  = $buff.read-uint8($offset++);
-    $!can-be-null = so $!flag +& 0x01;
-    my $default-value;
-    if $!flag +& 0x04 {
-      my $default-value-length = $buff.read-uint8($offset++);
-      $default-value = $buff.subbuf($offset, $default-value-length);
-      $offset += $default-value-length;
+    method read-desc($name, $alt-name, $buff, $off) {
+        $!name = $name;
+        $!alt-name = $alt-name;
+        my $offset = $off;
+        my $width = $buff.read-uint8($offset++);
+        $!flag  = $buff.read-uint8($offset++);
+        $!can-be-null = so $!flag +& 0x01;
+        my $default-value;
+        if $!flag +& 0x04 {
+            my $default-value-length = $buff.read-uint8($offset++);
+            $default-value = $buff.subbuf($offset, $default-value-length);
+            $offset += $default-value-length;
+        }
+        $offset - $off;
     }
-    $offset - $off;
-  }
 
-  method read-field(%row, $name, $buff, $off) {
-      my $value = $buff.read-num64($off, LittleEndian);
-      note "Found datetime: $value" if $dbg;
-      my $datetime = DateTime.new('1899-12-30T00:00:00').later(days => $value);
-      note "   which is $datetime" if $dbg;
-      %row{$name} = $datetime;
-      8;
-  }
+    method read-field(%row, $name, $buff, $off) {
+        my $value = $buff.read-num64($off, LittleEndian);
+        note "Found datetime: $value" if $dbg;
+        my $datetime = DateTime.new('1899-12-30T00:00:00').later(days => $value);
+        note "   which is $datetime" if $dbg;
+        %row{$name} = $datetime;
+        8;
+    }
 }
 
 class Column::ObjectID {
-  has $.name;
-  has $.alt-name;
-  has $.can-be-null is rw = 0;
+    has $.name;
+    has $.alt-name;
+    has $.can-be-null is rw = 0;
 
-  method read-desc($name, $alt-name, $buff, $off) {
-    $!name = $name;
-    $!alt-name = $alt-name;
-    my $offset = $off;
-    my $unknown =  $buff.read-uint16($offset, LittleEndian); $offset += 2;
-    note "objectid: magic is {$unknown.base(16)}, should be 0x0204" if $dbg;
-    # should be 0x0204;
-    $offset - $off;
-  }
+    method read-desc($name, $alt-name, $buff, $off) {
+        $!name = $name;
+        $!alt-name = $alt-name;
+        my $offset = $off;
+        my $unknown =  $buff.read-uint16($offset, LittleEndian); $offset += 2;
+        note "objectid: magic is {$unknown.base(16)}, should be 0x0204" if $dbg;
+        # should be 0x0204;
+        $offset - $off;
+    }
 
-  method read-field(%row, $name, $buffer, $offset) {
-      # there is never any space allocated for this field
-      0;
-  }
+    method read-field(%row, $name, $buffer, $offset) {
+        # there is never any space allocated for this field
+        0;
+    }
 }
 
 class Column::Geometry {
-  has $.name;
-  has $.alt-name;
-  has $.flag;
-  has $.can-be-null is rw = 0;
-  has $.srs;
-  has $.flags;
-  has $.has-m;
-  has $.has-z;
-  has $.xorigin;
-  has $.yorigin;
-  has $.xyscale;
-  has $.morigin;
-  has $.mscale;
-  has $.zorigin;
-  has $.zscale;
-  has $.xytolerance;
-  has $.mtolerance;
-  has $.ztolerance;
-  has $.xmin;
-  has $.ymin;
-  has $.xmax;
-  has $.ymax;
-  has $.zmin;
-  has $.zmax;
-  has $.mmin;
-  has $.mmax;
-  has @.spatial-grid-size;
-  has @.parts;
-  method read-desc($name, $alt-name, $buff, $off) {
-    $!name = $name;
-    $!alt-name = $alt-name;
-    note "Reading column $!name at offset $off" if $dbg;
-    my $offset = $off;
-    my $unknown1 = $buff.read-uint8($offset++);
-    $!flag     = $buff.read-uint8($offset++);
-    $!can-be-null = so $!flag +& 0x01;
-    note "flag: {$!flag.base(16)}, can-be-null: $!can-be-null" if $dbg;
-    my $srs-length =  $buff.read-uint16($offset, LittleEndian); $offset += 2;
-    note "srs-length: $srs-length" if $dbg;
-    $!srs = $buff.subbuf($offset, $srs-length).decode('utf16le'); $offset += $srs-length;
-    note "srs: $!srs" if $dbg;
-    $!flags    = $buff.read-uint8($offset++);
-    $!has-z = so $!flags +& 0x04;
-    $!has-m = so $!flags +& 0x02;
-    note "flags: {$!flags.base(16)}, has-z: $!has-z, has-m: $!has-m" if $dbg;
-    if $!flags {
-        $!xorigin       =  $buff.read-num64($offset, LittleEndian); $offset += 8;
-        $!yorigin       =  $buff.read-num64($offset, LittleEndian); $offset += 8;
-        $!xyscale       =  $buff.read-num64($offset, LittleEndian); $offset += 8;
-        note "xorigin: $!xorigin, yorigin: $!yorigin, xyscale: $!xyscale" if $dbg;
-        if $!has-m {
-            $!morigin     =  $buff.read-num64($offset, LittleEndian); $offset += 8;
-            $!mscale      =  $buff.read-num64($offset, LittleEndian); $offset += 8;
-            note "morigin: $!morigin, mscale: $!mscale" if $dbg;
-        }
-        if $!has-z {
-            $!zorigin     =  $buff.read-num64($offset, LittleEndian); $offset += 8;
-            $!zscale      =  $buff.read-num64($offset, LittleEndian); $offset += 8;
-            note "zorigin: $!zorigin, zscale: $!zscale" if $dbg;
-        }
-        $!xytolerance =  $buff.read-num64($offset, LittleEndian); $offset += 8;
-        note "xytolerance: $!xytolerance" if $dbg;
-        if $!has-m {
-            $!mtolerance  =  $buff.read-num64($offset, LittleEndian); $offset += 8;
-            note "mtolerance: $!mtolerance" if $dbg;
-        }
-        if $!has-z {
-            $!ztolerance  =  $buff.read-num64($offset, LittleEndian); $offset += 8;
-            note "ztolerance: $!ztolerance" if $dbg;
-        }
-        $!xmin          =  $buff.read-num64($offset, LittleEndian); $offset += 8;
-        $!ymin          =  $buff.read-num64($offset, LittleEndian); $offset += 8;
-        $!xmax          =  $buff.read-num64($offset, LittleEndian); $offset += 8;
-        $!ymax          =  $buff.read-num64($offset, LittleEndian); $offset += 8;
-        note "xmin: $!xmin, ymin: $!ymin, xmax: $!xmax, ymax: $!ymax" if $dbg;
+    has $.name;
+    has $.alt-name;
+    has $.flag;
+    has $.can-be-null is rw = 0;
+    has $.srs;
+    has $.flags;
+    has $.has-m;
+    has $.has-z;
+    has $.xorigin;
+    has $.yorigin;
+    has $.xyscale;
+    has $.morigin;
+    has $.mscale;
+    has $.zorigin;
+    has $.zscale;
+    has $.xytolerance;
+    has $.mtolerance;
+    has $.ztolerance;
+    has $.xmin;
+    has $.ymin;
+    has $.xmax;
+    has $.ymax;
+    has $.zmin;
+    has $.zmax;
+    has $.mmin;
+    has $.mmax;
+    has @.spatial-grid-size;
+    has @.parts;
+    method read-desc($name, $alt-name, $buff, $off) {
+        $!name = $name;
+        $!alt-name = $alt-name;
+        note "Reading column $!name at offset $off" if $dbg;
+        my $offset = $off;
+        my $unknown1 = $buff.read-uint8($offset++);
+        $!flag     = $buff.read-uint8($offset++);
+        $!can-be-null = so $!flag +& 0x01;
+        note "flag: {$!flag.base(16)}, can-be-null: $!can-be-null" if $dbg;
+        my $srs-length =  $buff.read-uint16($offset, LittleEndian); $offset += 2;
+        note "srs-length: $srs-length" if $dbg;
+        $!srs = $buff.subbuf($offset, $srs-length).decode('utf16le'); $offset += $srs-length;
+        note "srs: $!srs" if $dbg;
+        $!flags    = $buff.read-uint8($offset++);
+        $!has-z = so $!flags +& 0x04;
+        $!has-m = so $!flags +& 0x02;
+        note "flags: {$!flags.base(16)}, has-z: $!has-z, has-m: $!has-m" if $dbg;
+        if $!flags {
+            $!xorigin       =  $buff.read-num64($offset, LittleEndian); $offset += 8;
+            $!yorigin       =  $buff.read-num64($offset, LittleEndian); $offset += 8;
+            $!xyscale       =  $buff.read-num64($offset, LittleEndian); $offset += 8;
+            note "xorigin: $!xorigin, yorigin: $!yorigin, xyscale: $!xyscale" if $dbg;
+            if $!has-m {
+                $!morigin     =  $buff.read-num64($offset, LittleEndian); $offset += 8;
+                $!mscale      =  $buff.read-num64($offset, LittleEndian); $offset += 8;
+                note "morigin: $!morigin, mscale: $!mscale" if $dbg;
+            }
+            if $!has-z {
+                $!zorigin     =  $buff.read-num64($offset, LittleEndian); $offset += 8;
+                $!zscale      =  $buff.read-num64($offset, LittleEndian); $offset += 8;
+                note "zorigin: $!zorigin, zscale: $!zscale" if $dbg;
+            }
+            $!xytolerance =  $buff.read-num64($offset, LittleEndian); $offset += 8;
+            note "xytolerance: $!xytolerance" if $dbg;
+            if $!has-m {
+                $!mtolerance  =  $buff.read-num64($offset, LittleEndian); $offset += 8;
+                note "mtolerance: $!mtolerance" if $dbg;
+            }
+            if $!has-z {
+                $!ztolerance  =  $buff.read-num64($offset, LittleEndian); $offset += 8;
+                note "ztolerance: $!ztolerance" if $dbg;
+            }
+            $!xmin          =  $buff.read-num64($offset, LittleEndian); $offset += 8;
+            $!ymin          =  $buff.read-num64($offset, LittleEndian); $offset += 8;
+            $!xmax          =  $buff.read-num64($offset, LittleEndian); $offset += 8;
+            $!ymax          =  $buff.read-num64($offset, LittleEndian); $offset += 8;
+            note "xmin: $!xmin, ymin: $!ymin, xmax: $!xmax, ymax: $!ymax" if $dbg;
 
-### Including the next bit of code breaks things; there must be some other indicator as to whether this is needed or not
-#        if $!has-z {
-#            $!zmin        =  $buff.read-num64($offset, LittleEndian); $offset += 8;
-#            $!zmax        =  $buff.read-num64($offset, LittleEndian); $offset += 8;
-#note "zmin: $!zmin, zmax: $!zmax" if $dbg;
-#        }
-#        if $!has-m {
-#            $!mmin        =  $buff.read-num64($offset, LittleEndian); $offset += 8;
-#            $!mmax        =  $buff.read-num64($offset, LittleEndian); $offset += 8;
-#note "mmin: $!mmin, mmax: $!mmax" if $dbg;
-#        }
-###
+            ### Including the next bit of code breaks things; there must be some other indicator as to whether this is needed or not
+            #        if $!has-z {
+            #            $!zmin        =  $buff.read-num64($offset, LittleEndian); $offset += 8;
+            #            $!zmax        =  $buff.read-num64($offset, LittleEndian); $offset += 8;
+            #note "zmin: $!zmin, zmax: $!zmax" if $dbg;
+            #        }
+            #        if $!has-m {
+            #            $!mmin        =  $buff.read-num64($offset, LittleEndian); $offset += 8;
+            #            $!mmax        =  $buff.read-num64($offset, LittleEndian); $offset += 8;
+            #note "mmin: $!mmin, mmax: $!mmax" if $dbg;
+            #        }
+            ###
 
+        }
+        my $unknown2        = $buff.read-uint8($offset++);
+        note "offset now {$offset.base(16)}" if $dbg;
+        my $num-sizes       = $buff.read-uint32($offset, LittleEndian); $offset += 4;
+        note "num-sizes: $num-sizes" if $dbg;
+        for ^$num-sizes {
+            @!spatial-grid-size.push: $buff.read-num64($offset, LittleEndian); $offset += 8;
+        }
+        dd @!spatial-grid-size if $dbg;
+        $offset - $off;
     }
-    my $unknown2        = $buff.read-uint8($offset++);
-    note "offset now {$offset.base(16)}" if $dbg;
-    my $num-sizes       = $buff.read-uint32($offset, LittleEndian); $offset += 4;
-    note "num-sizes: $num-sizes" if $dbg;
-    for ^$num-sizes {
-        @!spatial-grid-size.push: $buff.read-num64($offset, LittleEndian); $offset += 8;
-    }
-    dd @!spatial-grid-size if $dbg;
-    $offset - $off;
-  }
 
-  method read-field(%row, $name, $buffer, $off) {
-      my $offset = $off;
-      my $geometry-length;
-      my $length;
-      my $geometry-type;
-      ($length, $geometry-length) = read-varuint($buffer, $offset); $offset += $length;
-      ($length, $geometry-type)   = read-varuint($buffer, $offset); $offset += $length;
-      note "length: $geometry-length, type: $geometry-type ({$geometry-type.base(16)})" if $dbg;
-      given $geometry-type +& 0xff {
-          when 3|5|10|13|15|19|23|25|51 {
+    method read-field(%row, $name, $buffer, $off) {
+        my $offset = $off;
+        my $geometry-length;
+        my $length;
+        my $geometry-type;
+        ($length, $geometry-length) = read-varuint($buffer, $offset); $offset += $length;
+        ($length, $geometry-type)   = read-varuint($buffer, $offset); $offset += $length;
+        note "length: $geometry-length, type: $geometry-type ({$geometry-type.base(16)})" if $dbg;
+        given $geometry-type +& 0xff {
+            when 1|9|11|21 { # point geometries
+                my $length;
+                my $x;
+                my $y;
+                my $z;
+                my $m;
+                ($length, $x) = read-varuint($buffer, $offset); $offset += $length;
+                ($length, $y) = read-varuint($buffer, $offset); $offset += $length;
+                $x = ($x - 1) / $!xyscale + $!xorigin;
+                $y = ($y - 1) / $!xyscale + $!yorigin;
+# Is the ense of has-m and has-z inverted?
+#                if $!has-z {
+#                    ($length, $z) = read-varuint($buffer, $offset); $offset += $length;
+#                    $z = ($z - 1) / $!zscale + $!zorigin;
+#                }
+#                if $!has-m {
+#                    ($length, $m) = read-varuint($buffer, $offset); $offset += $length;
+#                    $m = ($m - 1) / $!mscale + $!morigin;
+#                }
+                %row{$!name} = "SRID=4326;POINT($x $y)";
+          }
+          when 3|5|10|13|15|19|23|25|51 { # multilinestring or multipolygon
               my @parts;
               note "Reading geometry type 5" if $dbg;
               my $num-points;
@@ -483,7 +504,7 @@ class Column::Geometry {
                           "))";
           }
           default {
-              note "Unhandled geometry type $geometry-type" if $dbg;
+              fail "Unhandled geometry type $geometry-type";
           }
       }
       if $geometry-type +& 0x20000000 { # no idea what this is, but it makes things work
