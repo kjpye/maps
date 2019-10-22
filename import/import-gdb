@@ -133,7 +133,7 @@ class Column::Int16 {
     }
 
     method put-desc() {
-	"$!name int";
+	($!name, 'int');
     }
 }
 
@@ -173,7 +173,7 @@ class Column::Int32 {
     }
 
     method put-desc() {
-	"$!name int";
+	($!name, 'int');
     }
 }
 
@@ -205,7 +205,7 @@ class Column::Float32 {
     }
 
     method put-desc() {
-	"$!name float";
+	($!name, 'float');
     }
 }
 
@@ -244,7 +244,7 @@ class Column::Float64 {
     }
 
     method put-desc() {
-	"$!name double";
+	($!name, 'double');
     }
 }
 
@@ -286,7 +286,7 @@ class Column::String {
     }
 
     method put-desc() {
-	"$!name text";
+	($!name, 'text');
     }
 }
 
@@ -323,7 +323,7 @@ class Column::Datetime {
     }
 
     method put-desc() {
-	"$!name datetime";
+	($!name, 'date');
     }
 }
 
@@ -348,7 +348,7 @@ class Column::ObjectID {
     }
 
     method put-desc() {
-	"$!name int";
+	($!name, );
     }
 }
 
@@ -547,7 +547,7 @@ class Column::Geometry {
   }
 
     method put-desc() {
-	"$!name geometry";
+	($!name, 'geometry');
     }
 }
 
@@ -568,7 +568,7 @@ class Column::Binary {
   }
 
     method put-desc() {
-	"$!name binary";
+	($!name, 'binary');
     }
 }
 
@@ -633,7 +633,7 @@ class Column::Raster {
   }
 
     method put-desc() {
-	"$!name raster";
+	($!name, 'raster');
     }
 }
 
@@ -647,15 +647,13 @@ class Column::UUID {
   method read-desc($name, $alt-name, $buff, $offset) {
     $!name = $name;
     $!alt-name = $alt-name;
-    my $off = $offset;
-    my $unknown2  = $buff.read-uint8($offset++);
+    my $unknown2  = $buff.subbuf($offset, 16);
 
-    $!can-be-null = so $!flag +& 0x01;
-    $offset - $off;
+    16;
   }
 
     method put-desc() {
-	"$!name uuid";
+	($!name, 'uuid');
     }
 }
 
@@ -677,7 +675,7 @@ class Column::XML {
   }
 
     method put-desc() {
-	"$!name xml";
+	($!name, 'xml');
     }
 }
 
@@ -689,6 +687,7 @@ class Table {
     has $.layer-flags;
     has $.num-columns;
     has @.columns is rw;
+    has $.geometry-type;
     has $.nullable-columns is rw = 0;
     has $.nullable-bytes is rw = 0;
     
@@ -713,6 +712,7 @@ class Table {
 
     my $version    = $field-desc-buff.read-uint32($field-desc-offset, LittleEndian); $field-desc-offset += 4;
       $!layer-flags = $field-desc-buff.read-uint32($field-desc-offset, LittleEndian); $field-desc-offset += 4;
+      $!geometry-type = $!layer-flags +&0xff;
       $!num-columns = $field-desc-buff.read-uint16($field-desc-offset, LittleEndian); $field-desc-offset += 2;
 
     for ^$!num-columns {
@@ -770,6 +770,7 @@ class Table {
             $column = Column::Geometry.new;
             my $length = $column.read-desc($name, $alt-name, $field-desc-buff, $field-desc-offset);
             $field-desc-offset += $length;
+            dd self;
         }
         when 8 { # binary
             $column = Column::Binary.new;
@@ -806,23 +807,56 @@ class Table {
   }
 }
 
-sub MAIN($table-name, :$debug, :$schema, :$list, :$output) {
+sub MAIN($directory, :$debug, :@load, :$create = 0, :$list = 0, :$output) {
 
-    $dbg = $debug;
+    $dbg = $debug if $debug.defined;
     
-    note "Reading table $table-name" if $dbg;
+    note "Reading tables from $directory" if $dbg;
 
-    my $table-fh = ($table-name ~ '.gdbtable'). IO.open(:bin);
+    my ($columns, $rows) = read-table('', $directory ~ '/data.gdb/a00000001');
+    dd $rows if $dbg;
+
+    if $list {
+        for $rows.list -> $row {
+            if $row<row-number> > 8 {
+                say "{$row<row-number>}: {$row<Name>}";
+                my $table-name = $row<Name>;
+                say "Reading $table-name";
+                my $filename = sprintf "{$directory}/data.gdb/a%08.8x", $row<row-number>;
+                my ($columns, $data) = read-table($table-name, $filename, :$create);
+#                dd $data;
+                say "COPY {$table-name}({$columns.list.join(',')}) FROM <filename>";
+                for $data.list -> $row {
+                    my @data;
+                    for $columns.list -> $column {
+                        my $value = $row{$column} // '\N';
+                        @data.push: $value
+                    }
+                    say @data.join("\t");
+                }
+            }
+        }
+    }
+}
+
+my @geometry-types = ('NONE',          'POINT',           'MULTIPOINT', 'POLYLINE',      'POLYGON',
+                      'RECTANGLE',     'PATH',            'ANY',        '',              'MULTIPATCH',
+                      '',              'RING',            '',           'LINE',          'CIRCULAR-ARC',
+                      'BEZIER-CURVES', 'ELLIPTIC-CURVES', 'COLLECTION', 'TRIANGLESTRIP', 'TRIANGLEFAN',
+                      'RAY',           'SPHERE',          'TIN');
+
+sub read-table($table-name, $filename, :$create) {
+    my @rows;
+
+    note "Reading $table-name from $filename" if $dbg;
+    my $table-fh = ($filename ~ '.gdbtable'). IO.open(:bin);
     
     ### Read file header
     
     my $table = Table.new();
     my $header-buff = $table-fh.read(40);
     $table.read-header($header-buff);
-    
-    if $list {
-        $table.list;
-    }
+    dd $table;
     
     ### Read field descriptions
     
@@ -835,19 +869,48 @@ sub MAIN($table-name, :$debug, :$schema, :$list, :$output) {
     
     $table.read-field-descriptors($field-desc-buff);
     
+    my @allcolumns;
     for $table.columns {
+        @allcolumns.push: $_.name unless $_ ~~ Column::ObjectID;
         $table.nullable-columns++ if $_.can-be-null;
         $table.nullable-bytes = (($table.nullable-columns + 7) / 8).Int;
     }
     
     dd $table if $dbg;
+    dd @allcolumns if $dbg;
+    
+    if $create {
+        my @ordinarycolumns;
+        my @geometrycolumns;
+        say "CREATE TABLE $table-name (";
+        for $table.columns -> $column {
+            my ($name, $type) = $column.put-desc;
+            if $name.defined {
+                if $type eq 'geometry' {
+                    @geometrycolumns.push: $name;
+                } else {
+                    @ordinarycolumns.push: "  $name $type" if $type.defined;
+                }
+            }
+        }
+        say @ordinarycolumns.join: ",\n";
+        say ");";
+        my $geomtype = @geometry-types[$table.geometry-type];
+        for @geometrycolumns -> $column {
+            say "SELECT AddGeometryColumn($table-name, $column.name, '$geomtype');";
+        }
+        return (0, 0);
+    }
     
     ### Read tablx offsets
-    my $getoffset = opentablx($table-name ~ '.gdbtablx');
+    my $getoffset = opentablx($filename ~ '.gdbtablx');
     
     ### Read rows
     
+    my $row-number = 0;
+    
     while $getoffset() -> $row-offset {
+        ++$row-number;
         next if $row-offset < 0;
         note "reading row at $row-offset.base(16)" if $dbg;
         $table-fh.seek: $row-offset;
@@ -857,7 +920,7 @@ sub MAIN($table-name, :$debug, :$schema, :$list, :$output) {
         my $nullflags = $buffer.subbuf(0, $table.nullable-bytes).append(0 xx 8).read-uint64(0, LittleEndian);
         note "nullflags: $nullflags.base(16)" if $dbg;
         my $offset = $table.nullable-bytes;
-        my %row;
+        my %row = %('row-number' => $row-number);
         for $table.columns -> $column {
             #      if $column.can-be-null {
             #note "nullflag is {$nullflags.base(16)}" if $dbg;
@@ -875,6 +938,7 @@ sub MAIN($table-name, :$debug, :$schema, :$list, :$output) {
             note "Reading column {$column.name} at offset {$offset.base(16)}" if $dbg;
             $offset += $column.read-field(%row, $column.name, $buffer, $offset);
         }
-        dd %row;
+        @rows.push: %row;
     }
+    (@allcolumns, @rows);
 }
