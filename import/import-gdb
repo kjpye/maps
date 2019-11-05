@@ -32,9 +32,9 @@ sub dump-blob($blob, $start is copy, $width = 16) {
     while $bytes > 0 {
         my @bytes = $blob.subbuf($offset, $width).list;
         hex-dump(@bytes, $start, $width);
-        $start += $width;
+        $start  += $width;
         $offset += $width;
-        $bytes -= $width;
+        $bytes  -= $width;
     }
 }
 
@@ -52,6 +52,7 @@ sub read-varuint($buff, $offset is copy) {
         $value +|= ($bits +< $shift);
         $shift += 7;
     } while $byte +& 0x80;
+    note "read-varuint got: $value; length {$offset - $off}" if $dbg;
     ($offset - $off, $value);
 }
 
@@ -73,6 +74,9 @@ sub read-varint($buff, $offset is copy) {
     ($offset - $off, $value);
 }
 
+# Open the relevant .gdbtablx file, and return an iterator which will return successive
+# pointers to rows in the .gdbtable file
+
 sub opentablx($file) {
     my $fh = $file.IO.open(:bin);
 
@@ -88,7 +92,7 @@ sub opentablx($file) {
             --$rows;
             my $buff = $fh.read($size);
             $buff.append(0 xx 4);
-            $buff.read-uint64(0, LittleEndian) || -1;
+            $buff.read-uint64(0, LittleEndian);
         } else {
             return (Int);
         }
@@ -348,7 +352,7 @@ class Column::ObjectID {
     }
 
     method put-desc() {
-	($!name, );
+	($!name, 'serial');
     }
 }
 
@@ -464,7 +468,6 @@ class Column::Geometry {
         note "length: $geometry-length, type: $geometry-type ({$geometry-type.base(16)})" if $dbg;
         given $geometry-type +& 0xff {
             when 1|9|11|21 { # point geometries
-                my $length;
                 my $x;
                 my $y;
                 my $z;
@@ -473,7 +476,7 @@ class Column::Geometry {
                 ($length, $y) = read-varuint($buffer, $offset); $offset += $length;
                 $x = ($x - 1) / $!xyscale + $!xorigin;
                 $y = ($y - 1) / $!xyscale + $!yorigin;
-# Is the ense of has-m and has-z inverted?
+# Is the sense of has-m and has-z inverted?
 #                if $!has-z {
 #                    ($length, $z) = read-varuint($buffer, $offset); $offset += $length;
 #                    $z = ($z - 1) / $!zscale + $!zorigin;
@@ -807,45 +810,13 @@ class Table {
   }
 }
 
-sub MAIN($directory, :$debug, :@load, :$create = 0, :$list = 0, :$output) {
-
-    $dbg = $debug if $debug.defined;
-    
-    note "Reading tables from $directory" if $dbg;
-
-    my ($columns, $rows) = read-table('', $directory ~ '/data.gdb/a00000001');
-    dd $rows if $dbg;
-
-    if $list {
-        for $rows.list -> $row {
-            if $row<row-number> > 8 {
-                say "{$row<row-number>}: {$row<Name>}";
-                my $table-name = $row<Name>;
-                say "Reading $table-name";
-                my $filename = sprintf "{$directory}/data.gdb/a%08.8x", $row<row-number>;
-                my ($columns, $data) = read-table($table-name, $filename, :$create);
-#                dd $data;
-                say "COPY {$table-name}({$columns.list.join(',')}) FROM <filename>";
-                for $data.list -> $row {
-                    my @data;
-                    for $columns.list -> $column {
-                        my $value = $row{$column} // '\N';
-                        @data.push: $value
-                    }
-                    say @data.join("\t");
-                }
-            }
-        }
-    }
-}
-
 my @geometry-types = ('NONE',          'POINT',           'MULTIPOINT', 'POLYLINE',      'POLYGON',
                       'RECTANGLE',     'PATH',            'ANY',        '',              'MULTIPATCH',
                       '',              'RING',            '',           'LINE',          'CIRCULAR-ARC',
                       'BEZIER-CURVES', 'ELLIPTIC-CURVES', 'COLLECTION', 'TRIANGLESTRIP', 'TRIANGLEFAN',
                       'RAY',           'SPHERE',          'TIN');
 
-sub read-table($table-name, $filename, :$create) {
+sub read-table($table-name, $filename, :$create, :$load) {
     my @rows;
 
     note "Reading $table-name from $filename" if $dbg;
@@ -856,7 +827,7 @@ sub read-table($table-name, $filename, :$create) {
     my $table = Table.new();
     my $header-buff = $table-fh.read(40);
     $table.read-header($header-buff);
-    dd $table;
+    dd $table if $dbg;
     
     ### Read field descriptions
     
@@ -902,7 +873,7 @@ sub read-table($table-name, $filename, :$create) {
         return (0, 0);
     }
     
-    ### Read tablx offsets
+    ### .gdbtablx offsets iterator
     my $getoffset = opentablx($filename ~ '.gdbtablx');
     
     ### Read rows
@@ -910,6 +881,7 @@ sub read-table($table-name, $filename, :$create) {
     my $row-number = 0;
     
     while $getoffset() -> $row-offset {
+        last unless $row-offset.defined; # terminate when no more rows
         ++$row-number;
         next if $row-offset < 0;
         note "reading row at $row-offset.base(16)" if $dbg;
@@ -922,6 +894,9 @@ sub read-table($table-name, $filename, :$create) {
         my $offset = $table.nullable-bytes;
         my %row = %('row-number' => $row-number);
         for $table.columns -> $column {
+            # This commented out code seems to be what is required to implement the description of the nullflags
+            # in the reverse engineered documentation. It also doesn't work for the examples I have.
+            
             #      if $column.can-be-null {
             #note "nullflag is {$nullflags.base(16)}" if $dbg;
             #          my $null = $nullflags +& 1;
@@ -938,7 +913,47 @@ sub read-table($table-name, $filename, :$create) {
             note "Reading column {$column.name} at offset {$offset.base(16)}" if $dbg;
             $offset += $column.read-field(%row, $column.name, $buffer, $offset);
         }
-        @rows.push: %row;
+        if $load {
+            my @data;
+            for @allcolumns -> $column {
+                my $value = %row{$column} // '\N';
+                @data.push: $value
+            }
+            say @data.join("\t");
+        } else {
+            @rows.push: %row;
+        }
     }
     (@allcolumns, @rows);
+}
+
+sub MAIN($directory, :$debug = 0, :@load, :$create = 0, :$list = 0, :$output) {
+
+    # fix up scalar variables in case the broken MAIN handling broke them
+
+    my $create-dd = $create ~~ Positional ?? $create[0] !! $create;
+       $dbg       = $debug  ~~ Positional ?? $debug[0]  !! $debug;
+    my $list-only = $list   ~~ Positional ?? $list[0]   !! $list;
+    
+    note "Reading tables from $directory" if $dbg;
+
+    my ($columns, $rows) = read-table('', $directory ~ '/data.gdb/a00000001');
+    dd $rows if $dbg;
+
+    for $rows.list -> $row {
+        if $list-only {
+            say $row<Name>;
+            next;
+        }
+        if $row<row-number> > 8 {
+            say "{$row<row-number>}: {$row<Name>}";
+            my $table-name = $row<Name>;
+            say "Reading $table-name";
+            my $filename = sprintf "{$directory}/data.gdb/a%08.8x", $row<row-number>;
+# The next line will either print a table definition (if --create) was specified on the command line
+# or output the table contents in Posgrsql text copy format otherwise.
+            my ($columns, $data) = read-table($table-name, $filename, create => $create-dd, load => !$create-dd);
+            note "COPY {$table-name}({$columns.list.join(',')}) FROM <filename>";
+        }
+    }
 }
