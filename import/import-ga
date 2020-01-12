@@ -5,6 +5,8 @@ use v6.c+;
 use NativeCall;
 use DB::Pg;
 
+my $dbg = 0;
+
 # Define some useful debugging routines
 #
 # These should be moved to a separate module
@@ -69,7 +71,7 @@ sub dump-from-page($p, $count) {
 
 sub dump-page($p) {
     my $page-start = $p +& +^(PGSIZE - 1);
-note "Dumping page containing $p ({$page-start.base(16)})";
+note "Dumping page containing $p ({$page-start.base(16)})" if $dbg;
     dump-from-page($page-start, PGSIZE);
 }
 
@@ -83,8 +85,6 @@ my %perennial   = ( );
 my %hierarchy   = ( );
 my %source      = ( );
 
-my $dbg = 0;
-$dbg = 1;
 $*OUT.out-buffer = Nil if $dbg;
 $*ERR.out-buffer = Nil if $dbg;
 my $doparallel;
@@ -199,10 +199,10 @@ sub MAIN(
     return unless $doparallel;
     return if $justlist;
 
-    dd @threads;
+    dd @threads if $dbg;
     say "{+@threads} threads";
     await Promise.allof: @threads;
-    dd @threads;
+    dd @threads if $dbg;
     say "{+@threads} threads";
     note "Completed all tables";
 }
@@ -416,7 +416,6 @@ sub print-shape($pointer) {
         @segments[$segno].push: "$x $y";
         $ptr += 16;
     }
-    dd @segments if $dbg;
     dd @segments if $dbg;
     $shape = "SRID=4326;MULTILINESTRING((" ~
     (@segments>>.join(",")).join("),(") ~
@@ -922,12 +921,12 @@ sub read-bitmask($ptr) {
         while $bytes > 3 {
             note "Reading bitmask pages" if $dbg;
             my $next-page = read-rint($p);
-            note "read page {$next-page.base(16)}";
+            note "read page {$next-page.base(16)}" if $dbg;
             $next-page *= PGSIZE;
             note "read-bitmask: read page {$next-page.base(16)}" if $dbg;
             if $next-page {
                 dump-page($next-page) if $dbg;
-note "bitmask page {$next-page.base(16)}, page-offset: $page-offset";
+note "bitmask page {$next-page.base(16)}, page-offset: $page-offset" if $dbg;
                 my $magic = read-rshort($next-page);
                 note "Incorrect bitmask page $p ({$magic.base(16)})" unless $magic == 0x0105;
                 read-bits $next-page + 4, 4092, $page-offset, @pgs; # Fix for Jet 3
@@ -945,17 +944,14 @@ note "bitmask page {$next-page.base(16)}, page-offset: $page-offset";
     note "Reading bitmap ($bytes bytes) from position {$p.base(16)}" if $dbg;
     note "{+@pgs} pages of data";
     dd @pgs if $dbg;
-dd @pgs;
     @pgs;
 }
 
 sub read-data-page($id, $table, $table-type, $output, @columns, $table-name) {
   note "read-data-page:" if $dbg;
-  $*ERR.printf: "read-data-page: reading page %d (%x)\n", $id, $id;
   $*ERR.printf: "read-data-page: reading page %d (%x)\n", $id, $id if $dbg;
   my $page = read-page($id);
   my $type = $page.read-uint16(0, LittleEndian);
-  $*ERR.printf: "read-data-page: type %d\n", $type;
   $*ERR.printf: "read-data-page: type %d\n", $type if $dbg;
   if $type != 0x0101 {
       fail "Pointer to data page ($id) does not point to data page";
@@ -1007,7 +1003,7 @@ return unless !$name or $name ne 'Bores';
     my $table-type = %tables{$name};
     dd $table-type if $dbg;
     $*ERR.printf: "Reading table on page %d (%x)\n", $id, $id if $dbg;
-    note "Calling read-table-header";
+    note "Calling read-table-header" if $dbg;
     my $table = read-table-header($id);
     note "Back from read-table-header" if $dbg;
     if $name && $count-only {
@@ -1018,7 +1014,6 @@ return unless !$name or $name ne 'Bores';
     $*ERR.printf: "table bitmask: %x\n", $table.usage-bitmask if $dbg;
     my @pgs = read-bitmask($table.usage-bitmask);
 #    dd @pgs if $dbg;
-note "Reading data";
     for @pgs -> $pp {
 	note "Reading $name data page $pp" if $dbg;
 	print-data-pages($pp) if $dbg;
@@ -1244,7 +1239,7 @@ sub process-data {
     my $insert-data = 0;
     for $c.list -> $line {
 	given $line {
-	    note $line;
+	    note $line if $dbg;
 	    #Column 0 (Id): 15 0000000f
 	    when /^Column \s* (\d+) \s* \( (\w+) \) \: (.*) / {
 		my $columnnumber = +$0;
