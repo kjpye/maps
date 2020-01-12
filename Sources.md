@@ -1,30 +1,8 @@
 # Map data sources #
 
-## VicMap ##
-How to populate the VicMap database.
-
-### Download the data ###
-
-  * Go to https://service.land.vic.gov.au/SpatialDatamart and create an account for yourself. (This is not necessary, but useful.)
-  * Goto Search, and enter what you want in the "what" field. Useful things are "tr_road", tr_rail", "hy_water", "el_ground", "el_contour".
-  * Select the databases you want. The useful databases (i.e. those which the scripts know how to handle) include tr_road, tr_road_infrastructure, tr_road_locality, hy_water_area_polygon, hy_water_point, hy_water_struct_area_polygon, hy_water_struct_line, hy_water_struct_point, hy_watercourse, tr_rail, tr_rail_infrastructure, el_contour.
-  * Clock on "proceed to order".
-  * Select the area you want the data for. ("Whole of State" could generate rather large files, but they're manageable except for things like tree_density which contain great detail.) I usually use "Local Government Area" and wherever I'm interested in at the moment. (Note that the product of the number of datasets, and the number of areas must be no more then 12.)
-  * Select the buffer zone (i.e. how far outside the selected area you want data for), the format ("ESRI shapefile"), projection ("Geographicals on GDA-94") and delivery method
-  * Click on "Apply to All".
-  * Now click "Submit", and "Submit" again.
-  * When your order is ready, you will receive an email with the link to the data, which is valid for ten days. When the servers are busy this might take up to an hour or two. For very large database (Tree density for the whole state for example) you will be given a link to an ftp site which contains the files. Make sure you download data in the correct format.
-
-### Unpack the data, and populate the database ###
-
-  * Find a convenient directory and download the zip files to that directory.
-  * Unzip the data.
-  * Work out where the .shp files have been put.
-  * Create a postgresql database: "createdb maps".
-  * Ensure that postgis has been installed in that database.
-  * For each shp file (except for things like EXTRACT_POLYGON which simply contains the boundary of the data you have), run "shp2pqsql -a -D -s 4326 \<shapefile\> [\<tablename\>] | psql maps", except, the first time you use a particular table, use "-c" instead of "-a". The tablename is optional, but I usually create the tables as vm_\<name\> to avoid conflicts. Some of the other code assumes this.
-  * Fix up some database tables. The code assumes that certain types of tables have certain columns, and they don't always exist, so you need to create those columns with a default value, usually zero: "psql maps -c 'alter table tr_road_infrastructure add column width float default 0'". [Currently unnecessary]
-  * You will also need to populate the database with the postscript definitions of all the symbols (the symbols_ga table) and the mapping from Vicmap objects to those symbols (the vicmap.symbols table): "psql -d maps -f mksymbols_ga" and "psql -d maps -f mkvicmap_symbols". These will both give errors the first time they are run as they delete and then recreate tables.
+Note that most of the information below about unpacking the data and loading
+the database is subsumed into the import/build-database script. You will only
+need to unzip files where appropriate.
 
 ## GeoScience Australia 1:250000 ##
 
@@ -40,6 +18,62 @@ If you also search for "mount young 1:250 000 topographic map" you will be able 
 You can unzip the resulting file and then process the data.
 
 There are various scripts in the import directory which can be used to process the data, which is in Microsoft's JET database format. The make_gis script show one way of doing this.
+
+## QTopo ##
+
+Get Queensland topographic data by
+   * going to https://qtopo.dnrm.qld.gov.au/QTopoUserGuide and selecting one of the options under "Layer List". There may be multiple datasets under each heading. If so, repeat the instructions below for each dataset you want.
+   * Click on "Spatial Data". (If that option is not available, then the data is not available yet.)
+   * Find the relevant product (usually the first).
+   * Click on "Download dataset".
+   * Select the data format ias "Shapefile" and change "As stored" to "WGS84 Geographic 2D".
+   * Enter your email address
+   * Accept the terms and conditions (after reading them); and
+   * Click "Request download".
+   * Close the pop-up window.
+
+After some time you will get an email with a link to the data, which you can download and unzip.
+
+You will need to repeat the whole exercise for each dataset you want.
+
+## South Australia ##
+Get South Australian topographic data by
+   * Going to https://data.sa.gov.au
+   * On the left hand menu, select "Department of Planning, Transport and Infrastructure" and "zip (shp)
+   * Click on the desired dataset.
+   * Click on the "Explore" button next to the shp version, and select "Go to resource".
+
+Save the resultant file somewhere and unzip it.
+
+## VicMap ##
+How to populate the VicMap database.
+
+### Download the data ###
+
+  * Go to https://service.land.vic.gov.au/SpatialDatamart and create an account for yourself. (This is not necessary, but useful.)
+  * Goto Search, and enter what you want in the "what" field. Useful things are "tr_road", tr_rail", "hy_water", "el_ground", "el_contour" or just "vicmap".
+  * Select the databases you want. The useful databases (i.e. those which the scripts know how to handle) include tr_road, tr_road_infrastructure, tr_road_locality, hy_water_area_polygon, hy_water_point, hy_water_struct_area_polygon, hy_water_struct_line, hy_water_struct_point, hy_watercourse, tr_rail, tr_rail_infrastructure, el_contour.
+  * Clock on "proceed to order".
+  * Select the area you want the data for. ("Whole of State" could generate rather large files, but they're manageable except for things like tree_density which contain great detail.) I usually use "Local Government Area" and wherever I'm interested in at the moment. (Note that the product of the number of datasets, and the number of areas must be no more then 12.)
+  * Select the buffer zone (i.e. how far outside the selected area you want data for), the format ("ESRI shapefile"), projection ("_Geographicals on GDA-2020") and delivery method
+  * Click on "Apply to All".
+  * Now click "Submit", and "Submit" again.
+  * When your order is ready, you will receive an email with the link to the data, which is valid for ten days. When the servers are busy this might take up to an hour or two. For very large database (Tree density for the whole state for example) you will be given a link to an ftp site which contains the files. Make sure you download data in the correct format.
+
+### Unpack the data, and populate the database ###
+
+  * Find a convenient directory and download the zip files to that directory.
+  * Unzip the data.
+  * Work out where the .shp files have been put.
+  * Create a postgresql database: "createdb maps".
+  * Ensure that postgis has been installed in that database.
+  * For each shp file (except for things like EXTRACT_POLYGON which simply contains the boundary of the data you have), run "shp2pqsql -a -D -s 4326 \<shapefile\> [\<tablename\>] | psql maps", except, the first time you use a particular table, use "-c" instead of "-a". The tablename is optional, but I usually create the tables as vm_\<name\> to avoid conflicts. Some of the other code assumes this.
+  * Fix up some database tables. The code assumes that certain types of tables have certain columns, and they don't always exist, so you need to create those columns with a default value, usually zero: "psql maps -c 'alter table tr_road_infrastructure add column width float default 0'". [Currently unnecessary]
+  * You will also need to populate the database with the postscript definitions of all the symbols (the symbols_ga table) and the mapping from Vicmap objects to those symbols (the vicmap.symbols table): "psql -d maps -f mksymbols_ga" and "psql -d maps -f mkvicmap_symbols". These will both give errors the first time they are run as they delete and then recreate tables.
+
+## Other states and territories
+
+Ι have been unable to find a way of downloading data for WA, NT, ACT, NSW and Tas. Please let me know if you find a useful source.
 
 ## OpenStreetMap ##
 The script can utilise OSM for displaying roads.

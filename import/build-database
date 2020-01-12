@@ -75,7 +75,7 @@ sub MAIN($database,
 	load-ga($database, $file, $prefix);
       }
       when 'qld' {
-        note 'Loading QTopo tables' unless $quiet;
+        note "Loading QTopo tables from $file" unless $quiet;
         load-shape($database, $file, $prefix);
       }
       when 'sa' {
@@ -106,7 +106,7 @@ sub load-shape($database, $path, $prefix) {
   for $finder.in($path) -> $file {
     my $table = $file;
     $table ~~ s/.*\///;
-    $table ~~ s/\.shp$//;
+    $table ~~ s/\s*\.shp$//; # Yes -- some people (QTopo) have trailing spaces in the filename before the extension!
     note "Loading $table from $file as {$prefix}{$table}";
     my $createoradd = check-table($database, $table) == 1 ?? '-a' !! '-c';
     note "shp2pgsql $createoradd -D -s 4326 $file {$prefix}{$table} | psql $database";
