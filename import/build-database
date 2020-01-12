@@ -1,0 +1,143 @@
+#!/usr/bin/env raku
+
+use Path::Finder;
+use DB::Pg;
+
+sub MAIN($database,
+         :$create is copy = 0,  # "is copy" required for fixup below
+         :$quiet  is copy = 0,
+         :$prefix is copy = '',
+	 :@add,
+	 :@load,
+        ) {
+# Fix up some problems caused by a bug in MAIN argument handling
+  $quiet  = $quiet  ~~ Positional ?? $quiet[0]  !! $quiet;
+  $create = $create ~~ Positional ?? $create[0] !! $create;
+  $prefix = $prefix ~~ Positional ?? $prefix[0] !! $prefix;
+
+  if $create {
+    note 'Creating database' unless $quiet;
+    run 'dropdb', '--if-exists', $database;
+    run 'createdb', $database;
+    my $db = run 'psql', $database, :in;
+    $db.in.say: 'CREATE EXTENSION postgis;';
+    $db.in.say: 'CREATE EXTENSION postgis_topology;';
+    $db.in.say: 'CREATE SEQUENCE object_id;';
+    $db.in.close;
+    run 'psql', $database, '-f', 'schema.base';
+  }
+
+  for @add -> $table {
+    given $table {
+      when 'ga' {
+        note 'Adding GA tables' unless $quiet;
+        run 'psql', $database, '-f', 'schema.ga';
+        shell "./mk250ktables $database | psql $database";
+        my $db = run 'psql', $database, :in;
+        $db.in.say: '\COPY displayorder from displayorder.ga CSV HEADER;';
+        $db.in.close;
+      }
+      when 'qld' {
+        note 'Adding QTopo tables' unless $quiet;
+        my $db = run 'psql', $database, :in;
+        $db.in.say: '\COPY displayorder from displayorder.qld CSV HEADER;';
+        $db.in.close;
+      }
+      when 'sa' {
+        note 'Adding SA tables' unless $quiet;
+        my $db = run 'psql', $database, :in;
+        $db.in.say: '\COPY displayorder from displayorder.sa CSV HEADER;';
+        $db.in.close;
+      }
+      when 'vic' {
+        note 'Adding Vicmap tables' unless $quiet;
+        my $db = run 'psql', $database, :in;
+        $db.in.say: '\COPY displayorder from displayorder.vic CSV HEADER;';
+        $db.in.close;
+      }
+      when 'osm' {
+        note 'Adding OSM tables' unless $quiet;
+        my $db = run 'psql', $database, :in;
+        $db.in.say: '\COPY displayorder from displayorder.osm CSV HEADER;';
+        $db.in.close;
+      }
+      default {
+        note "Need external helper program for adding $_";
+      }
+    }
+  }
+
+  for @load {
+    my ($table, $file) = .split(':');
+    given $table {
+      when 'ga' {
+        note 'Loading GA tables' unless $quiet;
+	load-ga($database, $file, $prefix);
+      }
+      when 'qld' {
+        note 'Loading QTopo tables' unless $quiet;
+        load-shape($database, $file, $prefix);
+      }
+      when 'sa' {
+        note 'Loading SA tables' unless $quiet;
+        load-shape($database, $file, $prefix);
+      }
+      when 'vic' {
+        note "Loading Vicmap tables from $file" unless $quiet;
+        load-shape($database, $file, $prefix);
+      }
+      when 'osm' {
+        note 'Loading OSM tables' unless $quiet;
+        if $file.IO.f {
+          run 'osm2pgsql', '--append', '--slim', '--cache', 750, '--latlong', '--database', $database, $file;
+        } else {
+          fail "No such file $file";
+        }
+      }
+      default {
+        note "Need external helper program for loading $_";
+      }
+    }
+  }
+}
+
+sub load-shape($database, $path, $prefix) {
+  my $finder = Path::Finder.file.skip-vcs.ext('shp');
+  for $finder.in($path) -> $file {
+    my $table = $file;
+    $table ~~ s/.*\///;
+    $table ~~ s/\.shp$//;
+    note "Loading $table from $file as {$prefix}{$table}";
+    my $createoradd = check-table($database, $table) == 1 ?? '-a' !! '-c';
+    note "shp2pgsql $createoradd -D -s 4326 $file {$prefix}{$table} | psql $database";
+    my $proc-convert = Proc::Async.new: 'shp2pgsql', $createoradd,
+                                                     '-D',
+                                                     '-s', '4326',
+						     $file,
+						     "{$prefix}{$table}";
+    my $proc-load = Proc::Async.new: 'psql', $database;
+    $proc-load.bind-stdin($proc-convert.stdout);
+    await $proc-convert.start, $proc-load.start;
+  }
+}
+
+sub load-ga($database, $path, $prefix) {
+  my $finder = Path::Finder.file.skip-vcs.ext('mdb');
+  for $finder.in($path) -> $file {
+    note "Loading tables from $file with prefix {$prefix}";
+    run './import-ga',
+        "--db={$database}",
+        "--prefix={$prefix}",
+	$file;
+  }
+}
+
+sub check-table($database, $table) {
+  my $pg = DB::Pg.new(conninfo => "dbname=$database");
+  my $table-num = $pg.query('SELECT count(*)
+                               FROM pg_catalog.pg_tables
+		              WHERE tablename = $1
+		            ', $table).value;
+  $pg.finish;
+  $table-num;
+}
