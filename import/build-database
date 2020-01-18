@@ -35,30 +35,42 @@ sub MAIN($database,
         shell "./mk250ktables $database | psql $database";
         my $db = run 'psql', $database, :in;
         $db.in.say: '\COPY displayorder from displayorder.ga CSV HEADER;';
+        $db.in.say: '\COPY symbols      from symbols.ga      CSV HEADER;';
         $db.in.close;
       }
       when 'qld' {
         note 'Adding QTopo tables' unless $quiet;
         my $db = run 'psql', $database, :in;
         $db.in.say: '\COPY displayorder from displayorder.qld CSV HEADER;';
+        $db.in.say: '\COPY symbols      from symbols.qld      CSV HEADER;';
         $db.in.close;
       }
       when 'sa' {
         note 'Adding SA tables' unless $quiet;
         my $db = run 'psql', $database, :in;
         $db.in.say: '\COPY displayorder from displayorder.sa CSV HEADER;';
+        $db.in.say: '\COPY symbols      from symbols.sa      CSV HEADER;';
+        $db.in.close;
+      }
+      when 'tas' {
+        note 'Adding Tasmanian tables' unless $quiet;
+        my $db = run 'psql', $database, :in;
+        $db.in.say: '\COPY displayorder from displayorder.tas CSV HEADER;';
+        $db.in.say: '\COPY symbols      from symbols.tas      CSV HEADER;';
         $db.in.close;
       }
       when 'vic' {
         note 'Adding Vicmap tables' unless $quiet;
         my $db = run 'psql', $database, :in;
         $db.in.say: '\COPY displayorder from displayorder.vic CSV HEADER;';
+        $db.in.say: '\COPY symbols      from symbols.vic      CSV HEADER;';
         $db.in.close;
       }
       when 'osm' {
         note 'Adding OSM tables' unless $quiet;
         my $db = run 'psql', $database, :in;
         $db.in.say: '\COPY displayorder from displayorder.osm CSV HEADER;';
+        $db.in.say: '\COPY symbols      from symbols.osm      CSV HEADER;';
         $db.in.close;
       }
       default {
@@ -80,6 +92,10 @@ sub MAIN($database,
       }
       when 'sa' {
         note 'Loading SA tables' unless $quiet;
+        load-shape($database, $file, $prefix);
+      }
+      when 'tas' {
+        note 'Loading Tasmanian tables' unless $quiet;
         load-shape($database, $file, $prefix);
       }
       when 'vic' {
@@ -108,7 +124,7 @@ sub load-shape($database, $path, $prefix) {
     $table ~~ s/.*\///;
     $table ~~ s/\s*\.shp$//; # Yes -- some people (QTopo) have trailing spaces in the filename before the extension!
     note "Loading $table from $file as {$prefix}{$table}";
-    my $createoradd = check-table($database, $table) == 1 ?? '-a' !! '-c';
+    my $createoradd = check-table($database, "{$prefix}{$table}") == 1 ?? '-a' !! '-c';
     note "shp2pgsql $createoradd -D -s 4326 $file {$prefix}{$table} | psql $database";
     my $proc-convert = Proc::Async.new: 'shp2pgsql', $createoradd,
                                                      '-D',
@@ -133,11 +149,13 @@ sub load-ga($database, $path, $prefix) {
 }
 
 sub check-table($database, $table) {
+say "check-database -- $table";
   my $pg = DB::Pg.new(conninfo => "dbname=$database");
   my $table-num = $pg.query('SELECT count(*)
                                FROM pg_catalog.pg_tables
 		              WHERE tablename = $1
 		            ', $table).value;
   $pg.finish;
+say "check-database: $table-num";
   $table-num;
 }

@@ -45,6 +45,47 @@ Get South Australian topographic data by
 
 Save the resultant file somewhere and unzip it.
 
+## Tasmania ##
+Try https://listdata/thelist.tas.gov.au/opendata.
+
+Data for each dataset is available for each municipality. Each zip file contains data as shape files, ESRΙPgdb files and Mapinfo files, so you'll be downloading three copies of everything.
+
+Filenames appear to be https://listdata.thelist.tas.gov.au/opendata/data/LIST_<dataset>_<municipality>.zip.
+
+Municipalities are
+
+| Municipality         | File name            |
+| -------------------- | -------------------- |
+| Break O'Day          | BREAK_O_DAY          |
+| Brighton             | BRIGHTON             |
+| Burnie               | BURNIE               |
+| Central Coast        | CENTRAL_COAST        |
+| Central Highlands    | CENTRAL_HIGHLANDS    |
+| Circular Head        | CIRCULAR_HEAD        |
+| Clarence             | CLARENCE             |
+| Derwent Valley       | DERWENT_VALLEY       |
+| Devonport            | DEVONPORT            |
+| Dorset               | DORSET               |
+| Flinders             | FLINDERS             |
+| George Town          | GEORGE_TOWN          |
+| Glamorgan/Spring Bay | GLAMORGAN_SPRING_BAY |
+| Glenorchy            | GLENORCHY            |
+| Hobart               | HOBART               |
+| Huon Valley          | HUON_VALLEY          |
+| Kentish              | KENTISH              |
+| King Island          | KING_ISLAND          |
+| Kingborough          | KINGBOROUGH          |
+| Latrobe              | LATROBE              |
+| Launceston           | LAUNCESTON           |
+| Meander Valley       | MEANDER_VALLEY       |
+| Northern Midlands    | NORTHERN_MIDLANDS    |
+| Sorell               | SORELL               |
+| Southern Midlands    | SOUTHERN_MIDLANDS    |
+| Tasman               | TASMAN               |
+| Waratah/Wynyard      | WARATAH_WYNYARD      |
+| West Coast           | WEST_COAST           |
+| West Tamar           | WEST_TAMAR           |
+
 ## VicMap ##
 How to populate the VicMap database.
 
@@ -73,7 +114,7 @@ How to populate the VicMap database.
 
 ## Other states and territories
 
-Ι have been unable to find a way of downloading data for WA, NT, ACT, NSW and Tas. Please let me know if you find a useful source.
+Ι have been unable to find a way of downloading data for WA, NT, ACT and NSW. (WΑ data is available, but costs real money.) Please let me know if you find a useful source.
 
 ## OpenStreetMap ##
 The script can utilise OSM for displaying roads.
