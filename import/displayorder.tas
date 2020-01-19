@@ -1,0 +1,13 @@
+source,featurename,drawtype,tablename,featurecolumn,defaultsymbol,displayorder,geomcol,orientcol,widthcol
+tas,tas_2d_building_polys,area,tas_2d_building_polys,build_ty,0,10,geom,"",""
+tas,tas_5m_contours,contour,tas_5m_contours,contour_ty,0,10,geom,"",""
+tas,tas_building_pts,point,tas_building_points,build_ty,0,10,geom,"",""
+tas,tas_coastline,line,tas_coastline,hdlnty1:hydlnty2,0,10,geom,"",""
+tas,tas_community_facilities,point,tas_community_facilities,com_type1:com_type2,0,10,geom,"",""
+tas,tas_hydarea,area,tas_hydarea,hydarty1:tashydar2,0,10,geom,"",""
+tas,tas_hydpnt,point,tas_hydpoint,hydpntty,0,10,geom,"",""
+tas,tas_hydline,line,tas_hydline,hdlnty1:hdlnty2,0,10,geom,"",""
+tas,tas_public_land_class,area,tas_public_land_class,category,0,10,geom,"",""
+tas,tas_spot_heights,spotheight,tas_spot_heights,spot_ht_ty:spot_tytxt,0,10,geom,"",""
+tas,tas_transport_nodes,point,tas_transport_nodes,tnode_feat,0,10,geom,"",""
+tas,tas_transport_segments,vm_road,tas_transport_segments,trans_type:tseg_feat:user_type:surface_type,0,10,geom,"",""

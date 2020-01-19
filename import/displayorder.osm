@@ -1,0 +1,2 @@
+source,featurename,drawtype,tablename,featurecolumn,defaultsymbol,displayorder,geomcol,orientcol,widthcol
+ga,ga_OsmRoads,osm_road,ga_planet_osm_line,symbol,0,-2461,shape,"",""

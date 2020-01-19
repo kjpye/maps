@@ -1,0 +1,3 @@
+source,featurename,drawtype,tablename,featurecolumn,defaultsymbol,displayorder,geomcol,orientcol,widthcol
+gen,graticule,graticule,,,0,10340,geom,"",""
+gen,grid,grid,,,0,10350,geom,"",""
