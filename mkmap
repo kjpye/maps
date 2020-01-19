@@ -2101,38 +2101,36 @@ sub format-long(Real $long) {
     format-dms($long, 'E', 'W');
 }
 
-sub put-annotation(Real $pagex, Real $pagey,
-		   Real $long, Real $lat,
-		   Real $x1, Real $y1,
-		   Str $string is copy,
-		   Real $textsize = 1.5,
-		   Real $linespacing = 2,		       
-		   Int $drawbbox = 1,
-		   Str $colour = '0 0 0 1',
-		   Str $bgcolour = '0 0 0 0',
-		   Str $bboxcolour = '1 1 0 0',
+sub put-annotation(Real $pagex, Real $pagey,      # where to position the text
+		   Real $long, Real $lat,         # latitude and longitude of point -- used only for interpolation into string
+		   Real $x1, Real $y1,            # the point to be annotated -- line will be drawn from here to the text if a bbox is drawn
+		   Str $string is copy,           # string to print -- Latin 1
+		   Real $textsize    = 1.5,       # font size (mm)
+		   Real $linespacing = 2,         # line spacing (mm)
+		   Real $orientation = 30;        # text orientation in degrees
+		   Int $drawbbox     = 1,         # whether to draw a bounding box
+		   Str $colour       = '0 0 0 1', # text colour (CMYK)
+		   Str $bgcolour     = '0 0 0 0', # in-fill colour, empty for none
+		   Str $bboxcolour   = '0 0 0 1', # bounding box colour
 		  ) {
     my $longstr = format-long($long);
     my $latstr = format-lat($lat);
-#    $string.subst(/\$LONG/, $longstr);
-#    $string.subst(/\$LAT/, $latstr);
     $string ~~ s/\$LONG/{$longstr}/;
     $string ~~ s/\$LAT/{$latstr}/;
     my @lines = $string.lines;
 
-    my ($x2, $y2) = ($pagex, $pagey);
 # Calculate box height
     my $height = (@lines.end + 1) * $linespacing; # +1 for top and bottom margins
 # Calculate box width
     $TMP.print: "gsave 0\n";
     $TMP.print: "/Helvetica-Narrow-Latin1 $textsize selectfont\n";
     for @lines -> $line {
-	$TMP.say: "($line) stringwidth pop 2 copy lt \{exch\} if pop $linespacing add";
-    } # TOS is now required box width
+	$TMP.say: "($line) stringwidth pop 2 copy lt \{exch\} if pop $linespacing add $pagex $pagey translate $orientation rotate";
+    } # TOS is now required box width; current state is centered on required position for text
     if $drawbbox {
-      $TMP.print: "$x2 $y2 translate 0.2 setlinewidth $bboxcolour setcmykcolor $x1 $y1 moveto 0 0 lineto stroke\n";
+      $TMP.print: "0.2 setlinewidth $bboxcolour setcmykcolor $x1 $y1 moveto 0 0 lineto stroke\n";
+      $TMP.print: "$x1 $y1 translate dup 2 div neg $height 2 div moveto dup 0 rlineto 0 $height neg rlineto dup neg 0 rlineto closepath gsave $bgcolour setcmykcolor fill grestore $bboxcolour setcmykcolor stroke\n";
     }
-    $TMP.print: "$x1 $y1 translate dup 2 div neg $height 2 div moveto dup 0 rlineto 0 $height neg rlineto dup neg 0 rlineto closepath gsave $bgcolour setcmykcolor fill grestore $bboxcolour setcmykcolor stroke\n";
     $TMP.print: "2 div neg 1 add $height 2 div $textsize sub translate $colour setcmykcolor\n";
     for @lines -> $line {
 	$TMP.print: "0 0 moveto ($line) show 0 -{$linespacing} translate\n";
