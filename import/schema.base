@@ -1,0 +1,21 @@
+create table displayorder (
+  source        text,
+  featurename   text,
+  drawtype      text,
+  tablename     text,
+  featurecolumn text,
+  defaultsymbol int,
+  displayorder  int,
+  geomcol       text,
+  orientcol     text,
+  widthcol      text
+);
+\COPY displayorder FROM 'displayorder.base' CSV HEADER;
+
+CREATE TABLE symbols (
+  featuretype text,
+  symbol int,
+  type text,
+  dbtable text
+);
+\COPY symbols FROM 'symbols.base' CSV HEADER;

@@ -1,0 +1,24 @@
+#!/usr/bin/env raku
+
+use DB::Pg;
+
+my %counts;
+
+sub MAIN(:$out, *@db) {
+  for @db -> $db {
+  my $pg = DB::Pg.new(conninfo => "dbname=$db");
+    my @tables = $pg.query('SELECT distinct f_table_name FROM geometry_columns').arrays;
+    for @tables -> $table {
+      my $count = $pg.query("SELECT count(*) FROM $table").value;
+      %counts{$table}{$db} = $count;
+    }
+  }
+  print ',', @db.sort.join(','), "\n";
+  for %counts.keys.sort -> $table {
+    print "$table,";
+    for @db -> $db {
+      print %counts{$table}{$db} // '', ',';
+    }
+    print "\n";
+  }
+}

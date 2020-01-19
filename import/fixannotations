@@ -1,0 +1,255 @@
+#!/usr/bin/env perl6
+
+use v6;
+
+use DB::Pg;
+
+use NativeCall; # only for floating point reading routines
+
+my $debugannotation = True;
+my $debug = 10;
+
+class Annotation {
+  has $!length;
+  has @!bytes;
+  has $!index;
+
+  my %tobin = ('0' => 0, '1' => 1, '2' => 2, '3' => 3,
+               '4' => 4, '5' => 5, '6' => 6, '7' => 7,
+               '8' => 8, '9' => 9,
+	       'a' => 10, 'b' => 11, 'c' => 12, 'd' => 13, 'e' => 14, 'f' => 15,
+	       'A' => 10, 'B' => 11, 'C' => 12, 'D' => 13, 'E' => 14, 'F' => 15
+              );
+
+  use experimental :pack;
+
+  method start($annotation) {
+    note $annotation if $debugannotation;
+    $!index = 0;
+    $!length = $annotation.elems;
+    for ^$!length -> $i {
+      @!bytes.push($annotation.subbuf($i, 1).unpack('C'));
+    }
+  }
+
+  method skip(Int $skip) {
+    note "skipping $skip bytes at $!index" if $debugannotation;
+    $!index += $skip;
+  }
+
+  method byte {
+    fail('annotation out of range') if $!index >= $!length;
+    note "about to read byte number $!index (@!bytes[$!index])" if $debugannotation;
+    @!bytes[$!index++];
+  }
+
+  method getbytes(Int $count) {
+    note "getbytes $count from $!index" if $debugannotation;
+    $!index += $count;
+    @!bytes[($!index-$count) ..^ $!index - 1]>>.chr.join;
+  }
+
+  method getutf16(Int $count) {
+    $!index += $count;
+    my @utf16;
+    for @!bytes[($!index-$count) ..^ $!index - 2] -> $l, $h { @utf16.push: $h*256 + $l };
+    @utf16>>.chr.join;
+  }
+
+  method string {
+    note "read string at $!index" if $debugannotation;
+    my $length = self.int;
+    note "reading string of length $length" if $debugannotation;
+    self.getutf16($length);
+  }
+
+  method colour {
+    my $cyan    = self.byte / 100;
+    my $magenta = self.byte / 100;
+    my $yellow  = self.byte / 100;
+    my $black   = self.byte / 100;
+    ($cyan, $magenta, $yellow, $black);
+  }
+
+  method astring {
+    my $length = self.byte;
+    self.getbytes($length);
+  }
+
+  method lastring {
+    my $length = self.int;
+    self.getbytes($length);
+  }
+
+  method short {
+     $!index += 2;
+     nativecast((int32), Blob.new(@!bytes[$!index-2 ..^ $!index]));
+  }
+
+  method int {
+     $!index += 4;
+     nativecast((int32), Blob.new(@!bytes[$!index-4 ..^ $!index]));
+  }
+
+  method double {
+    $!index += 8;
+    nativecast((num64), Blob.new(@!bytes[($!index-8) ..^ $!index]));
+  }
+
+}
+
+sub MAIN($db, $table1, $table2) {
+  my $pg = DB::Pg.new(conninfo => "dbname=$db");
+
+  my $results = $pg.query("SELECT element,
+                                  st_astext(shape) AS shape,
+                                  objectid
+                             FROM ga_annotations
+                          ");
+    
+    for $results.arrays -> $object {
+note "Start loop" if $debugannotation;
+#        dd $object if $debugannotation;
+#	++$object-count;
+	my $element  = $object[0];
+	my $shape    = $object[1];
+        my $objectid = $object[2].Int;
+	my ($string2, $string3, $font);
+	my ($x1, $y1, $x2, $y2);
+	my $unknown1;
+	my $justn = 0;
+	my ($rotangle, $xdiff, $ydiff);
+        note "Object ID: $objectid" if $debug ≥ 10;
+	
+	my $ann = Annotation.new();
+        $ann.start($element);
+
+# The following horrendous code is an attempt to extract data from the undocumented annotations in the Australian 1:250000 series maps
+# It's also extremely slow :-(
+	$ann.skip(54);
+	$string2 = $ann.string;
+	note "draw-ga-annotation: $string2" if $debug >= 10;
+	$unknown1 = $ann.byte;
+        $ann.skip(21);
+	$unknown1 = $ann.byte;
+        $ann.skip(15);
+	$unknown1 = $ann.short();
+	$unknown1 = $ann.short();
+	my ($cyan, $magenta, $yellow, $black) = $ann.colour;
+	#note "colour: $cyan $magenta $yellow $black\n" if $debug >= 10;
+        $ann.skip(2);
+	$unknown1 = $ann.int;
+	$ann.skip(21) if ($unknown1 == 0);
+	$unknown1 = $ann.int;
+	$justn = $ann.int;
+        $ann.skip(2);
+	$rotangle = $ann.double;
+	$xdiff = $ann.double;
+	$ydiff = $ann.double;
+        $ann.skip(110);
+	$unknown1 = $ann.short;
+        $ann.skip(61);
+	$string3 = $ann.string;
+        $ann.skip(6);
+	#note "Second copy of string: $string3\n" if $debug >= 10;
+	my $pointsize = $ann.byte;
+	$pointsize = $pointsize / 4 * 25.4 / 72;
+	#note "Point size: $pointsize\n" if $debug >= 10;
+        $ann.skip(48);
+	$unknown1 = $ann.byte;
+	$unknown1 = $ann.short;
+	$pointsize = $ann.int;
+	$pointsize = $pointsize / 10000 * 25.4 / 72;
+	$font = $ann.astring;
+	#note "Font: $font\n" if $debug >= 10;
+        $ann.skip(18);
+	$unknown1 = $ann.byte;
+	#$TMP.print: "unknown1: $unknown1\n"; ###
+	if ($unknown1 == 16) {
+            $ann.skip(17);
+	    $unknown1 = $ann.short;
+            $ann.skip(6);
+	    $x1 = $ann.double;
+	    $y1 = $ann.double;
+	    $x2 = $ann.double;
+	    $y2 = $ann.double;
+	    #$TMP.print: "16: $x1 $y1 $x2 $y2\n"; ###
+            $ann.skip(4);
+	    my $count = $ann.int;
+            $ann.skip(4);
+	    #$TMP.print: "count: $count\n"; ###
+	    if ($count) {
+		my @coords = ();
+		while ($count--) {
+		    my $x = $ann.double;
+		    my $y = $ann.double;
+		    push @coords, [$x, $y];
+		}
+		($x1, $y1) = @(@coords[0]);
+		($x2, $y2) = @(@coords[1]);
+#		if (%drawobjects{'annotation_position'}) {
+#                   my ($tx, $ty) = latlon2page($x1, $y1);
+#                   $TMP.print: "%%%%%%%\n$tx $ty moveto\n";
+#                    for @coords -> $posn {
+#                        my ($x, $y) = @$posn;
+#                        ($tx, $ty) = latlon2page($x, $y);
+#                        $TMP.print: "$tx $ty lineto\n";
+#                    }
+#                    $TMP.print: "1 1 0 0 setcmykcolor 0.5 setlinewidth stroke\n";
+#                }
+                $xdiff = 0;
+                $ydiff = 0;
+                $justn = 0;
+            }
+        } elsif ($unknown1 == 65) {
+            $ann.skip(17);
+            $unknown1 = $ann.short;
+            $ann.skip(6);
+            $x1 = $ann.double;
+            $y1 = $ann.double;
+            #note "65: $x1 $y1\n" if $debug >= 10;
+#            if (%drawobjects{'annotation_position'}) {
+#                my ($tx, $ty) = latlon2page $x1, $y1;
+#                $TMP.print: "$tx $ty moveto 1 0 rlineto 1 1 0 0 setcmykcolor 0.5 setlinewidth stroke %%%%%\n";
+#            }
+            $xdiff = $ydiff = 0;
+        } else {
+            note "Unknown annotation value $unknown1, ignoring\n";
+            next;
+        }
+        $ann.skip(18);
+        $ann.lastring;
+        $ann.skip(41);
+        
+        note "Drawing annotation" if $debugannotation;
+        # finished parsing; now print something
+        
+        # Check for valid location -- sometimes we get lat/lon with NaN values!
+        if ($x1 == $x1 and $y1 == $y1) {
+#            $font = ($font eq 'Zurich Cn BT') ?? 'Helvetica-Narrow-Latin1' !! 'Helvetica-Latin1';
+#            $TMP.print: sprintf "/$font %.4g selectfont\n", $pointsize;
+            
+            my $annotation = $string2;
+#            ($x1, $y1) = latlon2page $x1, $y1;
+            my $angle;
+            if ($y2.defined) {
+#                ($x2, $y2) = latlon2page $x2, $y2;
+                $angle = atan2($y2 - $y1, $x2 - $x1) * 180 / π;
+            } else {
+                $angle = 0;
+            }
+            $annotation ~~ s:g/\\/\\\\/;
+            $annotation ~~ s:g/\(/\\\(/;
+            $annotation ~~ s:g/\)/\\\)/;
+#            $TMP.print: sprintf "gsave %.6g %.6g translate %.6g rotate 0 0 moveto %.4g %.4g %.4g %.4g setcmykcolor ", $x1+$xdiff, $y1+$ydiff, $angle, $cyan, $magenta, $yellow, $black;
+            if ($justn == 2) {
+#                $TMP.print: "($annotation) stringwidth pop neg 0 rmoveto ";
+            } elsif ($justn == 1) {
+#                $TMP.print: "($annotation) stringwidth pop 2 div neg 0 rmoveto ";
+            }
+#            $TMP.print: "($annotation) show grestore\n";
+say "\"$annotation\": $x1, $y1 orientation $angle, colour：$cyan $magenta $yellow $black, $font, size：$pointsize";
+        }
+    }
+}
+

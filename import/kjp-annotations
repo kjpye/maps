@@ -1,0 +1,13 @@
+DROP TABLE IF EXISTS kjp_annotations;
+
+CREATE TABLE kjp_annotations (
+  string      text,
+  location    text,
+  orientation float,
+  colour      text,
+  bgcolour    text,
+  drawbbox    int
+);
+
+SELECT AddGeometryColumn('', 'kjp_annotations', 'position', 4326, 'POINT', 2);
+

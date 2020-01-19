@@ -1,0 +1,66 @@
+CREATE TABLE ga_Maps (
+	name text,
+	number text UNIQUE,
+	bbox box
+);
+CREATE INDEX ga_Maps_bbox_index on ga_Maps using gist (bbox);
+
+\COPY ga_Maps FROM 'ga_maps.csv' CSV HEADER;
+
+CREATE TABLE ga_FeatureType (
+	type serial PRIMARY KEY,
+	name text UNIQUE
+);
+
+CREATE TABLE ga_Source (
+	source serial PRIMARY KEY,
+	name text UNIQUE
+);
+
+INSERT INTO ga_Source (name, source) VALUES ('unknown', 0);
+INSERT INTO ga_Source (name) VALUES ('GEOSCIENCE AUSTRALIA');
+INSERT INTO ga_Source (name) VALUES ('Kevin Pye');
+
+CREATE TABLE ga_Hierarchy (
+	hierarchy serial PRIMARY KEY,
+	description text
+);
+
+INSERT INTO ga_Hierarchy (description) VALUES ('Major');
+INSERT INTO ga_Hierarchy (description) VALUES ('Minor');
+
+CREATE TABLE ga_Perennial (
+	perennial serial PRIMARY KEY,
+	description text
+);
+
+INSERT INTO ga_Perennial (description) VALUES ('Perennial');
+INSERT INTO ga_Perennial (description) VALUES ('Non-perennial');
+
+CREATE TABLE ga_State (
+	state serial PRIMARY KEY,
+	name text
+);
+
+INSERT INTO ga_State (name) VALUES ('SA');
+INSERT INTO ga_State (name) VALUES ('WA');
+INSERT INTO ga_State (name) VALUES ('NT');
+INSERT INTO ga_State (name) VALUES ('Qld');
+INSERT INTO ga_State (name) VALUES ('NSW');
+INSERT INTO ga_State (name) VALUES ('ACT');
+INSERT INTO ga_State (name) VALUES ('Vic');
+INSERT INTO ga_State (name) VALUES ('Tas');
+
+CREATE TABLE Def250k (
+  dbtable          text NOT NULL,
+  dbcolumn         text NOT NULL,
+  source           text DEFAULT 0,
+  type             text,
+  canbenull        text,
+  columnreferences text,
+  setdefault       text,
+  isprimary        text,
+  sourcecolumn     text
+);
+
+\COPY Def250k FROM 'def250k.csv' CSV HEADER;
