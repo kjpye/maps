@@ -2,6 +2,9 @@
 
 use v6;
 
+use Trait::Traced;
+$*TRACER = $*ERR;
+
 use DB::Pg;
 use Geo::Coordinates::UTM;
 use NativeCall; # only for floating point reading routines
@@ -1761,6 +1764,38 @@ note "Start loop" if $debugannotation;
     }
 }
 
+sub draw-annotations($table) {
+    note "Annotations...\n" if $debug >= 1;
+    my $results = $pg.query("SELECT string, longitude, latitude, orientation,
+                                    size, linespacing, position, colour,
+                                    bboxcolour, bgcolour
+                               FROM $table
+                              WHERE $lllong <= longitude
+                                AND $urlong >= longitude
+                                AND $lllat  <= latitude
+                                AND $urlat  >= latitude
+                           ");
+    
+    for $results.arrays -> $object {
+dd $object;
+        dd $object if $debug ≥ 10;
+	++$object-count;
+	my $string        = $object[0];
+	my $longitude     = $object[1];
+	my $latitude      = $object[2];
+	my $orientation   = $object[3];
+	my $textsize      = $object[4];
+	my $linespacing   = $object[5];
+	my $justification = $object[6];
+	my $colour        = $object[7];
+	my $bboxcolour    = $object[8];
+	my $bgcolour      = $object[9];
+
+        my ($x, $y) = latlon2page($longitude, $latitude);
+        put-annotation($x, $y, $longitude, $latitude, 0, 0, $string, :$colour, :$bboxcolour, :$bgcolour, :$textsize, :$linespacing, :$orientation, :$justification);
+    }
+}
+
 my ($starteasting, $mineasting, $maxeasting, $startnorthing, $minnorthing, $maxnorthing);
 
 sub label-grid(Bool $left, Bool $right) {
@@ -2101,39 +2136,127 @@ sub format-long(Real $long) {
     format-dms($long, 'E', 'W');
 }
 
-sub put-annotation(Real $pagex, Real $pagey,      # where to position the text
-		   Real $long, Real $lat,         # latitude and longitude of point -- used only for interpolation into string
-		   Real $x1, Real $y1,            # the point to be annotated -- line will be drawn from here to the text if a bbox is drawn
-		   Str $string is copy,           # string to print -- Latin 1
-		   Real $textsize    = 1.5,       # font size (mm)
-		   Real $linespacing = 2,         # line spacing (mm)
-		   Real $orientation = 30;        # text orientation in degrees
-		   Int $drawbbox     = 1,         # whether to draw a bounding box
-		   Str $colour       = '0 0 0 1', # text colour (CMYK)
-		   Str $bgcolour     = '0 0 0 0', # in-fill colour, empty for none
-		   Str $bboxcolour   = '0 0 0 1', # bounding box colour
+sub put-annotation(Real  $x, Real $y,             # where to position the text
+		   Real  $long, Real $lat,        # latitude and longitude of point -- used only for interpolation into string
+		   Real  $xoffset, Real $yoffset, # offset to text location (mm) -- arrow will be drawn from text to real position if a bbox is drawn
+		   Str   $string is copy,         # string to print -- Latin 1
+		   Str  :$colour        = '',     # text colour (CMYK)
+		   Str  :$bboxcolour    = '',     # bounding box colour
+		   Str  :$bgcolour      = '',     # in-fill colour, empty for none
+		   Real :$textsize      = 1.5,    # font size (mm)
+		   Real :$linespacing   = 2,      # line spacing (mm)
+		   Real :$orientation   = 0,      # text orientation in degrees
+                   Str  :$justification = 'ccc',  # lcr for horizontal position of box
+                                                  # tcb for vertical position of box
+		                                  # lcr for horizontal position of text inside box
 		  ) {
     my $longstr = format-long($long);
-    my $latstr = format-lat($lat);
-    $string ~~ s/\$LONG/{$longstr}/;
-    $string ~~ s/\$LAT/{$latstr}/;
+    my $latstr  = format-lat($lat);
+note "put-annotation: $x $y ($long ($longstr), $lat ($latstr) -- $xoffset, $yoffset) justification=$justification: $string";
+    $string ~~ s:g/\$LONG/{$longstr}/;
+    $string ~~ s:g/\$LAT/{$latstr}/;
+    $string ~~ s:g/\\n/\n/;
     my @lines = $string.lines;
 
+# draw line from point to text -- do this before any translations/rotations
+# TODO: add arrowhead
+    $TMP.print: "0.2 setlinewidth $bboxcolour setcmykcolor $x $y moveto $xoffset $yoffset rlineto stroke\n" if $bboxcolour && ($xoffset || $yoffset);
+    
+# Apply offsets
+    my $pagex = $x + $xoffset;
+    my $pagey = $y + $yoffset;
+    
 # Calculate box height
-    my $height = (@lines.end + 1) * $linespacing; # +1 for top and bottom margins
+    my $height = (@lines.elems + 0.75) * $linespacing; # + 0.75 for top and bottom margins
+
 # Calculate box width
-    $TMP.print: "gsave 0\n";
-    $TMP.print: "/Helvetica-Narrow-Latin1 $textsize selectfont\n";
+    $TMP.print: "gsave 0\n"; # zero is initial max line width
+    $TMP.print: "/Helvetica-Narrow-Latin1 $textsize selectfont\n"; # TODO: Allow other fonts
     for @lines -> $line {
-	$TMP.say: "($line) stringwidth pop 2 copy lt \{exch\} if pop $linespacing add $pagex $pagey translate $orientation rotate";
-    } # TOS is now required box width; current state is centered on required position for text
-    if $drawbbox {
-      $TMP.print: "0.2 setlinewidth $bboxcolour setcmykcolor $x1 $y1 moveto 0 0 lineto stroke\n";
-      $TMP.print: "$x1 $y1 translate dup 2 div neg $height 2 div moveto dup 0 rlineto 0 $height neg rlineto dup neg 0 rlineto closepath gsave $bgcolour setcmykcolor fill grestore $bboxcolour setcmykcolor stroke\n";
+	$TMP.say: "($line) stringwidth pop 2 copy lt \{exch\} if pop"
     }
-    $TMP.print: "2 div neg 1 add $height 2 div $textsize sub translate $colour setcmykcolor\n";
+    $TMP.print: "{$linespacing} add\n"; # add half linespacing on either side
+    # top of stack is required box width
+
+    $TMP.say: "$pagex $pagey translate $orientation rotate"; # Move to specified position and orientation
+
+# move to allow centring etc
+    
+# Calculate horizontal position of text
+    given $justification.comb[0] {
+	when 'l' {
+            $TMP.say: "0";
+	}
+	when 'c' {
+            $TMP.say: "dup 2 div neg";
+	}
+	when 'r' {
+            $TMP.say: "dup neg";
+	}
+        default {
+            fail "Unknown horizontal annotation positioning code '$_'";
+	}
+    }
+
+# Calculate vertical position of text
+    given $justification.comb[1] {
+	when 't' {
+            $TMP.say: "0";
+	}
+	when 'c' {
+            $TMP.say: "{$height/2}";
+	}
+	when 'b' {
+            $TMP.say: "$height";
+	}
+        default {
+            fail "Unknown vertical annotation positioning code '$_'";
+	}
+    }
+
+    $TMP.say: "translate"; # origin is now top left corner of box
+
+# Draw bounding box
+    if $bboxcolour {
+        $TMP.print: "0.2 setlinewidth 0 0  moveto dup 0 rlineto 0 $height neg rlineto dup neg 0 rlineto closepath gsave";
+        if $bgcolour {
+            $TMP.print: " $bgcolour setcmykcolor fill grestore";
+        }
+        $TMP.print: " $bboxcolour setcmykcolor stroke\n";
+    }
+
+# Move to where the actual text will be
+
+    given $justification.comb[2] {
+        when 'l' {
+            $TMP.print: "{$linespacing / 2} {-$linespacing} translate\n";
+        }
+        when 'c' {
+            $TMP.print: "dup 2 div {-$linespacing} translate\n";
+        }
+        when 'r' {
+            $TMP.print: "dup {$linespacing / 2} sub {-$linespacing} translate\n";
+        }
+        # no need for default -- would have errored out before
+    }
+    
+# Finally draw the text
+#    $TMP.print: "2 div neg 1 add $height 2 div $textsize sub translate $colour setcmykcolor\n";
+    $TMP.print: "$colour setcmykcolor\n";
     for @lines -> $line {
-	$TMP.print: "0 0 moveto ($line) show 0 -{$linespacing} translate\n";
+	$TMP.print: "0 0 moveto ($line) ";
+        given $justification.comb[2] {
+            when 'l' {
+                # no need for anything here
+            }
+            when 'c' {
+                $TMP.print: "dup stringwidth pop 2 div neg 0 rmoveto ";
+            }
+            when 'r' {
+                $TMP.print: "dup stringwidth pop neg 0 rmoveto ";
+            }
+        }
+        $TMP.print: "show 0 {-$linespacing} translate\n";
     }
     $TMP.print: "grestore\n";
 }
@@ -2152,9 +2275,9 @@ sub draw-userannotations(Real $xoff, Real $yoff, Real $slopedeg) {
         next if %($ann)<lat>  < $lllatitude;
         next if %($ann)<lat>  > $urlatitude;
         my ($x, $y) = latlon2page %($ann)<long>, %($ann)<lat>;
-        my ($x1, $y1) = ($x * $c + $y * $s + $xoff * (1 - $c) - $yoff * $s,
-			 -$x * $s + $y * $c + $xoff * $s + $yoff * (1-$c));
-	#note "($x, $y) -> ($x1, $y1)";
+        my ($x1, $y1) = ( $x * $c + $y * $s + $xoff * (1 - $c) - $yoff *    $s,
+			 -$x * $s + $y * $c + $xoff *      $s  + $yoff * (1-$c));
+	note "($x, $y) -> ($x1, $y1)";
         $($ann)<pagex> = $x1;
         $($ann)<pagey> = $y1;
         @ann.push: $ann;
@@ -2169,8 +2292,12 @@ sub put-userannotations {
                        %($ann)<lat>,
                        %($ann)<xoffset>,
                        %($ann)<yoffset>,
-                       %($ann)<string>
-                      );
+                       %($ann)<string>,
+                       colour     =>'0 0 0 1', # default to black text
+		       bboxcolour =>'0 0 0 1', # bbox colour
+		       bgcolour   =>'0 0 0 0', # fill colour
+                      ) if $lllong ≤ %($ann)<long> ≤ $urlong
+                        && $lllat  ≤ %($ann)<lat>  ≤ $urlat;
     }
 }
 
@@ -2199,7 +2326,7 @@ sub draw-margins(Bool $left, Bool $right) {
     $xoffset = -$xoffset;
     $yoffset = -$yoffset;
     
-    $TMP.say: "save 1 .1 0 .1 setcmykcolor";
+    $TMP.say: "save 1 .1 0 .1 setcmykcolor % draw margins";
 	
     $minnorthing = min($llnorthing, $lrnorthing);
     $maxnorthing = max($ulnorthing, $urnorthing);
@@ -2329,6 +2456,7 @@ sub draw-objects(Real $xoff, Real $yoff, Real $slope) {
           when 'treeden'        { draw-treeden\             ($table                                               ); }
           when 'graticule'      { draw-graticule\           (                                                     ); }
           when 'grid'           { draw-grid\                (                                                     ); }
+          when 'annotation'     { draw-annotations\         ($table                                               ); }
           when 'ga_annotation'  { draw-ga-annotations\      (                                                     ); }
           when 'userannotation' { draw-userannotations\     ($xoff, $yoff, $slope                                 ); }
           when 'ga_area'        { draw-ga-areas\            ($table                                               ); }
@@ -2371,7 +2499,9 @@ sub drawit(Str $drawzone, Real $d-lllong, Real $d-lllat, Real $d-urlong, Real $d
     
     draw-objects($xoff, $yoff, $slope);
 
-    $TMP.say: 'restore'; # undo the clip path
+    put-userannotations();
+
+    $TMP.say: 'restore % undo clip path'; # undo the clip path
     ($lllongitude, $urlongitude, $lllatitude, $urlatitude) = ($tlllong, $turlong, $tlllat, $turlat);
 }
 
@@ -2413,7 +2543,7 @@ sub do-dependency($sth is copy, Str $dependency) {
 set-papersizes();
 
 for %*ENV<HOME> ~ '/.mkmap.rc', '.mkmap.rc' -> $cfgfile {
-  note "Handling config file $cfgfile";
+  note "Handling config file $cfgfile" if $debug ≥ 1;
   process-option-file($cfgfile, 0); # 0 -> not an error if the file doesn't exist
 }
 
@@ -2592,11 +2722,6 @@ EOF
       }
   }
 
-#  $sth-sym = $dbh.prepare("SELECT symbol_ga
-#                           FROM {%defaults{'symbols'}}
-#                           WHERE type = ?
-#                           AND ftype = ?
-#                          ");
   $sth-sym = $pg.db.prepare('SELECT symbol_ga
                            FROM vicmap_symbols
                            WHERE type = $1
@@ -2619,8 +2744,6 @@ EOF
     drawit($leftzone,  $lllongitude, $lllatitude, $boundary, $urlatitude, True, False);
     drawit($rightzone, $boundary, $lllatitude, $urlongitude, $urlatitude, False, True);
   }
-
-  put-userannotations();
 
   do-dependencies();
 

@@ -1,4 +1,4 @@
-#!/usr/bin/env perl6
+#!/usr/bin/env raku
 
 use v6;
 
@@ -9,6 +9,41 @@ use NativeCall; # only for floating point reading routines
 my $debugannotation = True;
 my $debug = 10;
 
+# Define some useful debugging routines
+#
+# These should be moved to a separate module
+
+sub dump-hex(@bytes, $width) {
+    $*ERR.print: (@bytes.map: {sprintf "%02.2x", $_}).join(' ');
+    $*ERR.print: '   ' x max(0, $width - @bytes.elems);
+}
+
+sub dump-ascii(@bytes, $width) {
+    $*ERR.print: '<';
+    $*ERR.print: (@bytes.map:{ $_ ~~ 32..126 ?? $_.chr !! '.' }).join('');
+    $*ERR.print: ' ' x max(0, $width - @bytes.elems);
+    $*ERR.print: '>';
+}
+
+sub hex-dump(@bytes, $start, $count) {
+    $*ERR.printf: "%08.8x ", $start;
+    dump-hex(@bytes, $count);
+    $*ERR.print: '  ';
+    dump-ascii(@bytes, $count);
+    $*ERR.print: "\n";
+}
+
+sub dump-blob($blob, $start is copy, $width = 16) {
+    my $bytes = $blob.elems;
+    my $offset = 0;
+    while $bytes > 0 {
+        my @bytes = $blob.subbuf($offset, $width).list;
+        hex-dump(@bytes, $start, $width);
+        $start += $width;
+        $offset += $width;
+        $bytes -= $width;
+    }
+}
 class Annotation {
   has $!length;
   has @!bytes;
@@ -27,6 +62,10 @@ class Annotation {
     note $annotation if $debugannotation;
     $!index = 0;
     $!length = $annotation.elems;
+    if $debug {
+        note "annotation of length $!length";
+        dump-blob($annotation, 0);
+    }
     for ^$!length -> $i {
       @!bytes.push($annotation.subbuf($i, 1).unpack('C'));
     }
@@ -109,7 +148,6 @@ sub MAIN($db, $table1, $table2) {
     
     for $results.arrays -> $object {
 note "Start loop" if $debugannotation;
-#        dd $object if $debugannotation;
 #	++$object-count;
 	my $element  = $object[0];
 	my $shape    = $object[1];

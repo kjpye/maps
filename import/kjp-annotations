@@ -1,13 +1,15 @@
 DROP TABLE IF EXISTS kjp_annotations;
 
 CREATE TABLE kjp_annotations (
-  string      text,
-  location    text,
-  orientation float,
-  colour      text,
-  bgcolour    text,
-  drawbbox    int
+  string      text                    NOT NULL,
+  longitude   float                   NOT NULL,
+  latitude    float                   NOT NULL,
+  orientation float default 0.0,
+  size        float default 2.0,
+  linespacing float default 2.5,
+  position    text  default 'lbl',
+  colour      text  default '0 0 0 1',
+  bboxcolour  text,
+  bgcolour    text
 );
-
-SELECT AddGeometryColumn('', 'kjp_annotations', 'position', 4326, 'POINT', 2);
 
