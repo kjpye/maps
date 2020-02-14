@@ -103,15 +103,15 @@ my $pg; # Database handle
 sub mmap(Pointer $addr, int32 $length, int32 $prot, int32 $flags, int32 $fd, int32 $offset) returns CArray[uint8] is native {*}
 
 sub MAIN(
-          $file,          #= mdb database file to load
-         :@noload,        #= don't load table
-         :@load,          #= load table
-         :$db,            #= database to update
-         :$prefix,        #= prefix to prepend to table names in database
-         :$debug=0,       #= print (very verbose) debugging information
-         :$parallel=True, #= read tables in parallel
-         :$list=False,    #= just list table names
-         :$count=False,   #= count number of rows in each table
+          $file     is copy,         #= mdb database file to load
+         :@noload,                   #= don't load table
+         :@load,                     #= load table
+         :$db       is copy,         #= database to update
+         :$prefix   is copy,         #= prefix to prepend to table names in database
+         :$debug    is copy = 0,     #= print (very verbose) debugging information
+         :$parallel is copy = True,  #= read tables in parallel
+         :$list     is copy = False, #= just list table names
+         :$count    is copy = False, #= count number of rows in each table
         ) {
  
 # Workarounds for MAIN handling bug in rakudo
@@ -207,14 +207,14 @@ sub MAIN(
     note "Completed all tables";
 }
 
-my %outputfile;
-
-sub get-fh($table) {
-    if ! %outputfile<$table>.exists {
-        %outputfile<$table> = "$table.sql".IO.open(:w);
-    }
-    %outputfile<$table>;
-}
+#my %outputfile;
+#
+#sub get-fh($table) {
+#    if ! %outputfile<$table>.exists {
+#        %outputfile<$table> = "$table.sql".IO.open(:w);
+#    }
+#    %outputfile<$table>;
+#}
 
 my $mess = '';
 
@@ -288,7 +288,7 @@ multi sub get-rbytes(Int $p is copy, $count is copy) {
 }
 
 multi sub get-rbytes($page, $p is copy, $count is copy) {
-    note "get-rbytes(int): {$count} bytes from current page: {$p.base(16)}" if $dbg;
+    note "get-rbytes(page): {$count} bytes from current page: {$p.base(16)}" if $dbg;
     my @array;
     while $count-- {
         @array.push: $page[$p++];
@@ -297,7 +297,7 @@ multi sub get-rbytes($page, $p is copy, $count is copy) {
 }
 
 multi sub get-rbytes(Buf $p is copy, $count is copy) {
-    note "get-rbytes(int): {$count} bytes from {$p.base(16)}" if $dbg;
+    note "get-rbytes(buf): {$count} bytes from buffer" if $dbg;
     $p.subbuf: 0, $count;
 }
 
@@ -673,7 +673,7 @@ sub read-row($page is copy, $number is copy, $table) {
 		            } else {
 			        $*ERR.printf: "pointer %x\n", $pointer if $dbg;
 			        my ($ptr, $length) = |find-lval($pointer);
-			        %row{$column.name.lc} = get-rbytes($page, $ptr, $length);
+			        %row{$column.name.lc} = get-rbytes($ptr, $length);
 			        note "Finished" if $dbg;
 		            }
 		        } else {
@@ -1149,7 +1149,7 @@ sub do-insert(%row, $output, @columns, $table-name) {
     note "do-insert:" if $dbg;
     dd @columns if $dbg;
     for @columns -> $column {
-    dd %tables{$table-name} if $dbg;
+        dd %tables{$table-name} if $dbg;
         my $source = %tables{$table-name}{$column.lc}<source>;
 	note "Reading $column from $source" if $dbg;
 

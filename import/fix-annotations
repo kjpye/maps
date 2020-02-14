@@ -6,8 +6,8 @@ use DB::Pg;
 
 use NativeCall; # only for floating point reading routines
 
-my $debugannotation = True;
-my $debug = 10;
+my $debugannotation = False;
+my $debug = 0;
 
 # Define some useful debugging routines
 #
@@ -44,6 +44,7 @@ sub dump-blob($blob, $start is copy, $width = 16) {
         $bytes -= $width;
     }
 }
+
 class Annotation {
   has $!length;
   has @!bytes;
@@ -137,18 +138,33 @@ class Annotation {
 
 }
 
+my $object-count = 0;
+
+if $debug {
+  $*OUT.out-buffer = False;
+  $*ERR.out-buffer = False;
+}
+
+sub format($value is copy) {
+    $value ~~ s:g/\\/\\\\/;
+    $value ~~ s:g/\n/\\n/;
+    $value ~~ s:g/\r/\\r/;
+    $value ~~ s:g/\t/\\t/;
+    $value;
+}
+
 sub MAIN($db, $table1, $table2) {
   my $pg = DB::Pg.new(conninfo => "dbname=$db");
 
   my $results = $pg.query("SELECT element,
                                   st_astext(shape) AS shape,
                                   objectid
-                             FROM ga_annotations
+                             FROM $table1
                           ");
     
     for $results.arrays -> $object {
 note "Start loop" if $debugannotation;
-#	++$object-count;
+	++$object-count;
 	my $element  = $object[0];
 	my $shape    = $object[1];
         my $objectid = $object[2].Int;
@@ -166,7 +182,7 @@ note "Start loop" if $debugannotation;
 # It's also extremely slow :-(
 	$ann.skip(54);
 	$string2 = $ann.string;
-	note "draw-ga-annotation: $string2" if $debug >= 10;
+	note "draw-ga-annotation: $string2" if $debug ≥ 10;
 	$unknown1 = $ann.byte;
         $ann.skip(21);
 	$unknown1 = $ann.byte;
@@ -174,7 +190,7 @@ note "Start loop" if $debugannotation;
 	$unknown1 = $ann.short();
 	$unknown1 = $ann.short();
 	my ($cyan, $magenta, $yellow, $black) = $ann.colour;
-	#note "colour: $cyan $magenta $yellow $black\n" if $debug >= 10;
+	note "colour: $cyan $magenta $yellow $black\n" if $debug ≥ 10;
         $ann.skip(2);
 	$unknown1 = $ann.int;
 	$ann.skip(21) if ($unknown1 == 0);
@@ -189,20 +205,20 @@ note "Start loop" if $debugannotation;
         $ann.skip(61);
 	$string3 = $ann.string;
         $ann.skip(6);
-	#note "Second copy of string: $string3\n" if $debug >= 10;
+	note "Second copy of string: $string3\n" if $debug ≥ 10;
 	my $pointsize = $ann.byte;
 	$pointsize = $pointsize / 4 * 25.4 / 72;
-	#note "Point size: $pointsize\n" if $debug >= 10;
+	note "Point size: $pointsize\n" if $debug ≥ 10;
         $ann.skip(48);
 	$unknown1 = $ann.byte;
 	$unknown1 = $ann.short;
 	$pointsize = $ann.int;
 	$pointsize = $pointsize / 10000 * 25.4 / 72;
 	$font = $ann.astring;
-	#note "Font: $font\n" if $debug >= 10;
+	note "Font: $font\n" if $debug ≥ 10;
         $ann.skip(18);
 	$unknown1 = $ann.byte;
-	#$TMP.print: "unknown1: $unknown1\n"; ###
+	$*ERR.print: "unknown1: $unknown1\n" if $debug; ###
 	if ($unknown1 == 16) {
             $ann.skip(17);
 	    $unknown1 = $ann.short;
@@ -211,12 +227,14 @@ note "Start loop" if $debugannotation;
 	    $y1 = $ann.double;
 	    $x2 = $ann.double;
 	    $y2 = $ann.double;
-	    #$TMP.print: "16: $x1 $y1 $x2 $y2\n"; ###
+            
+	    $*ERR.print: "16: $x1 $y1 $x2 $y2\n" if $debug; ###
+            next unless $x1 == $x1 && $x2 == $x2 && $y1 == $y1 && $y2 == $y2; # next if any Nan
             $ann.skip(4);
 	    my $count = $ann.int;
             $ann.skip(4);
-	    #$TMP.print: "count: $count\n"; ###
-	    if ($count) {
+	    $*ERR.print: "count: $count\n" if $debug; ###
+	    if $count {
 		my @coords = ();
 		while ($count--) {
 		    my $x = $ann.double;
@@ -225,16 +243,6 @@ note "Start loop" if $debugannotation;
 		}
 		($x1, $y1) = @(@coords[0]);
 		($x2, $y2) = @(@coords[1]);
-#		if (%drawobjects{'annotation_position'}) {
-#                   my ($tx, $ty) = latlon2page($x1, $y1);
-#                   $TMP.print: "%%%%%%%\n$tx $ty moveto\n";
-#                    for @coords -> $posn {
-#                        my ($x, $y) = @$posn;
-#                        ($tx, $ty) = latlon2page($x, $y);
-#                        $TMP.print: "$tx $ty lineto\n";
-#                    }
-#                    $TMP.print: "1 1 0 0 setcmykcolor 0.5 setlinewidth stroke\n";
-#                }
                 $xdiff = 0;
                 $ydiff = 0;
                 $justn = 0;
@@ -245,11 +253,7 @@ note "Start loop" if $debugannotation;
             $ann.skip(6);
             $x1 = $ann.double;
             $y1 = $ann.double;
-            #note "65: $x1 $y1\n" if $debug >= 10;
-#            if (%drawobjects{'annotation_position'}) {
-#                my ($tx, $ty) = latlon2page $x1, $y1;
-#                $TMP.print: "$tx $ty moveto 1 0 rlineto 1 1 0 0 setcmykcolor 0.5 setlinewidth stroke %%%%%\n";
-#            }
+            note "65: $x1 $y1\n" if $debug ≥ 10;
             $xdiff = $ydiff = 0;
         } else {
             note "Unknown annotation value $unknown1, ignoring\n";
@@ -264,14 +268,9 @@ note "Start loop" if $debugannotation;
         
         # Check for valid location -- sometimes we get lat/lon with NaN values!
         if ($x1 == $x1 and $y1 == $y1) {
-#            $font = ($font eq 'Zurich Cn BT') ?? 'Helvetica-Narrow-Latin1' !! 'Helvetica-Latin1';
-#            $TMP.print: sprintf "/$font %.4g selectfont\n", $pointsize;
-            
             my $annotation = $string2;
-#            ($x1, $y1) = latlon2page $x1, $y1;
             my $angle;
             if ($y2.defined) {
-#                ($x2, $y2) = latlon2page $x2, $y2;
                 $angle = atan2($y2 - $y1, $x2 - $x1) * 180 / π;
             } else {
                 $angle = 0;
@@ -279,14 +278,19 @@ note "Start loop" if $debugannotation;
             $annotation ~~ s:g/\\/\\\\/;
             $annotation ~~ s:g/\(/\\\(/;
             $annotation ~~ s:g/\)/\\\)/;
-#            $TMP.print: sprintf "gsave %.6g %.6g translate %.6g rotate 0 0 moveto %.4g %.4g %.4g %.4g setcmykcolor ", $x1+$xdiff, $y1+$ydiff, $angle, $cyan, $magenta, $yellow, $black;
-            if ($justn == 2) {
-#                $TMP.print: "($annotation) stringwidth pop neg 0 rmoveto ";
-            } elsif ($justn == 1) {
-#                $TMP.print: "($annotation) stringwidth pop 2 div neg 0 rmoveto ";
-            }
-#            $TMP.print: "($annotation) show grestore\n";
-say "\"$annotation\": $x1, $y1 orientation $angle, colour：$cyan $magenta $yellow $black, $font, size：$pointsize";
+            my @values;
+            @values.push: format($annotation);
+            @values.push: format($x1);
+            @values.push: format($y1);
+            @values.push: format($angle);
+            @values.push: format("$cyan $magenta $yellow $black");
+            @values.push: format($font);
+            @values.push: format($pointsize);
+            @values.push: format($justn);
+            dd @values if $debug;
+            say "\"$annotation\": $x1, $y1 orientation $angle, colour：$cyan $magenta $yellow $black, $font, size：$pointsize, justification: $justn" if $debug;
+            my $values = (@values.join: "	") ~ "\n"; # That's a tab folks
+            print $values;
         }
     }
 }

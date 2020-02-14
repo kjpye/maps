@@ -19,6 +19,10 @@ You can unzip the resulting file and then process the data.
 
 There are various scripts in the import directory which can be used to process the data, which is in Microsoft's JET database format. The make_gis script show one way of doing this.
 
+## NSW ##
+
+You can try browsing https://portal.spatial.nsw.gov.au/portal/apps/sites/#/home/pages/browse-data but I haven't found a way to actually download data yet.
+
 ## QTopo ##
 
 Get Queensland topographic data by
@@ -114,7 +118,7 @@ How to populate the VicMap database.
 
 ## Other states and territories
 
-Ι have been unable to find a way of downloading data for WA, NT, ACT and NSW. (WΑ data is available, but costs real money.) Please let me know if you find a useful source.
+Ι have been unable to find a way of downloading data for WA, NT and ACT. (WΑ data is available, but costs real money.) Please let me know if you find a useful source.
 
 ## OpenStreetMap ##
 The script can utilise OSM for displaying roads.

@@ -1,9 +1,6 @@
-#!/usr/bin/env perl6
+#!/usr/bin/env raku
 
 use v6;
-
-use Trait::Traced;
-$*TRACER = $*ERR;
 
 use DB::Pg;
 use Geo::Coordinates::UTM;
@@ -1610,7 +1607,7 @@ class Annotation {
 }
 
 sub draw-ga-annotations() {
-    note "Annotations...\n" if $debug >= 1;
+    note "Annotations1...\n" if $debug >= 1;
     my $results = $pg.query("SELECT element, st_astext(shape) AS shape, objectid
                             FROM ga_annotations
                             WHERE shape && $rect
@@ -1761,6 +1758,47 @@ note "Start loop" if $debugannotation;
             }
             $TMP.print: "($annotation) show grestore\n";
         }
+    }
+}
+
+sub draw-ga-annotations2() {
+    note "Annotations2...\n" if $debug >= 1;
+    note "  $lllong, $lllat, $urlong, $urlat" if $debug ≥ 1;
+    my $results = $pg.query("SELECT annotation,
+                                    longitude,
+                                    latitude,
+                                    orientation,
+                                    colour,
+                                    font,
+                                    pointsize,
+                                    justification
+                               FROM ga_fixed_annotations
+                              WHERE $lllong <= longitude
+                                AND $urlong >= longitude
+                                AND $lllat  <= latitude
+                                AND $urlat  >= latitude
+                           ");
+    
+    for $results.arrays -> $object {
+        my $annotation    = $object[0];
+        my $longitude     = $object[1];
+        my $latitude      = $object[2];
+        my $orientation   = $object[3];
+        my $colour        = $object[4];
+        my $font          = $object[5];
+        my $textsize      = $object[6];
+        my $justn         = $object[7];
+
+note "Putting annotation $annotation";
+        my ($x, $y) = latlon2page($longitude, $latitude);
+        my $justification;
+        given $justn {
+            when 0 { $justification = 'lbl' }
+            when 1 { $justification = 'lbc' }
+            when 2 { $justification = 'lbr' }
+            default { $justification = 'lbl' } # should probably raise an error
+        }
+        put-annotation($x, $y, $longitude, $latitude, 0, 0, $annotation, :$colour, :$textsize, linespacing => $textsize * 1.2, :$orientation, :$justification);
     }
 }
 
@@ -2258,7 +2296,7 @@ note "put-annotation: $x $y ($long ($longstr), $lat ($latstr) -- $xoffset, $yoff
         }
         $TMP.print: "show 0 {-$linespacing} translate\n";
     }
-    $TMP.print: "grestore\n";
+    $TMP.print: "pop grestore\n";
 }
 
 my @ann;
@@ -2440,7 +2478,7 @@ sub draw-objects(Real $xoff, Real $yoff, Real $slope) {
       my $default     = $object.shift // '';
       my $order       = $object.shift.Int;
       $default        = 0 unless $default.defined && $default;
-      note "Drawing $feature: '$draw' '$table' '$typecolumn' ($order)" if $debug >= 5;
+      note "Drawing $feature: '$draw' '$table' '$typecolumn' ($order)" if $debug ≥ 1;
       if $order > 0 && %drawobjects{$feature.lc} {
         given $draw {
           when 'point'          { draw-points\              ($table, $typecolumn, $geomcol, $orientcol, $widthcol ); }
@@ -2457,7 +2495,7 @@ sub draw-objects(Real $xoff, Real $yoff, Real $slope) {
           when 'graticule'      { draw-graticule\           (                                                     ); }
           when 'grid'           { draw-grid\                (                                                     ); }
           when 'annotation'     { draw-annotations\         ($table                                               ); }
-          when 'ga_annotation'  { draw-ga-annotations\      (                                                     ); }
+          when 'ga_annotation'  { draw-ga-annotations2\     (                                                     ); }
           when 'userannotation' { draw-userannotations\     ($xoff, $yoff, $slope                                 ); }
           when 'ga_area'        { draw-ga-areas\            ($table                                               ); }
           when 'vm_road'        { draw-vm-roads\            (                                                     ); }

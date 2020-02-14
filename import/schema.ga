@@ -64,3 +64,14 @@ CREATE TABLE Def250k (
 );
 
 \COPY Def250k FROM 'def250k.csv' CSV HEADER;
+
+CREATE TABLE GA_Fixed_Annotations (
+  annotation text,
+  longitude float,
+  latitude float,
+  orientation float,
+  colour text,
+  font text,
+  pointsize float,
+  justification int
+);
