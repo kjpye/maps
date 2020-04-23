@@ -1,0 +1,14 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('point421', '', '
+/point421 { % Village or settlement < 500 people
+  /featurewidth exch def
+  gsave
+    newpath
+    translate rotate
+    0 0 .55 0 360 arc closepath
+    gsave 0 0 1 0 setcmykcolor fill grestore
+    0 0 0 1 setcmykcolor
+    .15 setlinewidth stroke
+  grestore
+} bind def
+');

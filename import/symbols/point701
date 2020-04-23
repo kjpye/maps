@@ -1,0 +1,10 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('point701', 'circle', '
+/point701 { % Aircraft Facility Point -- Airport
+  /featurewidth exch def
+  2.9 % radius
+  0.4 % line width
+  1 .73 0 0 % color
+  circle
+} bind def
+');

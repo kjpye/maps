@@ -1,0 +1,13 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('point401', '', '
+/point401 { % Ambulance Station
+  /featurewidth exch def
+  gsave
+    translate rotate
+    1 0 1 0 setcmykcolor
+    1.5
+    dup neg dup neg moveto dup dup lineto dup dup neg lineto neg dup lineto closepath fill
+%%% Needs letter "A"
+  grestore
+} bind def
+');

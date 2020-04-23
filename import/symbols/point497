@@ -1,0 +1,20 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('point497', '', '
+/point497 { % Vertical obstruction (chimney) - incompletely specified
+  /featurewidth exch def
+  gsave
+    translate rotate
+    0 0 0 1 setcmykcolor
+    .15 setlinewidth
+    -.5 0 moveto 1 0 rlineto stroke
+    gsave
+      0 1.75 .075 sub .1125 sub translate
+      .8 .225 scale
+      0 0 .5 0 360 arc closepath fill
+    grestore
+%%% fix the following properly
+    -.5 0 moveto -.4 1.75 lineto
+    .5 0 moveto .4 1.75 lineto stroke
+  grestore
+} bind def
+');

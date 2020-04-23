@@ -1,0 +1,10 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('line942', 'solidline', '
+/line942 { % Watercourse -- Hierarchy: Minor with direction of flow
+  /featurewidth exch def
+  .15
+  1 .1 0 .1
+  solidline
+% TODO add arrow
+} bind def
+');

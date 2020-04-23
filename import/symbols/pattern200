@@ -1,0 +1,20 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('pattern200', 'draw_dw10_dots', '
+/pattern200
+<<
+  /PatternType 1
+  /PaintType 1
+  /TilingType 1
+  /BBox [0 0 1.7 1.0]
+  /XStep 1.7
+  /YStep 1.0
+  /PaintProc
+  {
+    begin
+      0 0 0 0 setcmykcolor
+      draw_dw10_dots
+    end
+  } bind
+>>
+matrix makepattern def
+');

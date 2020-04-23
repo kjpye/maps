@@ -1233,6 +1233,13 @@ VALUES ('area7', 'cmykfill', '
 ');
 
 INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('area700', 'cmykfill', '
+/area700 { % Aircraft facility area
+  .3 .22 0 0 cmykfill
+} bind def
+');
+
+INSERT INTO Symbols_GA (name, dependencies, body)
 VALUES ('area881', 'pattern881 pattfill', '
 /area881 { % Rapid area
   pattern881 pattfill
@@ -3887,6 +3894,105 @@ VALUES ('point1007', '', '
     dup neg dup neg moveto dup dup lineto dup dup neg lineto neg dup lineto closepath fill
     0.2 setlinewidth
     0 0.6 moveto 0 1.2 rlineto 0 -0.6 rlineto -0.6 0 rlineto 1.2 0 rlineto stroke
+  grestore
+} bind def
+');
+
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('point1008', '', '
+/point1008 { % Tourist Information Centre
+  /featurewidth exch def
+  gsave
+    translate rotate
+% Draw the background
+    .95 .52 0 0 setcmykcolor
+    1.5
+    dup neg dup neg moveto dup dup lineto dup dup neg lineto neg dup lineto closepath fill
+% and then the "i"
+    0 0 1 0 setcmykcolor
+  gsave
+    3 500 div dup neg scale
+    -370 -250 translate
+    %0 250.5 moveto
+      %0 501 lineto
+      %740 501 lineto
+      %740 0 lineto
+      %0 0 lineto
+    %closepath
+% the dot
+    467.801 68.898 moveto
+      483.398  73     495.602  81.301 499.602  90.699 curveto
+      501.602  95.398 501.301 102.699 498.898 107.699 curveto
+      496.398 113     488.102 120.301 481.199 123.5   curveto
+      470.398 128.5   461.398 130.301 447.5   130.301 curveto
+      437.102 130.398 432.898 129.898 426.699 128.199 curveto
+      406.199 122.398 394     111.398 394      98.801 curveto
+      394      83.5   411.102  70.898 437.5    66.699 curveto
+      443.699  65.699 459.699  66.898 467.801  68.898 curveto
+    closepath
+    467 153 moveto
+      467     153.602 464.602 157.699 461.602 162.301 curveto
+      458.699 166.801 451.398 178.102 445.398 187.5   curveto
+      439.5   196.801 433.801 205.602 432.699 207     curveto
+      431.699 208.398 426.801 215.801 421.801 223.5   curveto
+      416.801 231.199 410.102 240.898 406.898 245.102 curveto
+      401.898 251.699 397.398 258.5   383.5   280.5   curveto
+      375     293.898 366.5   308.699 358.199 324.199 curveto
+      346.602 346     347.199 360.699 360     367.301 curveto
+      365.102 369.898 366.199 370.102 374.5   369.699 curveto
+      379.5   369.5   386     368.5   389     367.5   curveto
+      397.699 364.699 407.199 361     411.199 358.699 curveto
+      413.301 357.602 415.199 356.898 415.5   357.199 curveto
+      415.801 357.398 414.602 361.699 412.898 366.602 curveto
+      411.301 371.5   409.398 377.102 408.801 379     curveto
+      407.301 384.398 399.199 409     397.5   413.602 curveto
+      396.398 416.398 395.199 418     393.699 418.301 curveto
+      392.5   418.602 387.602 420.199 382.898 421.898 curveto
+      347.602 434.199 303     437.398 280.898 429.102 curveto
+      268.699 424.398 260     414.602 255.398 400.398 curveto
+      252.898 392.5   252.801 391     253.199 379.699 curveto
+      253.5   373 254.301     366.102 255     364.5   curveto
+      255.602 362.801 256.602 359.199 257.102 356.301 curveto
+      258.102 350.801 264.5   330.602 268.602 320.199 curveto
+      273.699 306.898 276     301.301 278.398 295.699 curveto
+      279.801 292.5   281     289.5   281     289     curveto
+      281     288.398 272.199 287.898 259.301 287.801 curveto
+      237.5   287.5   lineto
+      237.199 283.398 lineto
+      236.898 279.301 lineto
+      249.199 270.801 lineto
+      274.199 253.398 296.301 235.102 321.898 210.398 curveto
+      336.398 196.5   358.898 172     368.5   159.699 curveto
+      374.5   152.102 lineto
+      420.801 152     lineto
+      451.199 152     467     152.301 467     153     curveto
+    closepath
+    570 449.602 moveto
+      570 450.602     570.699 451 572.199 450.801 curveto
+      575.398 450.301 575.699 448 572.602 448     curveto
+      570.898 448     570 448.5   570     449.602 curveto
+    closepath
+    % 570 449.602 moveto % ???
+    fill
+  grestore
+} bind def
+');
+
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('point1009', '', '
+/point1009 { % SES Station
+  /featurewidth exch def
+  gsave
+    translate rotate
+    0 .353 1 0 setcmykcolor
+    -1.5 dup translate
+    0 0 moveto 1 0 rlineto 0 1 rlineto -1 0 rlineto closepath fill
+    2 0 moveto 1 0 rlineto 0 1 rlineto -1 0 rlineto closepath fill
+    1 1 moveto 1 0 rlineto 0 1 rlineto -1 0 rlineto closepath fill
+    0 2 moveto 1 0 rlineto 0 1 rlineto -1 0 rlineto closepath fill
+    2 2 moveto 1 0 rlineto 0 1 rlineto -1 0 rlineto closepath fill
+    .1 setlinewidth
+    .05 .05 moveto 2.9 0 rlineto 0 2.9 rlineto -2.9 0 rlineto closepath stroke
   grestore
 } bind def
 ');

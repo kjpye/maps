@@ -1,0 +1,18 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('point406', '', '
+/point406 { % Police Station
+  /featurewidth exch def
+  gsave
+    translate rotate
+    .95 .52 0 0 setcmykcolor
+    -1.5 dup translate
+    0 0 moveto 1 0 rlineto 0 1 rlineto -1 0 rlineto closepath fill
+    2 0 moveto 1 0 rlineto 0 1 rlineto -1 0 rlineto closepath fill
+    1 1 moveto 1 0 rlineto 0 1 rlineto -1 0 rlineto closepath fill
+    0 2 moveto 1 0 rlineto 0 1 rlineto -1 0 rlineto closepath fill
+    2 2 moveto 1 0 rlineto 0 1 rlineto -1 0 rlineto closepath fill
+    .1 setlinewidth
+    .05 .05 moveto 2.9 0 rlineto 0 2.9 rlineto -2.9 0 rlineto closepath stroke
+  grestore
+} bind def
+');

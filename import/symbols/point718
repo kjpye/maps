@@ -1,0 +1,6 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('point718', 'aero_start aero_outer aero_pass aero_anchor aero_end', '
+/point718 { % Aerodrome - water civilian licensed with passenger facilities
+    aero_start aero_outer aero_pass aero_anchor aero_end
+} bind def
+');

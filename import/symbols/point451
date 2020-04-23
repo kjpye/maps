@@ -1,0 +1,10 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('point451', 'circle', '
+/point451 { % Cemetery point
+  /featurewidth exch def
+  .375 % radius
+  0.1 % line width
+  0 0 0 1 % color
+  circle
+} bind def
+');

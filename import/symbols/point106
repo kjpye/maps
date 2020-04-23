@@ -1,0 +1,13 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('point106', '', '
+/point106 { % Mine Point
+  /featurewidth exch def
+  gsave
+    translate 45 add rotate
+    0 0 0 1 setcmykcolor
+    .15 setlinewidth
+    2 {1.75 2 div neg 0 moveto 1.75 0 rlineto 0 .5 rlineto 0 -1 rlineto stroke 90 rotate} repeat
+% need to add the ends properly
+  grestore
+} bind def
+');

@@ -1,0 +1,6 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('area557', 'cmykfill', '
+/area557 { % Hypsometric tint 200m - 500m
+  0 0 .12 0 cmykfill
+} bind def
+');

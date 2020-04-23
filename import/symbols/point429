@@ -1,0 +1,14 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('point429', '', '
+/point429 { % Building - grain storage
+  /featurewidth exch def
+  gsave
+    translate rotate
+    0 0 0 1 setcmykcolor
+    0.15 setlinewidth
+    -.527 .526 moveto -.485 0 lineto .485 0 lineto .527 .526 lineto
+    -.984 .427 moveto 0 .727 lineto .984 .427 lineto
+    stroke
+  grestore
+} bind def
+');

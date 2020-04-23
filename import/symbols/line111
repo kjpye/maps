@@ -1,0 +1,10 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('line111', 'dashedline', '
+/line111 { % Old Lake Bed Boundary
+  /featurewidth exch def
+  [2 .4] 0
+  .15
+  1 .1 0 .1
+  dashedline
+} bind def
+');

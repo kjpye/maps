@@ -1,0 +1,24 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('pattern908', 'draw_random_dots drawgrass', '
+/pattern908
+<<
+  /PatternType 1
+  /PaintType 1
+  /TilingType 1
+  /BBox [0 0 10 10]
+  /XStep 10
+  /YStep 10
+  /PaintProc
+  {
+    begin
+      1 .1 0 .1 setcmykcolor
+      draw_random_dots
+      1.25 3.75 drawgrass
+      3.75 1.25 drawgrass
+      6.25 8.75 drawgrass
+      8.75 6.25 drawgrass
+    end
+  } bind
+>>
+matrix makepattern def
+');

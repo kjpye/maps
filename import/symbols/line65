@@ -1,0 +1,16 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('line65', 'solidline ', '
+/line65 { % Reserve Boundary Line -- Single boundary
+  /featurewidth exch def
+  gsave
+    closepath clip
+    1.5
+    .4 0 .34 0
+    solidline
+% TODO limit verge to only one side
+  grestore
+  .25
+  1 0 .86 0
+  solidline
+} bind def
+');

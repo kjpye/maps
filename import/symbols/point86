@@ -1,0 +1,12 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('point86', '', '
+/point86 { % Water Tank
+  /featurewidth exch def
+  gsave
+    translate rotate
+    1 .1 0 .1 setcmykcolor
+    -.375 -.375 moveto .75 0 rlineto 0 .75 rlineto -.75 0 rlineto
+    closepath fill
+  grestore
+} bind def
+');

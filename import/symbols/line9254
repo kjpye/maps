@@ -1,0 +1,10 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('line9254', 'dashedline', '
+/line9254 { % Road -- vehicular track
+  /featurewidth exch def
+  [1.5 .25] 0
+  .2
+  .79 .9 0 0
+  dashedline
+} bind def
+');

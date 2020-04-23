@@ -1,0 +1,9 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('line281', 'solidline', '
+/line281 { % Pipeline -- above ground and elevated (not water)
+  /featurewidth exch def
+  .15
+  0 0 0 1
+  solidline
+} bind def
+');

@@ -1,0 +1,8 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('point801', 'filledcircle', '
+/point801 { % Storage Tank
+  /featurewidth exch def
+  .375 0 0 0 1
+  filledcircle 
+} bind def
+');

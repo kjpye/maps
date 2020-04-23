@@ -1,0 +1,44 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('line9260', 'solidline', '
+/line9260 { % Railway or Road Bridge Line; no different from line260
+  /localdict 10 dict def localdict begin
+  /featurewidth exch def
+  gsave
+  { /starty exch def /startx exch def /currentx startx def /currenty starty def} % moveto
+  {/prevy currenty def
+   /prevx currentx def
+   /currenty exch def
+   /currentx exch def
+   localdict /secondx known
+    {}
+    {/secondx currentx def /secondy currenty def}
+    ifelse
+  } % lineto
+  {} % curveto
+  {} % closepath
+  pathforall
+% Draw the angular ends
+% leading end:
+  gsave
+    newpath
+    startx starty translate
+    secondx startx sub secondy starty sub atan neg rotate
+    -.2 setlinewidth 0 0 0 1 setcmykcolor featurewidth 2 div
+    dup 0 moveto 0.6 2 sqrt mul dup neg rlineto stroke
+    neg 0 moveto -0.6 2 sqrt mul dup rlineto stroke
+  grestore
+% trailing end:
+  gsave
+    newpath
+    currentx currenty translate
+    prevx currentx sub prevy currenty sub atan neg rotate
+    -.2 setlinewidth 0 0 0 1 setcmykcolor featurewidth 2 div
+    dup 0 moveto 0.6 2 sqrt mul dup neg rlineto stroke
+    neg 0 moveto -0.6 2 sqrt mul dup rlineto stroke
+  grestore
+  grestore
+  gsave featurewidth 0.4 add 0 0 0 1 solidline grestore
+  featurewidth dup 0.26 lt { 0 0 0 1 } { 0 0 1 0 } ifelse solidline
+  end
+} bind def
+');

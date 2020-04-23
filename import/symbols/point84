@@ -1,0 +1,15 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('point84', '', '
+/point84 { % Pinnacle
+  /featurewidth exch def
+  gsave
+    translate rotate
+    0 0 0 1 setcmykcolor
+    0 0 .25 0 360 arc fill
+    .1 setlinewidth
+    -.5 0 moveto 1 0 rlineto 0 -.5 moveto 0 1 rlineto stroke
+    45 rotate
+    -.5 0 moveto 1 0 rlineto 0 -.5 moveto 0 1 rlineto stroke
+  grestore
+} bind def
+');

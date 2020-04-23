@@ -1,0 +1,10 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('line265', 'solidline', '
+/line265 { % Pointer
+  /featurewidth exch def
+  .1
+  0 0 0 1
+  solidline
+% TODO add arrow
+} bind def
+');

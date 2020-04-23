@@ -1,0 +1,19 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('inverted_v', '', '
+/inverted_v {
+  gsave
+    2 mul setlinewidth
+    /height exch def
+    /width exch def
+    width 2 div neg 0 moveto
+    0 height lineto
+    width 2 div 0 lineto
+    closepath clip
+    newpath
+    width 2 div neg 0 moveto
+    0 height lineto
+    width 2 div 0 lineto
+    stroke
+  grestore
+} bind def
+');

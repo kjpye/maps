@@ -1,0 +1,16 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('point498', '', '
+/point498 { % Vertical obstruction (silo)
+  /featurewidth exch def
+  gsave
+% TODO fix dimensions
+    0 0 0 1 setcmykcolor
+    translate rotate
+    0.1 setlinewidth
+    -0.6 0 moveto 0.6 0 lineto stroke
+    -0.2 0 moveto 0 1.5 rlineto stroke
+    0.2 0 moveto 0 1.5 rlineto stroke
+    -0.4 1.2 moveto 0 1.7 lineto 0.4 1.3 lineto stroke
+  grestore
+} bind def
+');

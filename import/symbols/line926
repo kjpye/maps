@@ -1,0 +1,9 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('line926', 'solidline', '
+/line926 { % Spillway
+  /featurewidth exch def
+  .3
+  1 .1 0 .1
+  solidline
+} bind def
+');

@@ -1,0 +1,22 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('pattern4', '', '
+/pattern4
+<<
+  /PatternType 1
+  /PaintType 1
+  /TilingType 1
+  /BBox [0 0 .77 .77]
+  /XStep .77
+  /YStep .77
+  /PaintProc
+  {
+    begin
+      .15 0 .43 0 setcmykcolor 0 0 XStep YStep rectfill
+      1 0 .86 0 setcmykcolor
+      0 0 moveto .77 .77 lineto
+      0.2 setlinewidth stroke
+    end
+  } bind
+>>
+matrix makepattern def
+');

@@ -1,0 +1,23 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('point96', '', '
+/point96 { % Cave
+  /featurewidth exch def
+  gsave
+  translate rotate
+  0 0 0 1 setcmykcolor
+  -0.575 -0.46 moveto
+  0.37 0 rlineto
+  0 0.595 rlineto
+  0.05 0.135 0.255 180 0 arcn
+  0 -0.595 rlineto
+  0.27 0 rlineto
+  0 0.1 rlineto
+  -0.17 0 rlineto
+  0 0.495 rlineto
+  0 0.135 0.405 0 180 arc
+  0 -0.495 rlineto
+  -0.17 0 rlineto
+  closepath fill
+  grestore
+} bind def
+');

@@ -1,0 +1,17 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('point708', 'circle', '
+/point708 { % Aircraft Facility Point -- Heliport
+  /featurewidth exch def
+  3 copy
+  1.35 % radius
+  0.2 % line width
+  1 .73 0 0 % color
+  circle
+  gsave
+    translate rotate 1 .73 0 0 setcmykcolor
+    -0.71 0 moveto 1.42 0 rlineto .3 setlinewidth stroke
+    -0.51 0.875 moveto 0 -1.75 rlineto .4 setlinewidth stroke
+    0.51 0.875 moveto 0 -1.75 rlineto .4 setlinewidth stroke
+  grestore
+} bind def
+');

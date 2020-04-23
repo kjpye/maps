@@ -1,0 +1,10 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('line601', 'dashedline', '
+/line601 { % Open Grass Plain Boundary (WAC only)
+  /featurewidth exch def
+  [1.9 .6 ] 0
+  .15
+  0 0 0 1
+  dashedline
+} bind def
+');

@@ -1,0 +1,17 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('drawgrass', '', '
+/drawgrass{
+  0.2 setlinewidth
+  gsave
+    translate
+.5 .5 scale
+    -1 0 moveto 2 0 rlineto
+    -.7 -.5 moveto 1.4 0 rlineto
+    -.7 0 moveto -1 .5 lineto
+    -.2 0 moveto -.4 1 lineto
+    .2 0 moveto .42 .95 lineto
+    .7 0 moveto 1 .6 lineto
+    stroke
+  grestore
+} bind def
+');

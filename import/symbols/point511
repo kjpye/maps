@@ -1,0 +1,14 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('point511', '', '
+/point511 { % Broadcasting station - radio or television without mast
+        % Air navigation beacon - without obstruction or aerodrome
+  /featurewidth exch def
+  gsave
+    .79 .9 0 0 setcmykcolor
+    translate rotate
+    0 0 .2 0 360 arc closepath fill
+    .3 setlinewidth
+    0 0 1.1 0 360 arc closepath stroke
+  grestore
+} bind def
+');

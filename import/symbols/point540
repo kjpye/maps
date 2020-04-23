@@ -1,0 +1,10 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('point540', '', '
+/point540 { % Powerline Pylon
+  /featurewidth exch def
+  gsave
+    translate rotate
+% TODO
+  grestore
+} bind def
+');

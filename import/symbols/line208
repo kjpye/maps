@@ -1,0 +1,14 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('line208', 'dashedline solidline', '
+/line208 { % Railway - light
+  /featurewidth exch def
+  gsave
+    [.05 2.45] 1.25
+    1
+    0 0 0 1
+    dashedline
+  grestore
+  .15 0 0 0 1
+  solidline
+} bind def
+');

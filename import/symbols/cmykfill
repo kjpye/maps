@@ -1,0 +1,10 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('cmykfill', '', '
+/cmykfill {
+  gsave
+    setcmykcolor
+    closepath fill
+  grestore
+  newpath
+} bind def
+');

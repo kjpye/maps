@@ -1,0 +1,9 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('line70', 'solidline', '
+/line70 { % Jetty
+  /featurewidth exch def
+  .3
+  0 0 0 1
+  solidline
+} bind def
+');

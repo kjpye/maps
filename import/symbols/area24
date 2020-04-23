@@ -1,0 +1,7 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('area24', 'cmykfill', '
+/area24
+ { % Recreation Area
+  .8 0 .69 0 cmykfill
+} bind def
+');

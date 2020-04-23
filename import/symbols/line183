@@ -1,0 +1,10 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('line183', 'dashedline', '
+/line183 { % Conveyor
+  /featurewidth exch def
+  [.75 .25] 0
+  .14
+  0 0 0 1
+  dashedline
+} bind def
+');

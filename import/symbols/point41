@@ -1,0 +1,13 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('point41', '', '
+/point41 { % Building point (ruin)
+  /featurewidth exch def
+  gsave
+    translate rotate
+    0.15 setlinewidth
+    0 0 0 1 setcmykcolor
+    0.3
+    dup neg dup neg moveto dup dup lineto dup dup neg lineto neg dup lineto closepath stroke
+  grestore
+} bind def
+');

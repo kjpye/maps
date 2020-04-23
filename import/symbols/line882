@@ -1,0 +1,10 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('line882', 'solidline', '
+/line882 { % Rapid Line -- on minor watercourse chain
+  /featurewidth exch def
+  .15
+  1 .1 0 .1
+  solidline
+% TODO add arrows
+} bind def
+');

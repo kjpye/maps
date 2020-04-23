@@ -1,0 +1,9 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('line94', 'solidline', '
+/line94 { % Waterbody boundaries and Shoreline
+  /featurewidth exch def
+  .15
+  1 .1 0 .1
+  solidline
+} bind def
+');

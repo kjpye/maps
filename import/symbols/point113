@@ -1,0 +1,26 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('point113', '', '
+/point113 { % Petroleum Well (WAC only)
+  /featurewidth exch def
+  gsave
+    translate rotate
+    0 0 moveto
+    -1.1 0 rlineto
+    1.1 2.9 rlineto
+    1.1 -2.9 rlineto
+    closepath
+    clip
+    newpath
+    0 0 moveto
+    -1.1 0 rmoveto
+    1.1 2.9 rlineto
+    1.1 -2.9 rlineto
+    .15 setlinewidth
+    stroke
+    0 0 moveto
+    -1.1 1.95 rmoveto 2.2 0 rlineto
+    1.9 setlinewidth
+    stroke
+  grestore
+} bind def
+');

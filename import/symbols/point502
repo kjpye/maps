@@ -1,0 +1,12 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('point502', 'inverted_v', '
+/point502 { % Microwave repeater station
+  /featurewidth exch def
+  gsave
+    0 0 0 1 setcmykcolor
+    translate rotate
+    1.4 3 .15 inverted_v
+    0 2.6 .4 0 360 arc closepath fill
+  grestore
+} bind def
+');

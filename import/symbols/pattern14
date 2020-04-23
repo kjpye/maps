@@ -1,0 +1,99 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('pattern14', '', '
+/pattern14
+<<
+  /PatternType 1
+  /PaintType 1
+  /TilingType 1
+  /BBox [0 0 10 10]
+  /XStep 10
+  /YStep 10
+  /PaintProc
+  {
+    begin
+      1 .1 0 .1 setcmykcolor
+      0.000 0.25 moveto 1.732 0 rlineto
+      2.435 0.25 moveto 1.518 0 rlineto
+      5.388 0.25 moveto 1.238 0 rlineto
+      6.951 0.25 moveto 1.920 0 rlineto
+
+      0.000 0.75 moveto 2.626 0 rlineto
+      2.812 0.75 moveto 3.250 0 rlineto
+      9.775 0.75 moveto 0.224 0 rlineto
+
+      1.066 1.25 moveto 3.363 0 rlineto
+      5.666 1.25 moveto 3.715 0 rlineto
+
+      0.000 1.75 moveto 3.218 0 rlineto
+      6.155 1.75 moveto 3.435 0 rlineto
+
+      0.644 2.25 moveto 0.818 0 rlineto
+      3.602 2.25 moveto 0.948 0 rlineto
+      4.822 2.25 moveto 2.774 0 rlineto
+      7.823 2.25 moveto 2.176 0 rlineto
+
+      1.142 2.75 moveto 1.699 0 rlineto
+      3.330 2.75 moveto 3.523 0 rlineto
+      8.996 2.75 moveto 1.003 0 rlineto
+
+      0.000 3.25 moveto 1.278 0 rlineto
+      3.472 3.25 moveto 2.704 0 rlineto
+      7.274 3.25 moveto 2.376 0 rlineto
+      9.982 3.25 moveto 0.017 0 rlineto
+
+      0.000 3.75 moveto 3.672 0 rlineto
+      7.621 3.75 moveto 1.570 0 rlineto
+
+      0.240 4.25 moveto 0.801 0 rlineto
+      1.398 4.25 moveto 1.761 0 rlineto
+      3.326 4.25 moveto 0.411 0 rlineto
+      6.700 4.25 moveto 0.181 0 rlineto
+
+      0.000 4.75 moveto 1.306 0 rlineto
+      1.369 4.75 moveto 3.514 0 rlineto
+      5.064 4.75 moveto 3.110 0 rlineto
+
+      0.000 5.25 moveto 0.410 0 rlineto
+      3.598 5.25 moveto 2.567 0 rlineto
+      7.630 5.25 moveto 2.369 0 rlineto
+
+      1.512 5.75 moveto 3.193 0 rlineto
+      6.849 5.75 moveto 3.150 0 rlineto
+
+      0.000 6.25 moveto 2.507 0 rlineto
+      4.161 6.25 moveto 0.515 0 rlineto
+      6.973 6.25 moveto 2.858 0 rlineto
+
+      0.194 6.75 moveto 2.974 0 rlineto
+      3.851 6.75 moveto 1.805 0 rlineto
+     6.148 6.75 moveto 1.193 0 rlineto
+      7.506 6.75 moveto 1.682 0 rlineto
+      9.670 6.75 moveto 0.329 0 rlineto
+
+      1.166 7.25 moveto 3.018 0 rlineto
+      5.117 7.25 moveto 1.156 0 rlineto
+
+      0.000 7.75 moveto 2.397 0 rlineto
+      5.715 7.75 moveto 3.001 0 rlineto
+
+      0.000 8.25 moveto 2.855 0 rlineto
+      3.327 8.25 moveto 0.218 0 rlineto
+      7.460 8.25 moveto 0.617 0 rlineto
+
+      0.638 8.75 moveto 1.199 0 rlineto
+      3.764 8.75 moveto 3.400 0 rlineto
+
+      0.000 9.25 moveto 1.432 0 rlineto
+      1.797 9.25 moveto 1.686 0 rlineto
+      6.183 9.25 moveto 1.281 0 rlineto
+      8.872 9.25 moveto 0.226 0 rlineto
+
+      1.784 9.75 moveto 3.521 0 rlineto
+      5.357 9.75 moveto 2.888 0 rlineto
+      
+      0.05 setlinewidth stroke
+    end
+  } bind
+>>
+matrix makepattern def
+');

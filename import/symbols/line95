@@ -1,0 +1,10 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('line95', 'dashedline', '
+/line95 { % Shoal (edge symbology)
+  /featurewidth exch def
+  [1.75 .25] 0
+  .15
+  1 .1 0 .1
+  dashedline
+} bind def
+');

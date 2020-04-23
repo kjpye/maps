@@ -1,0 +1,15 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('point27', '', '
+/point27 { % Road marker - national
+  /featurewidth exch def
+  gsave
+    translate rotate
+    0.15 setlinewidth
+    0 0 0 1 setcmykcolor
+    -1.5 1.2 moveto
+    3 0 rlineto 0 -2.5 rlineto -1.5 -0.8 rlineto -1.5 0.8 rlineto closepath
+    gsave 0 0 0 0 setcmykcolor fill grestore
+    stroke
+  grestore
+} bind def
+');

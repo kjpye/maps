@@ -1,0 +1,9 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('line680', 'solidline', '
+/line680 { % Reserve Boundary Line -- Dual boundary coincident with edge of perennial feature or sea
+  /featurewidth exch def
+  1.5
+  .4 0 .34 0
+  solidline
+} bind def
+');

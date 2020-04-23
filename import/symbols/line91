@@ -1,0 +1,10 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('line91', 'dashedline', '
+/line91 { % Watercourse -- Hierarchy: Major (100K use only for non-perennial features)
+  /featurewidth exch def
+  [4 .3] 0
+  .2
+  1 .1 0 .1
+  dashedline
+} bind def
+');

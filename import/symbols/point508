@@ -1,0 +1,21 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('point508', 'inverted_v', '
+/point508 { % Broadcasting station (group) - radio or television with mast lit
+  /featurewidth exch def
+  gsave
+    .79 .9 0 0 setcmykcolor
+    translate rotate
+    0 0 .2 0 360 arc closepath fill
+    .3 setlinewidth 0 0 1.1 0 360 arc closepath stroke
+    -.45 0 translate % what do we really want here???
+    2.5 3 .3 inverted_v
+    .9 0 translate
+    2.5 3 .3 inverted_v
+    0 3 translate
+    .15 setlinewidth
+    3 {.5 0 moveto .7 0 rlineto stroke 45 rotate} repeat
+    -45 rotate 0 .9 translate
+    3 {.5 0 moveto .7 0 rlineto stroke 45 rotate} repeat
+  grestore
+} bind def
+');

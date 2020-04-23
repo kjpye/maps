@@ -1,0 +1,10 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('aero_pass', '', '
+/aero_pass {
+  .4 setlinewidth
+  0 2.3 moveto 0 3.5 lineto stroke
+  0 -2.3 moveto 0 -3.5 lineto stroke
+  -2.3 0 moveto -3.5 0 lineto stroke
+  2.3 0 moveto 3.5 0 lineto stroke
+} bind def
+');

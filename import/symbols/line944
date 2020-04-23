@@ -1,0 +1,10 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('line944', 'dashedline', '
+/line944 { % Watercourse -- Hierarchy: Minor (100K use only for non-preennial features)
+  /featurewidth exch def
+  [4 .3] 0
+  .15
+  1 .1 0 .1
+  dashedline
+} bind def
+');

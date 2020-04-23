@@ -1,0 +1,15 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('point503', 'inverted_v', '
+/point503 { % Obstacle (singular) - lit
+  /featurewidth exch def
+  gsave
+    .79 .9 0 0 setcmykcolor
+    translate rotate
+    0 0 .2 0 360 arc closepath fill
+    2.5 3 .3 inverted_v
+    0 3 translate
+    .15 setlinewidth
+    5 {.5 0 moveto .7 0 rlineto stroke 45 rotate} repeat
+  grestore
+} bind def
+');

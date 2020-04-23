@@ -1,0 +1,6 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('area6', 'pattern6 pattfill', '
+/area6 { % Plantation (on 100K softwood only)
+  pattern6 pattfill
+} bind def
+');

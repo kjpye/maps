@@ -1,0 +1,9 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('line60', 'solidline', '
+/line60 { % Habitation Boundaries and Cultural Boundaries
+  /featurewidth exch def
+  .15
+  0 0 0 1
+  solidline
+} bind def
+');

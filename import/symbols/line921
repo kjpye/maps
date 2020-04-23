@@ -1,0 +1,15 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('line921', 'dashedline solidline', '
+/line921 { % Levee
+  /featurewidth exch def
+  gsave
+    [.1 .5] .3
+    1
+    0 0 0 1
+    dashedline
+  grestore
+  .1
+  0 0 0 1
+  solidline
+} bind def
+');

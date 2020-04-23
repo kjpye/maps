@@ -1,0 +1,9 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('line42', 'solidline', '
+/line42 { % Lock line and arrow (without arrow)
+  /featurewidth exch def
+  .1
+  0 0 0 1
+  solidline
+} bind def
+');

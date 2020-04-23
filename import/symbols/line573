@@ -1,0 +1,10 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('line573', 'solidline', '
+/line573 { % Grid Line -- Standard
+        % Bathymetric Line -- Standard
+  /featurewidth exch def
+  .1
+  1 .1 0 .1
+  solidline
+} bind def
+');

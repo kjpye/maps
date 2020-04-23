@@ -1,0 +1,9 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('line58', 'solidline', '
+/line58 { % Standard Contour (Not index)
+  /featurewidth exch def
+  .1
+  0 .59 1 .18
+  solidline
+} bind def
+');

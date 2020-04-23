@@ -1,0 +1,23 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('aero_anchor', '', '
+/aero_anchor {
+  0 1.1 translate
+  .15 setlinewidth 0 0 .2 0 360 arc stroke
+  .3 setlinewidth
+  -.6 .2 .15 2 div sub .15 add neg moveto 1.2 0 rlineto stroke
+  0 -.2 moveto 0 -2.35 rlineto stroke
+  .3 setlinewidth
+  0 -.4925 translate
+  0 0 1.9 -115 -65 arc stroke
+  gsave
+    -24 rotate
+    0 -1.6 moveto -.5 -.3 rlineto
+                      .5 -.3 rlineto closepath fill
+  grestore
+  24 rotate
+  0 -1.6 moveto
+   .5 -.3 rlineto
+  -.5 -.3 rlineto
+  closepath fill
+} bind def
+');

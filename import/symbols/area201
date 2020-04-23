@@ -1,0 +1,6 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('area201', 'pattern201 pattfill cmykfill', '
+/area201 { % Forest or shrub (sparse) -- should be patterned
+  pattern201 pattfill
+} bind def
+');

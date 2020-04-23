@@ -1,0 +1,16 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('line64', 'dashedline solidline', '
+/line64 { % Prohibited Area Boundary Line -- Single boundary
+  /featurewidth exch def
+  gsave
+    1.5
+    .4 .29 0 0
+    solidline
+% TODO limit verge to only one side
+  grestore
+  [3.75 1.25 .25 1.25] 0
+  .1
+  0 0 0 1
+  dashedline
+} bind def
+');

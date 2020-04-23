@@ -1,0 +1,13 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('point1005', '', '
+/point1005 { % spot time stamp
+  gsave
+  moveto
+  dup stringwidth pop dup 2 div neg 0 rmoveto currentpoint translate
+  dup 0 rlineto 0 3 rlineto neg 0 rlineto closepath
+  gsave 0 0 0 0 setcmykcolor fill grestore
+  0.2 setlinewidth 0 0 0 1 setcmykcolor stroke
+  0 0 moveto show
+  grestore
+} bind def
+');

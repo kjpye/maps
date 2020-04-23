@@ -1,0 +1,15 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('point756', '', '
+/point756 { % Wreck -- bare or tidal
+  /featurewidth exch def
+  gsave
+    0 0 0 1 setcmykcolor
+    translate rotate
+    .1 setlinewidth
+    0 0 0.25 0 360 arc
+    -1.5 0 moveto -0.25 0 lineto .25 0 moveto 1.5 0 lineto -1.3 0.75 lineto -0.9 0 lineto stroke
+    1.5 0 translate -22.5 rotate -1.4 0 translate 0 0 moveto 0 1 lineto -.375 .71 moveto .75 0 rlineto stroke
+%    1.5 0 translate -1.4 0 moveto 0 1 lineto stroke -1.4 0.71 moveto -0.375 0 rlineto 0 .75 rlineto stroke
+  grestore
+} bind def
+');

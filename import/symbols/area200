@@ -1,0 +1,7 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('area200', 'pattern200 pattfill', '
+/area200 { % Forest or shrub (dense) -- should be patterned
+  gsave .15 0 .43 0 cmykfill grestore
+  pattern200 pattfill
+} bind def
+');

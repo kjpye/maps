@@ -1,0 +1,14 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('point89', '', '
+/point89 { % Waterfall
+  /featurewidth exch def
+% TODO make wider than river
+  gsave
+    translate rotate
+    .25 setlinewidth
+    1 .1 0 .1 setcmykcolor
+    0 -.5 moveto 0 1 rlineto stroke
+%    closepath fill
+  grestore
+} bind def
+');

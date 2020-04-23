@@ -519,6 +519,7 @@ sub draw-areas(Str $table, Str $columns, Str $geomcol) {
 	      }
 	  }
 	  
+          note "No symbol found for table {$table} feature {$featuretype}(area)" if $symbol <= 0 && $debug >= 1;
 	  next unless $symbol > 0;
 	  ++$object-count;
 	  put-line($shape.Str, "area$symbol", );
@@ -1302,6 +1303,7 @@ sub draw-points(Str $table, Str $columns, Str $geomcol, Str $orientcol, Str $wid
     } else {
       for $sth-symb.execute($table, $featuretype, 'point').arrays -> $obj {
         $symbol = $obj[0].Int;
+        note "No symbol found for table $table feature $featuretype" if $symbol <= 0 && $debug >= 1;
       }
     }
 	
@@ -2705,13 +2707,13 @@ EOF
   $pg = DB::Pg.new(conninfo => "dbname=$db");
 
   $sth-symb = $pg.db.prepare('SELECT symbol
-                                FROM   symbols
-                               WHERE  dbtable = $1
-                                 AND  featuretype = $2
-                                 AND  type = $3
+                                FROM symbols
+                               WHERE dbtable = $1
+                                 AND featuretype = $2
+                                 AND type = $3
                              ');
 
-  $copyright = 'copright'; # %defaults<copyright>;
+  $copyright = 'copyright'; # %defaults<copyright>;
 
   postscript-prefix();
 

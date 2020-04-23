@@ -1,4 +1,408 @@
 featuretype,symbol,type,dbtable
+lga,0,area,vm_ad_lga_area_polygon
+locality,0,area,vm_ad_locality_area_polygon
+building:undefined_building,40,point,vm_building_point
+residential building:house,40,point,vm_building_point
+storage facility:hay shed,40,point,vm_building_point
+storage facility:shed,40,point,vm_building_point
+storage facility:woolshed,40,point,vm_building_point
+building:undefined_building,26,area,vm_building_polygon
+storage facility:hay shed,26,area,vm_building_polygon
+storage facility:shed,26,area,vm_building_polygon
+storage facility:woolshed,26,area,vm_building_polygon
+contour,56,line,vm_el_contour
+contour_dep,58,line,vm_el_contour
+contour_dep_index,57,line,vm_el_contour
+contour_index,55,line,vm_el_contour
+spot_height,0,point,vm_el_grnd_surface_point
+rock_outcrop,0,area,vm_el_grnd_type_area_polygon
+sand,0,area,vm_el_grnd_type_area_polygon
+mountain,0,point,vm_el_grnd_type_point
+point,0,point,vm_el_grnd_type_point
+rock_outcrop,0,point,vm_el_grnd_type_point
+cliff,0,line,vm_el_morphology_line
+cutting_both,0,line,vm_el_morphology_line
+cutting_one,0,line,vm_el_morphology_line
+embankment_both,0,line,vm_el_morphology_line
+embankment_one,0,line,vm_el_morphology_line
+levee,0,line,vm_el_morphology_line
+sand_dune,0,line,vm_el_morphology_line
+cave,0,point,vm_el_morphology_point
+sinkhole,0,point,vm_el_morphology_point
+admin facility:custodial service,0,point,vm_foi_index_centroid
+admin facility:customer service centre,0,point,vm_foi_index_centroid
+admin facility:law court,0,point,vm_foi_index_centroid
+admin facility:municipal office,0,point,vm_foi_index_centroid
+admin facility:office,0,point,vm_foi_index_centroid
+admin facility:prison,0,point,vm_foi_index_centroid
+admin facility:research station,0,point,vm_foi_index_centroid
+admin facility:sheriffs office,0,point,vm_foi_index_centroid
+admin facility:tourist information centre,1008,point,vm_foi_index_centroid
+admin facility:weather station,0,point,vm_foi_index_centroid
+agricultural area:farm,0,point,vm_foi_index_centroid
+agricultural area:vineyard,0,point,vm_foi_index_centroid
+building:ruin,0,point,vm_foi_index_centroid
+cableway:cableway terminal,0,point,vm_foi_index_centroid
+cableway:chairlift,0,point,vm_foi_index_centroid
+cableway:poma tow,0,point,vm_foi_index_centroid
+cableway:t-bar tow,0,point,vm_foi_index_centroid
+care facility:aged care,0,point,vm_foi_index_centroid
+care facility:child care,0,point,vm_foi_index_centroid
+care facility:disability support centre,0,point,vm_foi_index_centroid
+commercial facility:accommodation,0,point,vm_foi_index_centroid
+commercial facility:business park,0,point,vm_foi_index_centroid
+commercial facility:entertainment centre,0,point,vm_foi_index_centroid
+commercial facility:shopping centre,0,point,vm_foi_index_centroid
+commercial facility:shopping precinct,0,point,vm_foi_index_centroid
+communication service:broadcast radio facility,0,point,vm_foi_index_centroid
+communication service:broadcast television facility,0,point,vm_foi_index_centroid
+communication service:radio communication facility,0,point,vm_foi_index_centroid
+communication service:telephone exchange,0,point,vm_foi_index_centroid
+community space:camp ground,0,point,vm_foi_index_centroid
+community space:caravan park,0,point,vm_foi_index_centroid
+community space:parking area,0,point,vm_foi_index_centroid
+community space:rest area,0,point,vm_foi_index_centroid
+community space:showground,0,point,vm_foi_index_centroid
+community venue:community centre,0,point,vm_foi_index_centroid
+community venue:hall,0,point,vm_foi_index_centroid
+community venue:neighbourhood house,0,point,vm_foi_index_centroid
+community venue:senior citizens,0,point,vm_foi_index_centroid
+control point:survey monument,0,point,vm_foi_index_centroid
+control point:trig station,0,point,vm_foi_index_centroid
+cultural centre:aquarium,0,point,vm_foi_index_centroid
+cultural centre:arboretum,0,point,vm_foi_index_centroid
+cultural centre:art gallery,0,point,vm_foi_index_centroid
+cultural centre:library,0,point,vm_foi_index_centroid
+cultural centre:museum,0,point,vm_foi_index_centroid
+cultural centre:observatory,0,point,vm_foi_index_centroid
+defence site:airforce base,0,point,vm_foi_index_centroid
+defence site:barracks,0,point,vm_foi_index_centroid
+defence site:military area,0,point,vm_foi_index_centroid
+defence site:naval base,0,point,vm_foi_index_centroid
+dumping ground:landfill,0,point,vm_foi_index_centroid
+dumping ground:scrap yard,0,point,vm_foi_index_centroid
+dumping ground:spoil banks,0,point,vm_foi_index_centroid
+dumping ground:tailings,0,point,vm_foi_index_centroid
+dumping ground:transfer station,0,point,vm_foi_index_centroid
+education centre:education complex,0,point,vm_foi_index_centroid
+education centre:further education,0,point,vm_foi_index_centroid
+education centre:primary school,0,point,vm_foi_index_centroid
+education centre:primary/secondary school,0,point,vm_foi_index_centroid
+education centre:school camp,0,point,vm_foi_index_centroid
+education centre:secondary school,0,point,vm_foi_index_centroid
+education centre:special school,0,point,vm_foi_index_centroid
+education centre:tertiary institution,0,point,vm_foi_index_centroid
+education centre:university,0,point,vm_foi_index_centroid
+emergency facility:ambulance station,401,point,vm_foi_index_centroid
+emergency facility:coast guard,0,point,vm_foi_index_centroid
+emergency facility:emergency complex,0,point,vm_foi_index_centroid
+emergency facility:emergency coordination centre,0,point,vm_foi_index_centroid
+emergency facility:fire lookout,0,point,vm_foi_index_centroid
+emergency facility:fire station,0,point,vm_foi_index_centroid
+emergency facility:fire station (forest industry),0,point,vm_foi_index_centroid
+emergency facility:lifesaving club,0,point,vm_foi_index_centroid
+emergency facility:neighbourhood safer place,0,point,vm_foi_index_centroid
+emergency facility:police station,0,point,vm_foi_index_centroid
+emergency facility:refuge,0,point,vm_foi_index_centroid
+emergency facility:ses unit,1009,point,vm_foi_index_centroid
+excavation site:abandoned mine,0,point,vm_foi_index_centroid
+excavation site:abandoned quarry,0,point,vm_foi_index_centroid
+excavation site:adit,0,point,vm_foi_index_centroid
+excavation site:mine,0,point,vm_foi_index_centroid
+excavation site:quarry,0,point,vm_foi_index_centroid
+health facility:community health centre,0,point,vm_foi_index_centroid
+health facility:maternal/child health centre,0,point,vm_foi_index_centroid
+hospital:bush nursing hospital,0,point,vm_foi_index_centroid
+hospital:day procedure centre,0,point,vm_foi_index_centroid
+hospital:general hospital,0,point,vm_foi_index_centroid
+hospital:general hospital (emergency),0,point,vm_foi_index_centroid
+hospital:hospital complex,0,point,vm_foi_index_centroid
+industrial facility:abattoir,0,point,vm_foi_index_centroid
+industrial facility:brickworks,0,point,vm_foi_index_centroid
+industrial facility:dairy,0,point,vm_foi_index_centroid
+industrial facility:factory,0,point,vm_foi_index_centroid
+industrial facility:mill/timber operations,0,point,vm_foi_index_centroid
+industrial facility:proving ground,0,point,vm_foi_index_centroid
+landmark:cairn,0,point,vm_foi_index_centroid
+landmark:flag pole,0,point,vm_foi_index_centroid
+landmark:fountain,0,point,vm_foi_index_centroid
+landmark:lookout,0,point,vm_foi_index_centroid
+landmark:monument,0,point,vm_foi_index_centroid
+landmark:tourist attraction,0,point,vm_foi_index_centroid
+landmark:tower,0,point,vm_foi_index_centroid
+physiographic:lava flow,0,point,vm_foi_index_centroid
+pipeline facility:gas plant,0,point,vm_foi_index_centroid
+pipeline facility:oil refinery,0,point,vm_foi_index_centroid
+pipeline facility:oil terminal,0,point,vm_foi_index_centroid
+pipeline facility:pumping station,0,point,vm_foi_index_centroid
+pipeline facility:treatment plant,0,point,vm_foi_index_centroid
+pipeline:gas pipeline,0,point,vm_foi_index_centroid
+pipeline:oil pipeline,0,point,vm_foi_index_centroid
+place of worship:church,0,point,vm_foi_index_centroid
+place of worship:gurdwara (sikh),0,point,vm_foi_index_centroid
+place of worship:monastry,0,point,vm_foi_index_centroid
+place of worship:mondir (hindu),0,point,vm_foi_index_centroid
+place of worship:mosque,0,point,vm_foi_index_centroid
+place of worship:synagogue,0,point,vm_foi_index_centroid
+place of worship:vihara (buddhist),0,point,vm_foi_index_centroid
+place:historic site,0,point,vm_foi_index_centroid
+power facility:biomass power station,0,point,vm_foi_index_centroid
+power facility:coal power station,0,point,vm_foi_index_centroid
+power facility:cooling tower,0,point,vm_foi_index_centroid
+power facility:gas power station,0,point,vm_foi_index_centroid
+power facility:hydro power station,0,point,vm_foi_index_centroid
+power facility:power sub station,0,point,vm_foi_index_centroid
+power facility:power terminal station,0,point,vm_foi_index_centroid
+power facility:wind farm,0,point,vm_foi_index_centroid
+power facility:wind turbine,500,point,vm_foi_index_centroid
+power line:power sub transmission,0,point,vm_foi_index_centroid
+power line:power transmission,0,point,vm_foi_index_centroid
+recreational resource:amphitheatre,0,point,vm_foi_index_centroid
+recreational resource:bmx track,0,point,vm_foi_index_centroid
+recreational resource:club house,0,point,vm_foi_index_centroid
+recreational resource:grandstand,0,point,vm_foi_index_centroid
+recreational resource:group camp,0,point,vm_foi_index_centroid
+recreational resource:hut,0,point,vm_foi_index_centroid
+recreational resource:picnic site,0,point,vm_foi_index_centroid
+recreational resource:playground,0,point,vm_foi_index_centroid
+recreational resource:rotunda,0,point,vm_foi_index_centroid
+recreational resource:skate park,0,point,vm_foi_index_centroid
+reserve:amusement centre,0,point,vm_foi_index_centroid
+reserve:cemetery,0,point,vm_foi_index_centroid
+reserve:city square,0,point,vm_foi_index_centroid
+reserve:conservation park,0,point,vm_foi_index_centroid
+reserve:gardens,0,point,vm_foi_index_centroid
+reserve:national park,0,point,vm_foi_index_centroid
+reserve:park,0,point,vm_foi_index_centroid
+reserve:zoo,0,point,vm_foi_index_centroid
+residential building:retirement village,0,point,vm_foi_index_centroid
+sign:emergency marker,0,point,vm_foi_index_centroid
+sign:snow pole,0,point,vm_foi_index_centroid
+sport facility:athletic field,0,point,vm_foi_index_centroid
+sport facility:baseball field,0,point,vm_foi_index_centroid
+sport facility:basketball court,0,point,vm_foi_index_centroid
+sport facility:boating club,0,point,vm_foi_index_centroid
+sport facility:bowling green,0,point,vm_foi_index_centroid
+sport facility:croquet green,0,point,vm_foi_index_centroid
+sport facility:equestrian facility,0,point,vm_foi_index_centroid
+sport facility:golf course,0,point,vm_foi_index_centroid
+sport facility:golf driving range,0,point,vm_foi_index_centroid
+sport facility:greyhound racetrack,0,point,vm_foi_index_centroid
+sport facility:harness racetrack,0,point,vm_foi_index_centroid
+sport facility:hockey ground,0,point,vm_foi_index_centroid
+sport facility:horse racetrack,0,point,vm_foi_index_centroid
+sport facility:motor track,0,point,vm_foi_index_centroid
+sport facility:netball court,0,point,vm_foi_index_centroid
+sport facility:racecourse,0,point,vm_foi_index_centroid
+sport facility:sports complex,0,point,vm_foi_index_centroid
+sport facility:sports ground,0,point,vm_foi_index_centroid
+sport facility:swimming pool,0,point,vm_foi_index_centroid
+sport facility:target range,0,point,vm_foi_index_centroid
+sport facility:tennis court,0,point,vm_foi_index_centroid
+sport facility:training track,0,point,vm_foi_index_centroid
+sport facility:velodrome,0,point,vm_foi_index_centroid
+stockpile:over burden pile,0,point,vm_foi_index_centroid
+storage facility:boathouse,0,point,vm_foi_index_centroid
+storage facility:depot,0,point,vm_foi_index_centroid
+storage facility:gas tank,0,point,vm_foi_index_centroid
+storage facility:grain bunker,0,point,vm_foi_index_centroid
+storage facility:hangar,0,point,vm_foi_index_centroid
+storage facility:oil tank,0,point,vm_foi_index_centroid
+storage facility:petroleum tank,0,point,vm_foi_index_centroid
+storage facility:silo,0,point,vm_foi_index_centroid
+storage facility:stockyard,0,point,vm_foi_index_centroid
+storage facility:tank,0,point,vm_foi_index_centroid
+admin facility:custodial service,0,area,vm_foi_index_extent
+admin facility:customer service centre,0,area,vm_foi_index_extent
+admin facility:law court,0,area,vm_foi_index_extent
+admin facility:municipal office,0,area,vm_foi_index_extent
+admin facility:office,0,area,vm_foi_index_extent
+admin facility:prison,0,area,vm_foi_index_extent
+admin facility:research station,0,area,vm_foi_index_extent
+admin facility:sheriffs office,0,area,vm_foi_index_extent
+admin facility:tourist information centre,0,area,vm_foi_index_extent
+admin facility:weather station,0,area,vm_foi_index_extent
+agricultural area:farm,0,area,vm_foi_index_extent
+agricultural area:vineyard,0,area,vm_foi_index_extent
+building:ruin,0,area,vm_foi_index_extent
+cableway:cableway terminal,0,area,vm_foi_index_extent
+cableway:chairlift,0,area,vm_foi_index_extent
+cableway:poma tow,0,area,vm_foi_index_extent
+cableway:t-bar tow,0,area,vm_foi_index_extent
+care facility:aged care,0,area,vm_foi_index_extent
+care facility:child care,0,area,vm_foi_index_extent
+care facility:disability support centre,0,area,vm_foi_index_extent
+commercial facility:accommodation,0,area,vm_foi_index_extent
+commercial facility:business park,0,area,vm_foi_index_extent
+commercial facility:entertainment centre,0,area,vm_foi_index_extent
+commercial facility:shopping centre,0,area,vm_foi_index_extent
+commercial facility:shopping precinct,0,area,vm_foi_index_extent
+communication service:broadcast radio facility,0,area,vm_foi_index_extent
+communication service:broadcast television facility,0,area,vm_foi_index_extent
+communication service:radio communication facility,0,area,vm_foi_index_extent
+communication service:telephone exchange,0,area,vm_foi_index_extent
+community space:camp ground,0,area,vm_foi_index_extent
+community space:caravan park,0,area,vm_foi_index_extent
+community space:parking area,0,area,vm_foi_index_extent
+community space:rest area,0,area,vm_foi_index_extent
+community space:showground,0,area,vm_foi_index_extent
+community venue:community centre,0,area,vm_foi_index_extent
+community venue:hall,0,area,vm_foi_index_extent
+community venue:neighbourhood house,0,area,vm_foi_index_extent
+community venue:senior citizens,0,area,vm_foi_index_extent
+control point:survey monument,0,area,vm_foi_index_extent
+control point:trig station,0,area,vm_foi_index_extent
+cultural centre:aquarium,0,area,vm_foi_index_extent
+cultural centre:arboretum,0,area,vm_foi_index_extent
+cultural centre:art gallery,0,area,vm_foi_index_extent
+cultural centre:library,0,area,vm_foi_index_extent
+cultural centre:museum,0,area,vm_foi_index_extent
+cultural centre:observatory,0,area,vm_foi_index_extent
+defence site:airforce base,0,area,vm_foi_index_extent
+defence site:barracks,0,area,vm_foi_index_extent
+defence site:military area,0,area,vm_foi_index_extent
+defence site:naval base,0,area,vm_foi_index_extent
+dumping ground:landfill,0,area,vm_foi_index_extent
+dumping ground:scrap yard,0,area,vm_foi_index_extent
+dumping ground:spoil banks,0,area,vm_foi_index_extent
+dumping ground:tailings,0,area,vm_foi_index_extent
+dumping ground:transfer station,0,area,vm_foi_index_extent
+education centre:education complex,0,area,vm_foi_index_extent
+education centre:further education,0,area,vm_foi_index_extent
+education centre:primary school,0,area,vm_foi_index_extent
+education centre:primary/secondary school,0,area,vm_foi_index_extent
+education centre:school camp,0,area,vm_foi_index_extent
+education centre:secondary school,0,area,vm_foi_index_extent
+education centre:special school,0,area,vm_foi_index_extent
+education centre:tertiary institution,0,area,vm_foi_index_extent
+education centre:university,0,area,vm_foi_index_extent
+emergency facility:ambulance station,0,area,vm_foi_index_extent
+emergency facility:coast guard,0,area,vm_foi_index_extent
+emergency facility:emergency complex,0,area,vm_foi_index_extent
+emergency facility:emergency coordination centre,0,area,vm_foi_index_extent
+emergency facility:fire lookout,0,area,vm_foi_index_extent
+emergency facility:fire station,0,area,vm_foi_index_extent
+emergency facility:fire station (forest industry),0,area,vm_foi_index_extent
+emergency facility:lifesaving club,0,area,vm_foi_index_extent
+emergency facility:neighbourhood safer place,0,area,vm_foi_index_extent
+emergency facility:police station,0,area,vm_foi_index_extent
+emergency facility:refuge,0,area,vm_foi_index_extent
+emergency facility:ses unit,0,area,vm_foi_index_extent
+excavation site:abandoned mine,0,area,vm_foi_index_extent
+excavation site:abandoned quarry,0,area,vm_foi_index_extent
+excavation site:adit,0,area,vm_foi_index_extent
+excavation site:mine,0,area,vm_foi_index_extent
+excavation site:quarry,0,area,vm_foi_index_extent
+health facility:community health centre,0,area,vm_foi_index_extent
+health facility:maternal/child health centre,0,area,vm_foi_index_extent
+hospital:bush nursing hospital,0,area,vm_foi_index_extent
+hospital:day procedure centre,0,area,vm_foi_index_extent
+hospital:general hospital,0,area,vm_foi_index_extent
+hospital:general hospital (emergency),0,area,vm_foi_index_extent
+hospital:hospital complex,0,area,vm_foi_index_extent
+industrial facility:abattoir,0,area,vm_foi_index_extent
+industrial facility:brickworks,0,area,vm_foi_index_extent
+industrial facility:dairy,0,area,vm_foi_index_extent
+industrial facility:factory,0,area,vm_foi_index_extent
+industrial facility:mill/timber operations,0,area,vm_foi_index_extent
+industrial facility:proving ground,0,area,vm_foi_index_extent
+landmark:cairn,0,area,vm_foi_index_extent
+landmark:flag pole,0,area,vm_foi_index_extent
+landmark:fountain,0,area,vm_foi_index_extent
+landmark:lookout,0,area,vm_foi_index_extent
+landmark:monument,0,area,vm_foi_index_extent
+landmark:tourist attraction,0,area,vm_foi_index_extent
+landmark:tower,0,area,vm_foi_index_extent
+physiographic:lava flow,0,area,vm_foi_index_extent
+pipeline facility:gas plant,0,area,vm_foi_index_extent
+pipeline facility:oil refinery,0,area,vm_foi_index_extent
+pipeline facility:oil terminal,0,area,vm_foi_index_extent
+pipeline facility:pumping station,0,area,vm_foi_index_extent
+pipeline facility:treatment plant,0,area,vm_foi_index_extent
+pipeline:gas pipeline,0,area,vm_foi_index_extent
+pipeline:oil pipeline,0,area,vm_foi_index_extent
+place of worship:church,0,area,vm_foi_index_extent
+place of worship:gurdwara (sikh),0,area,vm_foi_index_extent
+place of worship:monastry,0,area,vm_foi_index_extent
+place of worship:mondir (hindu),0,area,vm_foi_index_extent
+place of worship:mosque,0,area,vm_foi_index_extent
+place of worship:synagogue,0,area,vm_foi_index_extent
+place of worship:vihara (buddhist),0,area,vm_foi_index_extent
+place:historic site,0,area,vm_foi_index_extent
+power facility:biomass power station,0,area,vm_foi_index_extent
+power facility:coal power station,0,area,vm_foi_index_extent
+power facility:cooling tower,0,area,vm_foi_index_extent
+power facility:gas power station,0,area,vm_foi_index_extent
+power facility:hydro power station,0,area,vm_foi_index_extent
+power facility:power sub station,0,area,vm_foi_index_extent
+power facility:power terminal station,0,area,vm_foi_index_extent
+power facility:wind farm,0,area,vm_foi_index_extent
+power facility:wind turbine,0,area,vm_foi_index_extent
+power line:power sub transmission,0,area,vm_foi_index_extent
+power line:power transmission,0,area,vm_foi_index_extent
+recreational resource:amphitheatre,0,area,vm_foi_index_extent
+recreational resource:bmx track,0,area,vm_foi_index_extent
+recreational resource:club house,0,area,vm_foi_index_extent
+recreational resource:grandstand,0,area,vm_foi_index_extent
+recreational resource:group camp,0,area,vm_foi_index_extent
+recreational resource:hut,0,area,vm_foi_index_extent
+recreational resource:picnic site,0,area,vm_foi_index_extent
+recreational resource:playground,0,area,vm_foi_index_extent
+recreational resource:rotunda,0,area,vm_foi_index_extent
+recreational resource:skate park,0,area,vm_foi_index_extent
+reserve:amusement centre,0,area,vm_foi_index_extent
+reserve:cemetery,0,area,vm_foi_index_extent
+reserve:city square,0,area,vm_foi_index_extent
+reserve:conservation park,0,area,vm_foi_index_extent
+reserve:gardens,0,area,vm_foi_index_extent
+reserve:national park,0,area,vm_foi_index_extent
+reserve:park,0,area,vm_foi_index_extent
+reserve:zoo,0,area,vm_foi_index_extent
+residential building:retirement village,0,area,vm_foi_index_extent
+sign:emergency marker,0,area,vm_foi_index_extent
+sign:snow pole,0,area,vm_foi_index_extent
+sport facility:athletic field,0,area,vm_foi_index_extent
+sport facility:baseball field,0,area,vm_foi_index_extent
+sport facility:basketball court,0,area,vm_foi_index_extent
+sport facility:boating club,0,area,vm_foi_index_extent
+sport facility:bowling green,0,area,vm_foi_index_extent
+sport facility:croquet green,0,area,vm_foi_index_extent
+sport facility:equestrian facility,0,area,vm_foi_index_extent
+sport facility:golf course,0,area,vm_foi_index_extent
+sport facility:golf driving range,0,area,vm_foi_index_extent
+sport facility:greyhound racetrack,0,area,vm_foi_index_extent
+sport facility:harness racetrack,0,area,vm_foi_index_extent
+sport facility:hockey ground,0,area,vm_foi_index_extent
+sport facility:horse racetrack,0,area,vm_foi_index_extent
+sport facility:motor track,0,area,vm_foi_index_extent
+sport facility:netball court,0,area,vm_foi_index_extent
+sport facility:racecourse,0,area,vm_foi_index_extent
+sport facility:sports complex,0,area,vm_foi_index_extent
+sport facility:sports ground,0,area,vm_foi_index_extent
+sport facility:swimming pool,0,area,vm_foi_index_extent
+sport facility:target range,0,area,vm_foi_index_extent
+sport facility:tennis court,0,area,vm_foi_index_extent
+sport facility:training track,0,area,vm_foi_index_extent
+sport facility:velodrome,0,area,vm_foi_index_extent
+stockpile:over burden pile,0,area,vm_foi_index_extent
+storage facility:boathouse,0,area,vm_foi_index_extent
+storage facility:depot,0,area,vm_foi_index_extent
+storage facility:gas tank,0,area,vm_foi_index_extent
+storage facility:grain bunker,0,area,vm_foi_index_extent
+storage facility:hangar,0,area,vm_foi_index_extent
+storage facility:oil tank,0,area,vm_foi_index_extent
+storage facility:petroleum tank,0,area,vm_foi_index_extent
+storage facility:silo,0,area,vm_foi_index_extent
+storage facility:stockyard,0,area,vm_foi_index_extent
+storage facility:tank,0,area,vm_foi_index_extent
+cableway:chairlift,0,line,vm_foi_line
+cableway:poma tow,0,line,vm_foi_line
+cableway:t-bar tow,0,line,vm_foi_line
+physiographic:lava flow,0,line,vm_foi_line
+pipeline:gas pipeline,0,line,vm_foi_line
+pipeline:oil pipeline,0,line,vm_foi_line
+power line:power sub transmission,0,line,vm_foi_line
+power line:power transmission,0,line,vm_foi_line
 admin facility:custodial service,0,point,vm_foi_point
 admin facility:customer service centre,0,point,vm_foi_point
 admin facility:law court,0,point,vm_foi_point
@@ -7,48 +411,24 @@ admin facility:office,0,point,vm_foi_point
 admin facility:prison,0,point,vm_foi_point
 admin facility:research station,0,point,vm_foi_point
 admin facility:sheriffs office,0,point,vm_foi_point
-admin facility:tourist information centre,0,point,vm_foi_point
+admin facility:tourist information centre,1008,point,vm_foi_point
 admin facility:weather station,0,point,vm_foi_point
-agricultural area:farm,0,area,vm_foi_polygon
-agricultural area:vineyard,0,area,vm_foi_polygon
-airport,0,area,vm_tr_airport_area_polygon
-beacon,0,point,vm_hy_navigation_point
-bridge_rail_o,260,point,vm_tr_rail_infrastructure
 building:ruin,0,point,vm_foi_point
-building:undefined_building,26,area,vm_building_polygon
-building:undefined_building,40,point,vm_building_point
-buoy,0,point,vm_hy_navigation_point
 cableway:cableway terminal,0,point,vm_foi_point
-cableway:chairlift,0,line,vm_foi_line
-cableway:poma tow,0,line,vm_foi_line
-cableway:t-bar tow,0,line,vm_foi_line
 care facility:aged care,0,point,vm_foi_point
 care facility:child care,0,point,vm_foi_point
 care facility:disability support centre,0,point,vm_foi_point
-commercial facility:business park,0,area,vm_foi_polygon
 commercial facility:entertainment centre,0,point,vm_foi_point
-commercial facility:shopping centre,0,area,vm_foi_polygon
-commercial facility:shopping precinct,0,area,vm_foi_polygon
 communication service:broadcast radio facility,0,point,vm_foi_point
 communication service:broadcast television facility,0,point,vm_foi_point
 communication service:radio communication facility,0,point,vm_foi_point
 communication service:telephone exchange,0,point,vm_foi_point
-community space:camp ground,0,area,vm_foi_polygon
 community space:camp ground,0,point,vm_foi_point
-community space:caravan park,0,area,vm_foi_polygon
-community space:parking area,0,area,vm_foi_polygon
 community space:rest area,0,point,vm_foi_point
-community space:showground,0,area,vm_foi_polygon
 community venue:community centre,0,point,vm_foi_point
 community venue:hall,0,point,vm_foi_point
 community venue:neighbourhood house,0,point,vm_foi_point
 community venue:senior citizens,0,point,vm_foi_point
-connector_channel_drain,0,line,vm_hy_watercourse
-connector_river,0,line,vm_hy_watercourse
-connector_stream,0,line,vm_hy_watercourse
-contour,56,line,vm_el_contour
-contour_dep,58,line,vm_el_contour
-contour_index,55,line,vm_el_contour
 control point:survey monument,0,point,vm_foi_point
 control point:trig station,0,point,vm_foi_point
 cultural centre:aquarium,0,point,vm_foi_point
@@ -57,17 +437,8 @@ cultural centre:art gallery,0,point,vm_foi_point
 cultural centre:library,0,point,vm_foi_point
 cultural centre:museum,0,point,vm_foi_point
 cultural centre:observatory,0,point,vm_foi_point
-dam_wall,925,line,vm_hy_water_struct_line
-defence site:airforce base,0,area,vm_foi_polygon
 defence site:barracks,0,point,vm_foi_point
-defence site:military area,0,area,vm_foi_polygon
-defence site:naval base,0,area,vm_foi_polygon
-dumping ground:landfill,0,area,vm_foi_polygon
-dumping ground:scrap yard,0,area,vm_foi_polygon
-dumping ground:spoil banks,0,area,vm_foi_polygon
-dumping ground:tailings,0,area,vm_foi_polygon
 dumping ground:transfer station,0,point,vm_foi_point
-education centre:education complex,0,area,vm_foi_polygon
 education centre:further education,0,point,vm_foi_point
 education centre:primary school,0,point,vm_foi_point
 education centre:primary/secondary school,0,point,vm_foi_point
@@ -76,10 +447,8 @@ education centre:secondary school,0,point,vm_foi_point
 education centre:special school,0,point,vm_foi_point
 education centre:tertiary institution,0,point,vm_foi_point
 education centre:university,0,point,vm_foi_point
-emergency facility:ambulance station,0,point,vm_foi_point
 emergency facility:ambulance station,401,point,vm_foi_point
 emergency facility:coast guard,0,point,vm_foi_point
-emergency facility:emergency complex,0,area,vm_foi_polygon
 emergency facility:emergency coordination centre,0,point,vm_foi_point
 emergency facility:fire lookout,0,point,vm_foi_point
 emergency facility:fire station,0,point,vm_foi_point
@@ -90,69 +459,30 @@ emergency facility:neighbourhood safer place,0,point,vm_foi_point
 emergency facility:police station,0,point,vm_foi_point
 emergency facility:police station,406,point,vm_foi_point
 emergency facility:refuge,0,point,vm_foi_point
-emergency facility:ses unit,0,point,vm_foi_point
-excavation site:abandoned mine,0,area,vm_foi_polygon
-excavation site:abandoned quarry,0,area,vm_foi_polygon
+emergency facility:ses unit,1009,point,vm_foi_point
 excavation site:abandoned quarry,0,point,vm_foi_point
 excavation site:adit,0,point,vm_foi_point
-excavation site:mine,0,area,vm_foi_polygon
 excavation site:mine,0,point,vm_foi_point
-excavation site:quarry,0,area,vm_foi_polygon
 excavation site:quarry,0,point,vm_foi_point
-flat_sti,114,line,vm_hy_water_area_polygon
-flat_sti,11,area,vm_hy_water_area_polygon
 health facility:community health centre,0,point,vm_foi_point
 health facility:maternal/child health centre,0,point,vm_foi_point
-helipad,0,point,vm_tr_air_infra_point
 hospital:bush nursing hospital,0,point,vm_foi_point
 hospital:day procedure centre,0,point,vm_foi_point
 hospital:general hospital,0,point,vm_foi_point
 hospital:general hospital (emergency),0,point,vm_foi_point
-hospital:hospital complex,0,area,vm_foi_polygon
 industrial facility:abattoir,0,point,vm_foi_point
 industrial facility:brickworks,0,point,vm_foi_point
 industrial facility:dairy,0,point,vm_foi_point
 industrial facility:factory,0,point,vm_foi_point
 industrial facility:mill/timber operations,0,point,vm_foi_point
-industrial facility:proving ground,0,area,vm_foi_polygon
-int_nosignal,0,point,vm_tr_road_infrastructure
 landmark:cairn,0,point,vm_foi_point
 landmark:flag pole,0,point,vm_foi_point
 landmark:fountain,0,point,vm_foi_point
 landmark:lookout,0,point,vm_foi_point
 landmark:monument,0,point,vm_foi_point
-landmark:tourist attraction,0,area,vm_foi_polygon
 landmark:tourist attraction,0,point,vm_foi_point
 landmark:tower,0,point,vm_foi_point
-mountain,0,point,vm_el_grnd_type_point
-physiographic:lava flow,0,line,vm_foi_line
-pipeline facility:gas plant,0,area,vm_foi_polygon
-pipeline facility:oil refinery,0,area,vm_foi_polygon
-pipeline facility:oil terminal,0,area,vm_foi_polygon
 pipeline facility:pumping station,0,point,vm_foi_point
-pipeline facility:treatment plant,0,area,vm_foi_polygon
-pipeline:gas pipeline,0,line,vm_foi_line
-pipeline:oil pipeline,0,line,vm_foi_line
-place:1,424,point,vm_locality_point
-place:1,5,text,vm_locality_point
-place:2,424,point,vm_locality_point
-place:2,5,text,vm_locality_point
-place:3,424,point,vm_locality_point
-place:3,4,text,vm_locality_point
-place:4,423,point,vm_locality_point
-place:4,4,text,vm_locality_point
-place:5,423,point,vm_locality_point
-place:5,4,text,vm_locality_point
-place:6,422,point,vm_locality_point
-place:6,4,text,vm_locality_point
-place:7,3,text,vm_locality_point
-place:7,422,point,vm_locality_point
-place:8,3,text,vm_locality_point
-place:8,421,point,vm_locality_point
-place:9,3,text,vm_locality_point
-place:9,421,point,vm_locality_point
-place:historic site,0,area,vm_foi_polygon
-place:historic site,0,point,vm_foi_point
 place of worship:church,1007,point,vm_foi_point
 place of worship:gurdwara (sikh),0,point,vm_foi_point
 place of worship:monastry,0,point,vm_foi_point
@@ -160,30 +490,65 @@ place of worship:mondir (hindu),0,point,vm_foi_point
 place of worship:mosque,0,point,vm_foi_point
 place of worship:synagogue,0,point,vm_foi_point
 place of worship:vihara (buddhist),0,point,vm_foi_point
-point,0,point,vm_el_grnd_type_point
-power facility:biomass power station,0,area,vm_foi_polygon
-power facility:coal power station,0,area,vm_foi_polygon
+place:historic site,0,point,vm_foi_point
 power facility:cooling tower,0,point,vm_foi_point
-power facility:gas power station,0,area,vm_foi_polygon
-power facility:hydro power station,0,area,vm_foi_polygon
-power facility:power sub station,0,area,vm_foi_polygon
-power facility:power terminal station,0,area,vm_foi_polygon
 power facility:wind farm,0,point,vm_foi_point
-power facility:wind turbine,0,point,vm_foi_point
-power line:power sub transmission,0,line,vm_foi_line
-power line:power transmission,0,line,vm_foi_line
-rail_station,222,point,vm_tr_rail_infrastructure
+power facility:wind turbine,500,point,vm_foi_point
 recreational resource:amphitheatre,0,point,vm_foi_point
-recreational resource:bmx track,0,area,vm_foi_polygon
 recreational resource:club house,0,point,vm_foi_point
 recreational resource:grandstand,0,point,vm_foi_point
-recreational resource:group camp,0,area,vm_foi_polygon
 recreational resource:hut,0,point,vm_foi_point
 recreational resource:picnic site,0,point,vm_foi_point
 recreational resource:playground,0,point,vm_foi_point
 recreational resource:rotunda,0,point,vm_foi_point
+residential building:retirement village,0,point,vm_foi_point
+sign:emergency marker,0,point,vm_foi_point
+sign:snow pole,0,point,vm_foi_point
+sport facility:boating club,0,point,vm_foi_point
+sport facility:swimming pool,0,point,vm_foi_point
+storage facility:boathouse,0,point,vm_foi_point
+storage facility:depot,0,point,vm_foi_point
+storage facility:silo,0,point,vm_foi_point
+storage facility:tank,0,point,vm_foi_point
+agricultural area:farm,0,area,vm_foi_polygon
+agricultural area:vineyard,0,area,vm_foi_polygon
+commercial facility:business park,0,area,vm_foi_polygon
+commercial facility:shopping centre,0,area,vm_foi_polygon
+commercial facility:shopping precinct,0,area,vm_foi_polygon
+community space:camp ground,0,area,vm_foi_polygon
+community space:caravan park,0,area,vm_foi_polygon
+community space:parking area,0,area,vm_foi_polygon
+community space:showground,0,area,vm_foi_polygon
+defence site:airforce base,0,area,vm_foi_polygon
+defence site:military area,0,area,vm_foi_polygon
+defence site:naval base,0,area,vm_foi_polygon
+dumping ground:landfill,0,area,vm_foi_polygon
+dumping ground:scrap yard,0,area,vm_foi_polygon
+dumping ground:spoil banks,0,area,vm_foi_polygon
+dumping ground:tailings,0,area,vm_foi_polygon
+education centre:education complex,0,area,vm_foi_polygon
+emergency facility:emergency complex,0,area,vm_foi_polygon
+excavation site:abandoned mine,0,area,vm_foi_polygon
+excavation site:abandoned quarry,0,area,vm_foi_polygon
+excavation site:mine,0,area,vm_foi_polygon
+excavation site:quarry,0,area,vm_foi_polygon
+hospital:hospital complex,0,area,vm_foi_polygon
+industrial facility:proving ground,0,area,vm_foi_polygon
+landmark:tourist attraction,0,area,vm_foi_polygon
+pipeline facility:gas plant,0,area,vm_foi_polygon
+pipeline facility:oil refinery,0,area,vm_foi_polygon
+pipeline facility:oil terminal,0,area,vm_foi_polygon
+pipeline facility:treatment plant,0,area,vm_foi_polygon
+place:historic site,0,area,vm_foi_polygon
+power facility:biomass power station,0,area,vm_foi_polygon
+power facility:coal power station,0,area,vm_foi_polygon
+power facility:gas power station,0,area,vm_foi_polygon
+power facility:hydro power station,0,area,vm_foi_polygon
+power facility:power sub station,0,area,vm_foi_polygon
+power facility:power terminal station,0,area,vm_foi_polygon
+recreational resource:bmx track,0,area,vm_foi_polygon
+recreational resource:group camp,0,area,vm_foi_polygon
 recreational resource:skate park,0,area,vm_foi_polygon
-reef,0,line,vm_hy_navigation_line
 reserve:amusement centre,0,area,vm_foi_polygon
 reserve:cemetery,0,area,vm_foi_polygon
 reserve:city square,0,area,vm_foi_polygon
@@ -192,22 +557,9 @@ reserve:gardens,0,area,vm_foi_polygon
 reserve:national park,0,area,vm_foi_polygon
 reserve:park,0,area,vm_foi_polygon
 reserve:zoo,0,area,vm_foi_polygon
-residential building:house,40,point,vm_building_point
-residential building:retirement village,0,point,vm_foi_point
-road_end,0,point,vm_tr_road_infrastructure
-rock_bare,98,point,vm_hy_navigation_point
-rock_outcrop,0,area,vm_el_grnd_type_area_polygon
-rock_outcrop,0,point,vm_el_grnd_type_point
-runway,700,area,vm_tr_airport_infra_area_polygon
-runway,703,line,vm_tr_airport_infrastructure
-runway,703,point,vm_tr_airport_infrastructure
-sand,0,area,vm_el_grnd_type_area_polygon
-sign:emergency marker,0,point,vm_foi_point
-sign:snow pole,0,point,vm_foi_point
 sport facility:athletic field,0,area,vm_foi_polygon
 sport facility:baseball field,0,area,vm_foi_polygon
 sport facility:basketball court,0,area,vm_foi_polygon
-sport facility:boating club,0,point,vm_foi_point
 sport facility:bowling green,0,area,vm_foi_polygon
 sport facility:croquet green,0,area,vm_foi_polygon
 sport facility:equestrian facility,0,area,vm_foi_polygon
@@ -222,37 +574,420 @@ sport facility:netball court,0,area,vm_foi_polygon
 sport facility:racecourse,0,area,vm_foi_polygon
 sport facility:sports complex,0,area,vm_foi_polygon
 sport facility:sports ground,0,area,vm_foi_polygon
-sport facility:swimming pool,0,point,vm_foi_point
 sport facility:target range,0,area,vm_foi_polygon
 sport facility:tennis court,0,area,vm_foi_polygon
 sport facility:training track,0,area,vm_foi_polygon
 sport facility:velodrome,0,area,vm_foi_polygon
 stockpile:over burden pile,0,area,vm_foi_polygon
-storage facility:boathouse,0,point,vm_foi_point
-storage facility:depot,0,point,vm_foi_point
 storage facility:gas tank,0,area,vm_foi_polygon
 storage facility:grain bunker,0,area,vm_foi_polygon
 storage facility:hangar,0,area,vm_foi_polygon
-storage facility:hay shed,26,area,vm_building_polygon
-storage facility:hay shed,40,point,vm_building_point
 storage facility:oil tank,0,area,vm_foi_polygon
 storage facility:petroleum tank,0,area,vm_foi_polygon
-storage facility:shed,26,area,vm_building_polygon
-storage facility:shed,40,point,vm_building_point
-storage facility:silo,0,point,vm_foi_point
 storage facility:stockyard,0,area,vm_foi_polygon
-storage facility:tank,0,point,vm_foi_point
-storage facility:woolshed,26,area,vm_building_polygon
-storage facility:woolshed,40,point,vm_building_point
-tank_water,86,point,vm_hy_water_struct_point
+coast,0,line,vm_fr_framework_area_line
+state_border,0,line,vm_fr_framework_area_line
+vicmap_boundary,0,line,vm_fr_framework_area_line
+island,0,area,vm_fr_framework_area_polygon
+mainland,0,area,vm_fr_framework_area_polygon
+sea,0,area,vm_fr_framework_area_polygon
+bay:W,0,label,vm_geo_area_hydro_label
+beach:L,0,label,vm_geo_area_hydro_label
+bend:L,0,label,vm_geo_area_hydro_label
+island_marine:L,0,label,vm_geo_area_hydro_label
+island_terrestrial:L,0,label,vm_geo_area_hydro_label
+island_terrestrial:W,0,label,vm_geo_area_hydro_label
+marine_place:L,0,label,vm_geo_area_hydro_label
+marine_place:W,0,label,vm_geo_area_hydro_label
+sea:W,0,label,vm_geo_area_hydro_label
+shoreline:W,0,label,vm_geo_area_hydro_label
+waterbody:W,0,label,vm_geo_area_hydro_label
+watercourse:L,0,label,vm_geo_area_hydro_label
+watercourse:W,0,label,vm_geo_area_hydro_label
+cliff:L,0,label,vm_geo_area_relief_label
+named_natural_region:L,0,label,vm_geo_area_relief_label
+pass:L,0,label,vm_geo_area_relief_label
+peninsula:L,0,label,vm_geo_area_relief_label
+place:,0,label,vm_geo_area_relief_label
+place:L,0,label,vm_geo_area_relief_label
+plateau:L,0,label,vm_geo_area_relief_label
+ridge:L,0,label,vm_geo_area_relief_label
+rock_terrestrial:L,0,label,vm_geo_area_relief_label
+valley:L,0,label,vm_geo_area_relief_label
+admin facility:custodial service,0,point,vm_geomark_point
+admin facility:customer service centre,0,point,vm_geomark_point
+admin facility:law court,0,point,vm_geomark_point
+admin facility:municipal office,0,point,vm_geomark_point
+admin facility:office,0,point,vm_geomark_point
+admin facility:prison,0,point,vm_geomark_point
+admin facility:research station,0,point,vm_geomark_point
+admin facility:sheriffs office,0,point,vm_geomark_point
+admin facility:tourist information centre,1008,point,vm_geomark_point
+admin facility:weather station,0,point,vm_geomark_point
+building:ruin,0,point,vm_geomark_point
+cableway:cableway terminal,0,point,vm_geomark_point
+care facility:aged care,0,point,vm_geomark_point
+care facility:child care,0,point,vm_geomark_point
+care facility:disability support centre,0,point,vm_geomark_point
+commercial facility:entertainment centre,0,point,vm_geomark_point
+commercial facility:shopping precinct,0,point,vm_geomark_point
+communication service:broadcast radio facility,0,point,vm_geomark_point
+communication service:broadcast television facility,0,point,vm_geomark_point
+communication service:radio communication facility,0,point,vm_geomark_point
+communication service:telephone exchange,0,point,vm_geomark_point
+community space:camp ground,0,point,vm_geomark_point
+community space:rest area,0,point,vm_geomark_point
+community venue:community centre,0,point,vm_geomark_point
+community venue:hall,0,point,vm_geomark_point
+community venue:neighbourhood house,0,point,vm_geomark_point
+community venue:senior citizens,0,point,vm_geomark_point
+control point:survey monument,0,point,vm_geomark_point
+control point:trig station,0,point,vm_geomark_point
+cultural centre:aquarium,0,point,vm_geomark_point
+cultural centre:arboretum,0,point,vm_geomark_point
+cultural centre:art gallery,0,point,vm_geomark_point
+cultural centre:library,0,point,vm_geomark_point
+cultural centre:museum,0,point,vm_geomark_point
+cultural centre:observatory,0,point,vm_geomark_point
+defence site:barracks,0,point,vm_geomark_point
+dumping ground:transfer station,0,point,vm_geomark_point
+education centre:education complex,0,point,vm_geomark_point
+education centre:further education,0,point,vm_geomark_point
+education centre:pre school,0,point,vm_geomark_point
+education centre:primary school,0,point,vm_geomark_point
+education centre:primary/secondary school,0,point,vm_geomark_point
+education centre:school camp,0,point,vm_geomark_point
+education centre:secondary school,0,point,vm_geomark_point
+education centre:special school,0,point,vm_geomark_point
+education centre:tertiary institution,0,point,vm_geomark_point
+education centre:university,0,point,vm_geomark_point
+emergency facility:ambulance station,401,point,vm_geomark_point
+emergency facility:coast guard,0,point,vm_geomark_point
+emergency facility:emergency coordination centre,0,point,vm_geomark_point
+emergency facility:fire lookout,0,point,vm_geomark_point
+emergency facility:fire station,0,point,vm_geomark_point
+emergency facility:fire station (forest industry),0,point,vm_geomark_point
+emergency facility:lifesaving club,0,point,vm_geomark_point
+emergency facility:neighbourhood safer place,0,point,vm_geomark_point
+emergency facility:police station,0,point,vm_geomark_point
+emergency facility:refuge,0,point,vm_geomark_point
+emergency facility:ses unit,1009,point,vm_geomark_point
+excavation site:abandoned quarry,0,point,vm_geomark_point
+excavation site:adit,0,point,vm_geomark_point
+excavation site:mine,0,point,vm_geomark_point
+excavation site:quarry,0,point,vm_geomark_point
+health facility:community health centre,0,point,vm_geomark_point
+health facility:maternal/child health centre,0,point,vm_geomark_point
+hospital:bush nursing hospital,0,point,vm_geomark_point
+hospital:day procedure centre,0,point,vm_geomark_point
+hospital:general hospital,0,point,vm_geomark_point
+hospital:general hospital (emergency),0,point,vm_geomark_point
+hospital:hospital complex,0,point,vm_geomark_point
+industrial facility:abattoir,0,point,vm_geomark_point
+industrial facility:brickworks,0,point,vm_geomark_point
+industrial facility:dairy,0,point,vm_geomark_point
+industrial facility:factory,0,point,vm_geomark_point
+industrial facility:mill/timber operations,0,point,vm_geomark_point
+landmark:cairn,0,point,vm_geomark_point
+landmark:flag pole,0,point,vm_geomark_point
+landmark:fountain,0,point,vm_geomark_point
+landmark:lookout,0,point,vm_geomark_point
+landmark:monument,0,point,vm_geomark_point
+landmark:tourist attraction,0,point,vm_geomark_point
+landmark:tower,0,point,vm_geomark_point
+landmark:undefined_landmark,0,point,vm_geomark_point
+navigation_aid:beacon,0,point,vm_geomark_point
+physiographic:cave,0,point,vm_geomark_point
+physiographic:mountain,0,point,vm_geomark_point
+pipeline facility:pumping station,0,point,vm_geomark_point
+place of worship:church,0,point,vm_geomark_point
+place of worship:gurdwara (sikh),0,point,vm_geomark_point
+place of worship:monastry,0,point,vm_geomark_point
+place of worship:mondir (hindu),0,point,vm_geomark_point
+place of worship:mosque,0,point,vm_geomark_point
+place of worship:synagogue,0,point,vm_geomark_point
+place of worship:vihara (buddhist),0,point,vm_geomark_point
+place:historic site,0,point,vm_geomark_point
+power facility:cooling tower,0,point,vm_geomark_point
+power facility:undefined_power_station,0,point,vm_geomark_point
+power facility:wind farm,0,point,vm_geomark_point
+power facility:wind turbine,500,point,vm_geomark_point
+recreational resource:amphitheatre,0,point,vm_geomark_point
+recreational resource:club house,0,point,vm_geomark_point
+recreational resource:grandstand,0,point,vm_geomark_point
+recreational resource:hut,0,point,vm_geomark_point
+recreational resource:picnic site,0,point,vm_geomark_point
+recreational resource:playground,0,point,vm_geomark_point
+recreational resource:rotunda,0,point,vm_geomark_point
+residential building:retirement village,0,point,vm_geomark_point
+sign:emergency marker,0,point,vm_geomark_point
+sign:snow pole,0,point,vm_geomark_point
+sport facility:boating club,0,point,vm_geomark_point
+sport facility:swimming pool,0,point,vm_geomark_point
+storage facility:boathouse,0,point,vm_geomark_point
+storage facility:depot,0,point,vm_geomark_point
+storage facility:silo,0,point,vm_geomark_point
+storage facility:tank,0,point,vm_geomark_point
+storage facility:water tank,0,point,vm_geomark_point
+tower:undefined_tower,0,point,vm_geomark_point
+undefined:bridge_rail_o,0,point,vm_geomark_point
+undefined:helipad,0,point,vm_geomark_point
+undefined:point,0,point,vm_geomark_point
+undefined:rail_station,0,point,vm_geomark_point
+undefined:rapid,0,point,vm_geomark_point
+undefined:rock_bare,0,point,vm_geomark_point
+undefined:rock_outcrop,0,point,vm_geomark_point
+undefined:sinkhole,0,point,vm_geomark_point
+undefined:spot_height,0,point,vm_geomark_point
+undefined:spring,0,point,vm_geomark_point
+undefined:tank_water,0,point,vm_geomark_point
+undefined:waterfall,89,point,vm_geomark_point
+undefined:watering_place,0,point,vm_geomark_point
+undefined:wb_dam,0,point,vm_geomark_point
+undefined:well_water,0,point,vm_geomark_point
+undefined:wreck,0,point,vm_geomark_point
+AF:AIR FIELD,0,point,vm_gnr
+BAY:BAY,0,point,vm_gnr
+BLDG:BUILDING,0,point,vm_gnr
+BRDG:BRIDGE/CAUSEWAY,0,point,vm_gnr
+CHAN:CHANNEL,0,point,vm_gnr
+CLIF:CLIFF,0,point,vm_gnr
+CNTY:COUNTY,0,point,vm_gnr
+COVE:COVE/INLET,0,point,vm_gnr
+CPST:CARAVAN PARK/CAMP,0,point,vm_gnr
+DAM:DAM/WEIR,0,point,vm_gnr
+EDUC:EDUCATION,0,point,vm_gnr
+ENTR:ENTRANCE,0,point,vm_gnr
+FARM:FARM,0,point,vm_gnr
+FLD:FIELD/PADDOCK,0,point,vm_gnr
+FRNG:FIRING RANGE,0,point,vm_gnr
+FRST:FOREST,0,point,vm_gnr
+FSTA:FIRE STATION,0,point,vm_gnr
+FTRY:FACTORY,0,point,vm_gnr
+GRDN:GARDEN/VINEYARD,0,point,vm_gnr
+HILL:HILL/LOOKOUT,0,point,vm_gnr
+HOSP:HOSPITAL,0,point,vm_gnr
+HWY:HIGHWAY/FREEWAY,0,point,vm_gnr
+IS:ISLAND,0,point,vm_gnr
+LAGN:LAGOON,0,point,vm_gnr
+LAKE:LAKE,0,point,vm_gnr
+LGA:LOCAL GOVERNMENT AREA [MUNICIPAL],0,point,vm_gnr
+LNDG:LANDING PLACE [BOAT],0,point,vm_gnr
+LOCB:LOCALITY,0,point,vm_gnr
+MALL:MALL,0,point,vm_gnr
+MINE:MINE/MINEFIELD,0,point,vm_gnr
+MONU:MONUMENT,0,point,vm_gnr
+MT:MOUNTAIN/MOUNTAIN RANGE,0,point,vm_gnr
+NBHD:NEIGHBOURHOOD,0,point,vm_gnr
+NSP:NEIGHBOURHOOD SAFER PLACE,0,point,vm_gnr
+PARK:PARK/OVAL/GOLF COURSE,0,point,vm_gnr
+PASS:PASS/GAP,0,point,vm_gnr
+PEN:PENINSULA,0,point,vm_gnr
+PLN:CLEARING/PLAIN,0,point,vm_gnr
+PO:POST OFFICE,0,point,vm_gnr
+POOL:POOL,0,point,vm_gnr
+PRSH:PARISH,0,point,vm_gnr
+PRSN:PRISON,0,point,vm_gnr
+PSTA:POLICE STATION,0,point,vm_gnr
+PT:POINT [COASTAL]/HEAD,0,point,vm_gnr
+RCH:REACH,0,point,vm_gnr
+RES:RESERVOIR,0,point,vm_gnr
+RESV:RESERVE,0,point,vm_gnr
+RLY:TRAM/RAILWAY,0,point,vm_gnr
+RNGE:RANGE,0,point,vm_gnr
+RNO:ROAD NAME ORIGIN,0,point,vm_gnr
+ROCK:ROCK FORMATION,0,point,vm_gnr
+RSTA:RAILWAY STATION/SIDING,0,point,vm_gnr
+RTRK:RACETRACK,0,point,vm_gnr
+SND:SOUND,0,point,vm_gnr
+SPIT:PIT,0,point,vm_gnr
+STR:STRAIT,0,point,vm_gnr
+STRM:STREAM/RIVER/WATERCOURSE,0,point,vm_gnr
+SWMP:SWAMP/WETLAND,0,point,vm_gnr
+TOWR:TOWER,0,point,vm_gnr
+TPEX:TELEPHONE EXCHANGE,0,point,vm_gnr
+TRIG:TRIGONOMETRICAL STATION,0,point,vm_gnr
+TRK:WALKING TRACK,0,point,vm_gnr
+TUNN:TUNNEL,0,point,vm_gnr
+VAL:VALLEY/DALE,0,point,vm_gnr
+WTRF:WATERFALL/RAPIDS,89,point,vm_gnr
+reef,0,line,vm_hy_navigation_line
+beacon,0,point,vm_hy_navigation_point
+buoy,0,point,vm_hy_navigation_point
+rock_bare,98,point,vm_hy_navigation_point
+wreck,756,point,vm_hy_navigation_point
+flat_sti,11,area,vm_hy_water_area_polygon
 watercourse_area_river,10,area,vm_hy_water_area_polygon
-watercourse_area_river,114,line,vm_hy_water_area_polygon
-watercourse_channel_drain,940,line,vm_hy_watercourse
-watercourse_river,92,line,vm_hy_watercourse
-watercourse_stream,940,line,vm_hy_watercourse
-wb_dam,82,point,vm_hy_water_point
 wb_lake,10,area,vm_hy_water_area_polygon
+wetland_swamp,908,area,vm_hy_water_area_polygon
+flat_sti,114,line,vm_hy_water_area_polygon
+watercourse_area_river,114,line,vm_hy_water_area_polygon
 wb_lake,114,line,vm_hy_water_area_polygon
 wetland_swamp,114,line,vm_hy_water_area_polygon
-wetland_swamp,908,area,vm_hy_water_area_polygon
-wreck,756,point,vm_hy_navigation_point
+rapid,0,point,vm_hy_water_point
+spring,0,point,vm_hy_water_point
+waterfall,89,point,vm_hy_water_point
+wb_dam,82,point,vm_hy_water_point
+dam_batter,0,area,vm_hy_water_struct_area_polygon
+marina,0,area,vm_hy_water_struct_area_polygon
+spillway,0,area,vm_hy_water_struct_area_polygon
+tank_water,0,area,vm_hy_water_struct_area_polygon
+boat ramp,0,line,vm_hy_water_struct_line
+breakwater,0,line,vm_hy_water_struct_line
+causeway,0,line,vm_hy_water_struct_line
+dam_wall,925,line,vm_hy_water_struct_line
+dam_wall_road,0,line,vm_hy_water_struct_line
+launching_ramp,0,line,vm_hy_water_struct_line
+lock,0,line,vm_hy_water_struct_line
+pipe_water,0,line,vm_hy_water_struct_line
+pipe_water_uground,0,line,vm_hy_water_struct_line
+wharf,0,line,vm_hy_water_struct_line
+tank_water,86,point,vm_hy_water_struct_point
+wateringplace,0,point,vm_hy_water_struct_point
+well_water,0,point,vm_hy_water_struct_point
+connector_channel,0,line,vm_hy_watercourse
+connector_channel_drain,0,line,vm_hy_watercourse
+connector_drain,0,line,vm_hy_watercourse
+connector_river,0,line,vm_hy_watercourse
+connector_stream,0,line,vm_hy_watercourse
+connector_structure,0,line,vm_hy_watercourse
+shoreline,0,line,vm_hy_watercourse
+watercourse_channel,0,line,vm_hy_watercourse
+watercourse_channel_drain,940,line,vm_hy_watercourse
+watercourse_drain,0,line,vm_hy_watercourse
+watercourse_river,92,line,vm_hy_watercourse
+watercourse_stream,940,line,vm_hy_watercourse
+place:1,424,point,vm_locality_point
+place:2,424,point,vm_locality_point
+place:3,424,point,vm_locality_point
+place:4,423,point,vm_locality_point
+place:5,423,point,vm_locality_point
+place:6,422,point,vm_locality_point
+place:7,422,point,vm_locality_point
+place:8,421,point,vm_locality_point
+place:9,421,point,vm_locality_point
+place:1,5,text,vm_locality_point
+place:2,5,text,vm_locality_point
+place:3,4,text,vm_locality_point
+place:4,4,text,vm_locality_point
+place:5,4,text,vm_locality_point
+place:6,4,text,vm_locality_point
+place:7,3,text,vm_locality_point
+place:8,3,text,vm_locality_point
+place:9,3,text,vm_locality_point
+COASTAL RESERVE:1,0,area,vm_parkres
+EDUCATION AREA:2,0,area,vm_parkres
+FOREST PARK:52,0,area,vm_parkres
+HISTORIC RESERVE:4,0,area,vm_parkres
+LIGHTHOUSE RESERVE:40,0,area,vm_parkres
+"MARINE NATIONAL PARK - SCHEDULE 7, NATIONAL PARKS ACT:47",0,area,vm_parkres
+"MARINE SANCTUARY - SCHEDULE 8, NATIONAL PARKS ACT:48",0,area,vm_parkres
+METROPOLITAN PARK:24,0,area,vm_parkres
+"NATIONAL PARK - SCHEDULE 2, NATIONAL PARKS ACT:6",0,area,vm_parkres
+NATIONAL PARKS ACT SCHEDULE 4 PARK OR RESERVE - NCR:54,0,area,vm_parkres
+NATIONAL PARKS ACT SCHEDULE 4 PARK OR RESERVE:7,0,area,vm_parkres
+NATURAL FEATURES RESERVE - BUSHLAND RESERVE:9,0,area,vm_parkres
+NATURAL FEATURES RESERVE - CAVE RESERVE:10,0,area,vm_parkres
+NATURAL FEATURES RESERVE - GEOLOGICAL RESERVE:11,0,area,vm_parkres
+NATURAL FEATURES RESERVE - GIPPSLAND LAKES RESERVE:12,0,area,vm_parkres
+NATURAL FEATURES RESERVE - HIGHWAY PARK:13,0,area,vm_parkres
+NATURAL FEATURES RESERVE - LAKE RESERVE:14,0,area,vm_parkres
+NATURAL FEATURES RESERVE - NATURAL FEATURES AND SCENIC RESERVE:15,0,area,vm_parkres
+NATURAL FEATURES RESERVE - RIVER MURRAY RESERVE:16,0,area,vm_parkres
+NATURAL FEATURES RESERVE - SCENIC RESERVE:17,0,area,vm_parkres
+NATURAL FEATURES RESERVE - STREAMSIDE RESERVE:18,0,area,vm_parkres
+NATURAL FEATURES RESERVE - WILDLIFE RESERVE (HUNTING):19,0,area,vm_parkres
+NATURAL FEATURES RESERVE - WILDLIFE RESERVE (SGR CLASSIFICATION PENDING RESERVATION):42,0,area,vm_parkres
+NATURAL FEATURES RESERVE:39,0,area,vm_parkres
+NATURE CONSERVATION RESERVE - FLORA AND FAUNA RESERVE:21,0,area,vm_parkres
+NATURE CONSERVATION RESERVE - FLORA RESERVE:22,0,area,vm_parkres
+NATURE CONSERVATION RESERVE - WILDLIFE RESERVE (NCR CLASSIFICATION PENDING RESERVATION):41,0,area,vm_parkres
+NATURE CONSERVATION RESERVE - WILDLIFE RESERVE (NO HUNTING):23,0,area,vm_parkres
+NATURE CONSERVATION RESERVE:20,0,area,vm_parkres
+"OTHER PARK - SCHEDULE 3, NATIONAL PARKS ACT:26",0,area,vm_parkres
+OTHER:25,0,area,vm_parkres
+PHILLIP ISLAND NATURE PARK:27,0,area,vm_parkres
+PORT & COASTAL FACILITY:50,0,area,vm_parkres
+PROPOSED NATIONAL PARKS ACT PARK OR PARK ADDITION:33,0,area,vm_parkres
+PV MANAGEMENT SERVICES AGREEMENT OTHER LAND:51,0,area,vm_parkres
+REGIONAL PARK - NOT SCHEDULED UNDER NATIONAL PARKS ACT:30,0,area,vm_parkres
+RESERVOIR PARK:49,0,area,vm_parkres
+"STATE PARK - SCHEDULE 2B, NATIONAL PARKS ACT:34",0,area,vm_parkres
+"WILDERNESS PARK - SCHEDULE 2A, NATIONAL PARKS ACT:35",0,area,vm_parkres
+bua,0,area,vm_pl_place_area_polygon
+runway,0,area,vm_tr_air_infra_area_polygon
+helipad,0,point,vm_tr_air_infra_point
+airport,0,area,vm_tr_airport_area_polygon
+runway,700,area,vm_tr_airport_infra_area_polygon
+runway,703,line,vm_tr_airport_infrastructure
+runway,703,point,vm_tr_airport_infrastructure
+bridge_rail_dm,260,line,vm_tr_rail
+bridge_rail_dm:,260,line,vm_tr_rail
+bridge_rail_dm:1,260,line,vm_tr_rail
+bridge_rail_du,260,line,vm_tr_rail
+bridge_rail_du:,260,line,vm_tr_rail
+bridge_rail_du:1,260,line,vm_tr_rail
+bridge_rail_o,260,line,vm_tr_rail
+bridge_rail_o:,260,line,vm_tr_rail
+bridge_rail_o:1,260,line,vm_tr_rail
+bridge_rail_o:2,260,line,vm_tr_rail
+marshalling_yard_rail,206,line,vm_tr_rail
+marshalling_yard_rail:,206,line,vm_tr_rail
+rail_dismantled,209,line,vm_tr_rail
+rail_dismantled:,209,line,vm_tr_rail
+rail_dismantled:1,209,line,vm_tr_rail
+rail_disused,206,line,vm_tr_rail
+rail_disused:,206,line,vm_tr_rail
+rail_disused:1,206,line,vm_tr_rail
+rail_light,206,line,vm_tr_rail
+rail_light:,206,line,vm_tr_rail
+rail_siding,206,line,vm_tr_rail
+rail_siding:,206,line,vm_tr_rail
+rail_siding:0,206,line,vm_tr_rail
+rail_siding:1,206,line,vm_tr_rail
+rail_trail,22,line,vm_tr_rail
+rail_trail:,22,line,vm_tr_rail
+rail_trail:1,22,line,vm_tr_rail
+rail_uground_o,205,line,vm_tr_rail
+rail_uground_o:,205,line,vm_tr_rail
+railway,206,line,vm_tr_rail
+railway:,206,line,vm_tr_rail
+railway:1,206,line,vm_tr_rail
+railway:2,210,line,vm_tr_rail
+tram_dismantled,209,line,vm_tr_rail
+tram_dismantled:,209,line,vm_tr_rail
+tramway,206,line,vm_tr_rail
+tramway:,206,line,vm_tr_rail
+tunnel_rail_dm,205,line,vm_tr_rail
+tunnel_rail_dm:,205,line,vm_tr_rail
+tunnel_rail_o,205,line,vm_tr_rail
+tunnel_rail_o:,205,line,vm_tr_rail
+tunnel_rail_o:2,205,line,vm_tr_rail
+bridge_rail_dm,260,point,vm_tr_rail_infrastructure
+bridge_rail_du,260,point,vm_tr_rail_infrastructure
+bridge_rail_o,260,point,vm_tr_rail_infrastructure
+rail_station,222,point,vm_tr_rail_infrastructure
+rail_station,222,point,vm_tr_rail_infrastructure
+tunnel_rail_o,260,point,vm_tr_rail_infrastructure
+barrier,0,point,vm_tr_road_infrastructure
+bridge,0,point,vm_tr_road_infrastructure
+ford,0,point,vm_tr_road_infrastructure
+gate,0,point,vm_tr_road_infrastructure
+int_attribute,0,point,vm_tr_road_infrastructure
+int_coast,0,point,vm_tr_road_infrastructure
+int_locality,0,point,vm_tr_road_infrastructure
+int_nosignal,0,point,vm_tr_road_infrastructure
+int_nosignal,0,point,vm_tr_road_infrastructure
+int_paper,0,point,vm_tr_road_infrastructure
+int_signal,0,point,vm_tr_road_infrastructure
+level_crossing,0,point,vm_tr_road_infrastructure
+road_end,0,point,vm_tr_road_infrastructure
+road_end,0,point,vm_tr_road_infrastructure
+roundabout,0,point,vm_tr_road_infrastructure
+tunnel,0,point,vm_tr_road_infrastructure
+forest:DENSE,2,area,vm_tree_density
+forest:MEDIUM,200,area,vm_tree_density
+forest:SCATTERED,201,area,vm_tree_density
+forest:DENSE,2,area,vm_tree_density_dense
+forest:MEDIUM,200,area,vm_tree_density_medium
+forest:SCATTERED,201,area,vm_tree_density_scattered

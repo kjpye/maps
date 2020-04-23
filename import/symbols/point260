@@ -1,0 +1,15 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('point260', '', '
+/point260 { % Railway Bridge Point
+            % Road Bridge Point
+  /featurewidth exch 2 div def
+  gsave
+%    /featurewidth .25 2 div def
+    translate rotate
+    .2 setlinewidth
+    0 0 0 1 setcmykcolor
+    -0.82 featurewidth .52 add moveto 0.42 -0.42 rlineto 0.4 0 rlineto 0.42 0.42 rlineto stroke
+    -0.82 featurewidth neg .52 sub moveto 0.42 0.42 rlineto 0.4 0 rlineto 0.42 -0.42 rlineto stroke
+  grestore
+} bind def
+');

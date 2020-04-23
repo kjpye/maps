@@ -1,0 +1,16 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('point51', 'filledcircle', '
+/point51 { % Horizontal Control Point
+  /featurewidth exch def
+  gsave
+    translate
+    newpath
+    0 0
+    .075
+    0 0 0 1
+    filledcircle
+    0.15 setlinewidth
+    0 1 moveto 0.75 -0.5 lineto -1.5 0 rlineto closepath stroke
+  grestore
+} bind def
+');

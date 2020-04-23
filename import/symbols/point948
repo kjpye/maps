@@ -1,0 +1,11 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('point948', '', '
+/point948 { % Flow Direction Arrow
+  /featurewidth exch def
+  gsave
+  translate rotate
+  .1 setlinewidth 1 .1 0 .1 setcmykcolor
+  -.7 -.5 moveto 0 0 lineto -.7 .5 lineto stroke
+  grestore
+} bind def
+');

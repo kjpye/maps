@@ -1,0 +1,14 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('point25', '', '
+/point25 { % grid
+  /featurewidth exch def
+  gsave
+    translate rotate
+    .15 setlinewidth
+    0 0 0 1 setcmykcolor
+    -.75 0 moveto 1.5 0 rlineto stroke
+    -.75 .75 moveto 0 -1.5 rlineto 1.5
+    0 rlineto 0 1.5 rlineto closepath stroke
+  grestore
+} bind def
+');

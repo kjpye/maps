@@ -1,0 +1,9 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('line87', 'solidline', '
+/line87 { % Windbreak
+  /featurewidth exch def
+  .3
+  1 0 .86 0
+  solidline
+} bind def
+');

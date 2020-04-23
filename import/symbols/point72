@@ -1,0 +1,13 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('point72', '', '
+/point72 { % Lighthouse
+  /featurewidth exch def
+  gsave
+    translate rotate
+    0 0 0 1 setcmykcolor
+    .866 0 moveto -.5 .75 lineto -.5 -.75 lineto closepath
+    -.866 0 moveto .5 .75 lineto .5 -.75 lineto closepath
+    0 0 .375 0 -360 arc fill
+  grestore
+} bind def
+');

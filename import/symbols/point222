@@ -1,0 +1,12 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('point222', 'filledcircle', '
+/point222 { % Railway station
+  /featurewidth exch def
+  gsave
+    newpath
+    .5
+    0 0 0 1
+    filledcircle
+  grestore
+} bind def
+');

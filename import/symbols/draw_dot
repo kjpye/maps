@@ -1,0 +1,8 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('draw_dot', '', '
+/draw_dot
+{
+    currentpoint .1 0 360 arc
+    closepath fill
+} bind def
+');

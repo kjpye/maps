@@ -1,0 +1,13 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('point54', '', '
+/point54 { % Distance indicator
+  /featurewidth exch def
+  gsave
+    translate rotate
+    0 1 1 0 setcmykcolor
+    .15 setlinewidth
+    0 0 moveto 2 0 lineto stroke
+    2.45 0 .45 0 360 arc closepath fill
+  grestore
+} bind def
+');

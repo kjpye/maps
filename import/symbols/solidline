@@ -1,0 +1,11 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('solidline', '', '
+/solidline {
+  gsave
+    setcmykcolor
+    setlinewidth
+    stroke
+  grestore
+  newpath
+} bind def
+');

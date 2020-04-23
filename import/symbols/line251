@@ -1,0 +1,9 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('line251', 'solidline', '
+/line251 { % Road -- principal sealed
+  /featurewidth exch def
+  .9
+  0 1 1 0
+  solidline
+} bind def
+');

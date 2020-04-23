@@ -1,0 +1,12 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('circle', '', '
+/circle {
+  gsave
+    setcmykcolor
+    setlinewidth
+    4 1 roll translate rotate
+    newpath 0 0 3 -1 roll 0 360 arc
+    closepath stroke
+  grestore
+} bind def
+');

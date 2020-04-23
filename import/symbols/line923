@@ -1,0 +1,7 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('line923', '', '
+/line923 { % Cutting
+  /featurewidth exch def
+% TODO
+} bind def
+');

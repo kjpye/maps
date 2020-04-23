@@ -1,0 +1,6 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('area90', 'cmykfill', '
+/area90 { % Distorted Surface Outcrop
+  0 .09 .15 .03 cmykfill
+} bind def
+');

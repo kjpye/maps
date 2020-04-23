@@ -1,0 +1,7 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('line543', '', '
+/line543 { % Powerline (WAC only)
+  /featurewidth exch def
+% handled specially in the code
+} bind def
+');

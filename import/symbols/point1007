@@ -1,0 +1,14 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('point1007', '', '
+/point1007 { % Church
+  /featurewidth exch def
+  gsave
+    translate rotate
+    0 0 0 1 setcmykcolor
+    0.6
+    dup neg dup neg moveto dup dup lineto dup dup neg lineto neg dup lineto closepath fill
+    0.2 setlinewidth
+    0 0.6 moveto 0 1.2 rlineto 0 -0.6 rlineto -0.6 0 rlineto 1.2 0 rlineto stroke
+  grestore
+} bind def
+');

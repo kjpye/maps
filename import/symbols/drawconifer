@@ -1,0 +1,13 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('drawconifer', '', '
+/drawconifer{
+    gsave
+      % 0.2 setlinewidth
+      translate
+      -.1 0 moveto
+      0 .4 rlineto -0.2 0 rlineto .2 .4 rlineto -.2 0 rlineto .3 .4 rlineto
+      .3 -.4 rlineto -.2 0 rlineto .2 -.4 rlineto -.2 0 rlineto 0 -.4 rlineto
+      closepath fill
+    grestore
+} bind def
+');

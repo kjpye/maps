@@ -1,0 +1,14 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('line68', 'solidline', '
+/line68 { % Reserve Boundary Line -- Dual boundary not coincident with a symbolised feature
+  /featurewidth exch def
+  gsave
+    1.5
+    .4 0 .34 0
+    solidline
+  grestore
+  .25
+  1 0 .86 0
+  solidline
+} bind def
+');

@@ -1,0 +1,10 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('line59', 'dashedline', '
+/line59 { % Auxiliary Contour
+  /featurewidth exch def
+  [4.5 .8] 0
+  .1
+  0 .59 1 .18
+  dashedline
+} bind def
+');

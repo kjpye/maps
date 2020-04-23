@@ -1,0 +1,15 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('line79', 'solidline dashedline', '
+/line79 { % Boundary -- State or Territory (WAC only)
+  /featurewidth exch def
+  gsave
+    2
+    0 .35 .15 0
+    solidline
+  grestore
+  [5 .75 1.5 .75] 0
+  .3
+  0 0 0 1
+  dashedline
+} bind def
+');

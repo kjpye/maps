@@ -1,0 +1,7 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('line245', '', '
+/line245 { % Railway or Road Causeway
+  /featurewidth exch def
+% TODO
+} bind def
+');

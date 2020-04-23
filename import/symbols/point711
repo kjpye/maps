@@ -1,0 +1,9 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('point711', 'aero_start aero_outer aero_end', '
+/point711 { % Aerodrome - civilian unusable
+  /featurewidth exch def
+  aero_start aero_outer
+  % should draw "U"
+  aero_end
+} bind def
+');

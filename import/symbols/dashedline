@@ -1,0 +1,13 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('dashedline', '', '
+/dashedline {
+  gsave
+    setcmykcolor
+    setlinewidth
+    setdash
+    0 setlinecap
+    stroke
+  grestore
+  newpath
+} bind def
+');

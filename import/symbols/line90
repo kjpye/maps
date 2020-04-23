@@ -1,0 +1,11 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('line90', 'dashedline', '
+/line90 { % Physiography Boundaries -- Bounding a crater & distorted surface
+  /featurewidth exch def
+  [.75 .3] 0
+  .15
+  0 0 0 1
+  dashedline
+} bind def
+');
+

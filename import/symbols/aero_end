@@ -1,0 +1,6 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('areo_end', '', '
+/aero_end {
+    grestore
+} bind def
+');

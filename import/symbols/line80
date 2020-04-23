@@ -1,0 +1,10 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('line80', 'dashedline', '
+/line80 { % State Border
+  /featurewidth exch def
+  [5 .75 1.5 .75] 0
+  .3
+  0 0 0 1
+  dashedline
+} bind def
+');

@@ -1,0 +1,10 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('point52', 'filledcircle', '
+/point52 { % Spot Elevation
+  /featurewidth exch def
+  newpath
+  .1825
+  0 0 0 1
+  filledcircle
+} bind def
+');

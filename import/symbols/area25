@@ -1,0 +1,6 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('area25', 'pattern25 pattfill', '
+/area25 { % Sand Dune
+  pattern25 pattfill
+} bind def
+');

@@ -1,0 +1,9 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('line250A', 'solidline', '
+/line250A { % Road -- Dual carriageway (centre stripe)
+  /featurewidth exch def
+  .6
+  0 0 1 0
+  solidline
+} bind def
+');

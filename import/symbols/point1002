@@ -1,0 +1,16 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('point1002', 'solidline', '
+/point1002 { % Barrier
+  /featurewidth exch def
+% TODO make wider than road
+  gsave
+    translate rotate
+%    0 0 0 1 setcmykcolor
+%    0 -.5 moveto 0 1 rlineto stroke
+%    closepath fill
+  .4 setlinewidth
+  0 0 0 1 setcmykcolor
+  0 -.75 moveto 0 1.5 rlineto stroke
+  grestore
+} bind def
+');

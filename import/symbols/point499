@@ -1,0 +1,13 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('point499', 'inverted_v', '
+/point499 { % Vertical obstruction (tower)
+  /featurewidth exch def
+  gsave
+    0 0 0 1 setcmykcolor
+    translate rotate
+    0 0 .15 0 360 arc closepath fill
+    0 -.15 translate
+    1.5 2 .15 inverted_v
+  grestore
+} bind def
+');

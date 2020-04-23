@@ -1,0 +1,10 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('pattfill', '', '
+/pattfill {
+  gsave
+    closepath
+    setpattern fill
+  grestore
+  newpath
+} bind def
+');

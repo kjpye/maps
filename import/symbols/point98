@@ -1,0 +1,14 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('point98', '', '
+/point98 { % Offshore Rock -- bare and/or tidal
+  /featurewidth exch def
+  gsave
+  translate rotate
+  .1 setlinewidth 0 0 0 1 setcmykcolor
+  % TODO get size right
+  -0.5 0 moveto 0 1 rlineto stroke
+  60 rotate -0.5 0 moveto 0 1 rlineto stroke
+  60 rotate -0.5 0 moveto 0 1 rlineto stroke
+  grestore
+} bind def
+');

@@ -1,0 +1,7 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('area4', 'pattern4 pattfill', '
+/area4 { % Rainforest
+  pattern4 pattfill
+} bind def
+');
+
