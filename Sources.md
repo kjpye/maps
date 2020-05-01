@@ -50,7 +50,7 @@ Get South Australian topographic data by
 Save the resultant file somewhere and unzip it.
 
 ## Tasmania ##
-Try https://listdata/thelist.tas.gov.au/opendata.
+Try https://listdata.thelist.tas.gov.au/opendata.
 
 Data for each dataset is available for each municipality. Each zip file contains data as shape files, ESRΙPgdb files and Mapinfo files, so you'll be downloading three copies of everything.
 
