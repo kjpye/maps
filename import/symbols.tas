@@ -28,6 +28,16 @@ Intermediate Contour,56,line,tas_5m_contours
 Intermediate Dep Contour,56,line,tas_5m_contours
 Intermediate Dep Form Line,0,line,tas_5m_contours
 Intermediate Form Line,0,line,tas_5m_contours
+Auxiliary Contour,59,line,tas_10m_contours
+Auxiliary Dep Contour,59,line,tas_10m_contours
+Index Contour,55,line,tas_10m_contours
+Index Depression Contour,57,line,tas_10m_contours
+Index Depression Form Line,0,line,tas_10m_contours
+Index Form Line,0,line,tas_10m_contours
+Intermediate Contour,56,line,tas_10m_contours
+Intermediate Dep Contour,56,line,tas_10m_contours
+Intermediate Dep Form Line,0,line,tas_10m_contours
+Intermediate Form Line,0,line,tas_10m_contours
 Administration Facility,0,point,tas_building_pts
 Amenity,0,point,tas_building_pts
 Care Facility,0,point,tas_building_pts
@@ -380,44 +390,44 @@ Road:Elevated Way:Public:Unsealed,258,line,tas_transport_segments
 Road:Fire Trail:Authorised:4WD required,254,line,tas_transport_segments
 Road:Fire Trail:Authorised:Sealed,257,line,tas_transport_segments
 Road:Fire Trail:Authorised:Unsealed,253,line,tas_transport_segments
-Road:Fire Trail:Private:4WD required,0,line,tas_transport_segments
-Road:Fire Trail:Private:Sealed,0,line,tas_transport_segments
-Road:Fire Trail:Private:Unsealed,0,line,tas_transport_segments
-Road:Fire Trail:Public:Sealed,0,line,tas_transport_segments
-Road:Fire Trail:Public:Unsealed,0,line,tas_transport_segments
-Road:Floodway:Authorised:Sealed,0,line,tas_transport_segments
-Road:Floodway:Authorised:Unsealed,0,line,tas_transport_segments
-Road:Floodway:Private:Sealed,0,line,tas_transport_segments
-Road:Floodway:Public:Sealed,0,line,tas_transport_segments
-Road:Floodway:Public:Unsealed,0,line,tas_transport_segments
-Road:Ford:Authorised:4WD required,0,line,tas_transport_segments
-Road:Ford:Authorised:Sealed,0,line,tas_transport_segments
-Road:Ford:Authorised:Unsealed,0,line,tas_transport_segments
-Road:Ford:Private:4WD required,0,line,tas_transport_segments
-Road:Ford:Private:Unsealed,0,line,tas_transport_segments
-Road:Ford:Public:Sealed,0,line,tas_transport_segments
-Road:Ford:Public:Unsealed,0,line,tas_transport_segments
-Road:Intersection Segment:Authorised:Sealed,0,line,tas_transport_segments
-Road:Intersection Segment:Public:Sealed,0,line,tas_transport_segments
-Road:Layby:Private:Sealed,0,line,tas_transport_segments
-Road:Layby:Private:Unsealed,0,line,tas_transport_segments
-Road:Layby:Public:Sealed,0,line,tas_transport_segments
-Road:Layby:Public:Unsealed,0,line,tas_transport_segments
-Road:Normal Transport Segment:Authorised:4WD required,0,line,tas_transport_segments
-Road:Normal Transport Segment:Authorised:Sealed,0,line,tas_transport_segments
-Road:Normal Transport Segment:Authorised:Unsealed,0,line,tas_transport_segments
-Road:Normal Transport Segment:Private:4WD required,0,line,tas_transport_segments
-Road:Normal Transport Segment:Private:Sealed,0,line,tas_transport_segments
-Road:Normal Transport Segment:Private:Unsealed,0,line,tas_transport_segments
-Road:Normal Transport Segment:Public:4WD required,0,line,tas_transport_segments
-Road:Normal Transport Segment:Public:Sealed,0,line,tas_transport_segments
-Road:Normal Transport Segment:Public:Unsealed,0,line,tas_transport_segments
-Road:Normal Transport Segment:Restricted:4WD required,0,line,tas_transport_segments
-Road:Opening Bridge:Public:Sealed,0,line,tas_transport_segments
-Road:Roundabout:Authorised:Sealed,0,line,tas_transport_segments
-Road:Roundabout:Public:Sealed,0,line,tas_transport_segments
-Road:Temp LGA Road:Public:Sealed,0,line,tas_transport_segments
-Road:Temp LGA Road:Public:Unsealed,0,line,tas_transport_segments
+Road:Fire Trail:Private:4WD required,253,line,tas_transport_segments
+Road:Fire Trail:Private:Sealed,242,line,tas_transport_segments
+Road:Fire Trail:Private:Unsealed,253,line,tas_transport_segments
+Road:Fire Trail:Public:Sealed,242,line,tas_transport_segments
+Road:Fire Trail:Public:Unsealed,253,line,tas_transport_segments
+Road:Floodway:Authorised:Sealed,242,line,tas_transport_segments
+Road:Floodway:Authorised:Unsealed,253,line,tas_transport_segments
+Road:Floodway:Private:Sealed,242,line,tas_transport_segments
+Road:Floodway:Public:Sealed,242,line,tas_transport_segments
+Road:Floodway:Public:Unsealed,253,line,tas_transport_segments
+Road:Ford:Authorised:4WD required,253,line,tas_transport_segments
+Road:Ford:Authorised:Sealed,242,line,tas_transport_segments
+Road:Ford:Authorised:Unsealed,253,line,tas_transport_segments
+Road:Ford:Private:4WD required,253,line,tas_transport_segments
+Road:Ford:Private:Unsealed,253,line,tas_transport_segments
+Road:Ford:Public:Sealed,242,line,tas_transport_segments
+Road:Ford:Public:Unsealed,253,line,tas_transport_segments
+Road:Intersection Segment:Authorised:Sealed,242,line,tas_transport_segments
+Road:Intersection Segment:Public:Sealed,242,line,tas_transport_segments
+Road:Layby:Private:Sealed,242,line,tas_transport_segments
+Road:Layby:Private:Unsealed,253,line,tas_transport_segments
+Road:Layby:Public:Sealed,242,line,tas_transport_segments
+Road:Layby:Public:Unsealed,253,line,tas_transport_segments
+Road:Normal Transport Segment:Authorised:4WD required,253,line,tas_transport_segments
+Road:Normal Transport Segment:Authorised:Sealed,242,line,tas_transport_segments
+Road:Normal Transport Segment:Authorised:Unsealed,253,line,tas_transport_segments
+Road:Normal Transport Segment:Private:4WD required,253,line,tas_transport_segments
+Road:Normal Transport Segment:Private:Sealed,242,line,tas_transport_segments
+Road:Normal Transport Segment:Private:Unsealed,253,line,tas_transport_segments
+Road:Normal Transport Segment:Public:4WD required,253,line,tas_transport_segments
+Road:Normal Transport Segment:Public:Sealed,242,line,tas_transport_segments
+Road:Normal Transport Segment:Public:Unsealed,253,line,tas_transport_segments
+Road:Normal Transport Segment:Restricted:4WD required,253,line,tas_transport_segments
+Road:Opening Bridge:Public:Sealed,242,line,tas_transport_segments
+Road:Roundabout:Authorised:Sealed,242,line,tas_transport_segments
+Road:Roundabout:Public:Sealed,242,line,tas_transport_segments
+Road:Temp LGA Road:Public:Sealed,242,line,tas_transport_segments
+Road:Temp LGA Road:Public:Unsealed,253,line,tas_transport_segments
 Road:Transport Connector:Not Applicable:Not Applicable,0,line,tas_transport_segments
 Road:Transport Connector:Private:Unsealed,0,line,tas_transport_segments
 Road:Transport Connector:Public:Unsealed,0,line,tas_transport_segments
@@ -429,19 +439,19 @@ Road:Tunnel:Public:Sealed,205,line,tas_transport_segments
 Road:Tunnel:Public:Unsealed,205,line,tas_transport_segments
 Road:Tunnel Dual Carriageway:Public:Sealed,205,line,tas_transport_segments
 Road:Tunnel Intersection:Public:Sealed,205,line,tas_transport_segments
-Road:Undefined Way:Authorised:4WD required,0,line,tas_transport_segments
-Road:Undefined Way:Authorised:Unsealed,0,line,tas_transport_segments
-Road:Undefined Way:Private:4WD required,0,line,tas_transport_segments
-Road:Undefined Way:Private:Unsealed,0,line,tas_transport_segments
-Road:Undefined Way:Public:4WD required,0,line,tas_transport_segments
-Road:Undefined Way:Public:Unsealed,0,line,tas_transport_segments
-Road:Undefined Way:Restricted:4WD required,0,line,tas_transport_segments
-Road:Weighbridge:Authorised:Sealed,0,line,tas_transport_segments
-Road:Weighbridge:Authorised:Unsealed,0,line,tas_transport_segments
-Road:Weighbridge:Private:Sealed,0,line,tas_transport_segments
-Road:Weighbridge:Private:Unsealed,0,line,tas_transport_segments
-Road:Weighbridge:Public:Sealed,0,line,tas_transport_segments
-Route:Normal Transport Segment:Not Applicable:Not Applicable,0,line,tas_transport_segments
+Road:Undefined Way:Authorised:4WD required,253,line,tas_transport_segments
+Road:Undefined Way:Authorised:Unsealed,253,line,tas_transport_segments
+Road:Undefined Way:Private:4WD required,253,line,tas_transport_segments
+Road:Undefined Way:Private:Unsealed,253,line,tas_transport_segments
+Road:Undefined Way:Public:4WD required,253,line,tas_transport_segments
+Road:Undefined Way:Public:Unsealed,253,line,tas_transport_segments
+Road:Undefined Way:Restricted:4WD required,253,line,tas_transport_segments
+Road:Weighbridge:Authorised:Sealed,242,line,tas_transport_segments
+Road:Weighbridge:Authorised:Unsealed,253,line,tas_transport_segments
+Road:Weighbridge:Private:Sealed,242,line,tas_transport_segments
+Road:Weighbridge:Private:Unsealed,253,line,tas_transport_segments
+Road:Weighbridge:Public:Sealed,242,line,tas_transport_segments
+Route:Normal Transport Segment:Not Applicable:Not Applicable,242,line,tas_transport_segments
 Track:Bridge:Authorised:Boardwalk,22,line,tas_transport_segments
 Track:Bridge:Authorised:Fabricated Surface,22,line,tas_transport_segments
 Track:Bridge:Authorised:Sealed,22,line,tas_transport_segments

@@ -47,6 +47,12 @@ my $orientation = 'landscape';
 
 my @annotations;
 
+my %messages;
+sub one-message($msg) {
+    note $msg unless %messages{$msg}.defined;
+    %messages{$msg} = 1;
+}
+
 sub set-papersizes() {
   # Keys are papersize, values are a string with
   # width and length in mm separated by commas.
@@ -519,7 +525,7 @@ sub draw-areas(Str $table, Str $columns, Str $geomcol) {
 	      }
 	  }
 	  
-          note "No symbol found for table {$table} feature {$featuretype}(area)" if $symbol <= 0 && $debug >= 1;
+          one-message "No symbol found for table {$table} feature {$featuretype}(area)" if $symbol <= 0 && $debug >= 1;
 	  next unless $symbol > 0;
 	  ++$object-count;
 	  put-line($shape.Str, "area$symbol", );
@@ -1041,6 +1047,81 @@ sub draw-ga-wlines(Str $table) {
 ]
 
 #`[
+  sub draw-roads -- draw roads
+
+  Note that the first "feature column" must give a unique identifier for that row
+]
+
+sub draw-roads(Str $table, Str $columns, Str $geomcol, $default, Str $widthcol) {
+    my @dual;
+    my $featurewidth = 0.7;
+    
+    note "Roads..." if $debug >= 1;
+    my @columns       = $columns.split: ':';
+    my $pid           = @columns.shift;
+    my $selectcolumns = @columns.join: ', ';
+    my $numfeatcols   = +@columns;
+    $selectcolumns   ~= ', ' ~ $widthcol if $widthcol;
+    
+    my $results = $pg.query("SELECT $pid, $selectcolumns, st_astext($geomcol) as shape
+                              FROM $table
+                             WHERE $geomcol && $rect
+                            ");
+    
+    if $results {
+        for $results.arrays -> $object {
+            my $pfi   = $object.shift;
+	    my $shape = $object.pop;
+	    $featurewidth = $object.pop if $widthcol;
+	    my $featuretype = $object.join: ':';
+            dd $featuretype;
+	    
+	    my $symbol = $default;
+	    %linefeaturetypes{$table}{$featuretype}++;
+	    if ! $symbol || $symbol eq '0' {
+                note "Getting symbol: $table, $featuretype, line" if $debug > 15;
+                #dd $table;
+                #dd $featuretype;
+	        for $sth-symb.execute($table, $featuretype, 'line').arrays -> $obj {
+		    $symbol = $obj[0].Int;
+	        }
+	    }
+	    note "draw-road: $table $featuretype $symbol" if $debug >= 10;
+	    
+            #        $roadnames.say: "VM{$objectid} $road-name" if $roadnames;
+	    next unless $symbol > 0;
+	    @dual.push: $pfi if $symbol == 250;
+	    ++$object-count;
+            #        put-comment($road-name);
+            #        $symbol += 9000 if %emphasise-roads{$road-name}.defined;
+	    put-line($shape, "line$symbol", $featurewidth);
+        }
+    }
+    
+    # Now go back and draw the yellow centre line on dual carriageways
+    
+    note "Centre lines of roads..." if $debug >= 1;
+    
+    my $query = "SELECT st_astext($geomcol) AS shape
+                   FROM $table
+                  WHERE $pid = <whatever>
+                 ";
+    my $sth = $pg.db.prepare("SELECT st_astext($geomcol) AS shape
+                                FROM $table
+                               WHERE $pid = \$1
+                             ");                           
+    for @dual -> $objectid {
+	$results = $sth.execute($objectid);
+	
+	for $results.arrays -> $object {
+	    my $shape  = $object[0];
+	    
+	    put-line($shape, 'line250A', 0.6);
+	}
+    }
+}
+
+#`[
   sub draw-vm-roads -- draw roads from the Vicmap database table tr-road
     no parameters
 ]
@@ -1248,6 +1329,7 @@ my %pointfeaturetypes;
 
 sub draw-points(Str $table, Str $columns, Str $geomcol, Str $orientcol, Str $widthcol) {
   note "$table points..." if $debug >= 1;
+  note $columns if $debug >= 5;
 
   my @columns     = $columns.split: ':';
   my $selectcolumns = @columns.join: ', ';
@@ -1307,7 +1389,7 @@ sub draw-points(Str $table, Str $columns, Str $geomcol, Str $orientcol, Str $wid
     } else {
       for $sth-symb.execute($table, $featuretype, 'point').arrays -> $obj {
         $symbol = $obj[0].Int;
-        note "No symbol found for table $table feature $featuretype" if $symbol <= 0 && $debug >= 1;
+        one-message "No symbol found for table $table feature $featuretype" if $symbol <= 0 && $debug >= 1;
       }
     }
 	
@@ -2489,6 +2571,7 @@ sub draw-objects(Real $xoff, Real $yoff, Real $slope) {
         given $draw {
           when 'point'          { draw-points\              ($table, $typecolumn, $geomcol, $orientcol, $widthcol ); }
           when 'line'           { draw-lines\               ($table, $typecolumn, $geomcol, $default,   $widthcol ); }
+          when 'road'           { draw-roads\               ($table, $typecolumn, $geomcol, $default,   $widthcol ); }
           when 'ga_line'        { draw-lines\               ($table, $typecolumn, $geomcol, $default,   $widthcol ); }
           when 'area'           { draw-areas\               ($table, $typecolumn, $geomcol,                       ); }
           when 'text'           { draw-text\                ($table, $typecolumn, $geomcol,             $widthcol ); }

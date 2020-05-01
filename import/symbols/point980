@@ -7,7 +7,7 @@ VALUES ('point980', '', '
   .1 setlinewidth 0 0 0 .1 setcmykcolor
   % TODO get size right
   -0.5 0 moveto 0 1 rlineto stroke
-  90 rotate -0.5 0 moveto 0 1 rlineto stroke
+  0 -0.5 moveto 1 0 rlineto stroke
   grestore
 } bind def
 ');
