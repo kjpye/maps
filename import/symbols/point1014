@@ -1,0 +1,29 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('point1014', '', '
+/point1014 { % Playground
+  /featurewidth exch def
+  gsave
+    translate rotate
+    0 0 0 1 setcmykcolor
+% slide
+  -0.4 -0.4 moveto
+  .55 -0.4 .55 -1.5 1.5 -1.5 curveto
+  1.5 -1.1 lineto
+  .55 -1.05 .55 .1 -0.4 .1 curveto
+  closepath fill
+% ladder
+  0.2 setlinewidth
+  -1.4 -1.5 moveto 0 1 rlineto stroke
+  -0.6 -1.5 moveto 0 1 rlineto stroke
+  % rungs
+  -1.2 -1.2 moveto .5 0 rlineto stroke
+  -1.2 -0.8 moveto .5 0 rlineto stroke
+% hut
+  -1.5 -0.4 moveto 1 0 rlineto 0 1 rlineto -1 0 rlineto closepath
+  -1 0.1 moveto -1 0.1 .3 0 360 arc closepath
+  eofill
+% roof
+  -1.5 0.7 moveto 1 0 rlineto -0.5 0.3 rlineto closepath fill
+  grestore
+} bind def
+');

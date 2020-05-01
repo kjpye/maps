@@ -4,7 +4,7 @@ VALUES ('point1006', '', '
   gsave
   pop moveto pop
   0 0 0 1 setcmykcolor
-  currentpoint translate .01 -.01 scale
+  currentpoint translate .005 -.005 scale
   130.95011 46.585770 moveto currentpoint 46.54521 0 360 arc
   124.50539 388.15534 moveto
   124.50539 549.98933 lineto

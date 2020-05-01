@@ -708,6 +708,7 @@ sub draw-lines(Str $table, Str $columns, Str $geomcol, $default, Str $widthcol) 
   
   if $results {
       
+note "{$results.rows} objects from $table";
       for $results.arrays -> $object {
 	  my $shape = $object.pop;
 	  $featurewidth = $object.pop if $widthcol;
@@ -938,7 +939,10 @@ sub draw-ga-lines(Str $table, Str $typecolumn, $default-symbol = 0) {
   }
 }
 
-sub put-outline(Str $text, Real $x, Real $y, Real $size, Str $colour, Real $thickness) { 
+sub put-outline(Str $text is copy, Real $x, Real $y, Real $size, Str $colour, Real $thickness) { 
+    $text ~~ s:g/\\/\/\//;
+    $text ~~ s:g/\(/\\\(/;
+    $text ~~ s:g/\)/\\\)/;
     $TMP.print: sprintf "%f %f moveto (%s) /Helvetica findfont %f scalefont setfont stringwidth pop 2 div neg 0 rmoveto (%s) false charpath %s setcmykcolor %f setlinewidth stroke\n", $x, $y, $text, $size, $text, $colour, $thickness;
 }
 

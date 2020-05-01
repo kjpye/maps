@@ -72,7 +72,7 @@ control point:trig station,0,point,vm_foi_index_centroid
 cultural centre:aquarium,0,point,vm_foi_index_centroid
 cultural centre:arboretum,0,point,vm_foi_index_centroid
 cultural centre:art gallery,0,point,vm_foi_index_centroid
-cultural centre:library,0,point,vm_foi_index_centroid
+cultural centre:library,1013,point,vm_foi_index_centroid
 cultural centre:museum,0,point,vm_foi_index_centroid
 cultural centre:observatory,0,point,vm_foi_index_centroid
 defence site:airforce base,0,point,vm_foi_index_centroid
@@ -86,23 +86,23 @@ dumping ground:tailings,0,point,vm_foi_index_centroid
 dumping ground:transfer station,0,point,vm_foi_index_centroid
 education centre:education complex,0,point,vm_foi_index_centroid
 education centre:further education,0,point,vm_foi_index_centroid
-education centre:primary school,0,point,vm_foi_index_centroid
-education centre:primary/secondary school,0,point,vm_foi_index_centroid
+education centre:primary school,1018,point,vm_foi_index_centroid
+education centre:primary/secondary school,1020,point,vm_foi_index_centroid
 education centre:school camp,0,point,vm_foi_index_centroid
-education centre:secondary school,0,point,vm_foi_index_centroid
+education centre:secondary school,1019,point,vm_foi_index_centroid
 education centre:special school,0,point,vm_foi_index_centroid
-education centre:tertiary institution,0,point,vm_foi_index_centroid
-education centre:university,0,point,vm_foi_index_centroid
+education centre:tertiary institution,1021,point,vm_foi_index_centroid
+education centre:university,1021,point,vm_foi_index_centroid
 emergency facility:ambulance station,401,point,vm_foi_index_centroid
 emergency facility:coast guard,0,point,vm_foi_index_centroid
 emergency facility:emergency complex,0,point,vm_foi_index_centroid
 emergency facility:emergency coordination centre,0,point,vm_foi_index_centroid
 emergency facility:fire lookout,0,point,vm_foi_index_centroid
-emergency facility:fire station,0,point,vm_foi_index_centroid
+emergency facility:fire station,404,point,vm_foi_index_centroid
 emergency facility:fire station (forest industry),0,point,vm_foi_index_centroid
 emergency facility:lifesaving club,0,point,vm_foi_index_centroid
 emergency facility:neighbourhood safer place,0,point,vm_foi_index_centroid
-emergency facility:police station,0,point,vm_foi_index_centroid
+emergency facility:police station,406,point,vm_foi_index_centroid
 emergency facility:refuge,0,point,vm_foi_index_centroid
 emergency facility:ses unit,1009,point,vm_foi_index_centroid
 excavation site:abandoned mine,0,point,vm_foi_index_centroid
@@ -112,11 +112,11 @@ excavation site:mine,0,point,vm_foi_index_centroid
 excavation site:quarry,0,point,vm_foi_index_centroid
 health facility:community health centre,0,point,vm_foi_index_centroid
 health facility:maternal/child health centre,0,point,vm_foi_index_centroid
-hospital:bush nursing hospital,0,point,vm_foi_index_centroid
+hospital:bush nursing hospital,1012,point,vm_foi_index_centroid
 hospital:day procedure centre,0,point,vm_foi_index_centroid
-hospital:general hospital,0,point,vm_foi_index_centroid
-hospital:general hospital (emergency),0,point,vm_foi_index_centroid
-hospital:hospital complex,0,point,vm_foi_index_centroid
+hospital:general hospital,1012,point,vm_foi_index_centroid
+hospital:general hospital (emergency),1012,point,vm_foi_index_centroid
+hospital:hospital complex,1012,point,vm_foi_index_centroid
 industrial facility:abattoir,0,point,vm_foi_index_centroid
 industrial facility:brickworks,0,point,vm_foi_index_centroid
 industrial facility:dairy,0,point,vm_foi_index_centroid
@@ -142,7 +142,7 @@ place of worship:church,0,point,vm_foi_index_centroid
 place of worship:gurdwara (sikh),0,point,vm_foi_index_centroid
 place of worship:monastry,0,point,vm_foi_index_centroid
 place of worship:mondir (hindu),0,point,vm_foi_index_centroid
-place of worship:mosque,0,point,vm_foi_index_centroid
+place of worship:mosque,1016,point,vm_foi_index_centroid
 place of worship:synagogue,0,point,vm_foi_index_centroid
 place of worship:vihara (buddhist),0,point,vm_foi_index_centroid
 place:historic site,0,point,vm_foi_index_centroid
@@ -163,9 +163,9 @@ recreational resource:club house,0,point,vm_foi_index_centroid
 recreational resource:grandstand,0,point,vm_foi_index_centroid
 recreational resource:group camp,0,point,vm_foi_index_centroid
 recreational resource:hut,0,point,vm_foi_index_centroid
-recreational resource:picnic site,0,point,vm_foi_index_centroid
-recreational resource:playground,0,point,vm_foi_index_centroid
-recreational resource:rotunda,0,point,vm_foi_index_centroid
+recreational resource:picnic site,1010,point,vm_foi_index_centroid
+recreational resource:playground,1014,point,vm_foi_index_centroid
+recreational resource:rotunda,1011,point,vm_foi_index_centroid
 recreational resource:skate park,0,point,vm_foi_index_centroid
 reserve:amusement centre,0,point,vm_foi_index_centroid
 reserve:cemetery,0,point,vm_foi_index_centroid
@@ -196,7 +196,7 @@ sport facility:netball court,0,point,vm_foi_index_centroid
 sport facility:racecourse,0,point,vm_foi_index_centroid
 sport facility:sports complex,0,point,vm_foi_index_centroid
 sport facility:sports ground,0,point,vm_foi_index_centroid
-sport facility:swimming pool,0,point,vm_foi_index_centroid
+sport facility:swimming pool,1015,point,vm_foi_index_centroid
 sport facility:target range,0,point,vm_foi_index_centroid
 sport facility:tennis court,0,point,vm_foi_index_centroid
 sport facility:training track,0,point,vm_foi_index_centroid
@@ -312,7 +312,7 @@ landmark:fountain,0,area,vm_foi_index_extent
 landmark:lookout,0,area,vm_foi_index_extent
 landmark:monument,0,area,vm_foi_index_extent
 landmark:tourist attraction,0,area,vm_foi_index_extent
-landmark:tower,0,area,vm_foi_index_extent
+landmark:tower,1017,area,vm_foi_index_extent
 physiographic:lava flow,0,area,vm_foi_index_extent
 pipeline facility:gas plant,0,area,vm_foi_index_extent
 pipeline facility:oil refinery,0,area,vm_foi_index_extent
@@ -434,29 +434,27 @@ control point:trig station,0,point,vm_foi_point
 cultural centre:aquarium,0,point,vm_foi_point
 cultural centre:arboretum,0,point,vm_foi_point
 cultural centre:art gallery,0,point,vm_foi_point
-cultural centre:library,0,point,vm_foi_point
+cultural centre:library,1013,point,vm_foi_point
 cultural centre:museum,0,point,vm_foi_point
 cultural centre:observatory,0,point,vm_foi_point
 defence site:barracks,0,point,vm_foi_point
 dumping ground:transfer station,0,point,vm_foi_point
 education centre:further education,0,point,vm_foi_point
-education centre:primary school,0,point,vm_foi_point
-education centre:primary/secondary school,0,point,vm_foi_point
+education centre:primary school,1018,point,vm_foi_point
+education centre:primary/secondary school,1020,point,vm_foi_point
 education centre:school camp,0,point,vm_foi_point
-education centre:secondary school,0,point,vm_foi_point
+education centre:secondary school,1019,point,vm_foi_point
 education centre:special school,0,point,vm_foi_point
-education centre:tertiary institution,0,point,vm_foi_point
-education centre:university,0,point,vm_foi_point
+education centre:tertiary institution,1021,point,vm_foi_point
+education centre:university,1021,point,vm_foi_point
 emergency facility:ambulance station,401,point,vm_foi_point
 emergency facility:coast guard,0,point,vm_foi_point
 emergency facility:emergency coordination centre,0,point,vm_foi_point
 emergency facility:fire lookout,0,point,vm_foi_point
-emergency facility:fire station,0,point,vm_foi_point
 emergency facility:fire station,404,point,vm_foi_point
-emergency facility:fire station (forest industry),0,point,vm_foi_point
+emergency facility:fire station (forest industry),404,point,vm_foi_point
 emergency facility:lifesaving club,0,point,vm_foi_point
 emergency facility:neighbourhood safer place,0,point,vm_foi_point
-emergency facility:police station,0,point,vm_foi_point
 emergency facility:police station,406,point,vm_foi_point
 emergency facility:refuge,0,point,vm_foi_point
 emergency facility:ses unit,1009,point,vm_foi_point
@@ -466,10 +464,10 @@ excavation site:mine,0,point,vm_foi_point
 excavation site:quarry,0,point,vm_foi_point
 health facility:community health centre,0,point,vm_foi_point
 health facility:maternal/child health centre,0,point,vm_foi_point
-hospital:bush nursing hospital,0,point,vm_foi_point
+hospital:bush nursing hospital,1012,point,vm_foi_point
 hospital:day procedure centre,0,point,vm_foi_point
-hospital:general hospital,0,point,vm_foi_point
-hospital:general hospital (emergency),0,point,vm_foi_point
+hospital:general hospital,1012,point,vm_foi_point
+hospital:general hospital (emergency),1012,point,vm_foi_point
 industrial facility:abattoir,0,point,vm_foi_point
 industrial facility:brickworks,0,point,vm_foi_point
 industrial facility:dairy,0,point,vm_foi_point
@@ -481,13 +479,13 @@ landmark:fountain,0,point,vm_foi_point
 landmark:lookout,0,point,vm_foi_point
 landmark:monument,0,point,vm_foi_point
 landmark:tourist attraction,0,point,vm_foi_point
-landmark:tower,0,point,vm_foi_point
+landmark:tower,1017,point,vm_foi_point
 pipeline facility:pumping station,0,point,vm_foi_point
 place of worship:church,1007,point,vm_foi_point
 place of worship:gurdwara (sikh),0,point,vm_foi_point
 place of worship:monastry,0,point,vm_foi_point
 place of worship:mondir (hindu),0,point,vm_foi_point
-place of worship:mosque,0,point,vm_foi_point
+place of worship:mosque,1016,point,vm_foi_point
 place of worship:synagogue,0,point,vm_foi_point
 place of worship:vihara (buddhist),0,point,vm_foi_point
 place:historic site,0,point,vm_foi_point
@@ -498,14 +496,14 @@ recreational resource:amphitheatre,0,point,vm_foi_point
 recreational resource:club house,0,point,vm_foi_point
 recreational resource:grandstand,0,point,vm_foi_point
 recreational resource:hut,0,point,vm_foi_point
-recreational resource:picnic site,0,point,vm_foi_point
-recreational resource:playground,0,point,vm_foi_point
-recreational resource:rotunda,0,point,vm_foi_point
+recreational resource:picnic site,1010,point,vm_foi_point
+recreational resource:playground,1014,point,vm_foi_point
+recreational resource:rotunda,1011,point,vm_foi_point
 residential building:retirement village,0,point,vm_foi_point
 sign:emergency marker,0,point,vm_foi_point
 sign:snow pole,0,point,vm_foi_point
 sport facility:boating club,0,point,vm_foi_point
-sport facility:swimming pool,0,point,vm_foi_point
+sport facility:swimming pool,1015,point,vm_foi_point
 storage facility:boathouse,0,point,vm_foi_point
 storage facility:depot,0,point,vm_foi_point
 storage facility:silo,0,point,vm_foi_point
@@ -646,7 +644,7 @@ control point:trig station,0,point,vm_geomark_point
 cultural centre:aquarium,0,point,vm_geomark_point
 cultural centre:arboretum,0,point,vm_geomark_point
 cultural centre:art gallery,0,point,vm_geomark_point
-cultural centre:library,0,point,vm_geomark_point
+cultural centre:library,1013,point,vm_geomark_point
 cultural centre:museum,0,point,vm_geomark_point
 cultural centre:observatory,0,point,vm_geomark_point
 defence site:barracks,0,point,vm_geomark_point
@@ -654,22 +652,22 @@ dumping ground:transfer station,0,point,vm_geomark_point
 education centre:education complex,0,point,vm_geomark_point
 education centre:further education,0,point,vm_geomark_point
 education centre:pre school,0,point,vm_geomark_point
-education centre:primary school,0,point,vm_geomark_point
-education centre:primary/secondary school,0,point,vm_geomark_point
+education centre:primary school,1018,point,vm_geomark_point
+education centre:primary/secondary school,1020,point,vm_geomark_point
 education centre:school camp,0,point,vm_geomark_point
-education centre:secondary school,0,point,vm_geomark_point
+education centre:secondary school,1019,point,vm_geomark_point
 education centre:special school,0,point,vm_geomark_point
-education centre:tertiary institution,0,point,vm_geomark_point
-education centre:university,0,point,vm_geomark_point
+education centre:tertiary institution,1021,point,vm_geomark_point
+education centre:university,1021,point,vm_geomark_point
 emergency facility:ambulance station,401,point,vm_geomark_point
 emergency facility:coast guard,0,point,vm_geomark_point
 emergency facility:emergency coordination centre,0,point,vm_geomark_point
 emergency facility:fire lookout,0,point,vm_geomark_point
-emergency facility:fire station,0,point,vm_geomark_point
-emergency facility:fire station (forest industry),0,point,vm_geomark_point
+emergency facility:fire station,404,point,vm_geomark_point
+emergency facility:fire station (forest industry),404,point,vm_geomark_point
 emergency facility:lifesaving club,0,point,vm_geomark_point
 emergency facility:neighbourhood safer place,0,point,vm_geomark_point
-emergency facility:police station,0,point,vm_geomark_point
+emergency facility:police station,406,point,vm_geomark_point
 emergency facility:refuge,0,point,vm_geomark_point
 emergency facility:ses unit,1009,point,vm_geomark_point
 excavation site:abandoned quarry,0,point,vm_geomark_point
@@ -678,10 +676,10 @@ excavation site:mine,0,point,vm_geomark_point
 excavation site:quarry,0,point,vm_geomark_point
 health facility:community health centre,0,point,vm_geomark_point
 health facility:maternal/child health centre,0,point,vm_geomark_point
-hospital:bush nursing hospital,0,point,vm_geomark_point
+hospital:bush nursing hospital,1012,point,vm_geomark_point
 hospital:day procedure centre,0,point,vm_geomark_point
-hospital:general hospital,0,point,vm_geomark_point
-hospital:general hospital (emergency),0,point,vm_geomark_point
+hospital:general hospital,1012,point,vm_geomark_point
+hospital:general hospital (emergency),1012,point,vm_geomark_point
 hospital:hospital complex,0,point,vm_geomark_point
 industrial facility:abattoir,0,point,vm_geomark_point
 industrial facility:brickworks,0,point,vm_geomark_point
@@ -694,7 +692,7 @@ landmark:fountain,0,point,vm_geomark_point
 landmark:lookout,0,point,vm_geomark_point
 landmark:monument,0,point,vm_geomark_point
 landmark:tourist attraction,0,point,vm_geomark_point
-landmark:tower,0,point,vm_geomark_point
+landmark:tower,1017,point,vm_geomark_point
 landmark:undefined_landmark,0,point,vm_geomark_point
 navigation_aid:beacon,0,point,vm_geomark_point
 physiographic:cave,0,point,vm_geomark_point
@@ -704,7 +702,7 @@ place of worship:church,0,point,vm_geomark_point
 place of worship:gurdwara (sikh),0,point,vm_geomark_point
 place of worship:monastry,0,point,vm_geomark_point
 place of worship:mondir (hindu),0,point,vm_geomark_point
-place of worship:mosque,0,point,vm_geomark_point
+place of worship:mosque,1016,point,vm_geomark_point
 place of worship:synagogue,0,point,vm_geomark_point
 place of worship:vihara (buddhist),0,point,vm_geomark_point
 place:historic site,0,point,vm_geomark_point
@@ -716,19 +714,19 @@ recreational resource:amphitheatre,0,point,vm_geomark_point
 recreational resource:club house,0,point,vm_geomark_point
 recreational resource:grandstand,0,point,vm_geomark_point
 recreational resource:hut,0,point,vm_geomark_point
-recreational resource:picnic site,0,point,vm_geomark_point
-recreational resource:playground,0,point,vm_geomark_point
-recreational resource:rotunda,0,point,vm_geomark_point
+recreational resource:picnic site,1010,point,vm_geomark_point
+recreational resource:playground,1014,point,vm_geomark_point
+recreational resource:rotunda,1011,point,vm_geomark_point
 residential building:retirement village,0,point,vm_geomark_point
 sign:emergency marker,0,point,vm_geomark_point
 sign:snow pole,0,point,vm_geomark_point
 sport facility:boating club,0,point,vm_geomark_point
-sport facility:swimming pool,0,point,vm_geomark_point
+sport facility:swimming pool,1015,point,vm_geomark_point
 storage facility:boathouse,0,point,vm_geomark_point
 storage facility:depot,0,point,vm_geomark_point
 storage facility:silo,0,point,vm_geomark_point
 storage facility:tank,0,point,vm_geomark_point
-storage facility:water tank,0,point,vm_geomark_point
+storage facility:water tank,86,point,vm_geomark_point
 tower:undefined_tower,0,point,vm_geomark_point
 undefined:bridge_rail_o,0,point,vm_geomark_point
 undefined:helipad,0,point,vm_geomark_point
@@ -740,7 +738,7 @@ undefined:rock_outcrop,0,point,vm_geomark_point
 undefined:sinkhole,0,point,vm_geomark_point
 undefined:spot_height,0,point,vm_geomark_point
 undefined:spring,0,point,vm_geomark_point
-undefined:tank_water,0,point,vm_geomark_point
+undefined:tank_water,86,point,vm_geomark_point
 undefined:waterfall,89,point,vm_geomark_point
 undefined:watering_place,0,point,vm_geomark_point
 undefined:wb_dam,0,point,vm_geomark_point
@@ -762,11 +760,11 @@ FARM:FARM,0,point,vm_gnr
 FLD:FIELD/PADDOCK,0,point,vm_gnr
 FRNG:FIRING RANGE,0,point,vm_gnr
 FRST:FOREST,0,point,vm_gnr
-FSTA:FIRE STATION,0,point,vm_gnr
+FSTA:FIRE STATION,404,point,vm_gnr
 FTRY:FACTORY,0,point,vm_gnr
 GRDN:GARDEN/VINEYARD,0,point,vm_gnr
 HILL:HILL/LOOKOUT,0,point,vm_gnr
-HOSP:HOSPITAL,0,point,vm_gnr
+HOSP:HOSPITAL,1012,point,vm_gnr
 HWY:HIGHWAY/FREEWAY,0,point,vm_gnr
 IS:ISLAND,0,point,vm_gnr
 LAGN:LAGOON,0,point,vm_gnr
@@ -788,7 +786,7 @@ PO:POST OFFICE,0,point,vm_gnr
 POOL:POOL,0,point,vm_gnr
 PRSH:PARISH,0,point,vm_gnr
 PRSN:PRISON,0,point,vm_gnr
-PSTA:POLICE STATION,0,point,vm_gnr
+PSTA:POLICE STATION,406,point,vm_gnr
 PT:POINT [COASTAL]/HEAD,0,point,vm_gnr
 RCH:REACH,0,point,vm_gnr
 RES:RESERVOIR,0,point,vm_gnr
@@ -831,7 +829,7 @@ wb_dam,82,point,vm_hy_water_point
 dam_batter,0,area,vm_hy_water_struct_area_polygon
 marina,0,area,vm_hy_water_struct_area_polygon
 spillway,0,area,vm_hy_water_struct_area_polygon
-tank_water,0,area,vm_hy_water_struct_area_polygon
+tank_water,86,area,vm_hy_water_struct_area_polygon
 boat ramp,0,line,vm_hy_water_struct_line
 breakwater,0,line,vm_hy_water_struct_line
 causeway,0,line,vm_hy_water_struct_line

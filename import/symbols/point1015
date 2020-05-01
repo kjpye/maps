@@ -1,0 +1,25 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('point1015', '', '
+/point1015 { % Swimming Pool/Spot
+  /featurewidth exch def
+  gsave
+    translate rotate
+    0 0 0 1 setcmykcolor
+% wave
+    .3 setlinewidth
+    1 setlinecap
+    -1.35 dup moveto
+    -.3 -.1 .05 -1.9 1.2 -1 curveto
+    stroke
+% swimmer
+    -.7  -.65 moveto .1 -.7 0 -1 .5 -1 curveto % bottom curve
+     -.1  .3 lineto
+    .6   .7 .25 -90 90 arc
+    -.4   .5 .25 120 210 arc
+    -.3 -.3 lineto
+    closepath fill
+% head
+  .3 -.4 moveto .8 -.2 .5 0 360 arc closepath fill
+  grestore
+} bind def
+');

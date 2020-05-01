@@ -1,481 +1,481 @@
 featuretype,symbol,type,dbtable
-"Administration Facility",0,area,tas_2d_building_polys
-"Amenity",0,area,tas_2d_building_polys
-"Care Facility",0,area,tas_2d_building_polys
-"Commercial Facility",0,area,tas_2d_building_polys
-"Community Venue",0,area,tas_2d_building_polys
-"Cultural Centre",0,area,tas_2d_building_polys
-"Education Centre",0,area,tas_2d_building_polys
-"Emergency Facility",0,area,tas_2d_building_polys
-"Health Facility",0,area,tas_2d_building_polys
-"Hospital",0,area,tas_2d_building_polys
-"Hut",0,area,tas_2d_building_polys
-"Industrial Facility",0,area,tas_2d_building_polys
-"Organisation",0,area,tas_2d_building_polys
-"Other",0,area,tas_2d_building_polys
-"Place of Worship\r",0,area,tas_2d_building_polys
-"Residential Building",0,area,tas_2d_building_polys
-"Ruin",0,area,tas_2d_building_polys
-"Shed",0,area,tas_2d_building_polys
-"Structure",0,area,tas_2d_building_polys
-"Auxiliary Contour",0,line,tas_5m_contours
-"Auxiliary Dep Contour",0,line,tas_5m_contours
-"Index Contour",0,line,tas_5m_contours
-"Index Depression Contour",0,line,tas_5m_contours
-"Index Depression Form Line",0,line,tas_5m_contours
-"Index Form Line",0,line,tas_5m_contours
-"Intermediate Contour",0,line,tas_5m_contours
-"Intermediate Dep Contour",0,line,tas_5m_contours
-"Intermediate Dep Form Line",0,line,tas_5m_contours
-"Intermediate Form Line",0,line,tas_5m_contours
-"Administration Facility",0,point,tas_building_pts
-"Amenity",0,point,tas_building_pts
-"Care Facility",0,point,tas_building_pts
-"Commercial Facility",0,point,tas_building_pts
-"Community Venue",0,point,tas_building_pts
-"Cultural Centre",0,point,tas_building_pts
-"Education Centre",0,point,tas_building_pts
-"Emergency Facility",0,point,tas_building_pts
-"Health Facility",0,point,tas_building_pts
-"Hospital",0,point,tas_building_pts
-"Hut",0,point,tas_building_pts
-"Industrial Facility",0,point,tas_building_pts
-"Organisation",0,point,tas_building_pts
-"Other",0,point,tas_building_pts
-"Place of Worship",0,point,tas_building_pts
-"Remote Shed",0,point,tas_building_pts
-"Residential Building",0,point,tas_building_pts
-"Ruin",0,point,tas_building_pts
-"Shed",0,point,tas_building_pts
-"Structure",0,point,tas_building_pts
-"Unknown",0,point,tas_building_pts
-"Dam and closure:Weir",0,line,tas_coastline
-"Hydrographic Closure:Hydrographic Closure",0,line,tas_coastline
-"Tidal Line:MHWM",0,line,tas_coastline
-"Tidal Line:MHWM & MLWM",0,line,tas_coastline
-"Waterfall and Closure:Waterfall and Closure",0,line,tas_coastline
-"Accommodation:Camp and Camping Ground",0,point,tas_community_facilities
-"Accommodation:Caravan Park",0,point,tas_community_facilities
-"Accommodation:Guest House/ Bed and Breakfast",0,point,tas_community_facilities
-"Accommodation:Holiday Cabin",0,point,tas_community_facilities
-"Accommodation:Holiday Unit/ Flat",0,point,tas_community_facilities
-"Accommodation:Hostel",0,point,tas_community_facilities
-"Accommodation:Hotel",0,point,tas_community_facilities
-"Accommodation:Motel",0,point,tas_community_facilities
-"Church:Anglican Church",0,point,tas_community_facilities
-"Church:Apostolic Church",0,point,tas_community_facilities
-"Church:Australian Christian Churches",0,point,tas_community_facilities
-"Church:Baptist Church",0,point,tas_community_facilities
-"Church:Catholic Church",0,point,tas_community_facilities
-"Church:Christian Brethren Church",0,point,tas_community_facilities
-"Church:Christian Reformed Church",0,point,tas_community_facilities
-"Church:Churches of Christ",0,point,tas_community_facilities
-"Church:Convent or monastery",0,point,tas_community_facilities
-"Church:Jehovahs Witnesses",0,point,tas_community_facilities
-"Church:Latter-Day Saints",0,point,tas_community_facilities
-"Church:Other Church",0,point,tas_community_facilities
-"Church:Presbyterian Church",0,point,tas_community_facilities
-"Church:Salvation Army",0,point,tas_community_facilities
-"Church:Seventh Day Adventist Church",0,point,tas_community_facilities
-"Church:Uniting Church",0,point,tas_community_facilities
-"Club:Bowls",0,point,tas_community_facilities
-"Club:Cricket",0,point,tas_community_facilities
-"Club:Croquet",0,point,tas_community_facilities
-"Club:CWA",0,point,tas_community_facilities
-"Club:Equestrian",0,point,tas_community_facilities
-"Club:Football",0,point,tas_community_facilities
-"Club:Girl Guide",0,point,tas_community_facilities
-"Club:Golf",0,point,tas_community_facilities
-"Club:Gun and rifle",0,point,tas_community_facilities
-"Club:Masonic",0,point,tas_community_facilities
-"Club:Other social",0,point,tas_community_facilities
-"Club:Other sporting",0,point,tas_community_facilities
-"Club:Police and Citizens Youth",0,point,tas_community_facilities
-"Club:RACT",0,point,tas_community_facilities
-"Club:RAOB",0,point,tas_community_facilities
-"Club:Rowing",0,point,tas_community_facilities
-"Club:RSL and ex service",0,point,tas_community_facilities
-"Club:Rugby",0,point,tas_community_facilities
-"Club:Scout",0,point,tas_community_facilities
-"Club:Senior and elderly citizens",0,point,tas_community_facilities
-"Club:Soccer",0,point,tas_community_facilities
-"Club:Surf life saving",0,point,tas_community_facilities
-"Club:Tennis",0,point,tas_community_facilities
-"Club:Yacht and sailing",0,point,tas_community_facilities
-"Commonwealth government:ABC",0,point,tas_community_facilities
-"Commonwealth government:Air Traffic Control Tower",0,point,tas_community_facilities
-"Commonwealth government:Australian Customs",0,point,tas_community_facilities
-"Commonwealth government:Australia Post",0,point,tas_community_facilities
-"Commonwealth government:Aviation Rescue Fire Fighting",0,point,tas_community_facilities
-"Commonwealth government:Centrelink",0,point,tas_community_facilities
-"Commonwealth government:Defence",0,point,tas_community_facilities
-"Commonwealth government:Other",0,point,tas_community_facilities
-"Commonwealth government:Post offices and agencies",0,point,tas_community_facilities
-"Commonwealth government:Telstra",0,point,tas_community_facilities
-"Community care:Charity or welfare",0,point,tas_community_facilities
-"Community care:Creche",0,point,tas_community_facilities
-"Community care:Nursing and age home",0,point,tas_community_facilities
-"Council:Break ODay",0,point,tas_community_facilities
-"Council:Brighton",0,point,tas_community_facilities
-"Council:Burnie",0,point,tas_community_facilities
-"Council:Central Coast",0,point,tas_community_facilities
-"Council:Central Highlands",0,point,tas_community_facilities
-"Council:Circular Head",0,point,tas_community_facilities
-"Council:Clarence",0,point,tas_community_facilities
-"Council:Derwent Valley",0,point,tas_community_facilities
-"Council:Devonport",0,point,tas_community_facilities
-"Council:Dorset",0,point,tas_community_facilities
-"Council:Flinders",0,point,tas_community_facilities
-"Council:George Town",0,point,tas_community_facilities
-"Council:Glamorgan- Spring Bay",0,point,tas_community_facilities
-"Council:Glenorchy",0,point,tas_community_facilities
-"Council:Hobart",0,point,tas_community_facilities
-"Council:Huon Valley",0,point,tas_community_facilities
-"Council:Kentish",0,point,tas_community_facilities
-"Council:Kingborough",0,point,tas_community_facilities
-"Council:King Island",0,point,tas_community_facilities
-"Council:Latrobe",0,point,tas_community_facilities
-"Council:Launceston",0,point,tas_community_facilities
-"Council:Meander Valley",0,point,tas_community_facilities
-"Council:Northern Midlands",0,point,tas_community_facilities
-"Council:Other",0,point,tas_community_facilities
-"Council:Sorell",0,point,tas_community_facilities
-"Council:Southern Midlands",0,point,tas_community_facilities
-"Council:Tasman",0,point,tas_community_facilities
-"Council:Waratah/ Wynyard",0,point,tas_community_facilities
-"Council:West Coast",0,point,tas_community_facilities
-"Council:West Tamar",0,point,tas_community_facilities
-"Cultural:Gallery",0,point,tas_community_facilities
-"Cultural:Library",0,point,tas_community_facilities
-"Cultural:Museum",0,point,tas_community_facilities
-"Cultural:Theatre/ cinema",0,point,tas_community_facilities
-"Education and training:District High School",0,point,tas_community_facilities
-"Education and training:High School",0,point,tas_community_facilities
-"Education and training:Kindergarten",0,point,tas_community_facilities
-"Education and training:Other",0,point,tas_community_facilities
-"Education and training:Primary and infant",0,point,tas_community_facilities
-"Education and training:Private",0,point,tas_community_facilities
-"Education and training:Secondary college",0,point,tas_community_facilities
-"Education and training:TAFE & Adult Education",0,point,tas_community_facilities
-"Education and training:University",0,point,tas_community_facilities
-"Education and training:",0,point,tas_community_facilities
-"Financial institution:ANZ",0,point,tas_community_facilities
-"Financial institution:Bass & Equitable",0,point,tas_community_facilities
-"Financial institution:Commonwealth",0,point,tas_community_facilities
-"Financial institution:MyState Financial",0,point,tas_community_facilities
-"Financial institution:NAB",0,point,tas_community_facilities
-"Financial institution:Other",0,point,tas_community_facilities
-"Financial institution:Westpac",0,point,tas_community_facilities
-"Financial institution:",0,point,tas_community_facilities
-"Ground:Burial ground",0,point,tas_community_facilities
-"Ground:Park or reserve",0,point,tas_community_facilities
-"Ground:Picnic Area",0,point,tas_community_facilities
-"Ground:Showground",0,point,tas_community_facilities
-"Ground:Sportsground",0,point,tas_community_facilities
-"Hall/ Community centre:Church hall",0,point,tas_community_facilities
-"Hall/ Community centre:Community centre",0,point,tas_community_facilities
+Administration Facility,0,area,tas_2d_building_polys
+Amenity,0,area,tas_2d_building_polys
+Care Facility,0,area,tas_2d_building_polys
+Commercial Facility,0,area,tas_2d_building_polys
+Community Venue,0,area,tas_2d_building_polys
+Cultural Centre,0,area,tas_2d_building_polys
+Education Centre,0,area,tas_2d_building_polys
+Emergency Facility,0,area,tas_2d_building_polys
+Health Facility,0,area,tas_2d_building_polys
+Hospital,0,area,tas_2d_building_polys
+Hut,0,area,tas_2d_building_polys
+Industrial Facility,0,area,tas_2d_building_polys
+Organisation,0,area,tas_2d_building_polys
+Other,0,area,tas_2d_building_polys
+Place of Worship\r,0,area,tas_2d_building_polys
+Residential Building,26,area,tas_2d_building_polys
+Ruin,26,area,tas_2d_building_polys
+Shed,26,area,tas_2d_building_polys
+Structure,26,area,tas_2d_building_polys
+Auxiliary Contour,59,line,tas_5m_contours
+Auxiliary Dep Contour,59,line,tas_5m_contours
+Index Contour,55,line,tas_5m_contours
+Index Depression Contour,57,line,tas_5m_contours
+Index Depression Form Line,0,line,tas_5m_contours
+Index Form Line,0,line,tas_5m_contours
+Intermediate Contour,56,line,tas_5m_contours
+Intermediate Dep Contour,56,line,tas_5m_contours
+Intermediate Dep Form Line,0,line,tas_5m_contours
+Intermediate Form Line,0,line,tas_5m_contours
+Administration Facility,0,point,tas_building_pts
+Amenity,0,point,tas_building_pts
+Care Facility,0,point,tas_building_pts
+Commercial Facility,0,point,tas_building_pts
+Community Venue,0,point,tas_building_pts
+Cultural Centre,0,point,tas_building_pts
+Education Centre,0,point,tas_building_pts
+Emergency Facility,0,point,tas_building_pts
+Health Facility,0,point,tas_building_pts
+Hospital,1012,point,tas_building_pts
+Hut,430,point,tas_building_pts
+Industrial Facility,0,point,tas_building_pts
+Organisation,0,point,tas_building_pts
+Other,0,point,tas_building_pts
+Place of Worship,1007,point,tas_building_pts
+Remote Shed,430,point,tas_building_pts
+Residential Building,430,point,tas_building_pts
+Ruin,41,point,tas_building_pts
+Shed,430,point,tas_building_pts
+Structure,430,point,tas_building_pts
+Unknown,430,point,tas_building_pts
+Dam and closure:Weir,0,line,tas_coastline
+Hydrographic Closure:Hydrographic Closure,0,line,tas_coastline
+Tidal Line:MHWM,114,line,tas_coastline
+Tidal Line:MHWM & MLWM,114,line,tas_coastline
+Waterfall and Closure:Waterfall and Closure,0,line,tas_coastline
+Accommodation:Camp and Camping Ground,0,point,tas_community_facilities
+Accommodation:Caravan Park,0,point,tas_community_facilities
+Accommodation:Guest House/ Bed and Breakfast,0,point,tas_community_facilities
+Accommodation:Holiday Cabin,0,point,tas_community_facilities
+Accommodation:Holiday Unit/ Flat,0,point,tas_community_facilities
+Accommodation:Hostel,0,point,tas_community_facilities
+Accommodation:Hotel,0,point,tas_community_facilities
+Accommodation:Motel,0,point,tas_community_facilities
+Church:Anglican Church,1007,point,tas_community_facilities
+Church:Apostolic Church,1007,point,tas_community_facilities
+Church:Australian Christian Churches,1007,point,tas_community_facilities
+Church:Baptist Church,1007,point,tas_community_facilities
+Church:Catholic Church,1007,point,tas_community_facilities
+Church:Christian Brethren Church,1007,point,tas_community_facilities
+Church:Christian Reformed Church,1007,point,tas_community_facilities
+Church:Churches of Christ,1007,point,tas_community_facilities
+Church:Convent or monastery,1007,point,tas_community_facilities
+Church:Jehovahs Witnesses,1007,point,tas_community_facilities
+Church:Latter-Day Saints,1007,point,tas_community_facilities
+Church:Other Church,1007,point,tas_community_facilities
+Church:Presbyterian Church,1007,point,tas_community_facilities
+Church:Salvation Army,1007,point,tas_community_facilities
+Church:Seventh Day Adventist Church,1007,point,tas_community_facilities
+Church:Uniting Church,1007,point,tas_community_facilities
+Club:Bowls,0,point,tas_community_facilities
+Club:Cricket,0,point,tas_community_facilities
+Club:Croquet,0,point,tas_community_facilities
+Club:CWA,0,point,tas_community_facilities
+Club:Equestrian,0,point,tas_community_facilities
+Club:Football,0,point,tas_community_facilities
+Club:Girl Guide,0,point,tas_community_facilities
+Club:Golf,0,point,tas_community_facilities
+Club:Gun and rifle,0,point,tas_community_facilities
+Club:Masonic,0,point,tas_community_facilities
+Club:Other social,0,point,tas_community_facilities
+Club:Other sporting,0,point,tas_community_facilities
+Club:Police and Citizens Youth,0,point,tas_community_facilities
+Club:RACT,0,point,tas_community_facilities
+Club:RAOB,0,point,tas_community_facilities
+Club:Rowing,0,point,tas_community_facilities
+Club:RSL and ex service,0,point,tas_community_facilities
+Club:Rugby,0,point,tas_community_facilities
+Club:Scout,0,point,tas_community_facilities
+Club:Senior and elderly citizens,0,point,tas_community_facilities
+Club:Soccer,0,point,tas_community_facilities
+Club:Surf life saving,0,point,tas_community_facilities
+Club:Tennis,0,point,tas_community_facilities
+Club:Yacht and sailing,0,point,tas_community_facilities
+Commonwealth government:ABC,0,point,tas_community_facilities
+Commonwealth government:Air Traffic Control Tower,0,point,tas_community_facilities
+Commonwealth government:Australian Customs,0,point,tas_community_facilities
+Commonwealth government:Australia Post,0,point,tas_community_facilities
+Commonwealth government:Aviation Rescue Fire Fighting,0,point,tas_community_facilities
+Commonwealth government:Centrelink,0,point,tas_community_facilities
+Commonwealth government:Defence,0,point,tas_community_facilities
+Commonwealth government:Other,0,point,tas_community_facilities
+Commonwealth government:Post offices and agencies,0,point,tas_community_facilities
+Commonwealth government:Telstra,0,point,tas_community_facilities
+Community care:Charity or welfare,0,point,tas_community_facilities
+Community care:Creche,0,point,tas_community_facilities
+Community care:Nursing and age home,0,point,tas_community_facilities
+Council:Break ODay,0,point,tas_community_facilities
+Council:Brighton,0,point,tas_community_facilities
+Council:Burnie,0,point,tas_community_facilities
+Council:Central Coast,0,point,tas_community_facilities
+Council:Central Highlands,0,point,tas_community_facilities
+Council:Circular Head,0,point,tas_community_facilities
+Council:Clarence,0,point,tas_community_facilities
+Council:Derwent Valley,0,point,tas_community_facilities
+Council:Devonport,0,point,tas_community_facilities
+Council:Dorset,0,point,tas_community_facilities
+Council:Flinders,0,point,tas_community_facilities
+Council:George Town,0,point,tas_community_facilities
+Council:Glamorgan- Spring Bay,0,point,tas_community_facilities
+Council:Glenorchy,0,point,tas_community_facilities
+Council:Hobart,0,point,tas_community_facilities
+Council:Huon Valley,0,point,tas_community_facilities
+Council:Kentish,0,point,tas_community_facilities
+Council:Kingborough,0,point,tas_community_facilities
+Council:King Island,0,point,tas_community_facilities
+Council:Latrobe,0,point,tas_community_facilities
+Council:Launceston,0,point,tas_community_facilities
+Council:Meander Valley,0,point,tas_community_facilities
+Council:Northern Midlands,0,point,tas_community_facilities
+Council:Other,0,point,tas_community_facilities
+Council:Sorell,0,point,tas_community_facilities
+Council:Southern Midlands,0,point,tas_community_facilities
+Council:Tasman,0,point,tas_community_facilities
+Council:Waratah/ Wynyard,0,point,tas_community_facilities
+Council:West Coast,0,point,tas_community_facilities
+Council:West Tamar,0,point,tas_community_facilities
+Cultural:Gallery,0,point,tas_community_facilities
+Cultural:Library,0,point,tas_community_facilities
+Cultural:Museum,0,point,tas_community_facilities
+Cultural:Theatre/ cinema,0,point,tas_community_facilities
+Education and training:District High School,1019,point,tas_community_facilities
+Education and training:High School,1019,point,tas_community_facilities
+Education and training:Kindergarten,0,point,tas_community_facilities
+Education and training:Other,0,point,tas_community_facilities
+Education and training:Primary and infant,1018,point,tas_community_facilities
+Education and training:Private,0,point,tas_community_facilities
+Education and training:Secondary college,1019,point,tas_community_facilities
+Education and training:TAFE & Adult Education,1021,point,tas_community_facilities
+Education and training:University,1021,point,tas_community_facilities
+Education and training:,0,point,tas_community_facilities
+Financial institution:ANZ,0,point,tas_community_facilities
+Financial institution:Bass & Equitable,0,point,tas_community_facilities
+Financial institution:Commonwealth,0,point,tas_community_facilities
+Financial institution:MyState Financial,0,point,tas_community_facilities
+Financial institution:NAB,0,point,tas_community_facilities
+Financial institution:Other,0,point,tas_community_facilities
+Financial institution:Westpac,0,point,tas_community_facilities
+Financial institution:,0,point,tas_community_facilities
+Ground:Burial ground,451,point,tas_community_facilities
+Ground:Park or reserve,0,point,tas_community_facilities
+Ground:Picnic Area,1010,point,tas_community_facilities
+Ground:Showground,0,point,tas_community_facilities
+Ground:Sportsground,0,point,tas_community_facilities
+Hall/ Community centre:Church hall,0,point,tas_community_facilities
+Hall/ Community centre:Community centre,0,point,tas_community_facilities
 "Hall/ Community centre:Community, town or city hall",0,point,tas_community_facilities
-"Hall/ Community centre:Online Access Centre",0,point,tas_community_facilities
-"Hall/ Community centre:Other",0,point,tas_community_facilities
-"Medical service:Community health centre",0,point,tas_community_facilities
-"Medical service:Dental clinic",0,point,tas_community_facilities
-"Medical service:Family & child health centre",0,point,tas_community_facilities
-"Medical service:Health insurance",0,point,tas_community_facilities
-"Medical service:Hospital",0,point,tas_community_facilities
-"Medical service:Other",0,point,tas_community_facilities
-"Medical service:St John Ambulance",0,point,tas_community_facilities
-"Sports complex:Golf",0,point,tas_community_facilities
-"Sports complex:Hockey",0,point,tas_community_facilities
-"Sports complex:Indoor general",0,point,tas_community_facilities
-"Sports complex:Netball",0,point,tas_community_facilities
-"Sports complex:Other",0,point,tas_community_facilities
-"Sports complex:Racecourses",0,point,tas_community_facilities
-"Sports complex:Squash",0,point,tas_community_facilities
-"Sports complex:Swimming pools",0,point,tas_community_facilities
-"State Government:Aurora Energy",0,point,tas_community_facilities
-"State Government:DPIPWE",0,point,tas_community_facilities
-"State Government:Education",0,point,tas_community_facilities
-"State Government:Forestry Tasmania",0,point,tas_community_facilities
-"State Government:Health and Human Services",0,point,tas_community_facilities
-"State Government:Hydro Tasmania",0,point,tas_community_facilities
-"State Government:Justice",0,point,tas_community_facilities
-"State Government:Other",0,point,tas_community_facilities
-"State Government:Police and Emergency Management",0,point,tas_community_facilities
-"State Government:Premier and Cabinet",0,point,tas_community_facilities
-"State Government:Service Tasmania",0,point,tas_community_facilities
-"State Government:State Growth",0,point,tas_community_facilities
-"State Government:Transend Networks",0,point,tas_community_facilities
-"State Government:Treasury and Finance",0,point,tas_community_facilities
-"State police and emergency:Ambulance station",0,point,tas_community_facilities
-"State police and emergency:Community Fire Refuge",0,point,tas_community_facilities
-"State police and emergency:Fire station",0,point,tas_community_facilities
-"State police and emergency:Police station",0,point,tas_community_facilities
-"State police and emergency:State Emergency Service unit",0,point,tas_community_facilities
-"Tourist feature:Amusement or entertainment",0,point,tas_community_facilities
-"Tourist feature:Cultural",0,point,tas_community_facilities
-"Tourist feature:Historical",0,point,tas_community_facilities
-"Tourist feature:Industrial",0,point,tas_community_facilities
-"Tourist feature:Information",0,point,tas_community_facilities
-"Tourist feature:Natural",0,point,tas_community_facilities
-"Tourist feature:Other",0,point,tas_community_facilities
-"Transport:Air",0,point,tas_community_facilities
-"Transport:Car park",0,point,tas_community_facilities
-"Transport:Coach",0,point,tas_community_facilities
-"Transport:Port Operator",0,point,tas_community_facilities
-"Transport:Rail",0,point,tas_community_facilities
-"Transport:Sea",0,point,tas_community_facilities
-"Transport:Service Station",0,point,tas_community_facilities
-"Unknown:Unknown",0,point,tas_community_facilities
-"Artificial Watercourse:Canal",0,area,tas_hydarea
-"Artificial Watercourse:Drain",0,area,tas_hydarea
-"Artificial Watercourse:Flume",0,area,tas_hydarea
-"Artificial Watercourse:Spillway",0,area,tas_hydarea
-"Artificial Watercourse:Water channel",0,area,tas_hydarea
-"Artificial Watercourse:Water race",0,area,tas_hydarea
-"Dam:Dam",0,area,tas_hydarea
-"Dam:Dam wall",0,area,tas_hydarea
-"Dam:Weir",0,area,tas_hydarea
-"Estuary:Lagoon",0,area,tas_hydarea
-"Estuary:Other",0,area,tas_hydarea
-"Estuary:Stream",0,area,tas_hydarea
-"Flat:Coastal Flat",0,area,tas_hydarea
-"Flat:Salt Pan",0,area,tas_hydarea
-"Flood Plain:Moderate flood",0,area,tas_hydarea
-"Flood Plain:Severe flood",0,area,tas_hydarea
-"Land:Land",0,area,tas_hydarea
-"Rapid:Rapid",0,area,tas_hydarea
-"Sea:Sea",0,area,tas_hydarea
-"Submerged Reef:Shoal",0,area,tas_hydarea
-"Submerged Reef:Submerged Reef",0,area,tas_hydarea
-"Submerged Tree:Submerged Tree",0,area,tas_hydarea
-"Tidal zone:Rock",0,area,tas_hydarea
-"Tidal zone:Sand",0,area,tas_hydarea
-"Tidal zone:Unvegetated mudflat",0,area,tas_hydarea
-"Tidal zone:Vegetated mudflat",0,area,tas_hydarea
-"Water Body:Aquacultural Pond",0,area,tas_hydarea
-"Water Body:Hydro Storage",0,area,tas_hydarea
-"Water Body:Natural or dammed freshwa",0,area,tas_hydarea
-"Water Body:Reservoir",0,area,tas_hydarea
-"Water Body:Sewage pond",0,area,tas_hydarea
-"Water Body:Swimming pool",0,area,tas_hydarea
-"Water Body:Tailings pond",0,area,tas_hydarea
-"Water Body:Water tank",0,area,tas_hydarea
-"Watercourse:Watercourse",0,area,tas_hydarea
-"Wetland:Swamp",0,area,tas_hydarea
-"Wetland:Wet area",0,area,tas_hydarea
-"Wetland:Wetland",0,area,tas_hydarea
-"Dam",0,point,tas_hydpnt
-"Rapid",0,point,tas_hydpnt
-"Rock",0,point,tas_hydpnt
-"Spring",0,point,tas_hydpnt
-"Submerged Rock",0,point,tas_hydpnt
-"Surge Tank",0,point,tas_hydpnt
-"Tank",0,point,tas_hydpnt
-"Waterfall",0,point,tas_hydpnt
-"Water Tower",0,point,tas_hydpnt
-"Wreck",0,point,tas_hydpnt
-"Artificial Watercourse:Canal",0,line,tas_hydline
-"Artificial Watercourse:Drain",0,line,tas_hydline
-"Artificial Watercourse:Flume",0,line,tas_hydline
-"Artificial Watercourse:Penstock",0,line,tas_hydline
-"Artificial Watercourse:Siphon",0,line,tas_hydline
-"Artificial Watercourse:Sluice",0,line,tas_hydline
-"Artificial Watercourse:Spillway",0,line,tas_hydline
-"Artificial Watercourse:Water channel",0,line,tas_hydline
-"Artificial Watercourse:Water pipeline",0,line,tas_hydline
-"Artificial Watercourse:Water race",0,line,tas_hydline
-"Artificial Watercourse:Water tunnel",0,line,tas_hydline
-"Dam:Dam wall",0,line,tas_hydline
-"Dam:Sluice gate",0,line,tas_hydline
-"Dam:Weir",0,line,tas_hydline
-"Dam and closure:Dam Wall",0,line,tas_hydline
-"Dam and closure:Sluice Gate",0,line,tas_hydline
-"Dam and closure:Weir",0,line,tas_hydline
-"Hydrographic Closure:Hydrographic Closure",0,line,tas_hydline
-"Hydrographic Connector:Hydrographic Connector",0,line,tas_hydline
-"Hydro Line:Block boundaries",0,line,tas_hydline
-"Hydro Line:Dam 2d lines",0,line,tas_hydline
-"Hydro Line:Rapid lines",0,line,tas_hydline
-"Hydro Line:Subreef lines",0,line,tas_hydline
-"Hydro Line:Subtree lines",0,line,tas_hydline
-"Tidal Line:Internal",0,line,tas_hydline
-"Tidal Line:Low tide channel",0,line,tas_hydline
-"Tidal Line:MHWM",0,line,tas_hydline
-"Tidal Line:MHWM & MLWM",0,line,tas_hydline
-"Tidal Line:MLWM",0,line,tas_hydline
-"Tidal Line and Closure:MHWM",0,line,tas_hydline
-"Tidal Line and Closure:MLWM",0,line,tas_hydline
-"Tidal Line and Closure:Tidal Line and Closure",0,line,tas_hydline
-"Tidal Line and Connector:Low tide channel",0,line,tas_hydline
-"Watercourse:Definite",0,line,tas_hydline
-"Watercourse:Implied",0,line,tas_hydline
-"Watercourse:Indefinite",0,line,tas_hydline
-"Watercourse:Watercourse",0,line,tas_hydline
-"Water Fall:Water Fall",0,line,tas_hydline
-"Waterfall and Closure:Waterfall and Closure",0,line,tas_hydline
-"Waterfall and Waterline:Observed",0,line,tas_hydline
-"Water Line:Assumed",0,line,tas_hydline
-"Water Line:Observed",0,line,tas_hydline
-"Water Line:Water Line",0,line,tas_hydline
-"Water Line:",0,line,tas_hydline
-"Waterline and Connector:Observed",0,line,tas_hydline
-"Waterline and Connector:Waterline and Connector",0,line,tas_hydline
-"Conservation Area",0,area,tas_public_land_class
-"Game Reserve",0,area,tas_public_land_class
-"Historic Site",0,area,tas_public_land_class
-"National Park",0,area,tas_public_land_class
-"Nature Recreation Area",0,area,tas_public_land_class
-"Nature Reserve",0,area,tas_public_land_class
-"Permanent Timber Production Zone Land",0,area,tas_public_land_class
-"Public Reserve",0,area,tas_public_land_class
-"Regional Reserve",0,area,tas_public_land_class
-"State Reserve",0,area,tas_public_land_class
-"1:Observed",0,point,tas_spot_heights
-"2:Interpolated",0,point,tas_spot_heights
-"Adit",0,point,tas_transport_nodes
-"Bollard",0,point,tas_transport_nodes
-"Boom Gate",0,point,tas_transport_nodes
-"Cul-de-sac",0,point,tas_transport_nodes
-"Fence Barrier",0,point,tas_transport_nodes
-"Ford",0,point,tas_transport_nodes
-"Gate",0,point,tas_transport_nodes
-"Immovable Barrier",0,point,tas_transport_nodes
-"Non-Signalled Level Crossing",0,point,tas_transport_nodes
-"Non-Signalled Pedestrian Crossing",0,point,tas_transport_nodes
-"Normal Node",0,point,tas_transport_nodes
-"Railway Signals",0,point,tas_transport_nodes
-"Railway Station",0,point,tas_transport_nodes
-"Removable Barrier",0,point,tas_transport_nodes
-"Roundabout",0,point,tas_transport_nodes
-"Siding Extent Unknown",0,point,tas_transport_nodes
-"Signalled Level Crossing",0,point,tas_transport_nodes
-"Signalled Level Crossing and Barrier",0,point,tas_transport_nodes
-"Stock Grid",0,point,tas_transport_nodes
-"Turning Circle",0,point,tas_transport_nodes
-"Unknown Barrier",0,point,tas_transport_nodes
-"Weighbridge",0,point,tas_transport_nodes
-"Rail:Bridge:Not Applicable:Not Applicable",0,line,tas_transport_segments
-"Rail:Normal Transport Segment:Not Applicable:Not Applicable",0,line,tas_transport_segments
-"Rail:Opening Bridge:Not Applicable:Not Applicable",0,line,tas_transport_segments
-"Rail:Tunnel:Not Applicable:Not Applicable",0,line,tas_transport_segments
-"Road:Bridge:Authorised:4WD required",0,line,tas_transport_segments
-"Road:Bridge:Authorised:Sealed",0,line,tas_transport_segments
-"Road:Bridge:Authorised:Unsealed",0,line,tas_transport_segments
-"Road:Bridge:Private:4WD required",0,line,tas_transport_segments
-"Road:Bridge:Private:Sealed",0,line,tas_transport_segments
-"Road:Bridge:Private:Unsealed",0,line,tas_transport_segments
-"Road:Bridge:Public:4WD required",0,line,tas_transport_segments
-"Road:Bridge:Public:Sealed",0,line,tas_transport_segments
-"Road:Bridge:Public:Unsealed",0,line,tas_transport_segments
-"Road:Bridge Dual Carriageway:Public:Sealed",0,line,tas_transport_segments
-"Road:Bridge Intersection:Public:Sealed",0,line,tas_transport_segments
-"Road:Culvert Dual Carriageway State Growth:Public:Sealed",0,line,tas_transport_segments
-"Road:Culvert State Growth:Authorised:Sealed",0,line,tas_transport_segments
-"Road:Culvert State Growth:Public:Sealed",0,line,tas_transport_segments
-"Road:Culvert State Growth:Public:Unsealed",0,line,tas_transport_segments
-"Road:Dual Carriageway:Authorised:Sealed",0,line,tas_transport_segments
-"Road:Dual Carriageway:Public:Sealed",0,line,tas_transport_segments
-"Road:Elevated Way:Authorised:Sealed",0,line,tas_transport_segments
-"Road:Elevated Way:Public:Unsealed",0,line,tas_transport_segments
-"Road:Fire Trail:Authorised:4WD required",0,line,tas_transport_segments
-"Road:Fire Trail:Authorised:Sealed",0,line,tas_transport_segments
-"Road:Fire Trail:Authorised:Unsealed",0,line,tas_transport_segments
-"Road:Fire Trail:Private:4WD required",0,line,tas_transport_segments
-"Road:Fire Trail:Private:Sealed",0,line,tas_transport_segments
-"Road:Fire Trail:Private:Unsealed",0,line,tas_transport_segments
-"Road:Fire Trail:Public:Sealed",0,line,tas_transport_segments
-"Road:Fire Trail:Public:Unsealed",0,line,tas_transport_segments
-"Road:Floodway:Authorised:Sealed",0,line,tas_transport_segments
-"Road:Floodway:Authorised:Unsealed",0,line,tas_transport_segments
-"Road:Floodway:Private:Sealed",0,line,tas_transport_segments
-"Road:Floodway:Public:Sealed",0,line,tas_transport_segments
-"Road:Floodway:Public:Unsealed",0,line,tas_transport_segments
-"Road:Ford:Authorised:4WD required",0,line,tas_transport_segments
-"Road:Ford:Authorised:Sealed",0,line,tas_transport_segments
-"Road:Ford:Authorised:Unsealed",0,line,tas_transport_segments
-"Road:Ford:Private:4WD required",0,line,tas_transport_segments
-"Road:Ford:Private:Unsealed",0,line,tas_transport_segments
-"Road:Ford:Public:Sealed",0,line,tas_transport_segments
-"Road:Ford:Public:Unsealed",0,line,tas_transport_segments
-"Road:Intersection Segment:Authorised:Sealed",0,line,tas_transport_segments
-"Road:Intersection Segment:Public:Sealed",0,line,tas_transport_segments
-"Road:Layby:Private:Sealed",0,line,tas_transport_segments
-"Road:Layby:Private:Unsealed",0,line,tas_transport_segments
-"Road:Layby:Public:Sealed",0,line,tas_transport_segments
-"Road:Layby:Public:Unsealed",0,line,tas_transport_segments
-"Road:Normal Transport Segment:Authorised:4WD required",0,line,tas_transport_segments
-"Road:Normal Transport Segment:Authorised:Sealed",0,line,tas_transport_segments
-"Road:Normal Transport Segment:Authorised:Unsealed",0,line,tas_transport_segments
-"Road:Normal Transport Segment:Private:4WD required",0,line,tas_transport_segments
-"Road:Normal Transport Segment:Private:Sealed",0,line,tas_transport_segments
-"Road:Normal Transport Segment:Private:Unsealed",0,line,tas_transport_segments
-"Road:Normal Transport Segment:Public:4WD required",0,line,tas_transport_segments
-"Road:Normal Transport Segment:Public:Sealed",0,line,tas_transport_segments
-"Road:Normal Transport Segment:Public:Unsealed",0,line,tas_transport_segments
-"Road:Normal Transport Segment:Restricted:4WD required",0,line,tas_transport_segments
-"Road:Opening Bridge:Public:Sealed",0,line,tas_transport_segments
-"Road:Roundabout:Authorised:Sealed",0,line,tas_transport_segments
-"Road:Roundabout:Public:Sealed",0,line,tas_transport_segments
-"Road:Temp LGA Road:Public:Sealed",0,line,tas_transport_segments
-"Road:Temp LGA Road:Public:Unsealed",0,line,tas_transport_segments
-"Road:Transport Connector:Not Applicable:Not Applicable",0,line,tas_transport_segments
-"Road:Transport Connector:Private:Unsealed",0,line,tas_transport_segments
-"Road:Transport Connector:Public:Unsealed",0,line,tas_transport_segments
-"Road:Tunnel:Authorised:Sealed",0,line,tas_transport_segments
-"Road:Tunnel:Authorised:Unsealed",0,line,tas_transport_segments
-"Road:Tunnel:Private:Sealed",0,line,tas_transport_segments
-"Road:Tunnel:Private:Unsealed",0,line,tas_transport_segments
-"Road:Tunnel:Public:Sealed",0,line,tas_transport_segments
-"Road:Tunnel:Public:Unsealed",0,line,tas_transport_segments
-"Road:Tunnel Dual Carriageway:Public:Sealed",0,line,tas_transport_segments
-"Road:Tunnel Intersection:Public:Sealed",0,line,tas_transport_segments
-"Road:Undefined Way:Authorised:4WD required",0,line,tas_transport_segments
-"Road:Undefined Way:Authorised:Unsealed",0,line,tas_transport_segments
-"Road:Undefined Way:Private:4WD required",0,line,tas_transport_segments
-"Road:Undefined Way:Private:Unsealed",0,line,tas_transport_segments
-"Road:Undefined Way:Public:4WD required",0,line,tas_transport_segments
-"Road:Undefined Way:Public:Unsealed",0,line,tas_transport_segments
-"Road:Undefined Way:Restricted:4WD required",0,line,tas_transport_segments
-"Road:Weighbridge:Authorised:Sealed",0,line,tas_transport_segments
-"Road:Weighbridge:Authorised:Unsealed",0,line,tas_transport_segments
-"Road:Weighbridge:Private:Sealed",0,line,tas_transport_segments
-"Road:Weighbridge:Private:Unsealed",0,line,tas_transport_segments
-"Road:Weighbridge:Public:Sealed",0,line,tas_transport_segments
-"Route:Normal Transport Segment:Not Applicable:Not Applicable",0,line,tas_transport_segments
-"Track:Bridge:Authorised:Boardwalk",0,line,tas_transport_segments
-"Track:Bridge:Authorised:Fabricated Surface",0,line,tas_transport_segments
-"Track:Bridge:Authorised:Sealed",0,line,tas_transport_segments
-"Track:Bridge:Authorised:Unsealed",0,line,tas_transport_segments
-"Track:Bridge:Private:Sealed",0,line,tas_transport_segments
-"Track:Bridge:Private:Unsealed",0,line,tas_transport_segments
-"Track:Bridge:Public:Boardwalk",0,line,tas_transport_segments
-"Track:Bridge:Public:Fabricated Surface",0,line,tas_transport_segments
-"Track:Bridge:Public:Sealed",0,line,tas_transport_segments
-"Track:Bridge:Public:Unsealed",0,line,tas_transport_segments
-"Track:Elevated Way:Authorised:Fabricated Surface",0,line,tas_transport_segments
-"Track:Elevated Way:Public:Boardwalk",0,line,tas_transport_segments
-"Track:Elevated Way:Public:Sealed",0,line,tas_transport_segments
-"Track:Elevated Way:Public:Unsealed",0,line,tas_transport_segments
-"Track:Fire Trail:Public:Unsealed",0,line,tas_transport_segments
-"Track:Ford:Authorised:Unsealed",0,line,tas_transport_segments
-"Track:Ford:Public:Sealed",0,line,tas_transport_segments
-"Track:Ford:Public:Unsealed",0,line,tas_transport_segments
-"Track:Normal Transport Segment:Authorised:Boardwalk",0,line,tas_transport_segments
-"Track:Normal Transport Segment:Authorised:Sealed",0,line,tas_transport_segments
-"Track:Normal Transport Segment:Authorised:Unsealed",0,line,tas_transport_segments
-"Track:Normal Transport Segment:Private:Sealed",0,line,tas_transport_segments
-"Track:Normal Transport Segment:Private:Unsealed",0,line,tas_transport_segments
-"Track:Normal Transport Segment:Public:Boardwalk",0,line,tas_transport_segments
-"Track:Normal Transport Segment:Public:Fabricated Surface",0,line,tas_transport_segments
-"Track:Normal Transport Segment:Public:Sealed",0,line,tas_transport_segments
-"Track:Normal Transport Segment:Public:Unsealed",0,line,tas_transport_segments
-"Track:Normal Transport Segment:Restricted:Unsealed",0,line,tas_transport_segments
-"Track:Opening Bridge:Public:Sealed",0,line,tas_transport_segments
-"Track:Tunnel:Authorised:Sealed",0,line,tas_transport_segments
-"Track:Tunnel:Authorised:Unsealed",0,line,tas_transport_segments
-"Track:Tunnel:Private:Sealed",0,line,tas_transport_segments
-"Track:Tunnel:Public:Sealed",0,line,tas_transport_segments
-"Track:Tunnel:Public:Unsealed",0,line,tas_transport_segments
-"Track:Undefined Way:Authorised:Unsealed",0,line,tas_transport_segments
-"Track:Undefined Way:Public:Unsealed",0,line,tas_transport_segments
-"Track:Undefined Way:Restricted:Unsealed",0,line,tas_transport_segments
+Hall/ Community centre:Online Access Centre,0,point,tas_community_facilities
+Hall/ Community centre:Other,0,point,tas_community_facilities
+Medical service:Community health centre,0,point,tas_community_facilities
+Medical service:Dental clinic,0,point,tas_community_facilities
+Medical service:Family & child health centre,0,point,tas_community_facilities
+Medical service:Health insurance,0,point,tas_community_facilities
+Medical service:Hospital,1012,point,tas_community_facilities
+Medical service:Other,0,point,tas_community_facilities
+Medical service:St John Ambulance,0,point,tas_community_facilities
+Sports complex:Golf,0,point,tas_community_facilities
+Sports complex:Hockey,0,point,tas_community_facilities
+Sports complex:Indoor general,0,point,tas_community_facilities
+Sports complex:Netball,0,point,tas_community_facilities
+Sports complex:Other,0,point,tas_community_facilities
+Sports complex:Racecourses,0,point,tas_community_facilities
+Sports complex:Squash,0,point,tas_community_facilities
+Sports complex:Swimming pools,0,point,tas_community_facilities
+State Government:Aurora Energy,0,point,tas_community_facilities
+State Government:DPIPWE,0,point,tas_community_facilities
+State Government:Education,0,point,tas_community_facilities
+State Government:Forestry Tasmania,0,point,tas_community_facilities
+State Government:Health and Human Services,0,point,tas_community_facilities
+State Government:Hydro Tasmania,0,point,tas_community_facilities
+State Government:Justice,0,point,tas_community_facilities
+State Government:Other,0,point,tas_community_facilities
+State Government:Police and Emergency Management,0,point,tas_community_facilities
+State Government:Premier and Cabinet,0,point,tas_community_facilities
+State Government:Service Tasmania,0,point,tas_community_facilities
+State Government:State Growth,0,point,tas_community_facilities
+State Government:Transend Networks,0,point,tas_community_facilities
+State Government:Treasury and Finance,0,point,tas_community_facilities
+State police and emergency:Ambulance station,401,point,tas_community_facilities
+State police and emergency:Community Fire Refuge,0,point,tas_community_facilities
+State police and emergency:Fire station,404,point,tas_community_facilities
+State police and emergency:Police station,406,point,tas_community_facilities
+State police and emergency:State Emergency Service unit,1009,point,tas_community_facilities
+Tourist feature:Amusement or entertainment,0,point,tas_community_facilities
+Tourist feature:Cultural,0,point,tas_community_facilities
+Tourist feature:Historical,0,point,tas_community_facilities
+Tourist feature:Industrial,0,point,tas_community_facilities
+Tourist feature:Information,1008,point,tas_community_facilities
+Tourist feature:Natural,0,point,tas_community_facilities
+Tourist feature:Other,0,point,tas_community_facilities
+Transport:Air,0,point,tas_community_facilities
+Transport:Car park,0,point,tas_community_facilities
+Transport:Coach,0,point,tas_community_facilities
+Transport:Port Operator,0,point,tas_community_facilities
+Transport:Rail,0,point,tas_community_facilities
+Transport:Sea,0,point,tas_community_facilities
+Transport:Service Station,0,point,tas_community_facilities
+Unknown:Unknown,0,point,tas_community_facilities
+Artificial Watercourse:Canal,947,area,tas_hydarea
+Artificial Watercourse:Drain,947,area,tas_hydarea
+Artificial Watercourse:Flume,947,area,tas_hydarea
+Artificial Watercourse:Spillway,0,area,tas_hydarea
+Artificial Watercourse:Water channel,947,area,tas_hydarea
+Artificial Watercourse:Water race,947,area,tas_hydarea
+Dam:Dam,10,area,tas_hydarea
+Dam:Dam wall,0,area,tas_hydarea
+Dam:Weir,10,area,tas_hydarea
+Estuary:Lagoon,10,area,tas_hydarea
+Estuary:Other,10,area,tas_hydarea
+Estuary:Stream,10,area,tas_hydarea
+Flat:Coastal Flat,22,area,tas_hydarea
+Flat:Salt Pan,23,area,tas_hydarea
+Flood Plain:Moderate flood,0,area,tas_hydarea
+Flood Plain:Severe flood,0,area,tas_hydarea
+Land:Land,0,area,tas_hydarea
+Rapid:Rapid,881,area,tas_hydarea
+Sea:Sea,10,area,tas_hydarea
+Submerged Reef:Shoal,95,area,tas_hydarea
+Submerged Reef:Submerged Reef,97,area,tas_hydarea
+Submerged Tree:Submerged Tree,0,area,tas_hydarea
+Tidal zone:Rock,0,area,tas_hydarea
+Tidal zone:Sand,22,area,tas_hydarea
+Tidal zone:Unvegetated mudflat,0,area,tas_hydarea
+Tidal zone:Vegetated mudflat,0,area,tas_hydarea
+Water Body:Aquacultural Pond,0,area,tas_hydarea
+Water Body:Hydro Storage,10,area,tas_hydarea
+Water Body:Natural or dammed freshwa,10,area,tas_hydarea
+Water Body:Reservoir,10,area,tas_hydarea
+Water Body:Sewage pond,0,area,tas_hydarea
+Water Body:Swimming pool,0,area,tas_hydarea
+Water Body:Tailings pond,0,area,tas_hydarea
+Water Body:Water tank,0,area,tas_hydarea
+Watercourse:Watercourse,10,area,tas_hydarea
+Wetland:Swamp,908,area,tas_hydarea
+Wetland:Wet area,0,area,tas_hydarea
+Wetland:Wetland,0,area,tas_hydarea
+Dam,0,point,tas_hydpnt
+Rapid,0,point,tas_hydpnt
+Rock,0,point,tas_hydpnt
+Spring,73,point,tas_hydpnt
+Submerged Rock,980,point,tas_hydpnt
+Surge Tank,0,point,tas_hydpnt
+Tank,86,point,tas_hydpnt
+Waterfall,89,point,tas_hydpnt
+Water Tower,0,point,tas_hydpnt
+Wreck,756,point,tas_hydpnt
+Artificial Watercourse:Canal,114,line,tas_hydline
+Artificial Watercourse:Drain,114,line,tas_hydline
+Artificial Watercourse:Flume,114,line,tas_hydline
+Artificial Watercourse:Penstock,114,line,tas_hydline
+Artificial Watercourse:Siphon,114,line,tas_hydline
+Artificial Watercourse:Sluice,114,line,tas_hydline
+Artificial Watercourse:Spillway,0,line,tas_hydline
+Artificial Watercourse:Water channel,114,line,tas_hydline
+Artificial Watercourse:Water pipeline,0,line,tas_hydline
+Artificial Watercourse:Water race,0,line,tas_hydline
+Artificial Watercourse:Water tunnel,0,line,tas_hydline
+Dam:Dam wall,925,line,tas_hydline
+Dam:Sluice gate,0,line,tas_hydline
+Dam:Weir,575,line,tas_hydline
+Dam and closure:Dam Wall,925,line,tas_hydline
+Dam and closure:Sluice Gate,0,line,tas_hydline
+Dam and closure:Weir,575,line,tas_hydline
+Hydrographic Closure:Hydrographic Closure,0,line,tas_hydline
+Hydrographic Connector:Hydrographic Connector,0,line,tas_hydline
+Hydro Line:Block boundaries,0,line,tas_hydline
+Hydro Line:Dam 2d lines,0,line,tas_hydline
+Hydro Line:Rapid lines,881,line,tas_hydline
+Hydro Line:Subreef lines,0,line,tas_hydline
+Hydro Line:Subtree lines,0,line,tas_hydline
+Tidal Line:Internal,0,line,tas_hydline
+Tidal Line:Low tide channel,0,line,tas_hydline
+Tidal Line:MHWM,0,line,tas_hydline
+Tidal Line:MHWM & MLWM,0,line,tas_hydline
+Tidal Line:MLWM,0,line,tas_hydline
+Tidal Line and Closure:MHWM,0,line,tas_hydline
+Tidal Line and Closure:MLWM,0,line,tas_hydline
+Tidal Line and Closure:Tidal Line and Closure,0,line,tas_hydline
+Tidal Line and Connector:Low tide channel,0,line,tas_hydline
+Watercourse:Definite,91,line,tas_hydline
+Watercourse:Implied,91,line,tas_hydline
+Watercourse:Indefinite,91,line,tas_hydline
+Watercourse:Watercourse,91,line,tas_hydline
+Water Fall:Water Fall,0,line,tas_hydline
+Waterfall and Closure:Waterfall and Closure,0,line,tas_hydline
+Waterfall and Waterline:Observed,0,line,tas_hydline
+Water Line:Assumed,0,line,tas_hydline
+Water Line:Observed,0,line,tas_hydline
+Water Line:Water Line,0,line,tas_hydline
+Water Line:,0,line,tas_hydline
+Waterline and Connector:Observed,0,line,tas_hydline
+Waterline and Connector:Waterline and Connector,0,line,tas_hydline
+Conservation Area,0,area,tas_public_land_class
+Game Reserve,0,area,tas_public_land_class
+Historic Site,0,area,tas_public_land_class
+National Park,0,area,tas_public_land_class
+Nature Recreation Area,0,area,tas_public_land_class
+Nature Reserve,0,area,tas_public_land_class
+Permanent Timber Production Zone Land,0,area,tas_public_land_class
+Public Reserve,0,area,tas_public_land_class
+Regional Reserve,0,area,tas_public_land_class
+State Reserve,0,area,tas_public_land_class
+1:Observed,52,point,tas_spot_heights
+2:Interpolated,52,point,tas_spot_heights
+Adit,0,point,tas_transport_nodes
+Bollard,1002,point,tas_transport_nodes
+Boom Gate,0,point,tas_transport_nodes
+Cul-de-sac,0,point,tas_transport_nodes
+Fence Barrier,1002,point,tas_transport_nodes
+Ford,0,point,tas_transport_nodes
+Gate,26,point,tas_transport_nodes
+Immovable Barrier,1002,point,tas_transport_nodes
+Non-Signalled Level Crossing,0,point,tas_transport_nodes
+Non-Signalled Pedestrian Crossing,0,point,tas_transport_nodes
+Normal Node,0,point,tas_transport_nodes
+Railway Signals,0,point,tas_transport_nodes
+Railway Station,222,point,tas_transport_nodes
+Removable Barrier,0,point,tas_transport_nodes
+Roundabout,1003,point,tas_transport_nodes
+Siding Extent Unknown,0,point,tas_transport_nodes
+Signalled Level Crossing,0,point,tas_transport_nodes
+Signalled Level Crossing and Barrier,0,point,tas_transport_nodes
+Stock Grid,25,point,tas_transport_nodes
+Turning Circle,0,point,tas_transport_nodes
+Unknown Barrier,0,point,tas_transport_nodes
+Weighbridge,0,point,tas_transport_nodes
+Rail:Bridge:Not Applicable:Not Applicable,260,line,tas_transport_segments
+Rail:Normal Transport Segment:Not Applicable:Not Applicable,260,line,tas_transport_segments
+Rail:Opening Bridge:Not Applicable:Not Applicable,260,line,tas_transport_segments
+Rail:Tunnel:Not Applicable:Not Applicable,205,line,tas_transport_segments
+Road:Bridge:Authorised:4WD required,260,line,tas_transport_segments
+Road:Bridge:Authorised:Sealed,260,line,tas_transport_segments
+Road:Bridge:Authorised:Unsealed,260,line,tas_transport_segments
+Road:Bridge:Private:4WD required,260,line,tas_transport_segments
+Road:Bridge:Private:Sealed,260,line,tas_transport_segments
+Road:Bridge:Private:Unsealed,260,line,tas_transport_segments
+Road:Bridge:Public:4WD required,260,line,tas_transport_segments
+Road:Bridge:Public:Sealed,260,line,tas_transport_segments
+Road:Bridge:Public:Unsealed,260,line,tas_transport_segments
+Road:Bridge Dual Carriageway:Public:Sealed,260,line,tas_transport_segments
+Road:Bridge Intersection:Public:Sealed,260,line,tas_transport_segments
+Road:Culvert Dual Carriageway State Growth:Public:Sealed,0,line,tas_transport_segments
+Road:Culvert State Growth:Authorised:Sealed,0,line,tas_transport_segments
+Road:Culvert State Growth:Public:Sealed,0,line,tas_transport_segments
+Road:Culvert State Growth:Public:Unsealed,0,line,tas_transport_segments
+Road:Dual Carriageway:Authorised:Sealed,250,line,tas_transport_segments
+Road:Dual Carriageway:Public:Sealed,250,line,tas_transport_segments
+Road:Elevated Way:Authorised:Sealed,251,line,tas_transport_segments
+Road:Elevated Way:Public:Unsealed,258,line,tas_transport_segments
+Road:Fire Trail:Authorised:4WD required,254,line,tas_transport_segments
+Road:Fire Trail:Authorised:Sealed,257,line,tas_transport_segments
+Road:Fire Trail:Authorised:Unsealed,253,line,tas_transport_segments
+Road:Fire Trail:Private:4WD required,0,line,tas_transport_segments
+Road:Fire Trail:Private:Sealed,0,line,tas_transport_segments
+Road:Fire Trail:Private:Unsealed,0,line,tas_transport_segments
+Road:Fire Trail:Public:Sealed,0,line,tas_transport_segments
+Road:Fire Trail:Public:Unsealed,0,line,tas_transport_segments
+Road:Floodway:Authorised:Sealed,0,line,tas_transport_segments
+Road:Floodway:Authorised:Unsealed,0,line,tas_transport_segments
+Road:Floodway:Private:Sealed,0,line,tas_transport_segments
+Road:Floodway:Public:Sealed,0,line,tas_transport_segments
+Road:Floodway:Public:Unsealed,0,line,tas_transport_segments
+Road:Ford:Authorised:4WD required,0,line,tas_transport_segments
+Road:Ford:Authorised:Sealed,0,line,tas_transport_segments
+Road:Ford:Authorised:Unsealed,0,line,tas_transport_segments
+Road:Ford:Private:4WD required,0,line,tas_transport_segments
+Road:Ford:Private:Unsealed,0,line,tas_transport_segments
+Road:Ford:Public:Sealed,0,line,tas_transport_segments
+Road:Ford:Public:Unsealed,0,line,tas_transport_segments
+Road:Intersection Segment:Authorised:Sealed,0,line,tas_transport_segments
+Road:Intersection Segment:Public:Sealed,0,line,tas_transport_segments
+Road:Layby:Private:Sealed,0,line,tas_transport_segments
+Road:Layby:Private:Unsealed,0,line,tas_transport_segments
+Road:Layby:Public:Sealed,0,line,tas_transport_segments
+Road:Layby:Public:Unsealed,0,line,tas_transport_segments
+Road:Normal Transport Segment:Authorised:4WD required,0,line,tas_transport_segments
+Road:Normal Transport Segment:Authorised:Sealed,0,line,tas_transport_segments
+Road:Normal Transport Segment:Authorised:Unsealed,0,line,tas_transport_segments
+Road:Normal Transport Segment:Private:4WD required,0,line,tas_transport_segments
+Road:Normal Transport Segment:Private:Sealed,0,line,tas_transport_segments
+Road:Normal Transport Segment:Private:Unsealed,0,line,tas_transport_segments
+Road:Normal Transport Segment:Public:4WD required,0,line,tas_transport_segments
+Road:Normal Transport Segment:Public:Sealed,0,line,tas_transport_segments
+Road:Normal Transport Segment:Public:Unsealed,0,line,tas_transport_segments
+Road:Normal Transport Segment:Restricted:4WD required,0,line,tas_transport_segments
+Road:Opening Bridge:Public:Sealed,0,line,tas_transport_segments
+Road:Roundabout:Authorised:Sealed,0,line,tas_transport_segments
+Road:Roundabout:Public:Sealed,0,line,tas_transport_segments
+Road:Temp LGA Road:Public:Sealed,0,line,tas_transport_segments
+Road:Temp LGA Road:Public:Unsealed,0,line,tas_transport_segments
+Road:Transport Connector:Not Applicable:Not Applicable,0,line,tas_transport_segments
+Road:Transport Connector:Private:Unsealed,0,line,tas_transport_segments
+Road:Transport Connector:Public:Unsealed,0,line,tas_transport_segments
+Road:Tunnel:Authorised:Sealed,205,line,tas_transport_segments
+Road:Tunnel:Authorised:Unsealed,205,line,tas_transport_segments
+Road:Tunnel:Private:Sealed,205,line,tas_transport_segments
+Road:Tunnel:Private:Unsealed,205,line,tas_transport_segments
+Road:Tunnel:Public:Sealed,205,line,tas_transport_segments
+Road:Tunnel:Public:Unsealed,205,line,tas_transport_segments
+Road:Tunnel Dual Carriageway:Public:Sealed,205,line,tas_transport_segments
+Road:Tunnel Intersection:Public:Sealed,205,line,tas_transport_segments
+Road:Undefined Way:Authorised:4WD required,0,line,tas_transport_segments
+Road:Undefined Way:Authorised:Unsealed,0,line,tas_transport_segments
+Road:Undefined Way:Private:4WD required,0,line,tas_transport_segments
+Road:Undefined Way:Private:Unsealed,0,line,tas_transport_segments
+Road:Undefined Way:Public:4WD required,0,line,tas_transport_segments
+Road:Undefined Way:Public:Unsealed,0,line,tas_transport_segments
+Road:Undefined Way:Restricted:4WD required,0,line,tas_transport_segments
+Road:Weighbridge:Authorised:Sealed,0,line,tas_transport_segments
+Road:Weighbridge:Authorised:Unsealed,0,line,tas_transport_segments
+Road:Weighbridge:Private:Sealed,0,line,tas_transport_segments
+Road:Weighbridge:Private:Unsealed,0,line,tas_transport_segments
+Road:Weighbridge:Public:Sealed,0,line,tas_transport_segments
+Route:Normal Transport Segment:Not Applicable:Not Applicable,0,line,tas_transport_segments
+Track:Bridge:Authorised:Boardwalk,22,line,tas_transport_segments
+Track:Bridge:Authorised:Fabricated Surface,22,line,tas_transport_segments
+Track:Bridge:Authorised:Sealed,22,line,tas_transport_segments
+Track:Bridge:Authorised:Unsealed,22,line,tas_transport_segments
+Track:Bridge:Private:Sealed,22,line,tas_transport_segments
+Track:Bridge:Private:Unsealed,22,line,tas_transport_segments
+Track:Bridge:Public:Boardwalk,22,line,tas_transport_segments
+Track:Bridge:Public:Fabricated Surface,22,line,tas_transport_segments
+Track:Bridge:Public:Sealed,22,line,tas_transport_segments
+Track:Bridge:Public:Unsealed,22,line,tas_transport_segments
+Track:Elevated Way:Authorised:Fabricated Surface,22,line,tas_transport_segments
+Track:Elevated Way:Public:Boardwalk,22,line,tas_transport_segments
+Track:Elevated Way:Public:Sealed,22,line,tas_transport_segments
+Track:Elevated Way:Public:Unsealed,22,line,tas_transport_segments
+Track:Fire Trail:Public:Unsealed,22,line,tas_transport_segments
+Track:Ford:Authorised:Unsealed,22,line,tas_transport_segments
+Track:Ford:Public:Sealed,22,line,tas_transport_segments
+Track:Ford:Public:Unsealed,22,line,tas_transport_segments
+Track:Normal Transport Segment:Authorised:Boardwalk,22,line,tas_transport_segments
+Track:Normal Transport Segment:Authorised:Sealed,22,line,tas_transport_segments
+Track:Normal Transport Segment:Authorised:Unsealed,22,line,tas_transport_segments
+Track:Normal Transport Segment:Private:Sealed,22,line,tas_transport_segments
+Track:Normal Transport Segment:Private:Unsealed,22,line,tas_transport_segments
+Track:Normal Transport Segment:Public:Boardwalk,22,line,tas_transport_segments
+Track:Normal Transport Segment:Public:Fabricated Surface,22,line,tas_transport_segments
+Track:Normal Transport Segment:Public:Sealed,22,line,tas_transport_segments
+Track:Normal Transport Segment:Public:Unsealed,22,line,tas_transport_segments
+Track:Normal Transport Segment:Restricted:Unsealed,22,line,tas_transport_segments
+Track:Opening Bridge:Public:Sealed,22,line,tas_transport_segments
+Track:Tunnel:Authorised:Sealed,0,line,tas_transport_segments
+Track:Tunnel:Authorised:Unsealed,0,line,tas_transport_segments
+Track:Tunnel:Private:Sealed,0,line,tas_transport_segments
+Track:Tunnel:Public:Sealed,0,line,tas_transport_segments
+Track:Tunnel:Public:Unsealed,0,line,tas_transport_segments
+Track:Undefined Way:Authorised:Unsealed,0,line,tas_transport_segments
+Track:Undefined Way:Public:Unsealed,0,line,tas_transport_segments
+Track:Undefined Way:Restricted:Unsealed,0,line,tas_transport_segments

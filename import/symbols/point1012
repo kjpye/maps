@@ -1,0 +1,11 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('point1012', 'cross', '
+/point1012 { % Hospital
+  /featurewidth exch def
+  gsave
+    translate rotate
+    1 0 1 0 setcmykcolor
+    cross
+  grestore
+} bind def
+');

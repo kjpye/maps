@@ -1,0 +1,18 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('point1017', '', '
+/point1017 { % Tower
+  /featurewidth exch def
+  gsave
+    translate rotate
+    0 0 0 1 setcmykcolor
+    .2 setlinewidth
+    -1 -1.3 moveto 2 0 rlineto stroke % ground
+    -.8 -1.3 moveto -.4 .5 lineto .4 .5 lineto .8 -1.3 lineto stroke
+    -.75 -1.1 moveto .5 .2 lineto stroke
+    .75 -1.1 moveto -.5 .2 lineto stroke
+    -.6 .5 moveto .6 .5 lineto .6 1.2 lineto 0 1.5 lineto -.6 1.2 lineto closepath
+    -.3 0.7 moveto .6 0 rlineto 0 .4 rlineto -.6 0 rlineto closepath
+    eofill
+  grestore
+} bind def
+');

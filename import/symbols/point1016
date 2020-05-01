@@ -1,0 +1,22 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('point1016', '', '
+/point1016 { % Mosque
+  /featurewidth exch def
+  gsave
+    translate rotate
+    0 0 0 1 setcmykcolor
+% body
+    .4 setlinewidth
+    0 -1.4 moveto % bottom centre
+    1 -1.4 lineto % right part of bottom line
+    1 -.85 1.4 -.85 1.4 -.2 curveto % bottom half right curve
+    1.4 .55 0 .55 0 1.1 curveto % top half right curve
+    0 .55 -1.4 .55 -1.4 -.2 curveto
+    -1.4 -.85 -1 -.85 -1 -1.4 curveto
+    0 -1.4 lineto
+    stroke
+% head
+    -0.2 1.1 moveto 0 1.5 lineto .2 1.1 lineto closepath fill
+  grestore
+} bind def
+');

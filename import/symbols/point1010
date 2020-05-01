@@ -1,0 +1,30 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('point1010', '', '
+/point1010 { % Picnic Site
+  /featurewidth exch def
+  gsave
+    translate rotate
+    0 0 0 1 setcmykcolor
+% seats
+    -1.5 0 moveto
+    3 0 rlineto
+    0 -0.3 rlineto
+    -3 0 rlineto closepath fill
+% tabletop
+    -0.8 1.5 moveto 1.6 0 rlineto
+    0 -0.3 rlineto
+    -1.6 0 rlineto
+    closepath fill
+% legs
+    -1.1 -1.5 moveto
+    -0.5 1.2 lineto
+    0.4 0 rlineto
+    -0.7 -1.5 lineto
+    1.1 -1.5 moveto
+    0.5 1.2 lineto
+    -0.4 0 rlineto
+    0.7 -1.5 lineto
+    closepath fill
+  grestore
+} bind def
+');

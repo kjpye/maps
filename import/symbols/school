@@ -1,0 +1,23 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('school', '', '
+/school { % School logo -- used for different colours
+  gsave
+    1 setlinecap
+    .15 setlinewidth
+    -.5 1.1 moveto
+    0 .8 rlineto
+    .5 -.2 rlineto
+    .5 .2 rlineto
+    0 -.8 rlineto
+    -.5 -.2 rlineto
+    -.5 .2 rlineto
+    0 .9 moveto
+    0 .8 rlineto
+    .3 1.0 moveto 0 -.3 rlineto
+    strokepath
+    0 0 moveto 0 1.5 1 -45 225 arc
+    closepath
+    eofill
+  grestore
+} bind def
+');

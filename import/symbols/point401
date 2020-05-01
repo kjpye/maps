@@ -7,7 +7,14 @@ VALUES ('point401', '', '
     1 0 1 0 setcmykcolor
     1.5
     dup neg dup neg moveto dup dup lineto dup dup neg lineto neg dup lineto closepath fill
-%%% Needs letter "A"
+    0 0 0 0 setcmykcolor
+    1.4 -1.3 moveto
+    0.5 1.3 lineto -0.5 1.3 lineto
+    -1.4 -1.3 lineto -0.7 -1.3 lineto
+    0 .7 lineto 0.7 -1.3 lineto
+    closepath fill
+    -0.7 -0.8 moveto 1.5 0 rlineto 0 0.4 rlineto
+    -1.5 0 rlineto closepath fill
   grestore
 } bind def
 ');

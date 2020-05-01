@@ -1,8 +1,8 @@
 INSERT INTO Symbols_GA (name, dependencies, body)
 VALUES ('line575', 'solidline', '
 /line575 { % Graticule Line
+           % Dam or Weir (WAC only)
   /featurewidth exch def
-          Dam or Weir (WAC only)
   .2
   0 0 0 1
   solidline

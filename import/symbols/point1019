@@ -1,0 +1,11 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('point1019', 'school', '
+/point1019 { % Secondary School
+  /featurewidth exch def
+  gsave
+    translate rotate
+    1 0 1 0 setcmykcolor
+    school
+  grestore
+} bind def
+');

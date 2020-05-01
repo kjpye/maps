@@ -1,0 +1,29 @@
+#!/usr/bin/env raku
+
+use v6;
+
+use DB::Pg;
+use Geo::Coordinates::UTM;
+
+sub MAIN($database, $table, $from-column, $to-column) {
+  my $pg = DB::Pg.new(conninfo => "dbname=$database");
+  say "UPDATE $table
+                                   SET $to-column = ST_GeomFromText([new geometry], 4326)
+                                 WHERE gid = [gid]
+                               ";
+  my $sth-put = $pg.db.prepare("UPDATE $table
+                                   SET $to-column = ST_GeomFromText(\$1, 4326)
+                                 WHERE gid = \$2
+                               ");
+
+  my $results = $pg.query("SELECT gid, st_astext($from-column)
+                             FROM $table
+                            WHERE geom2 IS NULL
+                          ");
+  for $results.arrays -> $row {
+    my $geom = $row[1];
+    $geom ~~ s:g/(\d+[\.\d+]?)\s(\d+[\.\d+]?)/{my ($lat, $long) = |utm-to-latlon('WGS-84', '55', +$0, +$1); "$long $lat"}/;
+    $sth-put.execute($geom, $row[0]);
+    say $row[0] if $row[0] %% 100;
+  }
+}
