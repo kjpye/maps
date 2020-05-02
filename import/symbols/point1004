@@ -2,8 +2,10 @@ INSERT INTO Symbols_GA (name, dependencies, body)
 VALUES ('point1004', 'filledcircle', '
 /point1004 { % Intersection -- signal
   /featurewidth exch def
-  newpath
-  1.0 .70 .9 0 0
-  filledcircle 
+  gsave
+    newpath
+    1.0 .70 .9 0 0
+    filledcircle 
+  grestore
 } bind def
 ');

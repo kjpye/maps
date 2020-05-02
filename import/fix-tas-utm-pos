@@ -1,0 +1,32 @@
+#!/usr/bin/env raku
+
+use v6;
+
+use DB::Pg;
+use Geo::Coordinates::UTM;
+
+sub MAIN($database, $table) {
+  my $pg = DB::Pg.new(conninfo => "dbname=$database");
+  say "UPDATE $table
+                                   SET longitude = \$2,
+                                       latitude  = \$3
+                                 WHERE gid = \$1
+                               ";
+  my $sth-put = $pg.db.prepare("UPDATE $table
+                                   SET longitude = \$2,
+                                       latitude  = \$3
+                                 WHERE gid = \$1
+                               ");
+
+  my $results = $pg.query("SELECT gid, easting_gd, northing_g
+                             FROM $table
+                            WHERE longitude IS NULL
+                          ");
+  for $results.arrays -> $row {
+    my $easting  = $row[1];
+    my $northing = $row[2];
+    my ($latitude, $longitude) = |utm-to-latlon('WGS-84', '55', +$easting, +$northing);
+    $sth-put.execute($row[0], $longitude, $latitude);
+    say $row[0] if $row[0] %% 100;
+  }
+}

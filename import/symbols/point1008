@@ -10,17 +10,11 @@ VALUES ('point1008', '', '
     dup neg dup neg moveto dup dup lineto dup dup neg lineto neg dup lineto closepath fill
 % and then the "i"
     0 0 1 0 setcmykcolor
-  gsave
-    3 500 div dup neg scale
-    -370 -250 translate
-    %0 250.5 moveto
-      %0 501 lineto
-      %740 501 lineto
-      %740 0 lineto
-      %0 0 lineto
-    %closepath
+    %gsave
+      3 500 div dup neg scale
+      -370 -250 translate
 % the dot
-    467.801 68.898 moveto
+      467.801  68.898 moveto
       483.398  73     495.602  81.301 499.602  90.699 curveto
       501.602  95.398 501.301 102.699 498.898 107.699 curveto
       496.398 113     488.102 120.301 481.199 123.5   curveto
@@ -29,8 +23,8 @@ VALUES ('point1008', '', '
       406.199 122.398 394     111.398 394      98.801 curveto
       394      83.5   411.102  70.898 437.5    66.699 curveto
       443.699  65.699 459.699  66.898 467.801  68.898 curveto
-    closepath
-    467 153 moveto
+      closepath
+      467     153     moveto
       467     153.602 464.602 157.699 461.602 162.301 curveto
       458.699 166.801 451.398 178.102 445.398 187.5   curveto
       439.5   196.801 433.801 205.602 432.699 207     curveto
@@ -66,12 +60,12 @@ VALUES ('point1008', '', '
       374.5   152.102 lineto
       420.801 152     lineto
       451.199 152     467     152.301 467     153     curveto
-    closepath
-    570 449.602 moveto
+      closepath
+      570 449.602     moveto
       570 450.602     570.699 451 572.199 450.801 curveto
       575.398 450.301 575.699 448 572.602 448     curveto
       570.898 448     570 448.5   570     449.602 curveto
-    closepath
+      closepath
     % 570 449.602 moveto % ???
     fill
   grestore
