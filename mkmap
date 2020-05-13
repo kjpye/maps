@@ -511,6 +511,7 @@ sub draw-areas(Str $table, Str $columns, Str $geomcol) {
                           ");
 
   if $results {
+      note "{$results.rows} objects from $table" if $debug >= 1;
       for $results.arrays -> $object {
 	  my $shape = $object.pop;
 	  my $featuretype = $object.join: ':';
@@ -546,6 +547,7 @@ sub draw-ga-areas(Str $table) {
   
   if $results {
     
+      note "{$results.rows} objects from $table" if $debug >= 1;
       for $results.arrays -> $object {
       my $symbol = $object[0].Int;
       my $shape = $object[1];
@@ -570,6 +572,7 @@ sub draw-treeden(Str $table) {
                          RaiseError => 0);
 
   if $results {
+      note "{$results.rows} objects from $table" if $debug >= 1;
     
     for $results.arrays -> $object {
       my $ftype = $object[0];
@@ -692,11 +695,10 @@ my %funnylines = ();
 
 my %linefeaturetypes;
 
-sub draw-lines(Str $table, Str $columns, Str $geomcol, $default, Str $widthcol) {
+sub draw-lines(Str $table, Str $columns, Str $geomcol, Str $widthcol) {
 #    dd $table;
 #    dd $columns;
 #    dd $geomcol;
-#    dd $default,
 #    dd $widthcol;
   note "$table lines..." if $debug >= 1;
 
@@ -714,24 +716,20 @@ sub draw-lines(Str $table, Str $columns, Str $geomcol, $default, Str $widthcol) 
   
   if $results {
       
-note "{$results.rows} objects from $table";
+  note "{$results.rows} objects from $table" if $debug >= 1;
       for $results.arrays -> $object {
+          my $symbol;
 	  my $shape = $object.pop;
+          my $featurewidth = 0;
 	  $featurewidth = $object.pop if $widthcol;
 	  my $featuretype = $object.join: ':';
-#dd $featuretype;
 	  
-	  my $symbol = $default;
 	  %linefeaturetypes{$table}{$featuretype}++;
-	  if ! $symbol || $symbol eq '0' {
-note "Getting symbol: $table, $featuretype, line" if $debug > 15;
-#dd $table;
-#dd $featuretype;
-	      for $sth-symb.execute($table, $featuretype, 'line').arrays -> $obj {
-		  $symbol = $obj[0].Int;
-	      }
+          note "Getting symbol: $table, $featuretype, line" if $debug > 15;
+	  for $sth-symb.execute($table, $featuretype, 'line').arrays -> $obj {
+              $symbol = $obj[0].Int;
 	  }
-	  note "draw-line: $table $featuretype $symbol" if $debug >= 10;
+	  note "draw-line: $table $featuretype $symbol" if $debug >= 12;
 	  
 	  
 	  next unless $symbol > 0;
@@ -739,7 +737,7 @@ note "Getting symbol: $table, $featuretype, line" if $debug > 15;
 	  if %funnylines{$symbol}.defined {
               %funnylines{$symbol}($shape);
 	  } else {
-              put-line($shape.Str, "line$symbol", 0);
+              put-line($shape, "line$symbol", $featurewidth);
 	  }
       }
   } else {
@@ -764,6 +762,7 @@ sub draw-contours(Str $table, Str $columns, Str $geomcol, Str $elevcol) {
                           ");
   
   if $results {
+      note "{$results.rows} objects from $table" if $debug >= 1;
       for $results.arrays -> $object {
 	  my $shape = $object.pop;
 
@@ -815,6 +814,7 @@ sub draw-vm-lines(Str $table, Str $typecolumn, $default-symbol = 0) {
                          ");
   
   if $results {
+      note "{$results.rows} objects from $table" if $debug >= 1;
     
       for $results.arrays -> $object {
 	  my $ftype = $object[0];
@@ -873,36 +873,8 @@ sub draw-vm-lines(Str $table, Str $typecolumn, $default-symbol = 0) {
   }
 }
 
-#`[
-  sub draw-ga-lines -- draw lines from a Geosciences Australia table
-    $table          -- table name
-    $typecolumn     -- the name of the column containing the type of the line
-    $default-symbol -- if positive override the symbol to be used
-]
-
-sub draw-ga-lines(Str $table, Str $typecolumn, $default-symbol = 0) {
-  note "$table ($default-symbol) lines..." if $debug >= 1;
-  my $geomcol; # = %defaults{'linegeometry'};
-  $geomcol = 'shape';
-  note "Reading column $geomcol ($rect)" if $debug >= 1;
-  my $results = $pg.query("SELECT symbol, st_astext($geomcol) AS shape
-                          FROM $table
-                          WHERE $geomcol && $rect
-                         ");
-  
-  if $results {
-    
-      for $results.arrays -> $object {
-      my $symbol = $object[0].Int;
-      my $shape = $object[1];
-      
-      note $symbol if $debug >= 10;
-      if $default-symbol > 0 {
-	  $symbol = $default-symbol;
-      }
-      next unless $symbol > 0;
-      ++$object-count;
-      given $symbol {
+sub draw-line($symbol, $shape) {
+      given $symbol {  
           when  57 { # Depression contour (index)
               put-line($shape, "line57A", 0);
 	      follow-line($shape, 4, &leftticks, .3, .2, '0 .59 1 .18');
@@ -939,10 +911,6 @@ sub draw-ga-lines(Str $table, Str $typecolumn, $default-symbol = 0) {
               put-line($shape.Str, "line$symbol", 0);
           }
       }
-      }
-  } else {
-      note "Table $table not found";
-  }
 }
 
 sub put-outline(Str $text is copy, Real $x, Real $y, Real $size, Str $colour, Real $thickness) { 
@@ -962,6 +930,7 @@ sub draw-polygon-outline-names(Str $table, Str $column, Real $size, Real $thickn
                          ");
   
   if $results {
+      note "{$results.rows} objects from $table" if $debug >= 1;
     
     for $results.hashes -> $row {
 	my $name  = $row<name>.Str;
@@ -1003,41 +972,6 @@ sub draw-properties() {
 }
 
 #`[
-  sub draw-ga-wlines -- draw lines (with width) from a Geosciences Australia table
-    $table          -- table name
-]
-
-sub draw-ga-wlines(Str $table) {
-    note "$table lines..." if $debug >= 1;
-   my $results = $pg.query("SELECT symbol, st_astext(shape) AS shape, featurewidth
-                              FROM $table
-                             WHERE shape && $rect
-                          ");
-    
-   for $results.arrays -> $object {
-	my $symbol = $object[0].Int;
-	my $shape = $object[1];
-	my $featurewidth = $object[3];
-	$featurewidth = 0 unless $featurewidth.defined && $featurewidth;
-	
-	next unless $symbol > 0;
-	++$object-count;
-	if ($symbol == 57) { # Depression contour (index)
-	} elsif ($symbol == 58) { # Depression contour (standard)
-	} elsif ($symbol == 31) { # Embankment
-	} elsif ($symbol == 542) { # Powerline
-	} elsif ($symbol == 543) { # Powerline (WAC)
-	} elsif ($symbol == 920) { # Cliff (WAC)
-	} elsif ($symbol == 923) { # Cutting
-	} elsif ($symbol == 924) { # Cliff
-	} elsif ($symbol == 929) { # Razorback
-	} else {
-	    put-line($shape, "line$symbol", $featurewidth);
-	}
-    }
-}
-
-#`[
   Routines for drawing roads.
 
   These are more difficult than other lines because of dual carriageways
@@ -1052,7 +986,7 @@ sub draw-ga-wlines(Str $table) {
   Note that the first "feature column" must give a unique identifier for that row
 ]
 
-sub draw-roads(Str $table, Str $columns, Str $geomcol, $default, Str $widthcol) {
+sub draw-roads(Str $table, Str $columns, Str $geomcol, Str $widthcol) {
     my @dual;
     my $featurewidth = 0.7;
     
@@ -1069,24 +1003,23 @@ sub draw-roads(Str $table, Str $columns, Str $geomcol, $default, Str $widthcol) 
                             ");
     
     if $results {
+      note "{$results.rows} objects from $table" if $debug >= 1;
         for $results.arrays -> $object {
+            my $symbol;
             my $pfi   = $object.shift;
 	    my $shape = $object.pop;
 	    $featurewidth = $object.pop if $widthcol;
 	    my $featuretype = $object.join: ':';
             dd $featuretype;
 	    
-	    my $symbol = $default;
 	    %linefeaturetypes{$table}{$featuretype}++;
-	    if ! $symbol || $symbol eq '0' {
-                note "Getting symbol: $table, $featuretype, line" if $debug > 15;
-                #dd $table;
-                #dd $featuretype;
-	        for $sth-symb.execute($table, $featuretype, 'line').arrays -> $obj {
-		    $symbol = $obj[0].Int;
-	        }
+            note "Getting symbol: $table, $featuretype, line" if $debug > 15;
+            #dd $table;
+            #dd $featuretype;
+	    for $sth-symb.execute($table, $featuretype, 'line').arrays -> $obj {
+                $symbol = $obj[0].Int;
 	    }
-	    note "draw-road: $table $featuretype $symbol" if $debug >= 10;
+	    note "draw-road: $table $featuretype $symbol" if $debug >= 12;
 	    
             #        $roadnames.say: "VM{$objectid} $road-name" if $roadnames;
 	    next unless $symbol > 0;
@@ -1145,6 +1078,7 @@ sub draw-vm-roads() {
                           WHERE geom && $rect
                          ");
     
+      note "{$results.rows} objects from vm_tr_road" if $debug >= 1;
      for $results.arrays -> $object {
 
 	my $objectid     = $object[0];
@@ -1207,6 +1141,7 @@ sub draw-ga-roads() {
                             WHERE $geomcol && $rect
                            ");
     
+      note "{$results.rows} objects from ga_roads" if $debug >= 1;
     for $results.arrays -> $object {
 	my $objectid     = $object[0];
 	my $symbol       = $object[1].Int;
@@ -1280,6 +1215,7 @@ sub draw-osmroads() {
                               AND way && $rect
                            ");
     
+      note "{$results.rows} objects from planet_osm_line" if $debug >= 1;
     for $results.arrays -> $object {
 	my $objectid = $object[0].Int;
 	my $type = $object[1];
@@ -1328,8 +1264,9 @@ sub draw-osmroads() {
 my %pointfeaturetypes;
 
 sub draw-points(Str $table, Str $columns, Str $geomcol, Str $orientcol, Str $widthcol) {
-  note "$table points..." if $debug >= 1;
-  note $columns if $debug >= 5;
+  note "$table points..." if $debug ≥ 1;
+  note $columns if $debug ≥ 5;
+  note $geomcol if $debug ≥ 5;
 
   my @columns     = $columns.split: ':';
   my $selectcolumns = @columns.join: ', ';
@@ -1345,61 +1282,70 @@ sub draw-points(Str $table, Str $columns, Str $geomcol, Str $orientcol, Str $wid
   if $geomcol.index(':') {
     $latlong = True;
     my ($longcol, $latcol) = $geomcol.split(':');
-    $results = $pg.query("SELECT $selectcolumns, $longcol, $latcol
-                            FROM $table
-                            WHERE $longcol > $lllong
-                              AND $longcol < $urlong
-                              AND $latcol  > $lllat
-                              AND $latcol  < $urlat
-                             ");
+    my $query = "SELECT $selectcolumns, $longcol, $latcol
+                   FROM $table
+                  WHERE $longcol > $lllong
+                    AND $longcol < $urlong
+                    AND $latcol  > $lllat
+                    AND $latcol  < $urlat
+                 ";
+    note $query if $debug ≥ 5;
+    $results = $pg.query($query);
   } else {
-    $results = $pg.query("SELECT $selectcolumns, st_astext($geomcol) AS position
-                            FROM $table
-			    WHERE {$geomcol} && $rect
-			   ");
+    my $query = "SELECT $selectcolumns, st_astext($geomcol) AS position
+                   FROM $table
+                  WHERE {$geomcol} && $rect
+                ";
+    note $query if $debug ≥ 5;
+    $results = $pg.query($query);
   }
     
-  for $results.arrays -> $object {
-    my $featuretype = '';
-    for ^$numfeatcols {
-      $featuretype ~= $object.shift ~ ':';
-    }
-    $featuretype ~~ s/\:$//;
-    
-    $featurewidth = $object.shift if $widthcol;
-    $orientation  = $object.shift if $orientcol;
-    
-    my $long;
-    my $lat;
-    if $latlong {
-      $long = +$object.shift;
-      $lat  = +$object.shift;
-    } else {
-      my $position     = $object.shift;
-      $position ~~ / \( ( \-? <[\d\.]>+) \s+ ( \-? <[\d\.]>+ ) <[,)]> /;
-      $long = +$0;
-      $lat = +$1;
-    }
-    my ($x, $y) = latlon2page +$long, +$lat;
-
-    my $symbol = 0;
-    %pointfeaturetypes{$table}{$featuretype}++;
-    if $featuretype ~~ /^\d+$/ {
-      $symbol = $featuretype;
-    } else {
-      for $sth-symb.execute($table, $featuretype, 'point').arrays -> $obj {
-        $symbol = $obj[0].Int;
-        one-message "No symbol found for table $table feature $featuretype" if $symbol <= 0 && $debug >= 1;
+  if $results { 
+      note "{$results.rows} objects from $table" if $debug >= 1;
+      for $results.arrays -> $object {
+          my $featuretype = '';
+          for ^$numfeatcols {
+              $featuretype ~= $object.shift ~ ':';
+          }
+          $featuretype ~~ s/\:$//;
+          
+          $featurewidth = $object.shift if $widthcol;
+          $orientation  = $object.shift if $orientcol;
+          
+          my $long;
+          my $lat;
+          if $latlong {
+              $long = +$object.shift;
+              $lat  = +$object.shift;
+          } else {
+              my $position     = $object.shift;
+              $position ~~ / \( ( \-? <[\d\.]>+) \s+ ( \-? <[\d\.]>+ ) <[,)]> /;
+                                $long = +$0;
+                                $lat = +$1;
+                              }
+              my ($x, $y) = latlon2page +$long, +$lat;
+              
+              my $symbol = 0;
+              %pointfeaturetypes{$table}{$featuretype}++;
+              if $featuretype ~~ /^\d+$/ {
+                  $symbol = $featuretype;
+              } else {
+                  for $sth-symb.execute($table, $featuretype, 'point').arrays -> $obj {
+                      $symbol = $obj[0].Int;
+                      one-message "No symbol found for table $table feature $featuretype" if $symbol <= 0 && $debug >= 1;
+                  }
+              }
+	      
+              #next unless @display-feature[$featuretype]; ### TODO
+              next unless +$symbol;
+              ++$object-count;
+              %dependencies{"point$symbol"}++;
+              $TMP.print: sprintf("$orientation %.6g %.6g $featurewidth point$symbol\n", $x, $y);
+          }
+      } else {
+          note "No results returned" if $debug ≥ 1;
       }
-    }
-	
-    #next unless @display-feature[$featuretype]; ### TODO
-    next unless $symbol;
-    ++$object-count;
-    %dependencies{"point$symbol"}++;
-    $TMP.print: sprintf("$orientation %.6g %.6g $featurewidth point$symbol\n", $x, $y);
   }
-}
 
 #`[
   sub draw-ga-points -- draw points from a Geoscience Australia table
@@ -1420,6 +1366,7 @@ sub draw-ga-points(Str $table) {
 			    WHERE $geomcol && $rect
 			   ");
     
+      note "{$results.rows} objects from $table" if $debug >= 1;
   for $results.arrays -> $object {
 #dd $object;
 	my $symbol       = $object[0].Int;
@@ -1481,6 +1428,7 @@ sub draw-text(Str $table, Str $textcolumn, Str $geomcol, Str $widthcols) {
 			   ");
   }
     
+      note "{$results.rows} objects from $table" if $debug >= 1;
   for $results.arrays -> $object {
     my $text  = $object.shift;
     my $widthtype = '';
@@ -1524,30 +1472,76 @@ sub draw-text(Str $table, Str $textcolumn, Str $geomcol, Str $widthcols) {
   }
 }
 
-sub draw-spot-heights() {
-    note "spot heights..." if $debug >= 1;
-  my $geomcol; # = %defaults{'pointgeometry'};
-  $geomcol = 'geom';
-    my $results = $pg.query("SELECT ftype_code, st_astext($geomcol) AS position, altitude
-                            FROM vm_el_grnd_surface_point
-                            WHERE $geomcol && $rect
-                           ");
+sub draw-spot-heights(Str $table, Str $columns, Str $geomcol, Str $elevationcol) {
+    note "$table spot heights..." if $debug >= 1;
+    note $columns if $debug >= 5;
+    
+    my @columns     = $columns.split: ':';
+    my $selectcolumns = @columns.join: ', ';
+    my $numfeatcols = +@columns;
+    
+    my $featurewidth = 0;
+    my $orientation  = 0;
+    
+    my $results;
+    my $latlong = False;
+    if $geomcol.index(':') {
+        $latlong = True;
+        my ($longcol, $latcol) = $geomcol.split(':');
+        $results = $pg.query("SELECT $selectcolumns, $elevationcol, $longcol, $latcol
+                               FROM $table
+                              WHERE $longcol > $lllong
+                                AND $longcol < $urlong
+                                AND $latcol  > $lllat   
+                                AND $latcol  < $urlat   
+                             ");  
+    } else {
+        $results = $pg.query("SELECT $selectcolumns, $elevationcol, st_astext($geomcol) AS position
+                                FROM $table
+		               WHERE {$geomcol} && $rect
+			     ");
+    }
     
     $TMP.say: "/Helvetica-Latin1 2 selectfont 0 0 0 1 setcmykcolor";
 
+      note "{$results.rows} objects from $table" if $debug >= 1;
     for $results.arrays -> $object {
-        my $ftype    = $object[0];
-        my $position = $object[1];
-        my $altitude = $object[2] || 0;
-        my $featuretype = $ftype;
-
-        next unless $featuretype eq 'spot_height';
+        my $featuretype = '';
+        for ^$numfeatcols {
+            $featuretype ~= $object.shift ~ ':';
+        }
+        $featuretype ~~ s/\:$//;
         
-        $position ~~ / \( (\-?<[\d.]>+) \s+ (\-?<[\d.]>+) \) /;
+        my $elevation = $object.shift;
+        
+        my $symbol = 0;
+        %pointfeaturetypes{$table}{$featuretype}++;
+        if $featuretype ~~ /^\d+$/ {
+            $symbol = $featuretype;
+        } else {
+            for $sth-symb.execute($table, $featuretype, 'point').arrays -> $obj {
+                $symbol = $obj[0].Int;
+                one-message "No symbol found for table $table feature $featuretype" if $symbol <= 0 && $debug >= 1;
+            }
+        }
+	
+#        next unless $symbol == 52; # some table have other things in them
+                                   
+        my $long;
+        my $lat;
+        if $latlong {
+            $long = +$object.shift;
+            $lat  = +$object.shift;
+        } else {
+            my $position     = $object.shift;
+            $position ~~ / \( ( \-? <[\d\.]>+) \s+ ( \-? <[\d\.]>+ ) <[,)]> /;
+            $long = +$0;
+            $lat = +$1;
+        }
         my ($x, $y) = latlon2page +$0, +$1;
         %dependencies<point52>++;
 	$TMP.print: sprintf "0 %.6g %.6g 0 point52\n", $x, $y;
-        $TMP.print: sprintf "%.6g %.6g moveto ($altitude) show newpath\n", $x+0.5, $y-0.5;
+        $TMP.print: sprintf "%.6g %.6g moveto ({$elevation.Int}) show newpath\n", $x+0.5, $y-0.5;
     }
 }
 
@@ -1568,7 +1562,8 @@ sub draw-roadpoints() {
                             ');
     
     if $results {
-     
+           note "{$results.rows} objects from vm_tr_road_infrastructure" if $debug >= 1;
+
 	for $results -> $object {
 
         my $ftype        = $object[0];
@@ -1701,6 +1696,7 @@ sub draw-ga-annotations() {
                             WHERE shape && $rect
                            ");
     
+      note "{$results.rows} objects from ga_annotations" if $debug >= 1;
     for $results.arrays -> $object {
 note "Start loop" if $debugannotation;
         dd $object if $debugannotation;
@@ -1867,6 +1863,7 @@ sub draw-ga-annotations2() {
                                 AND $urlat  >= latitude
                            ");
     
+      note "{$results.rows} objects from ga_fixed_annotations" if $debug >= 1;
     for $results.arrays -> $object {
         my $annotation    = $object[0];
         my $longitude     = $object[1];
@@ -1902,6 +1899,7 @@ sub draw-annotations($table) {
                                 AND $urlat  >= latitude
                            ");
     
+      note "{$results.rows} objects from $table" if $debug >= 1;
     for $results.arrays -> $object {
 dd $object;
         dd $object if $debug ≥ 10;
@@ -2550,7 +2548,7 @@ sub draw-bbox() {
     
 sub draw-objects(Real $xoff, Real $yoff, Real $slope) {
     my $results = $pg.query("SELECT featurename, drawtype, tablename, featurecolumn, geomcol,
-                                        orientcol, widthcol, defaultsymbol, displayorder
+                                        orientcol, widthcol, displayorder
                                  FROM displayorder
                                  ORDER BY displayorder
                                 ");
@@ -2563,22 +2561,19 @@ sub draw-objects(Real $xoff, Real $yoff, Real $slope) {
       my $geomcol     = $object.shift // '';
       my $orientcol   = $object.shift // '';
       my $widthcol    = $object.shift // '';
-      my $default     = $object.shift // '';
       my $order       = $object.shift.Int;
-      $default        = 0 unless $default.defined && $default;
       note "Drawing $feature: '$draw' '$table' '$typecolumn' ($order)" if $debug ≥ 1;
       if $order > 0 && %drawobjects{$feature.lc} {
         given $draw {
           when 'point'          { draw-points\              ($table, $typecolumn, $geomcol, $orientcol, $widthcol ); }
-          when 'line'           { draw-lines\               ($table, $typecolumn, $geomcol, $default,   $widthcol ); }
-          when 'road'           { draw-roads\               ($table, $typecolumn, $geomcol, $default,   $widthcol ); }
-          when 'ga_line'        { draw-lines\               ($table, $typecolumn, $geomcol, $default,   $widthcol ); }
+          when 'line'           { draw-lines\               ($table, $typecolumn, $geomcol,             $widthcol ); }
+          when 'road'           { draw-roads\               ($table, $typecolumn, $geomcol,             $widthcol ); }
           when 'area'           { draw-areas\               ($table, $typecolumn, $geomcol,                       ); }
           when 'text'           { draw-text\                ($table, $typecolumn, $geomcol,             $widthcol ); }
           when 'contour'        { draw-contours\            ($table, $typecolumn, $geomcol,             $widthcol ); } # widthcol is contour elevation
           when 'outline'        { draw-polygon-outline-names($table, $typecolumn, 8, 0.2, '1 0 .86 0'             ); } # typecolumn is text to print
           when 'property'       { draw-properties\          (                                                     ); }
-          when 'spotheight'     { draw-spot-heights\        (                                                     ); }
+          when 'spotheight'     { draw-spot-heights\        ($table, $typecolumn, $geomcol,             $widthcol ); }
           when 'roadpoint'      { draw-roadpoints\          (                                                     ); }
           when 'treeden'        { draw-treeden\             ($table                                               ); }
           when 'graticule'      { draw-graticule\           (                                                     ); }
@@ -2590,7 +2585,6 @@ sub draw-objects(Real $xoff, Real $yoff, Real $slope) {
           when 'vm_road'        { draw-vm-roads\            (                                                     ); }
           when 'ga_road'        { draw-ga-roads\            (                                                     ); }
           when 'osm_road'       { draw-osmroads\            (                                                     ); }
-          when 'ga_wline'       { draw-ga-wlines\           ($table,                                              ); }
           when 'ga_point'       { draw-ga-points\           ($table,                                              ); }
           default               { note "Unknown draw type $draw for feature $feature: object ignored"; }
         }

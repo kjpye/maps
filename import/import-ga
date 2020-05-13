@@ -164,6 +164,7 @@ sub MAIN(
     if +@noload {
         for @noload { %loadtable{$_} = 0};
     }
+    dd %loadtable   if $dbg;
 
 # Read in the featuretype table
       {
@@ -648,7 +649,7 @@ sub read-row($page is copy, $number is copy, $table) {
 			        my $count = $page.read-uint32($voffset, LittleEndian);
 			        note "Got shape; count is $count" if $dbg;
 			        if $count == 1 {
-			            %row{$column.name.lc} = "SRID=4326;POINT({read-rdouble($voffset+4)} {$page.read-num64($voffset+12, LittleEndian)})";
+			            %row{$column.name.lc} = "SRID=4326;POINT({$page.read-num64($voffset+4)} {$page.read-num64($voffset+12, LittleEndian)})";
 			        } else {
 			            my $offset = $voffset+4;
 			            my @points;
@@ -706,6 +707,10 @@ sub read-row($page is copy, $number is copy, $table) {
         if $justlist {
             say %row<name>;
         } else {
+note "Checking whether to load table" if $dbg;
+dd %tables if $dbg;
+dd %row if $dbg;
+dd %loadtable if $dbg;
             if %tables{%row<name>}.defined && %loadtable{%row<name>}.defined && %loadtable{%row<name>} {
                 %loadtable{%row<name>} = 0; # we're seeing some tables multiple times -- why?
                 if $doparallel {
@@ -1154,6 +1159,7 @@ sub do-insert(%row, $output, @columns, $table-name) {
 	note "Reading $column from $source" if $dbg;
 
         my $value;
+        dd %row{$source} if $dbg;
         if %row{$source}.defined {
 	    dd $source if $dbg;
 	    dd $table-name if $dbg;
@@ -1167,6 +1173,7 @@ sub do-insert(%row, $output, @columns, $table-name) {
             $value ~~ s:g/\r/\\r/;
             $value ~~ s:g/\t/\\t/;
         } else {
+            note "$source not defined" if $dbg;
             $value = '\N' unless $value;
         }
         @values.push: $value;

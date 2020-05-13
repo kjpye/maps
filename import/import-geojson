@@ -1,0 +1,365 @@
+#!/usr/bin/env raku
+
+my $dbg = 0;
+my $tablename;
+my $fd;
+my $out;
+my $defs;
+my $tabledef;
+my @columns;
+my $line;
+
+sub getline {
+    ++$line;
+    $fd.get();
+}
+
+sub MAIN($file, :$debug=0, :$db='maps', :$defonly=0, :$columns='') {
+    $dbg = $debug;
+    $defs = $defonly;
+    $fd = $file.IO.open;
+    @columns = $columns.split: ',';
+    read-json();
+}
+
+sub read-json() {
+  unless getline() ~~ m:s/ ^ <.ws>? '{' <.ws>? $ / {
+    fail "Incorrectly formatted JSON -- doesn't start with '\{'";
+    exit 1;
+  }
+  while read-table() {
+    output-table();
+  }
+}
+
+sub read-table() {
+    note "In read-table" if $dbg;
+    my $line = getline();
+    if $line ~~ m:s/ ^ <.ws>? '"' (\w+) '"' ':' '{' <.ws>? $ / {
+        $tablename = $0;
+        note "Table name：$tablename";
+        if $defs {
+            $out = open "{$tablename}.defs", :w;
+        } else {
+            $out = open "{$tablename}.sql", :w;
+        }
+        read-table-contents();
+    } elsif $line ~~ m:s/ ^ <.ws>? '}' ','? $ / {
+        return 0;
+    } else {
+        fail "Could not determine table name";
+        exit 2;
+    }
+    $out.close;
+    1;
+}
+
+sub output-table() {
+    # no need to do anything at the moment
+}
+
+sub read-table-contents() {
+    note "In read-table-contents" if $dbg;
+    loop {
+        given getline() {
+            when m:s/ ^ <.ws>? '}' ','? $ / {
+                return;
+            }
+            when m:s/ ^ <.ws>? '"type"' ':' '"FeatureCollection"' ','? $ / {
+                note "type is FeatureCollection" if $dbg;
+            }
+            when m:s/ ^ <.ws>? '"crs"' ':' '{' $ / {
+                read-crs();
+            }
+            when m:s/ ^ <.ws>? '"features"' ':' '[' $ / {
+                read-features();
+            }
+            default {
+                fail "Unknown table field at line $line: $_";
+            }
+        }
+    }
+}
+
+sub read-crs() { # Coordinate Reference System
+    note "In read-crs" if $dbg;
+    loop {
+        given getline() {
+	    when m:s/ ^ <.ws>? '}' ','? $ / {
+                note "Returning from read-crs" if $dbg;
+	        return;
+            }
+            when m:s/ ^ <.ws>? '"type"' ':' '"name"' ','? $ / {
+                note "type : name" if $dbg;
+            }
+            when m:s/ ^ <.ws>? '"properties"' ':' '{' $ / {
+                read-crs-properties();
+            }
+            default {
+                fail "Unknown crs field: $_";
+            }
+        }
+    }
+}
+
+sub read-crs-properties() {
+    note "In read-crs-properties" if $dbg;
+    loop {
+        given getline() {
+	    when m:s/ ^ <.ws>? '}' $ / {
+	        note "Returning from read-crs-properties" if $dbg;
+                return;
+	    }
+            when m:s/ ^ '"name"' ':' '"' (\S+) '"' ','? $ / {
+	        note "name: $0" if $dbg;
+	    }
+	}
+    }
+}
+
+sub read-features() {
+    note "In read-features" if $dbg;
+    loop {
+        given getline() {
+            when m:s/ ^ <.ws> ']' $ / {
+                note "Returning from read-features" if $dbg;
+                return;
+            }
+            when m:s/ ^ <.ws> '{' $ / {
+                read-feature();
+            }
+            default {
+                fail "unknown entry in feature: $_";
+            }
+        }
+    }
+}
+
+sub put-field($field, $value is copy) {
+    if $field.ends-with('date') && $value.defined && $value {
+        if $value ~~ /(\d\d\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(.*)/ {
+            $value = "{$0}-{$1}-{$2}T{$3}:{$4}:{$5}";
+        } else {
+	    note "Unknown date format '$value'";
+	    $value = '\N';
+        }
+    }
+    $value //= '\N';
+    $out.print: $value ~ "\t";
+}
+
+sub read-feature() {
+    my $geometry;
+    my $properties;
+    note "In read-feature" if $dbg;
+    loop {
+        note "at top of read-feature loop" if $dbg;
+        given getline() {
+            when m:s/ ^ <.ws>? '}' ','? $ / {
+                unless $defs {
+                    fail "No geometry found at line $line" unless $geometry;
+                    fail "No properties found" unless $properties.defined;
+		    for @columns -> $column {
+                        put-field($column, $properties{$column});
+		    }
+                    $out.say: $geometry;
+		}
+                note "Returning from read-feature" if $dbg;
+                return;
+            }
+            when m:s/ ^ <.ws> '"type"' ':' '"Feature"' ','? $ / {
+                note "read-feature got type : Feature" if $dbg;
+            }
+            when m:s/ ^ <.ws>? '"geometry"' ':' '{' $ / {
+                note "Found \"geometry\"" if $dbg;
+                $geometry = read-geometry();
+		dd $geometry if $dbg;
+            }
+            when m:s/ ^ <.ws>? '"properties"' ':' '{' $ / {
+                $properties = read-feature-properties();
+            }
+            default {
+                fail "Unknown feature entry: $_";
+            }
+        }
+    }
+}
+
+sub tohex($buf) {
+    my @chars;
+    for $buf.list -> $byte {
+        @chars.push: sprintf("%02.2X", $byte);
+    }
+    @chars.join: '';
+}
+
+sub geom-to-ewkb($geometry-type, $geometry, :$byte-order = 1, :$srid = 4326) {
+    return '' if #defs;
+    my %geometry-types = (
+        'geometry'           =>  0,
+        'point'              =>  1,
+        'linestring'         =>  2,
+        'polygon'            =>  3,
+        'multipoint'         =>  4,
+        'multilinestring'    =>  5,
+        'multipolygon'       =>  6,
+        'geometrycollection' =>  7,
+        'circularstring'     =>  8,
+        'compoundcurve'      =>  9,
+        'curvepolygon'       => 10,
+        'multicurve'         => 11,
+        'multisurface'       => 12,
+        'curve'              => 13,
+        'surface'            => 14,
+        'polyhedralsurface'  => 15,
+        'tin'                => 16,
+    );
+    my $geomtype = $geometry-type.lc;
+    my $m        = $geomtype ~~ s/m$//;
+    my $z        = $geomtype ~~ s/z$//;
+    $geomtype = %geometry-types{$geomtype} // -1;
+    fail "Unsupported geometry type $geometry-type" if $geomtype < 0;
+    $geomtype += 1000 if $z;
+    $geomtype += 3000 if $m;
+    $geomtype += 0x20000000; # SRID present
+    my $coordcount = 2;
+    $coordcount++ if $z;
+    $coordcount++ if $m;
+
+    my $endian = $byte-order ?? (LittleEndian) !! (BigEndian);
+    my $buf = Buf.new($byte-order);
+dd $geometry if $dbg;
+    my $buflength = 5 + 8 * (+$geometry * $coordcount); # position of a 32-bit int at the end of the buffer
+    $buf.write-uint32($buflength, 0); # pre-extend the buffer to its final length
+    $buf.write-uint32(1, $geomtype,  $endian); # endian
+    $buf.write-uint32(5, $srid,      $endian); # srid
+    $buf.write-uint32(9, +$geometry, $endian); # number of points
+    my $offset = 13;
+    for $geometry.list -> $point {
+dd $point if $dbg;
+        $buf.write-num64($offset, $point[0].Num, $endian); $offset += 8;
+        $buf.write-num64($offset, $point[1].Num, $endian); $offset += 8;
+        if $coordcount > 2 {
+            $buf.write-num64($offset, $point[2].Num, $endian); $offset += 8;
+            if $coordcount > 3 {
+                $buf.write-num64($offset, $point[3].Num, $endian); $offset += 8;
+            }
+        }
+    }
+#    $buf.list>>.base(16).join(''); # convert to hex string
+    tohex($buf);
+}
+
+my token number {
+    [ '+' | '-' ]?
+    [
+        | \d+
+	| \d+ '.' \d*
+	| '.' \d+
+    ]
+    [ <[eE]> \d+ ]?
+}
+
+sub read-geometry() {
+    my $geometry;
+    note "In read-geometry" if $dbg;
+    my $geometry-type;
+    loop {
+        note "at top of read-geometry loop" if $dbg;
+        given getline() {
+            note "Next line is \"$_\"" if $dbg;
+            when m:s/ ^ <.ws>? '}' ','? $ / {
+                note "Returning from read-geometry" if $dbg;
+                return geom-to-ewkb($geometry-type, $geometry);
+            }
+            when m:s/ ^ <.ws>? '"type"' ':' '"' (\w+) '"' ','? $ / {
+                $geometry-type = $0;
+                note "Got geometry type {$geometry-type}" if $dbg;
+            }
+            when m:s/ ^ <.ws>? '"coordinates"' ':' '[' $ / { # multiple points
+                $geometry = read-coordinates();
+		dd $geometry if $dbg;
+                note "Back from read-coordinates" if $dbg;
+            }
+            when m:s/ ^ <.ws>? '"coordinates"' ':' '['
+                    (<number>) ','
+                    (<number>) ']' $ / { # single point -- two coordinates
+                $geometry = List.new: (~$0, ~$1);
+		dd $geometry if $dbg;
+            }
+            when m:s/ ^ <.ws>? '"coordinates"' ':' '['
+                    (<number>) ','
+                    (<number>) ','
+                    (<number>) ']' $ / { # single point -- three coordinates
+                $geometry = List.new: (~$0, ~$1, ~$2);
+		dd $geometry if $dbg;
+            }
+            when m:s/ ^ <.ws>? '"coordinates"' ':' '['
+                    (<number>) ','
+                    (<number>) ','
+                    (<number>) ','
+                    (<number>) ']' $ / { # single point -- four coordinates
+                $geometry = List.new: (~$0, ~$1, ~$2, ~$3);
+		dd $geometry if $dbg;
+            }
+            default {
+                fail "Unknown geometry field: \"$_\"";
+            }
+        }
+    }
+}
+
+sub read-coordinates() {
+    note "In read-coordinates" if $dbg;
+    my @coords;
+    loop {
+        given getline() {
+            when m:s/ ^ <.ws>? ']' ','? $ / {
+                dd @coords if $dbg;
+                note "Returning from read-coordinates" if $dbg;
+		return @coords;
+	    }
+            when m:s/ <.ws> '[' $ / {
+                # nested coordinates
+                my $subgeometry = read-coordinates();
+                @coords.push: $subgeometry;
+            }
+            when m:s/ <.ws> '[' (<number>) ',' (<number>) [',' <number>]? ']' ','? $ / {
+	        @coords.push: (+$0, +$1);
+            }
+	}
+    }
+}
+
+sub read-feature-properties() {
+    note "In read-geometry-properties" if $dbg;
+    my %properties;
+    loop {
+        given getline() {
+	    when m:s/ ^ <.ws>? '}' $ / {
+                dd %properties if $dbg;
+                for %properties.kv -> $key, $value {
+                    $out.say: $key, "\t", $value;
+                }
+	        note "Returning from read-feature-properties" if $dbg;
+                return %properties;
+	    }
+            when m:s/ ^ '"' (\S+) '"' ':' '"' (\S+) '"' ','? $ / {
+                %properties{~$0} = ~$1;
+	        note "name: {~$0}" if $dbg;
+	    }
+            when m:s/ ^ '"' (\S+) '"' ':' (<number>) ','? $ / {
+                %properties{~$0} = ~$1;
+	        note "name: {~$0}" if $dbg;
+	    }
+            when m:s/ ^ '"' (\S+) '"' ':' 'null' ','? $ / {
+                %properties{~$0} = Nil;
+	        note "name: {~$0}" if $dbg;
+	    }
+            default {
+
+	    }
+	}
+    }
+}
+
