@@ -25,6 +25,7 @@ sub dumptable($table) {
 
 sub MAIN($dbname, $dbtable, $prefix?) {
   $table-prefix = $prefix if $prefix.defined;
+  note "Adding table with prefix '$table-prefix' to database '$dbname'";
   my $db = DB::Pg.new(conninfo => "dbname=$dbname");
   my $results = $db.query("select dbtable, dbcolumn, source, type, canbenull, columnreferences, setdefault, isprimary from $dbtable order by dbtable, dbcolumn");
   for $results.hashes -> %row {
@@ -38,7 +39,13 @@ sub MAIN($dbname, $dbtable, $prefix?) {
           when 'line'|'area' {
             %table<geometry>.push: %row<dbcolumn> => 'MULTILINESTRING';
           }
-          when 'point' {
+          when 'LineString'|'Polygon' {
+            %table<geometry>.push: %row<dbcolumn> => %row<type>.uc;
+          }
+          when 'line'|'area' {
+            %table<geometry>.push: %row<dbcolumn> => 'MULTILINESTRING';
+          }
+          when 'point'|'Point' {
             %table<geometry>.push: %row<dbcolumn> => 'POINT';
           }
           default {
@@ -53,6 +60,9 @@ sub MAIN($dbname, $dbtable, $prefix?) {
       }
       when 'index' {
         %table<index>.push: %row<dbcolumn>;
+      }
+      when 'serial' {
+        %table<columns>.push: "%row<dbcolumn> serial";
       }
       default {
         note "Unknown entry type %row<source> for %row<dbtable>:%row<dbcolumn>";

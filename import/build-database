@@ -60,6 +60,15 @@ sub MAIN($database,
         $db.in.say: '\COPY symbols      from symbols.ga      CSV HEADER;';
         $db.in.close;
       }
+      when 'nsw' {
+        note 'Adding NSW tables' unless $quiet;
+        run 'psql', $database, '-f', 'schema.nsw';
+        shell "./mktables $database defnsw nsw_ | psql $database";
+        my $db = run 'psql', $database, :in;
+        $db.in.say: '\COPY displayorder from displayorder.nsw CSV HEADER;';
+        $db.in.say: '\COPY symbols      from symbols.nsw      CSV HEADER;';
+        $db.in.close;
+      }
       when 'qld' {
         note 'Adding QTopo tables' unless $quiet;
         my $db = run 'psql', $database, :in;
