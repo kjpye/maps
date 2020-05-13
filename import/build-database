@@ -54,7 +54,7 @@ sub MAIN($database,
       when 'ga' {
         note 'Adding GA tables' unless $quiet;
         run 'psql', $database, '-f', 'schema.ga';
-        shell "./mk250ktables $database | psql $database";
+        shell "./mktables $database def250k | psql $database";
         my $db = run 'psql', $database, :in;
         $db.in.say: '\COPY displayorder from displayorder.ga CSV HEADER;';
         $db.in.say: '\COPY symbols      from symbols.ga      CSV HEADER;';
