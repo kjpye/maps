@@ -7,6 +7,7 @@ use DB::Pg;
 
 my %table-names = (
 # Tasmania
+  'dhhs_ambulance_stations'   => 'dhhs_ambulance_stations',
   'list_2d_building_polys'    => '2d_building_polys',
   'list_5m_contours'          => '5m_contours',
   'list_building_pts'         => 'building_pts',
@@ -20,6 +21,7 @@ my %table-names = (
   'list_survey_control'       => 'survey_control',
   'list_transport_nodes'      => 'transport_nodes',
   'list_transport_segments'   => 'transport_segments',
+  'tasveg_30'                 => 'veg30',
   'municipality'              => 'municipality',
 );
 
@@ -119,6 +121,11 @@ sub MAIN($database,
         note 'Loading GA tables' unless $quiet;
 	load-ga($database, $file, $prefix);
       }
+      when 'nsw' {
+        note "Loading NSW tables from $file" unless $quiet;
+        load-shp($database, $file, $prefix);
+        load-geojson($database, $file, $prefix);
+      }
       when 'qld' {
         note "Loading QTopo tables from $file" unless $quiet;
         load-shp($database, $file, $prefix);
@@ -178,6 +185,17 @@ sub load-ga($database, $path, $prefix) {
   for $finder.in($path) -> $file {
     note "Loading tables from $file with prefix {$prefix}";
     run './import-ga',
+        "--db={$database}",
+        "--prefix={$prefix}",
+	$file;
+  }
+}
+
+sub load-geojson($database, $path, $prefix) {
+  my $finder = Path::Finder.file.skip-vcs.ext('json');
+  for $finder.in($path) -> $file {
+    note "Loading tables from $file with prefix {$prefix}";
+    run './import-geojson',
         "--db={$database}",
         "--prefix={$prefix}",
 	$file;

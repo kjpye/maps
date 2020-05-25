@@ -1,3 +1,4 @@
+featuretype,symbol,type,dbtable
 "MARINE NATIONAL PARK - SCHEDULE 7, NATIONAL PARKS ACT:47",0,area,vm_parkres
 "MARINE SANCTUARY - SCHEDULE 8, NATIONAL PARKS ACT:48",0,area,vm_parkres
 "NATIONAL PARK - SCHEDULE 2, NATIONAL PARKS ACT:6",0,area,vm_parkres
@@ -300,7 +301,7 @@ connector:5:1,0,line,vm_tr_road
 connector:5:2,0,line,vm_tr_road
 connector:6:1,0,line,vm_tr_road
 connector:6:2,0,line,vm_tr_road
-connector::,0,0,,line,vm_tr_road
+connector::,0,line,vm_tr_road
 connector_channel,0,line,vm_hy_watercourse
 connector_channel_drain,0,line,vm_hy_watercourse
 connector_drain,0,line,vm_hy_watercourse
@@ -485,8 +486,6 @@ excavation site:quarry,0,area,vm_foi_polygon
 excavation site:quarry,0,point,vm_foi_index_centroid
 excavation site:quarry,0,point,vm_foi_point
 excavation site:quarry,0,point,vm_geomark_point
-featuretype,symbol,type,dbtable
-featuretype,symbol,type,dbtable
 ferry_route:14:,0,line,vm_tr_road
 ferry_route:14:1,0,line,vm_tr_road
 ferry_route:14:3,0,line,vm_tr_road

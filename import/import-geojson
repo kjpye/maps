@@ -1,24 +1,78 @@
 #!/usr/bin/env raku
 
+use DB::Pg;
+
 my $dbg = 0;
 my $tablename;
 my $fd;
 my $out;
 my $defs;
 my $tabledef;
+my $dbname = 'maps';
 my @columns;
+my $columns;
 my $line;
+my $tabledir = "/tmp/import-tables-$*PID";
+my $commandsfile;
+my %tables;
+my %loadtable;
+my $pg; # Database handle
+my $dbprefix = '';
 
 sub getline {
     ++$line;
     $fd.get();
 }
 
-sub MAIN($file, :$debug=0, :$db='maps', :$defonly=0, :$columns='') {
+sub MAIN($file,              #= json database to load
+         :$debug   = 0,      #= print debugging information
+         :$db      = 'maps', #= database to update
+         :$prefix  = '',     #= database table prefix
+         :$defonly = 0,      #= list table attributes; don't load data
+         :@load,             #= load table
+         :@noload,           #= don't load table
+        ) {
+    $dbname = $db if $db.defined;
+    $dbprefix = $prefix;
     $dbg = $debug;
     $defs = $defonly;
+note "Reading into database $dbname";
+dd $defs;
+    # set up output directory
+    unless $defs {
+        mkdir $tabledir;
+        $commandsfile = "$tabledir/commands".IO.open(:w, :append, :0out-buffer);
+        $commandsfile.out-buffer = 0;
+        # read database table definitions
+        note "Updating database $db";
+        $pg = DB::Pg.new(conninfo => "dbname=$dbname");
+        my $results = $pg.query(
+            "SELECT dbtable, dbcolumn, type, sourcecolumn
+               FROM defnsw
+              WHERE source = 'data'
+            ");
+        for $results.hashes -> %row {
+            my $table  = %row<dbtable>;
+            my $column = %row<dbcolumn>;
+            my $type   = %row<type>;
+            my $source = %row<sourcecolumn>;
+            my $target = %row<dbcolumn>;
+            %tables{$table}{$source}<type>   = $type;
+	    %tables{$table}{$source}<target> = $target;
+            %tables{$table}{$target}<source> = $source;
+            %loadtable{$table} = 1; # by default, load all tables we know about.
+        }
+        $pg.finish;
+dd %tables;
+        if +@load {
+            %loadtable = @load Z=> 1 xx *; # overwrites initial value
+        }
+        if +@noload {
+            for @noload { %loadtable{$_} = 0};
+        }
+        dd %loadtable   if $dbg;
+    }
     $fd = $file.IO.open;
-    @columns = $columns.split: ',';
     read-json();
 }
 
@@ -28,7 +82,7 @@ sub read-json() {
     exit 1;
   }
   while read-table() {
-    output-table();
+    output-table($tablename);
   }
 }
 
@@ -41,7 +95,18 @@ sub read-table() {
         if $defs {
             $out = open "{$tablename}.defs", :w;
         } else {
-            $out = open "{$tablename}.sql", :w;
+            $out = open "{$tabledir}/{$dbprefix}{$tablename}.sql", :w;
+            dd %tables{$tablename};
+            @columns = @();
+            for %tables{$tablename}.keys.sort -> $column {
+                note "column $column:" if $dbg;
+                if %tables{$tablename}{$column}<source>.defined {
+                    note "Pushing column $column" if $dbg;
+                    @columns.push: $column;
+                }
+                dd @columns if $dbg;
+            }
+            $columns = @columns.join: ',';
         }
         read-table-contents();
     } elsif $line ~~ m:s/ ^ <.ws>? '}' ','? $ / {
@@ -54,8 +119,14 @@ sub read-table() {
     1;
 }
 
-sub output-table() {
-    # no need to do anything at the moment
+sub output-table($table) {
+    dd $table;
+    dd $columns;
+    my $file = $tabledir ~ '/' ~ $dbprefix ~ $table ~ '.sql';
+    my $copycmd = "copy {$dbprefix ~ $table} ({$columns},geometry) from '$file';";
+    note $copycmd;
+    $commandsfile.put: $copycmd;
+    # $pg.query：$copycmd;
 }
 
 sub read-table-contents() {
@@ -194,7 +265,7 @@ sub tohex($buf) {
 }
 
 sub geom-to-ewkb($geometry-type, $geometry, :$byte-order = 1, :$srid = 4326) {
-    return '' if #defs;
+    return '' if $defs;
     my %geometry-types = (
         'geometry'           =>  0,
         'point'              =>  1,
@@ -227,23 +298,78 @@ sub geom-to-ewkb($geometry-type, $geometry, :$byte-order = 1, :$srid = 4326) {
     $coordcount++ if $m;
 
     my $endian = $byte-order ?? (LittleEndian) !! (BigEndian);
-    my $buf = Buf.new($byte-order);
-dd $geometry if $dbg;
-    my $buflength = 5 + 8 * (+$geometry * $coordcount); # position of a 32-bit int at the end of the buffer
-    $buf.write-uint32($buflength, 0); # pre-extend the buffer to its final length
-    $buf.write-uint32(1, $geomtype,  $endian); # endian
-    $buf.write-uint32(5, $srid,      $endian); # srid
-    $buf.write-uint32(9, +$geometry, $endian); # number of points
-    my $offset = 13;
-    for $geometry.list -> $point {
-dd $point if $dbg;
-        $buf.write-num64($offset, $point[0].Num, $endian); $offset += 8;
-        $buf.write-num64($offset, $point[1].Num, $endian); $offset += 8;
-        if $coordcount > 2 {
-            $buf.write-num64($offset, $point[2].Num, $endian); $offset += 8;
-            if $coordcount > 3 {
-                $buf.write-num64($offset, $point[3].Num, $endian); $offset += 8;
+    my $buf;
+    given $geometry-type.lc {
+        when 'multipolygon' {
+            $buf = Buf.new($byte-order, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            $buf.write-uint32(1, $geomtype,  $endian); # geometry type
+            $buf.write-uint32(5, $srid,      $endian); # srid
+            $buf.write-uint32(9, +$geometry, $endian); # number of segments
+            my $offset = 13;
+            for $geometry.list -> $polygon {
+                $buf.write-uint32($offset + +$polygon * 8 * $coordcount, 0); # preextend buf for this polygon
+                $buf.write-uint32($offset, +$polygon, $endian); # number of segments
+                $offset += 4;
+                for $polygon.list -> $segment {
+                    for $segment.list -> $point {
+                        $buf.write-num64($offset, $point[0].Num, $endian); $offset += 8;
+                        $buf.write-num64($offset, $point[1].Num, $endian); $offset += 8;
+                        if $coordcount > 2 {
+                            $buf.write-num64($offset, $point[2].Num, $endian); $offset += 8;
+                            if $coordcount > 3 {
+                                $buf.write-num64($offset, $point[3].Num, $endian); $offset += 8;
+                            }
+                        }
+                    }
+                }
             }
+        }
+        when 'polygon' |
+             'multilinestring' {
+            $buf = Buf.new($byte-order, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            $buf.write-uint32(1, $geomtype,  $endian); # geometry type
+            $buf.write-uint32(5, $srid,      $endian); # srid
+            $buf.write-uint32(9, +$geometry, $endian); # number of segments
+            my $offset = 13;
+            for $geometry.list -> $segment {
+                $buf.write-uint32($offset + +$segment * 8 * $coordcount, 0); # preextend buf for this segment
+                $buf.write-uint32($offset, +$segment, $endian); # number of points
+                $offset += 4;
+                for $segment.list -> $point {
+                    $buf.write-num64($offset, $point[0].Num, $endian); $offset += 8;
+                    $buf.write-num64($offset, $point[1].Num, $endian); $offset += 8;
+                    if $coordcount > 2 {
+                        $buf.write-num64($offset, $point[2].Num, $endian); $offset += 8;
+                        if $coordcount > 3 {
+                            $buf.write-num64($offset, $point[3].Num, $endian); $offset += 8;
+                        }
+                    }
+                }
+            }
+        }
+        when 'point' |
+            'linestring' {
+            $buf = Buf.new($byte-order);
+            my $buflength = 5 + 8 * (+$geometry * $coordcount); # position of a 32-bit int at the end of the buffer
+            $buf.write-uint32($buflength, 0); # pre-extend the buffer to its final length
+            $buf.write-uint32(1, $geomtype,  $endian); # geometry type
+            $buf.write-uint32(5, $srid,      $endian); # srid
+            $buf.write-uint32(9, +$geometry, $endian); # number of points
+            my $offset = 13;
+            for $geometry.list -> $point {
+                dd $point if $dbg;
+                $buf.write-num64($offset, $point[0].Num, $endian); $offset += 8;
+                $buf.write-num64($offset, $point[1].Num, $endian); $offset += 8;
+                if $coordcount > 2 {
+                    $buf.write-num64($offset, $point[2].Num, $endian); $offset += 8;
+                    if $coordcount > 3 {
+                        $buf.write-num64($offset, $point[3].Num, $endian); $offset += 8;
+                    }
+                }
+            }
+        }
+        default {
+            fail "Unhandled geometry type $geomtype in geom-to-ewkb";
         }
     }
 #    $buf.list>>.base(16).join(''); # convert to hex string
@@ -338,8 +464,10 @@ sub read-feature-properties() {
         given getline() {
 	    when m:s/ ^ <.ws>? '}' $ / {
                 dd %properties if $dbg;
-                for %properties.kv -> $key, $value {
-                    $out.say: $key, "\t", $value;
+                if $defs {
+                    for %properties.kv -> $key, $value {
+                        $out.say: $key, "\t", $value;
+                    }
                 }
 	        note "Returning from read-feature-properties" if $dbg;
                 return %properties;

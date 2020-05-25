@@ -1,0 +1,6 @@
+INSERT INTO Symbols_GA (name, dependencies, body)
+VALUES ('area86', 'cmykfill', '
+/area86 { % Mangrove
+  1 .1 0 .1 mykfill
+} bind def
+');

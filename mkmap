@@ -490,7 +490,7 @@ sub get-symbol (Str $type, Str $ftype) is cached {
   if !$symbol {
     note "Unknown $type symbol $ftype";
   }
-  $symbol;
+$symbol;
 }
 
 my ($lllong, $lllat, $urlong, $urlat);
@@ -1010,7 +1010,6 @@ sub draw-roads(Str $table, Str $columns, Str $geomcol, Str $widthcol) {
 	    my $shape = $object.pop;
 	    $featurewidth = $object.pop if $widthcol;
 	    my $featuretype = $object.join: ':';
-            dd $featuretype;
 	    
 	    %linefeaturetypes{$table}{$featuretype}++;
             note "Getting symbol: $table, $featuretype, line" if $debug > 15;
@@ -1095,7 +1094,7 @@ sub draw-vm-roads() {
         $sealed = $sealed == 1 ?? 's' !! 'u';
         my $symbol = %roadsymbols{"{$ftype-code}:{$class}:{$sealed}"} //
                      %roadsymbols{"{$ftype-code}::"}; # default
-	note "Unknown road type \"{$ftype-code}:{$class}:{$sealed}\"" unless $symbol;
+	one-message "Unknown road type \"{$ftype-code}:{$class}:{$sealed}\"" unless $symbol;
 	next unless $symbol > 0;
 	@dual.push: $objectid if $symbol == 250;
 	++$object-count;
@@ -1496,10 +1495,12 @@ sub draw-spot-heights(Str $table, Str $columns, Str $geomcol, Str $elevationcol)
                                 AND $latcol  < $urlat   
                              ");  
     } else {
-        $results = $pg.query("SELECT $selectcolumns, $elevationcol, st_astext($geomcol) AS position
-                                FROM $table
-		               WHERE {$geomcol} && $rect
-			     ");
+        my $query = "SELECT $selectcolumns, $elevationcol, st_astext($geomcol) AS position
+                       FROM $table
+		      WHERE {$geomcol} && $rect
+		    ";
+        note $query if $debug >= 1;
+        $results = $pg.query($query);
     }
     
     $TMP.say: "/Helvetica-Latin1 2 selectfont 0 0 0 1 setcmykcolor";
@@ -1562,7 +1563,7 @@ sub draw-roadpoints() {
                             ');
     
     if $results {
-           note "{$results.rows} objects from vm_tr_road_infrastructure" if $debug >= 1;
+           note "{+$results} objects from vm_tr_road_infrastructure" if $debug >= 1;
 
 	for $results -> $object {
 

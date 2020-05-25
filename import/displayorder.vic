@@ -5,7 +5,7 @@ vm,vm_annotation,annotation,vm_annotation,,0,9400,geom,,
 vm,vm_building_point,point,vm_building_point,ftype:featsubtype,0,-1,geom,,
 vm,vm_building_polygon,area,vm_building_polygon,ftype:featsubtyp,0,1340,geom,,
 vm,vm_el_contour,contour,vm_el_contour,ftype_code,0,2391,geom,,altitude
-vm,vm_el_grnd_surface_point,spotheight,vm_el_grnd_surface_point,ftype_code,0,3281,geom,,
+vm,vm_el_grnd_surface_point,spotheight,vm_el_grnd_surface_point,ftype_code,0,3281,geom,,altitude
 vm,vm_el_grnd_type_area_polygon,area,vm_el_grnd_type_area_polygon,ftype_code,0,-1,geom,,
 vm,vm_el_grnd_type_point,point,vm_el_grnd_type_point,ftype_code,0,3990,geom,,
 vm,vm_el_morphology_line,line,vm_el_morphology_line,ftype_code,0,-1,geom,,
@@ -54,4 +54,4 @@ vm,vm_tr_rail_infrastructure,point,vm_tr_rail_infrastructure,ftype_code,0,3941,g
 vm,vm_tr_rail,line,vm_tr_rail,ftype_code,0,2501,geom,,
 vm,vm_tr_road_infrastructure,roadpoint,vm_tr_road_infrastructure,ftype_code,0,3939,geom,,
 vm,vm_tr_road_old,vm_road,vm_tr_road_old,ftype_code,0,2462,geom,,
-vm,vm_tr_road,road,vm_tr_road,pfi:ftype_code:class:sealed,0,2462,geom,,
+vm,vm_tr_road,road,vm_tr_road,pfi:ftype_code:class_code:road_seal,0,2462,geom,,

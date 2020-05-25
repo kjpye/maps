@@ -1,9 +1,0 @@
-#!/bin/sh
-
-sym=$1
-
-echo Replacing $sym
-
-psql maps -c "delete from symbols_ga where name = '$sym'"
-
-psql maps -f $sym

@@ -92,7 +92,7 @@ my $justlist = 0;
 my $count-only = 0;
 
 
-my $dbname = 'ntmap';
+my $dbname   = 'maps';
 my $dbprefix = 'ga_';
 my $tabledir = "/tmp/import-tables-$*PID";
 my $commandsfile;
