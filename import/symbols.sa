@@ -1,53 +1,425 @@
 featuretype,symbol,type,dbtable
-11:0,92,line,sa_topo_watercourses
-12:0,0,line,sa_topo_watercourses
-13:0,92,line,sa_topo_watercourses
-26:0,10,area,sa_topo_waterbodies
-26:0,114,line,sa_topo_waterbodies
-27:0,114,line,sa_topo_waterbodies
-27:0,908,area,sa_topo_waterbodies
-31:0,10,area,sa_topo_waterbodies
-31:0,114,line,sa_topo_waterbodies
-56:0,23,area,sa_topo_waterbodies
-ART:,251,line,sa_roads
-ART:SEAL,251,line,sa_roads
-ART:UNKN,251,line,sa_roads
-ART:UNSE,201,line,sa_roads
-BUS:SEAL,251,line,sa_roads
-CLOSED,210,line,sa_railways
-COLL:SEAL,256,line,sa_roads
-COLL:UNKN,256,line,sa_roads
-COLL:UNSE,259,line,sa_roads
+Private Acute,1012,point,sa_all_hosps
+Public Acute,1012,point,sa_all_hosps
 CP,65,line,sa_conservation_npwsareserves
 CR,65,line,sa_conservation_npwsareserves
-FREE:SEAL,250,line,sa_roads
-FREE:UNKN,250,line,sa_roads
 GR,65,line,sa_conservation_npwsareserves
-HWY:SEAL,251,line,sa_roads
-HWY:UNKN,251,line,sa_roads
-HWY:UNSE,258,line,sa_roads
-LOCL:,253,line,sa_roads
-LOCL:SEAL,257,line,sa_roads
-LOCL:UNKN,257,line,sa_roads
-LOCL:UNSE,253,line,sa_roads
 NP,65,line,sa_conservation_npwsareserves
-OPEN,206,line,sa_railways
 RP,65,line,sa_conservation_npwsareserves
 RR,65,line,sa_conservation_npwsareserves
-:SEAL,257,line,sa_roads
-SUBA:,259,line,sa_roads
-SUBA:SEAL,256,line,sa_roads
-SUBA:UNKN,256,line,sa_roads
-SUBA:UNSE,259,line,sa_roads
-TRK2:,253,line,sa_roads
-TRK2:SEAL,257,line,sa_roads
-TRK2:UNKN,253,line,sa_roads
-TRK2:UNSE,253,line,sa_roads
-TRK4:NONE,254,line,sa_roads
-TRK4:UNSE,254,line,sa_roads
-UND:,259,line,sa_roads
-UND:SEAL,257,line,sa_roads
-UND:UNKN,259,line,sa_roads
-:UNKN,253,line,sa_roads
-:UNSE,253,line,sa_roads
 WA,65,line,sa_conservation_npwsareserves
+MP,65,line,sa_conservation_statemarineparknetwork
+Australian Federal Police,406,point,sa_emergency_services
+Aviation Rescue and Fire Fighting,404,point,sa_emergency_services
+South Australia Ambulance Service,401,point,sa_emergency_services
+South Australia Country Fire Service,404,point,sa_emergency_services
+South Australia Metropolitan Fire Service,404,point,sa_emergency_services
+South Australia Police,406,point,sa_emergency_services
+South Australia State Emergency Service,1009,point,sa_emergency_services
+St John Ambulance Australia,401,point,sa_emergency_services
+BAPL,0,area,sa_gazetteerareas_gda2020
+BAY,0,area,sa_gazetteerareas_gda2020
+BGHT,0,area,sa_gazetteerareas_gda2020
+BLDG,0,area,sa_gazetteerareas_gda2020
+CEM,0,area,sa_gazetteerareas_gda2020
+CNTY,0,area,sa_gazetteerareas_gda2020
+COVE,0,area,sa_gazetteerareas_gda2020
+CRPK,0,area,sa_gazetteerareas_gda2020
+DI,0,area,sa_gazetteerareas_gda2020
+DOCK,0,area,sa_gazetteerareas_gda2020
+DSRT,0,area,sa_gazetteerareas_gda2020
+DUNE,0,area,sa_gazetteerareas_gda2020
+ENTR,0,area,sa_gazetteerareas_gda2020
+FLAT,0,area,sa_gazetteerareas_gda2020
+FTRY,0,area,sa_gazetteerareas_gda2020
+GORG,0,area,sa_gazetteerareas_gda2020
+GRDN,0,area,sa_gazetteerareas_gda2020
+GTWN,0,area,sa_gazetteerareas_gda2020
+GULF,0,area,sa_gazetteerareas_gda2020
+HBR,0,area,sa_gazetteerareas_gda2020
+HD,0,area,sa_gazetteerareas_gda2020
+HILL,0,area,sa_gazetteerareas_gda2020
+IS,0,area,sa_gazetteerareas_gda2020
+LAKE,0,area,sa_gazetteerareas_gda2020
+LOCB,0,area,sa_gazetteerareas_gda2020
+PARK,0,area,sa_gazetteerareas_gda2020
+PEN,0,area,sa_gazetteerareas_gda2020
+PL,0,area,sa_gazetteerareas_gda2020
+PLN,0,area,sa_gazetteerareas_gda2020
+POOL,0,area,sa_gazetteerareas_gda2020
+POPL,0,area,sa_gazetteerareas_gda2020
+PORT,0,area,sa_gazetteerareas_gda2020
+QUAR,0,area,sa_gazetteerareas_gda2020
+RANG,0,area,sa_gazetteerareas_gda2020
+RCH,0,area,sa_gazetteerareas_gda2020
+RESV,0,area,sa_gazetteerareas_gda2020
+ROAD,0,area,sa_gazetteerareas_gda2020
+ROCK,0,area,sa_gazetteerareas_gda2020
+RTRK,0,area,sa_gazetteerareas_gda2020
+STRM,0,area,sa_gazetteerareas_gda2020
+SUB,0,area,sa_gazetteerareas_gda2020
+SWP,0,area,sa_gazetteerareas_gda2020
+VAL,0,area,sa_gazetteerareas_gda2020
+WOOD,0,area,sa_gazetteerareas_gda2020
+WTRH,0,area,sa_gazetteerareas_gda2020
+BEND,0,line,sa_gazetteerlines_gda2020
+BNDY,0,line,sa_gazetteerlines_gda2020
+BPTH,0,line,sa_gazetteerlines_gda2020
+CLIF,0,line,sa_gazetteerlines_gda2020
+GLLY,0,line,sa_gazetteerlines_gda2020
+RDGE,0,line,sa_gazetteerlines_gda2020
+RLWY,0,line,sa_gazetteerlines_gda2020
+ROAD,0,line,sa_gazetteerlines_gda2020
+STRM,0,line,sa_gazetteerlines_gda2020
+?,0,point,sa_gazetteersites_gda2020
+AF,0,point,sa_gazetteersites_gda2020
+AG,0,point,sa_gazetteersites_gda2020
+ANCH,0,point,sa_gazetteersites_gda2020
+ARCH,0,point,sa_gazetteersites_gda2020
+ARTB,0,point,sa_gazetteersites_gda2020
+ASCP,0,point,sa_gazetteersites_gda2020
+BANK,0,point,sa_gazetteersites_gda2020
+BAPL,0,point,sa_gazetteersites_gda2020
+BAY,0,point,sa_gazetteersites_gda2020
+BCH,0,point,sa_gazetteersites_gda2020
+BEND,0,point,sa_gazetteersites_gda2020
+BGHT,0,point,sa_gazetteersites_gda2020
+BH,0,point,sa_gazetteersites_gda2020
+BLDG,0,point,sa_gazetteersites_gda2020
+BNDY,0,point,sa_gazetteersites_gda2020
+BORE,0,point,sa_gazetteersites_gda2020
+BPTH,0,point,sa_gazetteersites_gda2020
+BRDG,0,point,sa_gazetteersites_gda2020
+BSTA,0,point,sa_gazetteersites_gda2020
+CAPE,0,point,sa_gazetteersites_gda2020
+CAVE,0,point,sa_gazetteersites_gda2020
+CEM,0,point,sa_gazetteersites_gda2020
+CHAN,0,point,sa_gazetteersites_gda2020
+CLAY,0,point,sa_gazetteersites_gda2020
+CLIF,0,point,sa_gazetteersites_gda2020
+CNAL,0,point,sa_gazetteersites_gda2020
+CNTY,0,point,sa_gazetteersites_gda2020
+CONT,0,point,sa_gazetteersites_gda2020
+COVE,0,point,sa_gazetteersites_gda2020
+CP,0,point,sa_gazetteersites_gda2020
+CRPK,0,point,sa_gazetteersites_gda2020
+CRTR,0,point,sa_gazetteersites_gda2020
+CS,0,point,sa_gazetteersites_gda2020
+CTNG,0,point,sa_gazetteersites_gda2020
+DAM,0,point,sa_gazetteersites_gda2020
+DEPR,0,point,sa_gazetteersites_gda2020
+DI,0,point,sa_gazetteersites_gda2020
+DOCK,0,point,sa_gazetteersites_gda2020
+DRN,0,point,sa_gazetteersites_gda2020
+DSRT,0,point,sa_gazetteersites_gda2020
+DUMP,0,point,sa_gazetteersites_gda2020
+DUNE,0,point,sa_gazetteersites_gda2020
+ENTR,0,point,sa_gazetteersites_gda2020
+ESTY,0,point,sa_gazetteersites_gda2020
+FLAT,0,point,sa_gazetteersites_gda2020
+FORD,0,point,sa_gazetteersites_gda2020
+FRNG,0,point,sa_gazetteersites_gda2020
+FRST,0,point,sa_gazetteersites_gda2020
+FTRY,0,point,sa_gazetteersites_gda2020
+FY,0,point,sa_gazetteersites_gda2020
+GASF,0,point,sa_gazetteersites_gda2020
+GATE,0,point,sa_gazetteersites_gda2020
+GLLY,0,point,sa_gazetteersites_gda2020
+GORG,0,point,sa_gazetteersites_gda2020
+GRDN,0,point,sa_gazetteersites_gda2020
+GTWN,0,point,sa_gazetteersites_gda2020
+GULF,0,point,sa_gazetteersites_gda2020
+HBR,0,point,sa_gazetteersites_gda2020
+HD,0,point,sa_gazetteersites_gda2020
+HILL,0,point,sa_gazetteersites_gda2020
+HMSD,0,point,sa_gazetteersites_gda2020
+HOSP,0,point,sa_gazetteersites_gda2020
+HWY,0,point,sa_gazetteersites_gda2020
+IRAD,0,point,sa_gazetteersites_gda2020
+IRRA,0,point,sa_gazetteersites_gda2020
+IS,0,point,sa_gazetteersites_gda2020
+ISTH,0,point,sa_gazetteersites_gda2020
+JUNC,0,point,sa_gazetteersites_gda2020
+LAKE,0,point,sa_gazetteersites_gda2020
+LDGE,0,point,sa_gazetteersites_gda2020
+LH,0,point,sa_gazetteersites_gda2020
+LNDG,0,point,sa_gazetteersites_gda2020
+LOCA,0,point,sa_gazetteersites_gda2020
+LOCB,0,point,sa_gazetteersites_gda2020
+LOCK,0,point,sa_gazetteersites_gda2020
+LOCU,0,point,sa_gazetteersites_gda2020
+LOOK,0,point,sa_gazetteersites_gda2020
+MINE,0,point,sa_gazetteersites_gda2020
+MONU,0,point,sa_gazetteersites_gda2020
+MSHT,0,point,sa_gazetteersites_gda2020
+MT,0,point,sa_gazetteersites_gda2020
+NAVB,0,point,sa_gazetteersites_gda2020
+OCBK,0,point,sa_gazetteersites_gda2020
+OCEN,0,point,sa_gazetteersites_gda2020
+OILF,0,point,sa_gazetteersites_gda2020
+OS,0,point,sa_gazetteersites_gda2020
+PARK,0,point,sa_gazetteersites_gda2020
+PASS,0,point,sa_gazetteersites_gda2020
+PDK,0,point,sa_gazetteersites_gda2020
+PEN,0,point,sa_gazetteersites_gda2020
+PIER,0,point,sa_gazetteersites_gda2020
+PIPE,0,point,sa_gazetteersites_gda2020
+PL,0,point,sa_gazetteersites_gda2020
+PLAN,0,point,sa_gazetteersites_gda2020
+PLN,0,point,sa_gazetteersites_gda2020
+POOL,0,point,sa_gazetteersites_gda2020
+POPL,0,point,sa_gazetteersites_gda2020
+PORT,0,point,sa_gazetteersites_gda2020
+PT,0,point,sa_gazetteersites_gda2020
+PWRL,0,point,sa_gazetteersites_gda2020
+QUAR,0,point,sa_gazetteersites_gda2020
+RANG,0,point,sa_gazetteersites_gda2020
+RCH,0,point,sa_gazetteersites_gda2020
+RDEP,0,point,sa_gazetteersites_gda2020
+RDGE,0,point,sa_gazetteersites_gda2020
+REEF,0,point,sa_gazetteersites_gda2020
+RES,0,point,sa_gazetteersites_gda2020
+REST,0,point,sa_gazetteersites_gda2020
+RESV,0,point,sa_gazetteersites_gda2020
+RH,0,point,sa_gazetteersites_gda2020
+RICP,0,point,sa_gazetteersites_gda2020
+RLWY,0,point,sa_gazetteersites_gda2020
+RLYX,0,point,sa_gazetteersites_gda2020
+RNYH,0,point,sa_gazetteersites_gda2020
+ROAD,0,point,sa_gazetteersites_gda2020
+ROCK,0,point,sa_gazetteersites_gda2020
+RSTA,0,point,sa_gazetteersites_gda2020
+RTRK,0,point,sa_gazetteersites_gda2020
+RUIN,0,point,sa_gazetteersites_gda2020
+SCHL,0,point,sa_gazetteersites_gda2020
+SHK,0,point,sa_gazetteersites_gda2020
+SHOL,0,point,sa_gazetteersites_gda2020
+SLP,0,point,sa_gazetteersites_gda2020
+SND,0,point,sa_gazetteersites_gda2020
+SOAK,0,point,sa_gazetteersites_gda2020
+SPAN,0,point,sa_gazetteersites_gda2020
+SPIT,0,point,sa_gazetteersites_gda2020
+SPRG,0,point,sa_gazetteersites_gda2020
+STAT,0,point,sa_gazetteersites_gda2020
+STR,0,point,sa_gazetteersites_gda2020
+STRM,0,point,sa_gazetteersites_gda2020
+SUB,0,point,sa_gazetteersites_gda2020
+SUBD,0,point,sa_gazetteersites_gda2020
+SWP,0,point,sa_gazetteersites_gda2020
+TANK,0,point,sa_gazetteersites_gda2020
+TOUR,0,point,sa_gazetteersites_gda2020
+TREE,0,point,sa_gazetteersites_gda2020
+TRGH,0,point,sa_gazetteersites_gda2020
+TRIG,0,point,sa_gazetteersites_gda2020
+TUNN,0,point,sa_gazetteersites_gda2020
+TWR,0,point,sa_gazetteersites_gda2020
+VAL,0,point,sa_gazetteersites_gda2020
+VD,0,point,sa_gazetteersites_gda2020
+VS,0,point,sa_gazetteersites_gda2020
+WALL,0,point,sa_gazetteersites_gda2020
+WEIR,0,point,sa_gazetteersites_gda2020
+WELL,0,point,sa_gazetteersites_gda2020
+WHPL,0,point,sa_gazetteersites_gda2020
+WOOD,0,point,sa_gazetteersites_gda2020
+WRK,0,point,sa_gazetteersites_gda2020
+WRTH,0,point,sa_gazetteersites_gda2020
+WTRF,0,point,sa_gazetteersites_gda2020
+WTRH,0,point,sa_gazetteersites_gda2020
+YD,0,point,sa_gazetteersites_gda2020
+,0,point,sa_gazetteersites_gda2020
+CC,0,line,sa_lga_gda2020
+CT,0,line,sa_lga_gda2020
+DC,0,line,sa_lga_gda2020
+MC,0,line,sa_lga_gda2020
+RC,0,line,sa_lga_gda2020
+WD,0,line,sa_lga_gda2020
+:,0,line,sa_notallowedroads
+:HWY        ,0,line,sa_notallowedroads
+B:SUBA      ,0,line,sa_notallowedroads
+L:BUS,0,line,sa_notallowedroads
+L:FREE      ,0,line,sa_notallowedroads
+L:HWY       ,0,line,sa_notallowedroads
+R:BUS       ,0,line,sa_notallowedroads
+R:FREE      ,0,line,sa_notallowedroads
+R:HWY       ,0,line,sa_notallowedroads
+U:          ,0,line,sa_notallowedroads
+U:ART,0,line,sa_notallowedroads
+U:COLL      ,0,line,sa_notallowedroads
+U:FREE      ,0,line,sa_notallowedroads
+U:HWY,0,line,sa_notallowedroads
+U:LOCL,0,line,sa_notallowedroads
+U:SUBA,0,line,sa_notallowedroads
+U:TRK2      ,0,line,sa_notallowedroads
+U:UND       ,0,line,sa_notallowedroads
+Off Road Sealed Path,0,line,sa_offroadpath
+Off Road Track,0,line,sa_offroadpath
+,0,line,sa_offroadpath
+:,0,line,sa_onroadpath
+:ART,0,line,sa_onroadpath
+:COLL,0,line,sa_onroadpath
+:LOCL,0,line,sa_onroadpath
+:SUBA,0,line,sa_onroadpath
+Local Road:LOCL,0,line,sa_onroadpath
+Main Road - Bike Lane / Shoulder:,0,line,sa_onroadpath
+Main Road - Bike Lane / Shoulder:ART,0,line,sa_onroadpath
+Main Road - Bike Lane / Shoulder:COLL,0,line,sa_onroadpath
+Main Road - Bike Lane / Shoulder:FREE,0,line,sa_onroadpath
+Main Road - Bike Lane / Shoulder:hwy,0,line,sa_onroadpath
+Main Road - Bike Lane / Shoulder:LOCL,0,line,sa_onroadpath
+Main Road - Bike Lane / Shoulder:SUBA,0,line,sa_onroadpath
+Main Road:,0,line,sa_onroadpath
+Main Road:ART,0,line,sa_onroadpath
+Main Road:COLL,0,line,sa_onroadpath
+Main Road:FREE,0,line,sa_onroadpath
+Main Road:HWY,0,line,sa_onroadpath
+Main Road:LOCL,0,line,sa_onroadpath
+Main Road:SUBA,0,line,sa_onroadpath
+Main Road:TRK,0,line,sa_onroadpath
+Off Road Track:,0,line,sa_onroadpath
+Secondary Road - Bike Lane:,0,line,sa_onroadpath
+Secondary Road - Bike Lane:ART,0,line,sa_onroadpath
+Secondary Road - Bike Lane:COLL,0,line,sa_onroadpath
+Secondary Road - Bike Lane:HWY,0,line,sa_onroadpath
+Secondary Road - Bike Lane:LOCL,0,line,sa_onroadpath
+Secondary Road - Bike Lane:SUBA,0,line,sa_onroadpath
+Secondary Road - Bike Lane:UND,0,line,sa_onroadpath
+Secondary Road:,0,line,sa_onroadpath
+Secondary Road:ART,0,line,sa_onroadpath
+Secondary Road:COLL,0,line,sa_onroadpath
+Secondary Road:LOCL,0,line,sa_onroadpath
+Secondary Road:SUBA,0,line,sa_onroadpath
+"Rare Flora (grass, herb, shrub or tree) ",0,point,sa_railsidesignificantsites_gda2020
+Significant Tree/s,0,point,sa_railsidesignificantsites_gda2020
+Vegetation/Bushland,0,point,sa_railsidesignificantsites_gda2020
+Wetland,0,point,sa_railsidesignificantsites_gda2020
+:CLOSED     ,0,line,sa_railways_gda2020
+BROAD:CLOSED  ,0,line,sa_railways_gda2020
+BROAD:OPEN  ,0,line,sa_railways_gda2020
+BROAD:OTHER,0,line,sa_railways_gda2020
+BROAD:PROPOSED,0,line,sa_railways_gda2020
+DUAL:OPEN   ,0,line,sa_railways_gda2020
+DUAL:OTHER  ,0,line,sa_railways_gda2020
+NARROW:CLOSED,0,line,sa_railways_gda2020
+NARROW:OPEN,0,line,sa_railways_gda2020
+NARROW:OTHER  ,0,line,sa_railways_gda2020
+STANDARD:CLOSED,0,line,sa_railways_gda2020
+STANDARD:OPEN,0,line,sa_railways_gda2020
+STANDARD:OTHER,0,line,sa_railways_gda2020
+Sealed:Decomissioned,0,point,sa_restareas
+Sealed:Operational,0,point,sa_restareas
+Unsealed:Operational,0,point,sa_restareas
+:SEAL:OPER,257,line,sa_roads_gda2020
+:UNKN:OPER,253,line,sa_roads_gda2020
+:UNSE:,253,line,sa_roads_gda2020
+:UNSE:OPER,253,line,sa_roads_gda2020
+:UNSE:PROP,0,line,sa_roads_gda2020
+ART::OPER,251,line,sa_roads_gda2020
+ART:SEAL:OPER,251,line,sa_roads_gda2020
+ART:UNKN:OPER,251,line,sa_roads_gda2020
+ART:UNSE:OPER,201,line,sa_roads_gda2020
+BUS:SEAL:OPER,251,line,sa_roads_gda2020
+COLL:SEAL:OPER,256,line,sa_roads_gda2020
+COLL:UNKN:OPER,256,line,sa_roads_gda2020
+COLL:UNSE:OPER,259,line,sa_roads_gda2020
+FREE:SEAL:OPER,250,line,sa_roads_gda2020
+FREE:UNKN:OPER,250,line,sa_roads_gda2020
+HWY:SEAL:OPER,251,line,sa_roads_gda2020
+HWY:UNKN:OPER,251,line,sa_roads_gda2020
+HWY:UNSE:OPER,258,line,sa_roads_gda2020
+LOCL::OPER,253,line,sa_roads_gda2020
+LOCL:SEAL:OPER,257,line,sa_roads_gda2020
+LOCL:UNKN:OPER,257,line,sa_roads_gda2020
+LOCL:UNSE:,253,line,sa_roads_gda2020
+LOCL:UNSE:OPER,253,line,sa_roads_gda2020
+SUBA::OPER,250,line,sa_roads_gda2020
+SUBA:SEAL:OPER,256,line,sa_roads_gda2020
+SUBA:UNKN:OPER,256,line,sa_roads_gda2020
+SUBA:UNSE:OPER,259,line,sa_roads_gda2020
+TRK2::OPER,253,line,sa_roads_gda2020
+TRK2:SEAL:OPER,257,line,sa_roads_gda2020
+TRK2:UNKN:OPER,253,line,sa_roads_gda2020
+TRK2:UNSE:,253,line,sa_roads_gda2020
+TRK2:UNSE:OPER,253,line,sa_roads_gda2020
+TRK4:NONE:OPER,254,line,sa_roads_gda2020
+TRK4:UNSE:OPER,254,line,sa_roads_gda2020
+UND::NONE,259,line,sa_roads_gda2020
+UND:SEAL:OPER,257,line,sa_roads_gda2020
+UND:UNKN:NONE,259,line,sa_roads_gda2020
+Built/Cultural,0,point,sa_roadsidesignificantsites_gda2020
+Natural,0,point,sa_roadsidesignificantsites_gda2020
+1:Y,0,line,sa_statemaintainedroads_gda2020
+2:Y  ,0,line,sa_statemaintainedroads_gda2020
+3:N  ,0,line,sa_statemaintainedroads_gda2020
+3:Y  ,0,line,sa_statemaintainedroads_gda2020
+4:,0,line,sa_statemaintainedroads_gda2020
+4:N  ,0,line,sa_statemaintainedroads_gda2020
+4:Y  ,0,line,sa_statemaintainedroads_gda2020
+5:N  ,0,line,sa_statemaintainedroads_gda2020
+5:Y  ,0,line,sa_statemaintainedroads_gda2020
+6:Y  ,0,line,sa_statemaintainedroads_gda2020
+7:,0,line,sa_statemaintainedroads_gda2020
+7:Y  ,0,line,sa_statemaintainedroads_gda2020
+8:,0,line,sa_statemaintainedroads_gda2020
+8:Y,0,line,sa_statemaintainedroads_gda2020
+26:0,10,area,sa_topo_waterbodies_gda2020
+27:0,908,area,sa_topo_waterbodies_gda2020
+31:0,10,area,sa_topo_waterbodies_gda2020
+56:0,23,area,sa_topo_waterbodies_gda2020
+26:0,114,line,sa_topo_waterbodies_gda2020
+27:0,114,line,sa_topo_waterbodies_gda2020
+31:0,114,line,sa_topo_waterbodies_gda2020
+11:0,92,line,sa_topo_watercourses_gda2020
+12:0,0,line,sa_topo_watercourses_gda2020
+13:0,92,line,sa_topo_watercourses_gda2020
+4403:0,11,area,sa_topo_waterbodies_gda2020
+4407:0,908,area,sa_topo_waterbodies_gda2020
+4401:0,10,area,sa_topo_waterbodies_gda2020
+4812:0,10,area,sa_topo_waterbodies_gda2020
+4402:0,11,area,sa_topo_waterbodies_gda2020
+3236:0,10,area,sa_topo_waterbodies_gda2020
+4400:0,908,area,sa_topo_waterbodies_gda2020
+4427:0,11,area,sa_topo_waterbodies_gda2020
+4403:0,114,line,sa_topo_waterbodies_gda2020
+4407:0,114,line,sa_topo_waterbodies_gda2020
+4401:0,114,line,sa_topo_waterbodies_gda2020
+4812:0,114,line,sa_topo_waterbodies_gda2020
+4402:0,114,line,sa_topo_waterbodies_gda2020
+3236:0,114,line,sa_topo_waterbodies_gda2020
+4400:0,114,line,sa_topo_waterbodies_gda2020
+4427:0,114,line,sa_topo_waterbodies_gda2020
+4422:H:,940,line,sa_topo_watercourses_gda2020
+4422:L:,940,line,sa_topo_watercourses_gda2020
+4422:M:,92,line,sa_topo_watercourses_gda2020
+4422:Major:Non Perennial,92,line,sa_topo_watercourses_gda2020
+4422::Major::Perennial,92,line,sa_topo_watercourses_gda2020
+4422:Major:,92,line,sa_topo_watercourses_gda2020
+4422:Minor:INTR,944,line,sa_topo_watercourses_gda2020
+4422:Minor:Non Perennial,944,line,sa_topo_watercourses_gda2020
+4422:Minor:Perennial,940,line,sa_topo_watercourses_gda2020
+4422:Minor:,944,line,sa_topo_watercourses_gda2020
+4422::,944,line,sa_topo_watercourses_gda2020
+4423:Minor:,944,line,sa_topo_watercourses_gda2020
+4423::,944,line,sa_topo_watercourses_gda2020
+4428:H:,944,line,sa_topo_watercourses_gda2020
+4428:L:,944,line,sa_topo_watercourses_gda2020
+4428:M:,92,line,sa_topo_watercourses_gda2020
+4428:Major:Non Perennial,92,line,sa_topo_watercourses_gda2020
+4428:Major:Perennial,92,line,sa_topo_watercourses_gda2020
+4428:Major:,92,line,sa_topo_watercourses_gda2020
+4428:Minor:Non Perennial,944,line,sa_topo_watercourses_gda2020
+4428:Minor:Perennial,940,line,sa_topo_watercourses_gda2020
+4428:Minor:,944,line,sa_topo_watercourses_gda2020
+4428::,944,line,sa_topo_watercourses_gda2020
+4429:Minor:Non Perennial,944,line,sa_topo_watercourses_gda2020
+4429::NA,944,line,sa_topo_watercourses_gda2020
+4429::,944,line,sa_topo_watercourses_gda2020
+4810:H:,947,line,sa_topo_watercourses_gda2020
+4810:L:,947,line,sa_topo_watercourses_gda2020
+4810:M:,947,line,sa_topo_watercourses_gda2020
+4810:Major:Non Perennial,947,line,sa_topo_watercourses_gda2020
+4810:Major:,947,line,sa_topo_watercourses_gda2020
+4810:Minor:NA,947,line,sa_topo_watercourses_gda2020
+4810:Minor:Non Perennial,947,line,sa_topo_watercourses_gda2020
+4810:Minor:,947,line,sa_topo_watercourses_gda2020
+4810::NA,947,line,sa_topo_watercourses_gda2020
+4810::,947,line,sa_topo_watercourses_gda2020

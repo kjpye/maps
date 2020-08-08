@@ -447,6 +447,13 @@ sub add-point(Real $x, Real $y) {
     $quadrant = $new-quadrant;
 }
 
+sub add-points(@points is copy) {
+    my ($a, $b) = latlon2page(+@points.shift, +@points.shift);
+    $TMP.printf("%.6g %.6g moveto\n", $a, $b);
+    my @page = do hyper for @points -> $a, $b {latlon2page(+$a, +$b)};
+    for @page -> $point { $TMP.printf("%.6g %.6g lineto\n", $point[0], $point[1]) }
+}
+
 sub put-comment($comment) {
   $TMP.print: "% $comment\n";
 }
@@ -460,12 +467,13 @@ sub put-line(Str $shape is copy, Str $func, $featurewidth = '') {
     my $segno = 1;
     for @segments -> $segment {
 $TMP.print: "% Segment ", $segno++, "\n";
-	$quadrant = -1;
-	$moveto = True;
-        for $segment.comb: /\-?<[\d\.]>+/ -> $x, $y { # just extract the numbers and ignore anything else
-	  add-point(+$x, +$y);
-	}
-	plot-previous-point() if $quadrant != 5;
+#	$quadrant = -1;
+#	$moveto = True;
+#        for $segment.comb: /\-?<[\d\.]>+/ -> $x, $y { # just extract the numbers and ignore anything else
+#	  add-point(+$x, +$y);
+#	}
+#	plot-previous-point() if $quadrant != 5;
+        add-points($segment.comb(/\-?<[\d\.]>+/));
     }
     plot-previous-point() if $quadrant != 5;
     $TMP.say: "$featurewidth $func";
@@ -696,10 +704,6 @@ my %funnylines = ();
 my %linefeaturetypes;
 
 sub draw-lines(Str $table, Str $columns, Str $geomcol, Str $widthcol) {
-#    dd $table;
-#    dd $columns;
-#    dd $geomcol;
-#    dd $widthcol;
   note "$table lines..." if $debug >= 1;
 
   my @columns     = $columns.split: ':';
@@ -716,7 +720,7 @@ sub draw-lines(Str $table, Str $columns, Str $geomcol, Str $widthcol) {
   
   if $results {
       
-  note "{$results.rows} objects from $table" if $debug >= 1;
+      note "{$results.rows} objects from $table" if $debug >= 1;
       for $results.arrays -> $object {
           my $symbol;
 	  my $shape = $object.pop;
@@ -731,8 +735,7 @@ sub draw-lines(Str $table, Str $columns, Str $geomcol, Str $widthcol) {
 	  }
 	  note "draw-line: $table $featuretype $symbol" if $debug >= 12;
 	  
-	  
-	  next unless $symbol > 0;
+	  next unless $symbol.defined && $symbol > 0;
 	  ++$object-count;
 	  if %funnylines{$symbol}.defined {
               %funnylines{$symbol}($shape);
@@ -997,11 +1000,12 @@ sub draw-roads(Str $table, Str $columns, Str $geomcol, Str $widthcol) {
     my $numfeatcols   = +@columns;
     $selectcolumns   ~= ', ' ~ $widthcol if $widthcol;
     
-    my $results = $pg.query("SELECT $pid, $selectcolumns, st_astext($geomcol) as shape
-                              FROM $table
-                             WHERE $geomcol && $rect
-                            ");
-    
+    my $query = "SELECT $pid, $selectcolumns, st_astext($geomcol) as shape
+                   FROM $table
+                  WHERE $geomcol && $rect
+                 ";
+    note $query if $debug >= 1;
+    my $results = $pg.query: $query;
     if $results {
       note "{$results.rows} objects from $table" if $debug >= 1;
         for $results.arrays -> $object {
@@ -1021,7 +1025,7 @@ sub draw-roads(Str $table, Str $columns, Str $geomcol, Str $widthcol) {
 	    note "draw-road: $table $featuretype $symbol" if $debug >= 12;
 	    
             #        $roadnames.say: "VM{$objectid} $road-name" if $roadnames;
-	    next unless $symbol > 0;
+	    next unless $symbol.defined && $symbol > 0;
 	    @dual.push: $pfi if $symbol == 250;
 	    ++$object-count;
             #        put-comment($road-name);
@@ -1034,10 +1038,10 @@ sub draw-roads(Str $table, Str $columns, Str $geomcol, Str $widthcol) {
     
     note "Centre lines of roads..." if $debug >= 1;
     
-    my $query = "SELECT st_astext($geomcol) AS shape
-                   FROM $table
-                  WHERE $pid = <whatever>
-                 ";
+    $query = "SELECT st_astext($geomcol) AS shape
+                FROM $table
+               WHERE $pid = <whatever>
+              ";
     my $sth = $pg.db.prepare("SELECT st_astext($geomcol) AS shape
                                 FROM $table
                                WHERE $pid = \$1
