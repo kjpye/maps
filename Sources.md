@@ -4,9 +4,10 @@ Note that most of the information below about unpacking the data and loading
 the database is subsumed into the import/build-database script. You will only
 need to unzip files where appropriate.
 
-## GeoScience Australia 1:250000 ##
+## Australia ##
+### GeoScience Australia 1:250000 ###
 
-### Download the data ###
+#### Download the data ####
 1. If you want data for the whole country, the easiest way is to search
 for "geoscience australia digital topographic data". This will give you
 options for various scales. The 1:250000 data is best handled at the moment,
@@ -32,7 +33,7 @@ Click on "Download the file (pGDB).
 If you also search for "mount young 1:250 000 topographic map" you will
 be able to download an image of the map. I generally use the PDF version.
 
-### Unpack the data and populate the database ###
+#### Unpack the data and populate the database ####
 
 You can unzip the resulting file and then process the data.
 
@@ -40,7 +41,7 @@ There are various scripts in the import directory which can be used to
 process the data, which is in Microsoft's JET database format.
 The make_gis script shows one way of doing this.
 
-## NSW ##
+### NSW ###
 
 Browse
 https://portal.spatial.nsw.gov.au/portal/apps/sites/#/home/pages/browse-data
@@ -86,7 +87,7 @@ the one without the option is on the first page of results,
 and the one with the option is alone on the second page.
 
 
-## QTopo ##
+### QTopo ###
 
 Get Queensland topographic data by
    * going to https://qtopo.dnrm.qld.gov.au/QTopoUserGuide and selecting one of the options under "Layer List". There may be multiple datasets under each heading. If so, repeat the instructions below for each dataset you want.
@@ -103,7 +104,7 @@ After some time you will get an email with a link to the data, which you can dow
 
 You will need to repeat the whole exercise for each dataset you want.
 
-## South Australia ##
+### South Australia ###
 Get South Australian topographic data by
    * Going to https://data.sa.gov.au
    * On the left hand menu, select "Department of Planning, Transport and Infrastructure" and "zip (shp)
@@ -112,7 +113,7 @@ Get South Australian topographic data by
 
 Save the resultant file somewhere and unzip it.
 
-## Tasmania ##
+### Tasmania ###
 Try https://listdata.thelist.tas.gov.au/opendata.
 
 Data for each dataset is available for each municipality. Each zip file contains data as shape files, ESRΙPgdb files and Mapinfo files, so you'll be downloading three copies of everything.
@@ -153,10 +154,10 @@ Municipalities are
 | West Coast           | WEST_COAST           |
 | West Tamar           | WEST_TAMAR           |
 
-## VicMap ##
+### VicMap ###
 How to populate the VicMap database.
 
-### Download the data ###
+#### Download the data ####
 
   * Go to https://service.land.vic.gov.au/SpatialDatamart and create an account for yourself. (This is not necessary, but useful.)
   * Goto Search, and enter what you want in the "what" field. Useful things are "tr_road", tr_rail", "hy_water", "el_ground", "el_contour" or just "vicmap".
@@ -168,7 +169,7 @@ How to populate the VicMap database.
   * Now click "Submit", and "Submit" again.
   * When your order is ready, you will receive an email with the link to the data, which is valid for ten days. When the servers are busy this might take up to an hour or two. For very large database (Tree density for the whole state for example) you will be given a link to an ftp site which contains the files. Make sure you download data in the correct format.
 
-### Unpack the data, and populate the database ###
+#### Unpack the data, and populate the database ####
 
   * Find a convenient directory and download the zip files to that directory.
   * Unzip the data.
@@ -179,13 +180,25 @@ How to populate the VicMap database.
   * Fix up some database tables. The code assumes that certain types of tables have certain columns, and they don't always exist, so you need to create those columns with a default value, usually zero: "psql maps -c 'alter table tr_road_infrastructure add column width float default 0'". [Currently unnecessary]
   * You will also need to populate the database with the postscript definitions of all the symbols (the symbols_ga table) and the mapping from Vicmap objects to those symbols (the vicmap.symbols table): "psql -d maps -f mksymbols_ga" and "psql -d maps -f mkvicmap_symbols". These will both give errors the first time they are run as they delete and then recreate tables.
 
-## Other states and territories
+### Other states and territories ###
 
 Ι have been unable to find a way of downloading data for WA, NT and ACT. (WΑ data is available, but costs real money.) Please let me know if you find a useful source.
+
+## Canada ##
+
+Try https://ftp.maps.canada.ca/pub/nrcan_rncan/vector/index/html/geospatial_product_index_en.html and select "Themes" and then "Vector" and maybe "Elevation".
+
+This provides links to ftp files for each theme and province which may be downloaded, but when I tried they are very, very slow -- think days to download a file.
+
+## United States of America ##
+
+Try https://www.usgs.gov/core-science-systems/national-geospatial-program/supporting-themes?qt-science_support_page_related_con=0#qt-science_support_page_related_con
 
 ## OpenStreetMap ##
 The script can utilise OSM for displaying roads.
 
-To download the data, try getting an extract fromn the osm database from somewhere, and running something like "osm2pgsql -l -d \<database\> ~/Downloads/australia.extract.osm.pbf".
+To download the data, try getting an extract from the osm database
+from somewhere, and running something like
+ "osm2pgsql -l -d \<database\> ~/Downloads/australia.extract.osm.pbf".
 
 I have used http://download.geofabrik.de/australia-oceania-latest.osm.pbf to get all of Australia.
