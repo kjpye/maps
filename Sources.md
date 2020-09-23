@@ -190,6 +190,10 @@ Try https://ftp.maps.canada.ca/pub/nrcan_rncan/vector/index/html/geospatial_prod
 
 This provides links to ftp files for each theme and province which may be downloaded, but when I tried they are very, very slow -- think days to download a file.
 
+## United Kingdom ##
+
+Try https://osdatahub.os.uk/downloads/open
+
 ## United States of America ##
 
 Try https://www.usgs.gov/core-science-systems/national-geospatial-program/supporting-themes?qt-science_support_page_related_con=0#qt-science_support_page_related_con
