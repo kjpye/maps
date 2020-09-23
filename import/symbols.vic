@@ -5,6 +5,12 @@ featuretype,symbol,type,dbtable
 "OTHER PARK - SCHEDULE 3, NATIONAL PARKS ACT:26",0,area,vm_parkres
 "STATE PARK - SCHEDULE 2B, NATIONAL PARKS ACT:34",0,area,vm_parkres
 "WILDERNESS PARK - SCHEDULE 2A, NATIONAL PARKS ACT:35",0,area,vm_parkres
+"MARINE NATIONAL PARK - SCHEDULE 7, NATIONAL PARKS ACT:47",65,line,vm_parkres
+"MARINE SANCTUARY - SCHEDULE 8, NATIONAL PARKS ACT:48",65,line,vm_parkres
+"NATIONAL PARK - SCHEDULE 2, NATIONAL PARKS ACT:6",65,line,vm_parkres
+"OTHER PARK - SCHEDULE 3, NATIONAL PARKS ACT:26",65,line,vm_parkres
+"STATE PARK - SCHEDULE 2B, NATIONAL PARKS ACT:34",65,line,vm_parkres
+"WILDERNESS PARK - SCHEDULE 2A, NATIONAL PARKS ACT:35",65,line,vm_parkres
 AF:AIR FIELD,0,point,vm_gnr
 BAY:BAY,0,point,vm_gnr
 BLDG:BUILDING,0,point,vm_gnr
@@ -13,9 +19,10 @@ CHAN:CHANNEL,0,point,vm_gnr
 CLIF:CLIFF,0,point,vm_gnr
 CNTY:COUNTY,0,point,vm_gnr
 COASTAL RESERVE:1,0,area,vm_parkres
+COASTAL RESERVE:1,65,line,vm_parkres
 COVE:COVE/INLET,0,point,vm_gnr
 CPST:CARAVAN PARK/CAMP,0,point,vm_gnr
-DAM:DAM/WEIR,0,point,vm_gnr
+DAM:DAM/WEIR,1024,point,vm_gnr
 EDUC:EDUCATION,0,point,vm_gnr
 EDUCATION AREA:2,0,area,vm_parkres
 ENTR:ENTRANCE,0,point,vm_gnr
@@ -63,6 +70,26 @@ NATURE CONSERVATION RESERVE - FLORA RESERVE:22,0,area,vm_parkres
 NATURE CONSERVATION RESERVE - WILDLIFE RESERVE (NCR CLASSIFICATION PENDING RESERVATION):41,0,area,vm_parkres
 NATURE CONSERVATION RESERVE - WILDLIFE RESERVE (NO HUNTING):23,0,area,vm_parkres
 NATURE CONSERVATION RESERVE:20,0,area,vm_parkres
+NATIONAL PARKS ACT SCHEDULE 4 PARK OR RESERVE - NCR:54,65,line,vm_parkres
+NATIONAL PARKS ACT SCHEDULE 4 PARK OR RESERVE:7,65,line,vm_parkres
+NATURAL FEATURES RESERVE - BUSHLAND RESERVE:9,65,line,vm_parkres
+NATURAL FEATURES RESERVE - CAVE RESERVE:10,65,line,vm_parkres
+NATURAL FEATURES RESERVE - GEOLOGICAL RESERVE:11,65,line,vm_parkres
+NATURAL FEATURES RESERVE - GIPPSLAND LAKES RESERVE:12,65,line,vm_parkres
+NATURAL FEATURES RESERVE - HIGHWAY PARK:13,65,line,vm_parkres
+NATURAL FEATURES RESERVE - LAKE RESERVE:14,65,line,vm_parkres
+NATURAL FEATURES RESERVE - NATURAL FEATURES AND SCENIC RESERVE:15,65,line,vm_parkres
+NATURAL FEATURES RESERVE - RIVER MURRAY RESERVE:16,65,line,vm_parkres
+NATURAL FEATURES RESERVE - SCENIC RESERVE:17,65,line,vm_parkres
+NATURAL FEATURES RESERVE - STREAMSIDE RESERVE:18,65,line,vm_parkres
+NATURAL FEATURES RESERVE - WILDLIFE RESERVE (HUNTING):19,65,line,vm_parkres
+NATURAL FEATURES RESERVE - WILDLIFE RESERVE (SGR CLASSIFICATION PENDING RESERVATION):42,65,line,vm_parkres
+NATURAL FEATURES RESERVE:39,65,line,vm_parkres
+NATURE CONSERVATION RESERVE - FLORA AND FAUNA RESERVE:21,65,line,vm_parkres
+NATURE CONSERVATION RESERVE - FLORA RESERVE:22,65,line,vm_parkres
+NATURE CONSERVATION RESERVE - WILDLIFE RESERVE (NCR CLASSIFICATION PENDING RESERVATION):41,65,line,vm_parkres
+NATURE CONSERVATION RESERVE - WILDLIFE RESERVE (NO HUNTING):23,65,line,vm_parkres
+NATURE CONSERVATION RESERVE:20,65,line,vm_parkres
 NBHD:NEIGHBOURHOOD,0,point,vm_gnr
 NSP:NEIGHBOURHOOD SAFER PLACE,0,point,vm_gnr
 OTHER:25,0,area,vm_parkres
@@ -82,6 +109,7 @@ PT:POINT [COASTAL]/HEAD,0,point,vm_gnr
 PV MANAGEMENT SERVICES AGREEMENT OTHER LAND:51,0,area,vm_parkres
 RCH:REACH,0,point,vm_gnr
 REGIONAL PARK - NOT SCHEDULED UNDER NATIONAL PARKS ACT:30,0,area,vm_parkres
+REGIONAL PARK - NOT SCHEDULED UNDER NATIONAL PARKS ACT:30,65,line,vm_parkres
 RES:RESERVOIR,0,point,vm_gnr
 RESERVOIR PARK:49,0,area,vm_parkres
 RESV:RESERVE,0,point,vm_gnr
@@ -96,7 +124,7 @@ SPIT:PIT,0,point,vm_gnr
 STR:STRAIT,0,point,vm_gnr
 STRM:STREAM/RIVER/WATERCOURSE,0,point,vm_gnr
 SWMP:SWAMP/WETLAND,0,point,vm_gnr
-TOWR:TOWER,0,point,vm_gnr
+TOWR:TOWER,1017,point,vm_gnr
 TPEX:TELEPHONE EXCHANGE,0,point,vm_gnr
 TRIG:TRIGONOMETRICAL STATION,0,point,vm_gnr
 TRK:WALKING TRACK,0,point,vm_gnr
@@ -150,15 +178,15 @@ agricultural area:farm,0,point,vm_foi_index_centroid
 agricultural area:vineyard,0,area,vm_foi_index_extent
 agricultural area:vineyard,0,area,vm_foi_polygon
 agricultural area:vineyard,0,point,vm_foi_index_centroid
-airport,0,area,vm_tr_airport_area_polygon
+airport,700,area,vm_tr_airport_area_polygon
 barrier,0,point,vm_tr_road_infrastructure
 bay:W,0,label,vm_geo_area_hydro_label
 beach:L,0,label,vm_geo_area_hydro_label
-beacon,0,point,vm_hy_navigation_point
+beacon,1022,point,vm_hy_navigation_point
 bend:L,0,label,vm_geo_area_hydro_label
 boat ramp,0,line,vm_hy_water_struct_line
 breakwater,0,line,vm_hy_water_struct_line
-bridge,0,point,vm_tr_road_infrastructure
+bridge,260,point,vm_tr_road_infrastructure
 bridge:0:1,260,line,vm_tr_road
 bridge:1:1,260,line,vm_tr_road
 bridge:2:1,260,line,vm_tr_road
@@ -189,9 +217,9 @@ bridge_rail_o:2,260,line,vm_tr_rail
 bridleway::,22,line,vm_tr_road
 bua,0,area,vm_pl_place_area_polygon
 building:ruin,0,area,vm_foi_index_extent
-building:ruin,0,point,vm_foi_index_centroid
-building:ruin,0,point,vm_foi_point
-building:ruin,0,point,vm_geomark_point
+building:ruin,41,point,vm_foi_index_centroid
+building:ruin,41,point,vm_foi_point
+building:ruin,41,point,vm_geomark_point
 building:undefined_building,26,area,vm_building_polygon
 building:undefined_building,40,point,vm_building_point
 buoy,0,point,vm_hy_navigation_point
@@ -220,11 +248,11 @@ care facility:disability support centre,0,area,vm_foi_index_extent
 care facility:disability support centre,0,point,vm_foi_index_centroid
 care facility:disability support centre,0,point,vm_foi_point
 care facility:disability support centre,0,point,vm_geomark_point
-causeway,0,line,vm_hy_water_struct_line
-cave,0,point,vm_el_morphology_point
-cliff,0,line,vm_el_morphology_line
-cliff:L,0,label,vm_geo_area_relief_label
-coast,0,line,vm_fr_framework_area_line
+causeway,245,line,vm_hy_water_struct_line
+cave,96,point,vm_el_morphology_point
+cliff,924,line,vm_el_morphology_line
+cliff:L,924,label,vm_geo_area_relief_label
+coast,94,line,vm_fr_framework_area_line
 commercial facility:accommodation,0,area,vm_foi_index_extent
 commercial facility:accommodation,0,point,vm_foi_index_centroid
 commercial facility:business park,0,area,vm_foi_index_extent
@@ -317,9 +345,9 @@ control point:survey monument,0,point,vm_foi_index_centroid
 control point:survey monument,0,point,vm_foi_point
 control point:survey monument,0,point,vm_geomark_point
 control point:trig station,0,area,vm_foi_index_extent
-control point:trig station,0,point,vm_foi_index_centroid
-control point:trig station,0,point,vm_foi_point
-control point:trig station,0,point,vm_geomark_point
+control point:trig station,51,point,vm_foi_index_centroid
+control point:trig station,51,point,vm_foi_point
+control point:trig station,51,point,vm_geomark_point
 cultural centre:aquarium,0,area,vm_foi_index_extent
 cultural centre:aquarium,0,point,vm_foi_index_centroid
 cultural centre:aquarium,0,point,vm_foi_point
@@ -345,10 +373,10 @@ cultural centre:observatory,0,point,vm_foi_index_centroid
 cultural centre:observatory,0,point,vm_foi_point
 cultural centre:observatory,0,point,vm_geomark_point
 cutting_both,0,line,vm_el_morphology_line
-cutting_one,0,line,vm_el_morphology_line
+cutting_one,923,line,vm_el_morphology_line
 dam_batter,0,area,vm_hy_water_struct_area_polygon
 dam_wall,925,line,vm_hy_water_struct_line
-dam_wall_road,0,line,vm_hy_water_struct_line
+dam_wall_road,45,line,vm_hy_water_struct_line
 defence site:airforce base,0,area,vm_foi_index_extent
 defence site:airforce base,0,area,vm_foi_polygon
 defence site:airforce base,0,point,vm_foi_index_centroid
@@ -464,31 +492,31 @@ emergency facility:ses unit,0,area,vm_foi_index_extent
 emergency facility:ses unit,1009,point,vm_foi_index_centroid
 emergency facility:ses unit,1009,point,vm_foi_point
 emergency facility:ses unit,1009,point,vm_geomark_point
-excavation site:abandoned mine,0,area,vm_foi_index_extent
-excavation site:abandoned mine,0,area,vm_foi_polygon
-excavation site:abandoned mine,0,point,vm_foi_index_centroid
-excavation site:abandoned quarry,0,area,vm_foi_index_extent
-excavation site:abandoned quarry,0,area,vm_foi_polygon
-excavation site:abandoned quarry,0,point,vm_foi_index_centroid
-excavation site:abandoned quarry,0,point,vm_foi_point
-excavation site:abandoned quarry,0,point,vm_geomark_point
-excavation site:adit,0,area,vm_foi_index_extent
+excavation site:abandoned mine,102,area,vm_foi_index_extent
+excavation site:abandoned mine,102,area,vm_foi_polygon
+excavation site:abandoned mine,106,point,vm_foi_index_centroid
+excavation site:abandoned quarry,102,area,vm_foi_index_extent
+excavation site:abandoned quarry,102,area,vm_foi_polygon
+excavation site:abandoned quarry,106,point,vm_foi_index_centroid
+excavation site:abandoned quarry,106,point,vm_foi_point
+excavation site:abandoned quarry,106,point,vm_geomark_point
+excavation site:adit,106,area,vm_foi_index_extent
 excavation site:adit,0,point,vm_foi_index_centroid
 excavation site:adit,0,point,vm_foi_point
 excavation site:adit,0,point,vm_geomark_point
-excavation site:mine,0,area,vm_foi_index_extent
-excavation site:mine,0,area,vm_foi_polygon
-excavation site:mine,0,point,vm_foi_index_centroid
-excavation site:mine,0,point,vm_foi_point
-excavation site:mine,0,point,vm_geomark_point
-excavation site:quarry,0,area,vm_foi_index_extent
-excavation site:quarry,0,area,vm_foi_polygon
-excavation site:quarry,0,point,vm_foi_index_centroid
-excavation site:quarry,0,point,vm_foi_point
-excavation site:quarry,0,point,vm_geomark_point
-ferry_route:14:,0,line,vm_tr_road
-ferry_route:14:1,0,line,vm_tr_road
-ferry_route:14:3,0,line,vm_tr_road
+excavation site:mine,102,area,vm_foi_index_extent
+excavation site:mine,102,area,vm_foi_polygon
+excavation site:mine,106,point,vm_foi_index_centroid
+excavation site:mine,106,point,vm_foi_point
+excavation site:mine,106,point,vm_geomark_point
+excavation site:quarry,102,area,vm_foi_index_extent
+excavation site:quarry,102,area,vm_foi_polygon
+excavation site:quarry,106,point,vm_foi_index_centroid
+excavation site:quarry,106,point,vm_foi_point
+excavation site:quarry,106,point,vm_geomark_point
+ferry_route:14:,20,line,vm_tr_road
+ferry_route:14:1,20,line,vm_tr_road
+ferry_route:14:3,20,line,vm_tr_road
 flat_sti,11,area,vm_hy_water_area_polygon
 flat_sti,114,line,vm_hy_water_area_polygon
 foot_bridge:11:1,260,line,vm_tr_road
@@ -512,7 +540,7 @@ forest:MEDIUM,200,area,vm_tree_density
 forest:MEDIUM,200,area,vm_tree_density_medium
 forest:SCATTERED,201,area,vm_tree_density
 forest:SCATTERED,201,area,vm_tree_density_scattered
-gate,0,point,vm_tr_road_infrastructure
+gate,26,point,vm_tr_road_infrastructure
 health facility:community health centre,0,area,vm_foi_index_extent
 health facility:community health centre,0,point,vm_foi_index_centroid
 health facility:community health centre,0,point,vm_foi_point
@@ -521,7 +549,7 @@ health facility:maternal/child health centre,0,area,vm_foi_index_extent
 health facility:maternal/child health centre,0,point,vm_foi_index_centroid
 health facility:maternal/child health centre,0,point,vm_foi_point
 health facility:maternal/child health centre,0,point,vm_geomark_point
-helipad,0,point,vm_tr_air_infra_point
+helipad,708,point,vm_tr_air_infra_point
 hospital:bush nursing hospital,0,area,vm_foi_index_extent
 hospital:bush nursing hospital,1012,point,vm_foi_index_centroid
 hospital:bush nursing hospital,1012,point,vm_foi_point
@@ -571,8 +599,8 @@ int_locality,0,point,vm_tr_road_infrastructure
 int_nosignal,0,point,vm_tr_road_infrastructure
 int_nosignal,0,point,vm_tr_road_infrastructure
 int_paper,0,point,vm_tr_road_infrastructure
-int_signal,0,point,vm_tr_road_infrastructure
-island,0,area,vm_fr_framework_area_polygon
+int_signal,1004,point,vm_tr_road_infrastructure
+island,1001,area,vm_fr_framework_area_polygon
 island_marine:L,0,label,vm_geo_area_hydro_label
 island_terrestrial:L,0,label,vm_geo_area_hydro_label
 island_terrestrial:W,0,label,vm_geo_area_hydro_label
@@ -589,9 +617,9 @@ landmark:fountain,0,point,vm_foi_index_centroid
 landmark:fountain,0,point,vm_foi_point
 landmark:fountain,0,point,vm_geomark_point
 landmark:lookout,0,area,vm_foi_index_extent
-landmark:lookout,0,point,vm_foi_index_centroid
-landmark:lookout,0,point,vm_foi_point
-landmark:lookout,0,point,vm_geomark_point
+landmark:lookout,1023,point,vm_foi_index_centroid
+landmark:lookout,1023,point,vm_foi_point
+landmark:lookout,1023,point,vm_geomark_point
 landmark:monument,0,area,vm_foi_index_extent
 landmark:monument,0,point,vm_foi_index_centroid
 landmark:monument,0,point,vm_foi_point
@@ -606,13 +634,15 @@ landmark:tower,1017,area,vm_foi_index_extent
 landmark:tower,1017,point,vm_foi_point
 landmark:tower,1017,point,vm_geomark_point
 landmark:undefined_landmark,0,point,vm_geomark_point
-launching_ramp,0,line,vm_hy_water_struct_line
-levee,0,line,vm_el_morphology_line
+launching_ramp,755,line,vm_hy_water_struct_line
+levee,921,line,vm_el_morphology_line
 level_crossing,0,point,vm_tr_road_infrastructure
 lga,0,area,vm_ad_lga_area_polygon
 living_street::,22,line,vm_tr_road
 locality,0,area,vm_ad_locality_area_polygon
-lock,0,line,vm_hy_water_struct_line
+locality,65,line,vm_ad_locality_area_polygon
+locality,65,line,vm_locality_polygon
+lock,42,line,vm_hy_water_struct_line
 mainland,0,area,vm_fr_framework_area_polygon
 marina,0,area,vm_hy_water_struct_area_polygon
 marine_place:L,0,label,vm_geo_area_hydro_label
@@ -621,17 +651,17 @@ marshalling_yard_rail,206,line,vm_tr_rail
 marshalling_yard_rail:,206,line,vm_tr_rail
 mountain,0,point,vm_el_grnd_type_point
 named_natural_region:L,0,label,vm_geo_area_relief_label
-navigation_aid:beacon,0,point,vm_geomark_point
+navigation_aid:beacon,1022,point,vm_geomark_point
 pass:L,0,label,vm_geo_area_relief_label
 pedestrian::,22,line,vm_tr_road
 peninsula:L,0,label,vm_geo_area_relief_label
-physiographic:cave,0,point,vm_geomark_point
+physiographic:cave,96,point,vm_geomark_point
 physiographic:lava flow,0,area,vm_foi_index_extent
 physiographic:lava flow,0,line,vm_foi_line
 physiographic:lava flow,0,point,vm_foi_index_centroid
 physiographic:mountain,0,point,vm_geomark_point
-pipe_water,0,line,vm_hy_water_struct_line
-pipe_water_uground,0,line,vm_hy_water_struct_line
+pipe_water,947,line,vm_hy_water_struct_line
+pipe_water_uground,947,line,vm_hy_water_struct_line
 pipeline facility:gas plant,0,area,vm_foi_index_extent
 pipeline facility:gas plant,0,area,vm_foi_polygon
 pipeline facility:gas plant,0,point,vm_foi_index_centroid
@@ -649,14 +679,14 @@ pipeline facility:treatment plant,0,area,vm_foi_index_extent
 pipeline facility:treatment plant,0,area,vm_foi_polygon
 pipeline facility:treatment plant,0,point,vm_foi_index_centroid
 pipeline:gas pipeline,0,area,vm_foi_index_extent
-pipeline:gas pipeline,0,line,vm_foi_line
+pipeline:gas pipeline,281,line,vm_foi_line
 pipeline:gas pipeline,0,point,vm_foi_index_centroid
 pipeline:oil pipeline,0,area,vm_foi_index_extent
-pipeline:oil pipeline,0,line,vm_foi_line
+pipeline:oil pipeline,281,line,vm_foi_line
 pipeline:oil pipeline,0,point,vm_foi_index_centroid
 place of worship:church,0,area,vm_foi_index_extent
-place of worship:church,0,point,vm_foi_index_centroid
-place of worship:church,0,point,vm_geomark_point
+place of worship:church,1007,point,vm_foi_index_centroid
+place of worship:church,1007,point,vm_geomark_point
 place of worship:church,1007,point,vm_foi_point
 place of worship:gurdwara (sikh),0,area,vm_foi_index_extent
 place of worship:gurdwara (sikh),0,point,vm_foi_index_centroid
@@ -815,7 +845,7 @@ reserve:amusement centre,0,area,vm_foi_polygon
 reserve:amusement centre,0,point,vm_foi_index_centroid
 reserve:cemetery,0,area,vm_foi_index_extent
 reserve:cemetery,0,area,vm_foi_polygon
-reserve:cemetery,0,point,vm_foi_index_centroid
+reserve:cemetery,451,point,vm_foi_index_centroid
 reserve:city square,0,area,vm_foi_index_extent
 reserve:city square,0,area,vm_foi_polygon
 reserve:city square,0,point,vm_foi_index_centroid
@@ -873,23 +903,23 @@ road:9:3,254,line,vm_tr_road
 road_end,0,point,vm_tr_road_infrastructure
 road_end,0,point,vm_tr_road_infrastructure
 rock_bare,98,point,vm_hy_navigation_point
-rock_outcrop,0,area,vm_el_grnd_type_area_polygon
+rock_outcrop,90,area,vm_el_grnd_type_area_polygon
 rock_outcrop,0,point,vm_el_grnd_type_point
 rock_terrestrial:L,0,label,vm_geo_area_relief_label
-roundabout,0,point,vm_tr_road_infrastructure
+roundabout,1003,point,vm_tr_road_infrastructure
 roundabout:1:1,256,line,vm_tr_road
 roundabout:3:1,256,line,vm_tr_road
 roundabout:5:1,256,line,vm_tr_road
-runway,0,area,vm_tr_air_infra_area_polygon
+runway,700,area,vm_tr_air_infra_area_polygon
 runway,700,area,vm_tr_airport_infra_area_polygon
 runway,703,line,vm_tr_airport_infrastructure
 runway,703,point,vm_tr_airport_infrastructure
-sand,0,area,vm_el_grnd_type_area_polygon
-sand_dune,0,line,vm_el_morphology_line
-sea,0,area,vm_fr_framework_area_polygon
+sand,22,area,vm_el_grnd_type_area_polygon
+sand_dune,25,line,vm_el_morphology_line
+sea,10,area,vm_fr_framework_area_polygon
 sea:W,0,label,vm_geo_area_hydro_label
 secondary_link::,0,line,vm_tr_road
-shoreline,0,line,vm_hy_watercourse
+shoreline,94,line,vm_hy_watercourse
 shoreline:W,0,label,vm_geo_area_hydro_label
 sign:emergency marker,0,area,vm_foi_index_extent
 sign:emergency marker,0,point,vm_foi_index_centroid
@@ -901,80 +931,80 @@ sign:snow pole,0,point,vm_foi_point
 sign:snow pole,0,point,vm_geomark_point
 sinkhole,0,point,vm_el_morphology_point
 spillway,0,area,vm_hy_water_struct_area_polygon
-sport facility:athletic field,0,area,vm_foi_index_extent
-sport facility:athletic field,0,area,vm_foi_polygon
+sport facility:athletic field,24,area,vm_foi_index_extent
+sport facility:athletic field,24,area,vm_foi_polygon
 sport facility:athletic field,0,point,vm_foi_index_centroid
-sport facility:baseball field,0,area,vm_foi_index_extent
-sport facility:baseball field,0,area,vm_foi_polygon
+sport facility:baseball field,24,area,vm_foi_index_extent
+sport facility:baseball field,24,area,vm_foi_polygon
 sport facility:baseball field,0,point,vm_foi_index_centroid
-sport facility:basketball court,0,area,vm_foi_index_extent
-sport facility:basketball court,0,area,vm_foi_polygon
+sport facility:basketball court,24,area,vm_foi_index_extent
+sport facility:basketball court,24,area,vm_foi_polygon
 sport facility:basketball court,0,point,vm_foi_index_centroid
 sport facility:boating club,0,area,vm_foi_index_extent
 sport facility:boating club,0,point,vm_foi_index_centroid
 sport facility:boating club,0,point,vm_foi_point
 sport facility:boating club,0,point,vm_geomark_point
-sport facility:bowling green,0,area,vm_foi_index_extent
-sport facility:bowling green,0,area,vm_foi_polygon
+sport facility:bowling green,24,area,vm_foi_index_extent
+sport facility:bowling green,24,area,vm_foi_polygon
 sport facility:bowling green,0,point,vm_foi_index_centroid
-sport facility:croquet green,0,area,vm_foi_index_extent
-sport facility:croquet green,0,area,vm_foi_polygon
+sport facility:croquet green,24,area,vm_foi_index_extent
+sport facility:croquet green,24,area,vm_foi_polygon
 sport facility:croquet green,0,point,vm_foi_index_centroid
-sport facility:equestrian facility,0,area,vm_foi_index_extent
-sport facility:equestrian facility,0,area,vm_foi_polygon
+sport facility:equestrian facility,24,area,vm_foi_index_extent
+sport facility:equestrian facility,24,area,vm_foi_polygon
 sport facility:equestrian facility,0,point,vm_foi_index_centroid
 sport facility:golf course,0,area,vm_foi_index_extent
 sport facility:golf course,0,area,vm_foi_polygon
 sport facility:golf course,0,point,vm_foi_index_centroid
-sport facility:golf driving range,0,area,vm_foi_index_extent
-sport facility:golf driving range,0,area,vm_foi_polygon
+sport facility:golf driving range,24,area,vm_foi_index_extent
+sport facility:golf driving range,24,area,vm_foi_polygon
 sport facility:golf driving range,0,point,vm_foi_index_centroid
-sport facility:greyhound racetrack,0,area,vm_foi_index_extent
-sport facility:greyhound racetrack,0,area,vm_foi_polygon
+sport facility:greyhound racetrack,24,area,vm_foi_index_extent
+sport facility:greyhound racetrack,24,area,vm_foi_polygon
 sport facility:greyhound racetrack,0,point,vm_foi_index_centroid
-sport facility:harness racetrack,0,area,vm_foi_index_extent
-sport facility:harness racetrack,0,area,vm_foi_polygon
+sport facility:harness racetrack,24,area,vm_foi_index_extent
+sport facility:harness racetrack,24,area,vm_foi_polygon
 sport facility:harness racetrack,0,point,vm_foi_index_centroid
-sport facility:hockey ground,0,area,vm_foi_index_extent
-sport facility:hockey ground,0,area,vm_foi_polygon
+sport facility:hockey ground,24,area,vm_foi_index_extent
+sport facility:hockey ground,24,area,vm_foi_polygon
 sport facility:hockey ground,0,point,vm_foi_index_centroid
-sport facility:horse racetrack,0,area,vm_foi_index_extent
-sport facility:horse racetrack,0,area,vm_foi_polygon
+sport facility:horse racetrack,24,area,vm_foi_index_extent
+sport facility:horse racetrack,24,area,vm_foi_polygon
 sport facility:horse racetrack,0,point,vm_foi_index_centroid
-sport facility:motor track,0,area,vm_foi_index_extent
-sport facility:motor track,0,area,vm_foi_polygon
+sport facility:motor track,24,area,vm_foi_index_extent
+sport facility:motor track,24,area,vm_foi_polygon
 sport facility:motor track,0,point,vm_foi_index_centroid
-sport facility:netball court,0,area,vm_foi_index_extent
-sport facility:netball court,0,area,vm_foi_polygon
+sport facility:netball court,24,area,vm_foi_index_extent
+sport facility:netball court,24,area,vm_foi_polygon
 sport facility:netball court,0,point,vm_foi_index_centroid
-sport facility:racecourse,0,area,vm_foi_index_extent
-sport facility:racecourse,0,area,vm_foi_polygon
+sport facility:racecourse,24,area,vm_foi_index_extent
+sport facility:racecourse,24,area,vm_foi_polygon
 sport facility:racecourse,0,point,vm_foi_index_centroid
 sport facility:sports complex,0,area,vm_foi_index_extent
 sport facility:sports complex,0,area,vm_foi_polygon
 sport facility:sports complex,0,point,vm_foi_index_centroid
-sport facility:sports ground,0,area,vm_foi_index_extent
-sport facility:sports ground,0,area,vm_foi_polygon
+sport facility:sports ground,24,area,vm_foi_index_extent
+sport facility:sports ground,24,area,vm_foi_polygon
 sport facility:sports ground,0,point,vm_foi_index_centroid
 sport facility:swimming pool,0,area,vm_foi_index_extent
 sport facility:swimming pool,1015,point,vm_foi_index_centroid
 sport facility:swimming pool,1015,point,vm_foi_point
 sport facility:swimming pool,1015,point,vm_geomark_point
-sport facility:target range,0,area,vm_foi_index_extent
-sport facility:target range,0,area,vm_foi_polygon
+sport facility:target range,24,area,vm_foi_index_extent
+sport facility:target range,24,area,vm_foi_polygon
 sport facility:target range,0,point,vm_foi_index_centroid
-sport facility:tennis court,0,area,vm_foi_index_extent
-sport facility:tennis court,0,area,vm_foi_polygon
+sport facility:tennis court,24,area,vm_foi_index_extent
+sport facility:tennis court,24,area,vm_foi_polygon
 sport facility:tennis court,0,point,vm_foi_index_centroid
-sport facility:training track,0,area,vm_foi_index_extent
-sport facility:training track,0,area,vm_foi_polygon
+sport facility:training track,24,area,vm_foi_index_extent
+sport facility:training track,24,area,vm_foi_polygon
 sport facility:training track,0,point,vm_foi_index_centroid
-sport facility:velodrome,0,area,vm_foi_index_extent
-sport facility:velodrome,0,area,vm_foi_polygon
+sport facility:velodrome,24,area,vm_foi_index_extent
+sport facility:velodrome,24,area,vm_foi_polygon
 sport facility:velodrome,0,point,vm_foi_index_centroid
 spot_height,0,point,vm_el_grnd_surface_point
-spring,0,point,vm_hy_water_point
-state_border,0,line,vm_fr_framework_area_line
+spring,73,point,vm_hy_water_point
+state_border,80,line,vm_fr_framework_area_line
 steps::,22,line,vm_tr_road
 stockpile:over burden pile,0,area,vm_foi_index_extent
 stockpile:over burden pile,0,area,vm_foi_polygon
@@ -989,7 +1019,7 @@ storage facility:depot,0,point,vm_foi_point
 storage facility:depot,0,point,vm_geomark_point
 storage facility:gas tank,0,area,vm_foi_index_extent
 storage facility:gas tank,0,area,vm_foi_polygon
-storage facility:gas tank,0,point,vm_foi_index_centroid
+storage facility:gas tank,801,point,vm_foi_index_centroid
 storage facility:grain bunker,0,area,vm_foi_index_extent
 storage facility:grain bunker,0,area,vm_foi_polygon
 storage facility:grain bunker,0,point,vm_foi_index_centroid
@@ -1000,10 +1030,10 @@ storage facility:hay shed,26,area,vm_building_polygon
 storage facility:hay shed,40,point,vm_building_point
 storage facility:oil tank,0,area,vm_foi_index_extent
 storage facility:oil tank,0,area,vm_foi_polygon
-storage facility:oil tank,0,point,vm_foi_index_centroid
+storage facility:oil tank,801,point,vm_foi_index_centroid
 storage facility:petroleum tank,0,area,vm_foi_index_extent
 storage facility:petroleum tank,0,area,vm_foi_polygon
-storage facility:petroleum tank,0,point,vm_foi_index_centroid
+storage facility:petroleum tank,801,point,vm_foi_index_centroid
 storage facility:shed,26,area,vm_building_polygon
 storage facility:shed,40,point,vm_building_point
 storage facility:silo,0,area,vm_foi_index_extent
@@ -1014,53 +1044,53 @@ storage facility:stockyard,0,area,vm_foi_index_extent
 storage facility:stockyard,0,area,vm_foi_polygon
 storage facility:stockyard,0,point,vm_foi_index_centroid
 storage facility:tank,0,area,vm_foi_index_extent
-storage facility:tank,0,point,vm_foi_index_centroid
-storage facility:tank,0,point,vm_foi_point
-storage facility:tank,0,point,vm_geomark_point
+storage facility:tank,801,point,vm_foi_index_centroid
+storage facility:tank,801,point,vm_foi_point
+storage facility:tank,801,point,vm_geomark_point
 storage facility:water tank,86,point,vm_geomark_point
 storage facility:woolshed,26,area,vm_building_polygon
 storage facility:woolshed,40,point,vm_building_point
 tank_water,86,area,vm_hy_water_struct_area_polygon
 tank_water,86,point,vm_hy_water_struct_point
-tertiary_link::,1,line,vm_tr_road
-tower:undefined_tower,0,point,vm_geomark_point
+tertiary_link::,0,line,vm_tr_road
+tower:undefined_tower,1017,point,vm_geomark_point
 tram_dismantled,209,line,vm_tr_rail
 tram_dismantled:,209,line,vm_tr_rail
 tramway,206,line,vm_tr_rail
 tramway:,206,line,vm_tr_rail
 tunnel,0,point,vm_tr_road_infrastructure
-tunnel:0:1,0,line,vm_tr_road
-tunnel:11:2,0,line,vm_tr_road
-tunnel:12:2,0,line,vm_tr_road
-tunnel:1:1,0,line,vm_tr_road
-tunnel:2:1,0,line,vm_tr_road
-tunnel:3:1,0,line,vm_tr_road
-tunnel:5:1,0,line,vm_tr_road
-tunnel:5:2,0,line,vm_tr_road
-tunnel:6:1,0,line,vm_tr_road
-tunnel:6:2,0,line,vm_tr_road
+tunnel:0:1,205,line,vm_tr_road
+tunnel:11:2,205,line,vm_tr_road
+tunnel:12:2,205,line,vm_tr_road
+tunnel:1:1,205,line,vm_tr_road
+tunnel:2:1,205,line,vm_tr_road
+tunnel:3:1,205,line,vm_tr_road
+tunnel:5:1,205,line,vm_tr_road
+tunnel:5:2,205,line,vm_tr_road
+tunnel:6:1,205,line,vm_tr_road
+tunnel:6:2,205,line,vm_tr_road
 tunnel_rail_dm,205,line,vm_tr_rail
 tunnel_rail_dm:,205,line,vm_tr_rail
 tunnel_rail_o,205,line,vm_tr_rail
 tunnel_rail_o,260,point,vm_tr_rail_infrastructure
 tunnel_rail_o:,205,line,vm_tr_rail
 tunnel_rail_o:2,205,line,vm_tr_rail
-undefined:bridge_rail_o,0,point,vm_geomark_point
-undefined:helipad,0,point,vm_geomark_point
+undefined:bridge_rail_o,260,point,vm_geomark_point
+undefined:helipad,708,point,vm_geomark_point
 undefined:point,0,point,vm_geomark_point
-undefined:rail_station,0,point,vm_geomark_point
+undefined:rail_station,222,point,vm_geomark_point
 undefined:rapid,0,point,vm_geomark_point
-undefined:rock_bare,0,point,vm_geomark_point
-undefined:rock_outcrop,0,point,vm_geomark_point
+undefined:rock_bare,98,point,vm_geomark_point
+undefined:rock_outcrop,98,point,vm_geomark_point
 undefined:sinkhole,0,point,vm_geomark_point
 undefined:spot_height,0,point,vm_geomark_point
-undefined:spring,0,point,vm_geomark_point
+undefined:spring,73,point,vm_geomark_point
 undefined:tank_water,86,point,vm_geomark_point
 undefined:waterfall,89,point,vm_geomark_point
 undefined:watering_place,0,point,vm_geomark_point
-undefined:wb_dam,0,point,vm_geomark_point
-undefined:well_water,0,point,vm_geomark_point
-undefined:wreck,0,point,vm_geomark_point
+undefined:wb_dam,1024,point,vm_geomark_point
+undefined:well_water,11,point,vm_geomark_point
+undefined:wreck,756,point,vm_geomark_point
 valley:L,0,label,vm_geo_area_relief_label
 vicmap_boundary,0,line,vm_fr_framework_area_line
 waterbody:W,0,label,vm_geo_area_hydro_label
@@ -1075,11 +1105,11 @@ watercourse_river,92,line,vm_hy_watercourse
 watercourse_stream,940,line,vm_hy_watercourse
 waterfall,89,point,vm_hy_water_point
 wateringplace,0,point,vm_hy_water_struct_point
-wb_dam,82,point,vm_hy_water_point
+wb_dam,1024,point,vm_hy_water_point
 wb_lake,10,area,vm_hy_water_area_polygon
 wb_lake,114,line,vm_hy_water_area_polygon
-well_water,0,point,vm_hy_water_struct_point
+well_water,11,point,vm_hy_water_struct_point
 wetland_swamp,114,line,vm_hy_water_area_polygon
 wetland_swamp,908,area,vm_hy_water_area_polygon
-wharf,0,line,vm_hy_water_struct_line
+wharf,752,line,vm_hy_water_struct_line
 wreck,756,point,vm_hy_navigation_point

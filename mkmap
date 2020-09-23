@@ -451,6 +451,7 @@ sub add-points(@points is copy) {
     my ($a, $b) = latlon2page(+@points.shift, +@points.shift);
     $TMP.printf("%.6g %.6g moveto\n", $a, $b);
     my @page = do hyper for @points -> $a, $b {latlon2page(+$a, +$b)};
+#   my @page = do       for @points -> $a, $b {latlon2page(+$a, +$b)};
     for @page -> $point { $TMP.printf("%.6g %.6g lineto\n", $point[0], $point[1]) }
 }
 
@@ -709,17 +710,21 @@ sub draw-lines(Str $table, Str $columns, Str $geomcol, Str $widthcol) {
   my @columns     = $columns.split: ':';
   my $selectcolumns = @columns.join: ', ';
   my $numfeatcols = +@columns;
-  $selectcolumns    ~= ',' ~ $widthcol if $widthcol;
-
+  if $widthcol {
+    $selectcolumns    ~= ',' if $selectcolumns;
+    $selectcolumns    ~= $widthcol;
+  }
+  $selectcolumns ~= ', ' if $selectcolumns;
+  $selectcolumns ~= "st_astext($geomcol) as shape";
+  
   my $featurewidth = 0;
 
-  my $results = $pg.query("SELECT $selectcolumns, st_astext($geomcol) as shape
+  my $results = $pg.query("SELECT $selectcolumns
                           FROM $table
                           WHERE $geomcol && $rect
                          ");
   
   if $results {
-      
       note "{$results.rows} objects from $table" if $debug >= 1;
       for $results.arrays -> $object {
           my $symbol;
@@ -728,10 +733,83 @@ sub draw-lines(Str $table, Str $columns, Str $geomcol, Str $widthcol) {
 	  $featurewidth = $object.pop if $widthcol;
 	  my $featuretype = $object.join: ':';
 	  
+          note "featuretype : '$featuretype'" if $debug ≥ 16;
 	  %linefeaturetypes{$table}{$featuretype}++;
           note "Getting symbol: $table, $featuretype, line" if $debug > 15;
-	  for $sth-symb.execute($table, $featuretype, 'line').arrays -> $obj {
-              $symbol = $obj[0].Int;
+          if $featuretype {
+	      for $sth-symb.execute($table, $featuretype, 'line').arrays -> $obj {
+                  $symbol = $obj[0].Int;
+              }
+          } else {
+              my $sth = $pg.db.prepare('SELECT symbol
+                         FROM symbols
+                        WHERE dbtable = $1
+                          AND type = $2
+                       ');
+	      for $sth.execute($table, 'line').arrays -> $obj {
+                  $symbol = $obj[0].Int;
+              }
+	  }
+	  note "draw-line: $table $featuretype $symbol" if $debug >= 12;
+	  
+	  next unless $symbol.defined && $symbol > 0;
+	  ++$object-count;
+	  if %funnylines{$symbol}.defined {
+              %funnylines{$symbol}($shape);
+	  } else {
+              put-line($shape, "line$symbol", $featurewidth);
+	  }
+      }
+  } else {
+      note "Table $table not found";
+  }
+}
+
+sub draw-closed-lines(Str $table, Str $columns, Str $geomcol, Str $widthcol) {
+  note "$table polygons..." if $debug >= 1;
+
+  my @columns     = $columns.split: ':';
+  my $selectcolumns = @columns.join: ', ';
+  my $numfeatcols = +@columns;
+  if $widthcol {
+    $selectcolumns    ~= ',' if $selectcolumns;
+    $selectcolumns    ~= $widthcol;
+  }
+  $selectcolumns ~= ', ' if $selectcolumns;
+  $selectcolumns ~= "st_astext($geomcol) as shape";
+  
+  my $featurewidth = 0;
+
+  my $results = $pg.query("SELECT $selectcolumns
+                          FROM $table
+                          WHERE $geomcol && $rect
+                         ");
+  
+  if $results {
+      note "{$results.rows} objects from $table" if $debug >= 1;
+      for $results.arrays -> $object {
+          my $symbol;
+	  my $shape = $object.pop;
+          my $featurewidth = 0;
+	  $featurewidth = $object.pop if $widthcol;
+	  my $featuretype = $object.join: ':';
+	  
+          note "featuretype : '$featuretype'" if $debug ≥ 16;
+	  %linefeaturetypes{$table}{$featuretype}++;
+          note "Getting symbol: $table, $featuretype, line" if $debug > 15;
+          if $featuretype {
+	      for $sth-symb.execute($table, $featuretype, 'line').arrays -> $obj {
+                  $symbol = $obj[0].Int;
+              }
+          } else {
+              my $sth = $pg.db.prepare('SELECT symbol
+                         FROM symbols
+                        WHERE dbtable = $1
+                          AND type = $2
+                       ');
+	      for $sth.execute($table, 'line').arrays -> $obj {
+                  $symbol = $obj[0].Int;
+              }
 	  }
 	  note "draw-line: $table $featuretype $symbol" if $debug >= 12;
 	  
@@ -954,6 +1032,20 @@ sub draw-polygon-outline-names(Str $table, Str $column, Real $size, Real $thickn
   } else {
       note "Table $table not found";
   }
+}
+
+sub draw-all-properties($table, $geomcol) {
+    note "all property lines..." if $debug >= 1;
+    my $sth = $pg.db.prepare("SELECT st_astext($geomcol) AS shape
+                                FROM $table 
+                                WHERE $geomcol && $rect
+                             ");
+    
+    for $sth.execute().arrays -> $object {
+        my $shape = $object[0];
+        ++$object-count;
+        put-line($shape, 'line927', 0);
+    }
 }
 
 sub draw-properties() {
@@ -1475,6 +1567,106 @@ sub draw-text(Str $table, Str $textcolumn, Str $geomcol, Str $widthcols) {
   }
 }
 
+#`[
+  sub draw-text -- draw text from a generic table
+    $table      -- database table
+    $textcolumn -- the column which contains the text to be printed
+    $geomcol    -- the column which specifies where the text should go (subject to an offset)
+    $widthcols  -- the column(s) which will be used to determine font, pointsize etc.
+]
+
+sub draw-general-text(Str $table, Str $featurecolumn, Str $geomcol, Str $textcolumn, Str $widthcols) {
+  note "$table text..." if $debug >= 1;
+
+  my ($orientationcol, $justificationcol, $heightcol, $widthcol) = $widthcols.split: ':';
+  my $selectcolumns = $textcolumn;
+  $selectcolumns ~= ', ' ~ $featurecolumn    if $featurecolumn;
+  $selectcolumns ~= ', ' ~ $orientationcol   if $orientationcol;
+  $selectcolumns ~= ', ' ~ $justificationcol if $justificationcol;
+  $selectcolumns ~= ', ' ~ $heightcol        if $heightcol;
+  $selectcolumns ~= ', ' ~ $widthcol         if $widthcol;
+
+  my $results;
+  my $latlong = False;
+  if $geomcol.index(':') {
+    $latlong = True;
+    my ($longcol, $latcol) = $geomcol.split(':');
+    $results = $pg.query("SELECT $selectcolumns, $longcol, $latcol
+                            FROM $table
+                            WHERE $longcol > $lllong
+                              AND $longcol < $urlong
+                              AND $latcol  > $lllat
+                              AND $latcol  < $urlat
+                             ");
+  } else {
+    my $query = "SELECT $selectcolumns, st_astext($geomcol) AS position
+                            FROM $table
+			    WHERE {$geomcol} && $rect
+			   ";
+note $query;
+    $results = $pg.query("SELECT $selectcolumns, st_astext($geomcol) AS position
+                            FROM $table
+			    WHERE {$geomcol} && $rect
+			   ");
+  }
+    
+  note "{$results.rows} objects from $table" if $debug >= 1;
+  for $results.arrays -> $object {
+    my $featuretype;
+    my $orientation = 0;
+    my $justification = 'cc';
+    my $height;
+    my $width;
+    my $text  = $object.shift;
+    $featuretype   = $object.shift if $featurecolumn;
+    $orientation   = $object.shift if $orientationcol;
+    $justification = $object.shift if $justificationcol;
+    $height        = $object.shift if $heightcol;
+    $width         = $object.shift if $widthcol;
+    note "'$text': $featuretype $orientation $justification $height $width" if $debug ≥ 16; 
+    
+    my $long;
+    my $lat;
+    if $latlong {
+      $long = +$object.shift;
+      $lat  = +$object.shift;
+    } else {
+      my $position     = $object.shift;
+      $position ~~ / \( ( \-? <[\d\.]>+) \s+ ( \-? <[\d\.]>+ ) \) /;
+      $long = +$0;
+      $lat = +$1;
+    }
+    my ($x, $y) = latlon2page +$long, +$lat;
+
+    #next unless @display-feature[$featuretype]; ### TODO
+    ++$object-count;
+    $TMP.print: "% annotation_text: '$text' - $x $y $orientation $justification\n";
+    $TMP.print: sprintf("gsave 0 0 0 1 setcmykcolor %.6g %.6g translate 0 0 moveto %.6g rotate /Arial findfont 2 scalefont setfont ($text)", $x, $y, $orientation);
+    if $justification ne 'LC' {
+        my ($left, $top) = $justification.split: '', :skip-empty;
+        if $left ne 'L' {
+            $TMP.print: " dup stringwidth pop ";
+            $TMP.print: "2 div " if $left eq 'C';
+        } else {
+            $TMP.print: ' 0 ';
+        }
+        given $top {
+            when 'C' {
+                $TMP.print: " -1.5";
+            }
+            when 'T' {
+                $TMP.print: " -3";
+            }
+            default {
+                $TMP.print: '0';
+            }
+        }
+        $TMP.print: " rmoveto ";
+    }
+    $TMP.print: "show grestore\n";
+  }
+}
+
 sub draw-spot-heights(Str $table, Str $columns, Str $geomcol, Str $elevationcol) {
     note "$table spot heights..." if $debug >= 1;
     note $columns if $debug >= 5;
@@ -1547,6 +1739,71 @@ sub draw-spot-heights(Str $table, Str $columns, Str $geomcol, Str $elevationcol)
         %dependencies<point52>++;
 	$TMP.print: sprintf "0 %.6g %.6g 0 point52\n", $x, $y;
         $TMP.print: sprintf "%.6g %.6g moveto ({$elevation.Int}) show newpath\n", $x+0.5, $y-0.5;
+    }
+}
+
+sub draw-point-text(Str $table, Str $columns, Str $geomcol, Str $textcol) {
+    note "draw-point-text" if $debug ≥ 12;
+    note "$table point text..." if $debug ≥ 1;
+    note $columns if $debug ≥ 5;
+    
+    my @columns     = $columns.split: ':';
+    my $selectcolumns = @columns.join: ', ';
+    my $numfeatcols = +@columns;
+    
+    my $featurewidth = 0;
+    my $orientation  = 0;
+    
+    my $results;
+    my $latlong = False;
+    if $geomcol.index(':') {
+        $latlong = True;
+        my ($longcol, $latcol) = $geomcol.split(':');
+        $results = $pg.query("SELECT $selectcolumns, $textcol, $longcol, $latcol
+                               FROM $table
+                              WHERE $longcol > $lllong
+                                AND $longcol < $urlong
+                                AND $latcol  > $lllat   
+                                AND $latcol  < $urlat   
+                                AND $textcol IS NOT NULL
+                             ");  
+    } else {
+        my $query = "SELECT $selectcolumns, $textcol, st_astext($geomcol) AS position
+                       FROM $table
+		      WHERE $geomcol && $rect
+                        AND $textcol IS NOT NULL
+		    ";
+        note $query if $debug >= 1;
+        $results = $pg.query($query);
+    }
+    
+    $TMP.say: "/Helvetica-Latin1 2 selectfont 0 0 0 1 setcmykcolor";
+
+      note "{$results.rows} objects from $table" if $debug >= 1;
+    for race $results.arrays -> $object {
+# $featuretype not actually used -- leave this here to get the right columns
+        my $featuretype = '';
+        for ^$numfeatcols {
+            $featuretype ~= $object.shift ~ ':';
+        }
+        $featuretype ~~ s/\:$//;
+        
+        my $text = $object.shift;
+        next unless $text;
+        
+        my $long;
+        my $lat;
+        if $latlong {
+            $long = +$object.shift;
+            $lat  = +$object.shift;
+        } else {
+            my $position     = $object.shift;
+            $position ~~ / \( ( \-? <[\d\.]>+) \s+ ( \-? <[\d\.]>+ ) <[,)]> /;
+            $long = +$0;
+            $lat = +$1;
+        }
+        my ($x, $y) = latlon2page +$0, +$1;
+        $TMP.print: sprintf "%.6g %.6g moveto ({$text}) show newpath\n", $x+0.5, $y-0.5;
     }
 }
 
@@ -2572,13 +2829,16 @@ sub draw-objects(Real $xoff, Real $yoff, Real $slope) {
         given $draw {
           when 'point'          { draw-points\              ($table, $typecolumn, $geomcol, $orientcol, $widthcol ); }
           when 'line'           { draw-lines\               ($table, $typecolumn, $geomcol,             $widthcol ); }
+          when 'closedline'     { draw-closed-lines\        ($table, $typecolumn, $geomcol,             $widthcol ); }
           when 'road'           { draw-roads\               ($table, $typecolumn, $geomcol,             $widthcol ); }
           when 'area'           { draw-areas\               ($table, $typecolumn, $geomcol,                       ); }
           when 'text'           { draw-text\                ($table, $typecolumn, $geomcol,             $widthcol ); }
           when 'contour'        { draw-contours\            ($table, $typecolumn, $geomcol,             $widthcol ); } # widthcol is contour elevation
           when 'outline'        { draw-polygon-outline-names($table, $typecolumn, 8, 0.2, '1 0 .86 0'             ); } # typecolumn is text to print
+          when 'properties'     { draw-all-properties\      ($table,              $geomcol                        ); }
           when 'property'       { draw-properties\          (                                                     ); }
           when 'spotheight'     { draw-spot-heights\        ($table, $typecolumn, $geomcol,             $widthcol ); }
+          when 'pointtext'      { draw-point-text\          ($table, $typecolumn, $geomcol,             $widthcol ); }
           when 'roadpoint'      { draw-roadpoints\          (                                                     ); }
           when 'treeden'        { draw-treeden\             ($table                                               ); }
           when 'graticule'      { draw-graticule\           (                                                     ); }
@@ -2591,6 +2851,7 @@ sub draw-objects(Real $xoff, Real $yoff, Real $slope) {
           when 'ga_road'        { draw-ga-roads\            (                                                     ); }
           when 'osm_road'       { draw-osmroads\            (                                                     ); }
           when 'ga_point'       { draw-ga-points\           ($table,                                              ); }
+          when 'generaltext'    { draw-general-text\        ($table, $typecolumn, $geomcol, $orientcol, $widthcol ); }
           default               { note "Unknown draw type $draw for feature $feature: object ignored"; }
         }
         } else {
