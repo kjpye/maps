@@ -450,8 +450,8 @@ sub add-point(Real $x, Real $y) {
 sub add-points(@points is copy) {
     my ($a, $b) = latlon2page(+@points.shift, +@points.shift);
     $TMP.printf("%.6g %.6g moveto\n", $a, $b);
-    my @page = do hyper for @points -> $a, $b {latlon2page(+$a, +$b)};
-#   my @page = do       for @points -> $a, $b {latlon2page(+$a, +$b)};
+#   my @page = do hyper for @points -> $a, $b {latlon2page(+$a, +$b)};
+    my @page = do       for @points -> $a, $b {latlon2page(+$a, +$b)};
     for @page -> $point { $TMP.printf("%.6g %.6g lineto\n", $point[0], $point[1]) }
 }
 
@@ -497,9 +497,19 @@ sub get-symbol (Str $type, Str $ftype) is cached {
     note "Found $sym" if $debug >= 10;
   }
   if !$symbol {
-    note "Unknown $type symbol $ftype";
+    one-message "Unknown $type symbol $ftype";
   }
 $symbol;
+}
+
+sub get-symb($table, $featuretype, $type) is cached {
+    note "Looking up $type symbol for \"$featuretype\" in $table" if $debug ≥ 1;
+    my $symbol = 0;
+    for $sth-symb.execute($table, $featuretype, $type).arrays -> $obj {
+	$symbol = $obj[0].Int;
+    }
+    one-message "No symbol found for table {$table} feature {$featuretype}(area)" if $symbol <= 0 && $debug >= 1;
+    $symbol;
 }
 
 my ($lllong, $lllat, $urlong, $urlat);
@@ -530,12 +540,9 @@ sub draw-areas(Str $table, Str $columns, Str $geomcol) {
 	  if $featuretype ~~ /^\d+$/ {
 	      $symbol = $featuretype;
 	  } else {
-	      for $sth-symb.execute($table, $featuretype, 'area').arrays -> $obj {
-		  $symbol = $obj[0].Int;
-	      }
+              $symbol = get-symb($table, $featuretype, 'area');
 	  }
 	  
-          one-message "No symbol found for table {$table} feature {$featuretype}(area)" if $symbol <= 0 && $debug >= 1;
 	  next unless $symbol > 0;
 	  ++$object-count;
 	  put-line($shape.Str, "area$symbol", );
@@ -603,7 +610,7 @@ my $powerlinestart = 1;
 my $powerdirection = 1;
 my $tickdirection = 0;
 
-sub powerline(Real $x, Real $y, Real $angle, Real $width, Real $thick, Str $colour) {
+sub powerline(Real $x, Real $y, Real $angle is copy, Real $width, Real $thick, Str $colour) {
     if ($powerlinestart) {
 	$powerlinestart = 0;
 	$powerdirection = 1;
@@ -1387,7 +1394,9 @@ sub draw-points(Str $table, Str $columns, Str $geomcol, Str $orientcol, Str $wid
     note $query if $debug ≥ 5;
     $results = $pg.query($query);
   } else {
-    my $query = "SELECT $selectcolumns, st_astext($geomcol) AS position
+      my $query = "SELECT ";
+      $query ~= "$selectcolumns, " if $selectcolumns;
+      $query ~= "st_astext($geomcol) AS position
                    FROM $table
                   WHERE {$geomcol} && $rect
                 ";
@@ -1404,8 +1413,9 @@ sub draw-points(Str $table, Str $columns, Str $geomcol, Str $orientcol, Str $wid
           }
           $featuretype ~~ s/\:$//;
           
-          $featurewidth = $object.shift if $widthcol;
+          $featurewidth = +$object.shift if $widthcol;
           $orientation  = $object.shift if $orientcol;
+          $orientation //= 0;
           
           my $long;
           my $lat;
@@ -2377,7 +2387,7 @@ sub draw-graticule() {
         $TMP.print: ".1 setlinewidth 0 0 0 1 setcmykcolor\n";
         $TMP.print: "$x $y moveto\n";
         $lat += 1.0/60.0;
-        while ($lat <= $urlatitude + .0001) {
+        while ($lat <= $urlatitude + $graticule-spacing + .02) {
             ($x, $y) = latlon2page $long, $lat;
             $TMP.print: "$x $y lineto\n";
             $lat += 1.0/60.0;
@@ -2990,7 +3000,7 @@ sub draw-map {
       $gratwidth = $tlong - $lllongitude;
       note "Calculated graticule width as $tlong - $lllongitude ($lleasting $llnorthing $imagewidth) tlat = $tlat" if $debug ≥ 2;
     }
-    if (! $gratheight.defined) {
+    if ! $gratheight.defined {
       my ($tlat, $tlong, Nil)
 	      = |utm-to-latlon('WGS-84', $zone, $lleasting, $llnorthing+$imageheight);
       $gratheight = $tlat - $lllatitude;
