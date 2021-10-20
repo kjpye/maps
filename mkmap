@@ -1123,12 +1123,12 @@ sub draw-roads(Str $table, Str $columns, Str $geomcol, Str $widthcol) {
 	    }
 	    note "draw-road: $table $featuretype $symbol" if $debug >= 12;
 	    
-            #        $roadnames.say: "VM{$objectid} $road-name" if $roadnames;
+                    #$roadnames.say: "VM-PFI{$pfi} $road-name" if $roadnames;
 	    next unless $symbol.defined && $symbol > 0;
 	    @dual.push: $pfi if $symbol == 250;
 	    ++$object-count;
-            #        put-comment($road-name);
-            #        $symbol += 9000 if %emphasise-roads{$road-name}.defined;
+                    #put-comment($road-name);
+                    #$symbol += 9000 if %emphasise-roads{$road-name}.defined;
 	    put-line($shape, "line$symbol", $featurewidth);
         }
     }
@@ -1193,7 +1193,7 @@ sub draw-vm-roads() {
 	my $road-name    = $object[6];
 	my $shape        = $object[7];
 	
-        $roadnames.say: "VM{$objectid} $road-name" if $roadnames;
+        $roadnames.say: "VM{$objectid} $road-name" if $roadnames.defined;
         $sealed = $sealed == 1 ?? 's' !! 'u';
         my $symbol = %roadsymbols{"{$ftype-code}:{$class}:{$sealed}"} //
                      %roadsymbols{"{$ftype-code}::"}; # default
@@ -1790,7 +1790,7 @@ sub draw-point-text(Str $table, Str $columns, Str $geomcol, Str $textcol) {
     $TMP.say: "/Helvetica-Latin1 2 selectfont 0 0 0 1 setcmykcolor";
 
       note "{$results.rows} objects from $table" if $debug >= 1;
-    for race $results.arrays -> $object {
+   for race $results.arrays -> $object {
 # $featuretype not actually used -- leave this here to get the right columns
         my $featuretype = '';
         for ^$numfeatcols {
@@ -1819,15 +1819,15 @@ sub draw-point-text(Str $table, Str $columns, Str $geomcol, Str $textcol) {
 
 my @road-widths = (.9, .9, .9, .6, .6, .6, .4, .4, .4, .4, .2, .2, .2);
 
-sub draw-roadpoints() {
+sub draw-roadpoints($table, $typecolumn) {
     note "vm_tr_road_infrastructure points..." if $debug >= 1;
     my $geomcol; # = %defaults{'pointgeometry'};
     $geomcol = 'geom';
-    my $results = $pg.db.query("SELECT ftype_code, st_astext($geomcol) AS position, rotation, ufi
-                                  FROM vm_tr_road_infrastructure
+    my $results = $pg.db.query("SELECT $typecolumn, st_astext($geomcol) AS position, rotation, ufi
+                                  FROM $table
                                   WHERE $geomcol && $rect
                                ").array;
-    my $sth2 = $pg.db.prepare('SELECT ftype_code, class_code
+    my $sth2 = $pg.db.prepare('SELECT feature_type_code, class_code
                              FROM vm_tr_road
                              WHERE from_ufi = $1
                                 OR to_ufi = $2
@@ -2849,7 +2849,7 @@ sub draw-objects(Real $xoff, Real $yoff, Real $slope) {
           when 'property'       { draw-properties\          (                                                     ); }
           when 'spotheight'     { draw-spot-heights\        ($table, $typecolumn, $geomcol,             $widthcol ); }
           when 'pointtext'      { draw-point-text\          ($table, $typecolumn, $geomcol,             $widthcol ); }
-          when 'roadpoint'      { draw-roadpoints\          (                                                     ); }
+          when 'roadpoint'      { draw-roadpoints\          ($table, $typecolumn                                  ); }
           when 'treeden'        { draw-treeden\             ($table                                               ); }
           when 'graticule'      { draw-graticule\           (                                                     ); }
           when 'grid'           { draw-grid\                (                                                     ); }
