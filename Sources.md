@@ -7,6 +7,7 @@ need to unzip files where appropriate.
 ## Australia ##
 ### GeoScience Australia 1:250000 ###
 
+<<<<<<< Updated upstream
 #### Download the data ####
 1. If you want data for the whole country, the easiest way is to search
 for "geoscience australia digital topographic data". This will give you
@@ -32,20 +33,61 @@ Click on "Download the file (pGDB).
 
 If you also search for "mount young 1:250 000 topographic map" you will
 be able to download an image of the map. I generally use the PDF version.
+=======
+### Download the data ###
+1. If you want data for the whole country, the easiest way is to search
+for "geoscience australia digital topographic data".
+This will give you options for various scales.
+The 1:250000 data is best handled at the moment,
+but the others should also work.
+The 1:100000 data has certainly worked in the past.
+Selecting the 1:250000 option gives a set of download links.
+(Usually. Refresh if necessary.) Open the "esri pgdb" link.
+This will download a zip file about 1.3Gb in size.
+Unzip it, and process the files in the Vector_data directory as below.
+2. If you want data for only a small part of the country,
+you can download data for individual 1:250000 map sheets
+from data.gov.au by searching for the name of the map and
+selecting the correct map: '\<name\> 1:250000 GIS Dataset'.
+The search engine on data.gov.au has recently changed,
+and you will find the data most easily by searching for
+something like "mount young 1:250 000 gis dataset",
+including the double quotes.
+Otherwise you will need to scroll through a lot of irrelevant data
+before finding what you want.
+An index of the maps is available on data.gov.au
+as "Map Sheet / Data indexes 2012 (for 1:100 000, 1:250 000 and 1:1,000,000 scale maps)".
+Click on "Download the file (pGDB).
+
+If you also search for "mount young 1:250 000 topographic map"
+you will be able to download an image of the map.
+I generally use the PDF version.
+>>>>>>> Stashed changes
 
 #### Unpack the data and populate the database ####
 
 You can unzip the resulting file and then process the data.
 
+<<<<<<< Updated upstream
 There are various scripts in the import directory which can be used to
 process the data, which is in Microsoft's JET database format.
 The make_gis script shows one way of doing this.
+=======
+There are various scripts in the import directory which can be
+used to process the data, which is in Microsoft's JET database format.
+The make_gis script show one way of doing this.
+>>>>>>> Stashed changes
 
 ### NSW ###
 
+<<<<<<< Updated upstream
 Browse
 https://portal.spatial.nsw.gov.au/portal/apps/sites/#/home/pages/browse-data
 and work your way down to the data. Try this for example...
+=======
+You can try browsing
+https://portal.spatial.nsw.gov.au/portal/apps/sites/#/home/pages/browse-data but I haven't found a way to actually download data yet.
+>>>>>>> Stashed changes
 
 1. Click on the graphic for "NSW Data Themes".
 
@@ -94,20 +136,21 @@ Get Queensland topographic data by
    * Click on "Spatial Data". (If that option is not available, then the data is not available yet.)
    * Find the relevant product (usually the first).
    * Click on "Download dataset".
-   * Select the data format ias "Shapefile" and change "As stored" to "WGS84 Geographic 2D".
+   * Select the data format as "Shapefile" and change "As stored" to "WGS84 Geographic 2D".
    * Enter your email address
    * Accept the terms and conditions (after reading them); and
    * Click "Request download".
    * Close the pop-up window.
 
-After some time you will get an email with a link to the data, which you can download and unzip.
+After some time you will get an email with a link to the data,
+which you can download and unzip.
 
 You will need to repeat the whole exercise for each dataset you want.
 
 ### South Australia ###
 Get South Australian topographic data by
    * Going to https://data.sa.gov.au
-   * On the left hand menu, select "Department of Planning, Transport and Infrastructure" and "zip (shp)
+   * On the left hand menu, select "Department of Planning, Transport and Infrastructure" and "zip (shp)"
    * Click on the desired dataset.
    * Click on the "Explore" button next to the shp version, and select "Go to resource".
 
@@ -116,9 +159,13 @@ Save the resultant file somewhere and unzip it.
 ### Tasmania ###
 Try https://listdata.thelist.tas.gov.au/opendata.
 
-Data for each dataset is available for each municipality. Each zip file contains data as shape files, ESRΙPgdb files and Mapinfo files, so you'll be downloading three copies of everything.
+Data for each dataset is available for each municipality.
+Each zip file contains data as shape files,
+ESRΙPgdb files and Mapinfo files,
+so you'll be downloading three copies of everything.
 
-Filenames appear to be https://listdata.thelist.tas.gov.au/opendata/data/LIST_<dataset>_<municipality>.zip.
+Filenames appear to be
+https://listdata.thelist.tas.gov.au/opendata/data/LIST_<dataset>_<municipality>.zip.
 
 Municipalities are
 

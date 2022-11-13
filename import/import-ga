@@ -79,7 +79,7 @@ note "Dumping page containing $p ({$page-start.base(16)})" if $dbg;
 # read it from there, and add new entries automatically when we find
 # them!
 
-my %featuretype = ( );
+my %*featuretype = ( );
 my %state       = ( );
 my %perennial   = ( );
 my %hierarchy   = ( );
@@ -167,13 +167,13 @@ sub MAIN(
     dd %loadtable   if $dbg;
 
 # Read in the featuretype table
-      {
-	  my $result = $pg.query("SELECT name, type FROM {$dbprefix}FeatureType");
-	  for $result.hashes -> $entry {
-	      %featuretype{$entry<name>} = $entry<type>;
-	  }
-	  $pg.finish;
-      }
+#      {
+#	  my $result = $pg.query("SELECT name, type FROM {$dbprefix}FeatureType");
+#	  for $result.hashes -> $entry {
+#	      %featuretype{$entry<name>} = $entry<type>;
+#	  }
+#	  $pg.finish;
+#      }
 
 # Read in the source table
       {
@@ -188,8 +188,11 @@ sub MAIN(
     note "Opening $file" if $dbg;
     $inputfh = $file.IO.open(:bin) or fail "Could not open $file\n";
     my $file-length = $file.IO.s;
+note "File length: {$file-length}";
     
     $pages = mmap(Pointer, $file-length, 1, 1, $inputfh.native-descriptor, 0); # FIX
+note $pages;
+
     
     $c = Channel.new;
 
@@ -767,6 +770,8 @@ sub process-data-page($page, $table, $table-type, $output, @columns, $table-name
 # Runs simultaneously in multiple threads
 
 sub read-table-header($page) {
+    my %*featuretype;
+    
     note "Table definition ($page)\n" if $dbg;
     my $table = Table.new(:$page);
     %tableptr{$page} := $table; # ALSO DANGEROUS -- FIX (might not actually be necessary; we read this for each page, and it won't be used elsewhere!)
@@ -1003,7 +1008,7 @@ return unless !$name or $name ne 'Bores';
         $output = $file.IO.open(:a, out-buffer => False);
         dd $output if $dbg;
     } else {
-	note "No database connection for $name";
+	#note "No database connection for $name";
     }
     my $table-type = %tables{$name};
     dd $table-type if $dbg;
@@ -1030,7 +1035,7 @@ return unless !$name or $name ne 'Bores';
         $output.close;
         my $copycmd = "copy {$dbprefix ~ $name} ($columns) from '$file';";
 	note $copycmd;
-        $commandsfile.put: $copycmd ~ "\n";
+        $commandsfile.put: $copycmd;
 	$pg.query: $copycmd;
     }
     # $output.unlink;
@@ -1050,19 +1055,28 @@ my @row;
 
 sub get-featuretype($name, $prefix) {
     note "get-featuretype($name, $prefix)" if $dbg;
-    return %featuretype{$name} if defined %featuretype{$name};
+    return %*featuretype{$name} if defined %*featuretype{$name};
     note "new entry required" if $dbg;
     $name ~~ s:g/\'/\\'/;
-    my $result = $pg.query("INSERT INTO {$prefix}FeatureType (name)
-                                 VALUES (\$1)
-                            ON CONFLICT DO NOTHING
-                              RETURNING type
+#    my $result = $pg.query("INSERT INTO {$prefix}FeatureType (name)
+#                                 VALUES (\$1)
+#                            ON CONFLICT DO NOTHING
+#                              RETURNING type
+#                           ", $name).value;
+    $pg.query("INSERT INTO {$prefix}FeatureType (name)
+                    VALUES (\$1)
+               ON CONFLICT DO NOTHING
+              ", $name);
+    my $result = $pg.query("SELECT type
+                              FROM {$prefix}FeatureType
+                             WHERE name = \$1
                            ", $name).value;
-### FIX
+### FIX -- the following code can cause conflicts in writing to the hash from multiple threads
     dd $result if $dbg;
     my $type = $result;
-    %featuretype{$name} = $type;
+    %*featuretype{$name} = $type;
     $*ERR.say: "Added featuretype $type ($name) to database\n" if $dbg;
+    $*ERR.say: $type if $dbg;
     $type;
 }
 

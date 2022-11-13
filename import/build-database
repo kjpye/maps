@@ -23,14 +23,25 @@ my %table-names = (
   'list_transport_segments'   => 'transport_segments',
   'tasveg_30'                 => 'veg30',
   'municipality'              => 'municipality',
+# Canada
+  'building_0'          => 'building_0',
+  'contour_1'           => 'contour_1',
+  'road_segment_1'      => 'road_segment_1',
+  'shoreline_1'         => 'shoreline_1',
+  'water_linear_flow_1' => 'water_linear_flow_1',
+  'waterbody_2'         => 'waterbody_2',
+  'watercourse_1'       => 'watercourse_1',
+  'wooded_area_2'       => 'wooded_area_2',
 );
 
 my @table-names = %table-names.keys;
 
 sub MAIN($database,
-         :$create is copy = 0,  # "is copy" required for fixup below
-         :$quiet  is copy = 0,
-         :$prefix is copy = '',
+         :$create    is copy = 0,  # "is copy" required for fixup below
+         :$quiet     is copy = 0,
+         :$prefix    is copy = '',
+         :$remove    is copy = 0,
+         :$overwrite is copy = 0,
 	 :@add,
 	 :@load,
         ) {
@@ -38,6 +49,7 @@ sub MAIN($database,
   $quiet  = $quiet  ~~ Positional ?? $quiet[0]  !! $quiet;
   $create = $create ~~ Positional ?? $create[0] !! $create;
   $prefix = $prefix ~~ Positional ?? $prefix[0] !! $prefix;
+  $remove = $remove ~~ Positional ?? $remove[0] !! $remove;
 
   if $create {
     note 'Creating database' unless $quiet;
@@ -53,6 +65,15 @@ sub MAIN($database,
 
   for @add -> $table {
     given $table {
+      when 'ca' {
+        note 'Adding Canadian tables' unless $quiet;
+        my $db = run 'psql', $database, :in;
+        $db.in.say: "DELETE FROM displayorder WHERE source = 'ca';";
+        $db.in.say: "DELETE FROM symbols WHERE dbtable like 'ca_%';";
+        $db.in.say: '\COPY displayorder from displayorder.ca CSV HEADER;';
+        $db.in.say: '\COPY symbols      from symbols.ca      CSV HEADER;';
+        $db.in.close;
+      }
       when 'ga' {
         note 'Adding GA tables' unless $quiet;
         run 'psql', $database, '-f', 'schema.ga';
@@ -94,6 +115,13 @@ sub MAIN($database,
         $db.in.say: '\COPY symbols      from symbols.tas      CSV HEADER;';
         $db.in.close;
       }
+      when 'uk' {
+        note 'Adding UK tables' unless $quiet;
+        my $db = run 'psql', $database, :in;
+        $db.in.say: '\COPY displayorder from displayorder.uk CSV HEADER;';
+        $db.in.say: '\COPY symbols      from symbols.uk      CSV HEADER;';
+        $db.in.close;
+      }
       when 'vic' {
         note 'Adding Vicmap tables' unless $quiet;
         my $db = run 'psql', $database, :in;
@@ -117,30 +145,38 @@ sub MAIN($database,
   for @load {
     my ($table, $file) = .split(':');
     given $table {
+      when 'ca' {
+        note 'Loading Canadian tables' unless $quiet;
+        load-shp($database, $file, $prefix, $remove, $overwrite);
+      }
       when 'ga' {
         note 'Loading GA tables' unless $quiet;
 	load-ga($database, $file, $prefix);
       }
       when 'nsw' {
         note "Loading NSW tables from $file" unless $quiet;
-        load-shp($database, $file, $prefix);
+        load-shp($database, $file, $prefix, $remove, $overwrite);
         load-geojson($database, $file, $prefix);
       }
       when 'qld' {
         note "Loading QTopo tables from $file" unless $quiet;
-        load-shp($database, $file, $prefix);
+        load-shp($database, $file, $prefix, $remove, $overwrite);
       }
       when 'sa' {
         note 'Loading SA tables' unless $quiet;
-        load-shp($database, $file, $prefix);
+        load-shp($database, $file, $prefix, $remove, $overwrite);
       }
       when 'tas' {
         note 'Loading Tasmanian tables' unless $quiet;
-        load-shp($database, $file, $prefix);
+        load-shp($database, $file, $prefix, $remove, $overwrite);
+      }
+      when 'uk' {
+        note "Loading UK tables from $file" unless $quiet;
+        load-shp($database, $file, $prefix, $remove, $overwrite);
       }
       when 'vic' {
         note "Loading Vicmap tables from $file" unless $quiet;
-        load-shp($database, $file, $prefix);
+        load-shp($database, $file, $prefix, $remove, $overwrite);
       }
       when 'osm' {
         note 'Loading OSM tables' unless $quiet;
@@ -157,26 +193,60 @@ sub MAIN($database,
   }
 }
 
-sub load-shp($database, $path, $prefix) {
+sub load-shp($database, $path, $prefix, $remove, $overwrite = 0) {
   my $finder = Path::Finder.file.skip-vcs.ext('shp');
   for $finder.in($path) -> $file {
     my $table = $file;
     $table ~~ s/.*\///;
     $table ~~ s/\s*\.shp$//; # Yes -- some people (QTopo) have trailing spaces in the filename before the extension!
     for @table-names -> $tn {
-        $table = %table-names{$tn} if $table.starts-with: $tn;
+#        say "Checking $table for prefix $tn";
+        if $table.starts-with: $tn {
+            $table = %table-names{$tn};
+            say "Now using $table";
+        }
     }
-    note "Loading $table from $file as {$prefix}{$table}";
-    my $createoradd = check-table($database, "{$prefix}{$table}") == 1 ?? '-a' !! '-c';
-    note "shp2pgsql $createoradd -D -s 4326 $file {$prefix}{$table} | psql $database";
-    my $proc-convert = Proc::Async.new: 'shp2pgsql', $createoradd,
-                                                     '-D',
-                                                     '-s', '4326',
-						     $file,
-						     "{$prefix}{$table}";
+    my $tablename = $table;
+    $tablename = $tablename.substr($remove, *) if $remove;
+    $tablename = $prefix ~ $tablename;
+    say "Loading $table from $file as {$tablename}";
+    my $createoradd = check-table($database, "{$tablename}", $overwrite) == 1 ?? '-a' !! '-c';
+    my $columnfile = $file;
+    my $proc-convert;
+    $columnfile ~~ s/\.shp$/_column_names.txt/;
+    my $hascolumnfile = $columnfile.IO.e;
+    my $tempfile = "{$*PID}.txt";
+    if $hascolumnfile {
+      my $tfd = $tempfile.IO.open(:w);
+      for $columnfile.IO.lines() {
+        $tfd.say("$1 $0") if /^(.*) ' = ' (.*)/;
+      }
+      $tfd.close;
+      say "shp2pgsql $createoradd -D -s 4326 -m $tempfile $file {$tablename} | psql $database";
+      $proc-convert = Proc::Async.new: 'shp2pgsql', $createoradd,
+                                                       '-D',
+                                                       '-s', '4326',
+                                                        '-m', $tempfile,
+						       $file,
+						       "{$tablename}";
+    } else { # no column name mapping file
+      say "shp2pgsql $createoradd -D -s 4326 $file {$tablename} | psql $database";
+      $proc-convert = Proc::Async.new: 'shp2pgsql', $createoradd,
+                                                       '-D',
+                                                       '-s', '4326',
+						       $file,
+						       "{$tablename}";
+    }
     my $proc-load = Proc::Async.new: 'psql', $database;
     $proc-load.bind-stdin($proc-convert.stdout);
     await $proc-convert.start, $proc-load.start;
+    if $createoradd eq '-c' {
+	    note "CREATE INDEX {$tablename ~ '_index'} ON $tablename USING GIST(geom)";
+        run '/usr/bin/psql', $database, '-c', "CREATE INDEX {$tablename ~ '_index'} ON $tablename USING GIST(geom)";
+    }
+    if $hascolumnfile {
+      run '/usr/bin/rm', $tempfile;
+    }
   }
 }
 
@@ -202,14 +272,194 @@ sub load-geojson($database, $path, $prefix) {
   }
 }
 
-sub check-table($database, $table) {
+sub check-table($database, $table, $overwrite = 0) {
 say "check-database -- $table";
   my $pg = DB::Pg.new(conninfo => "dbname=$database");
-  my $table-num = $pg.query('SELECT count(*)
+  my $table-num = $pg.query("SELECT count(*)
                                FROM pg_catalog.pg_tables
-		              WHERE tablename = $1
-		            ', $table).value;
+		              WHERE schemaname = 'public'
+                                AND lower(tablename) = lower(\$1)
+		            ", $table).value;
+  say "check-database: $table-num";
+  if $table-num && $overwrite {
+      say "Dropping table $table";
+      $pg.query("DROP TABLE $table");
+      $table-num = 0;
+  }
   $pg.finish;
-say "check-database: $table-num";
   $table-num;
 }
+
+=begin pod
+=head1 NAME
+
+build-database - populate the database with map data
+
+=head1 SYNOPSIS
+
+  build-database [--create] [--quiet] [--prefix=<prefix>] [--remove=<prefix>] [--overwrite] [--add=<category> ...] [--load=<dataspec> ...] <database>
+
+=head1 PREREQUISITES
+
+This program must be run from within its directory as it references
+other files within that directory.
+
+It also assumes a working Postgresql implementation with the
+Postgis extensions, and that the user running it has the
+permissions to create databases.
+
+=head1 DESCRIPTION
+
+C<build-database> creates and populates a Postgis enabled
+Postgresql database with map data from a variety of formats.
+
+=head2 Options
+
+  build-database [--create] [--quiet] [--prefix=<prefix>] [--remove=<prefix>] [--overwrite] [--add=<category> ...] [--load=<dataspec> ...] <database>
+
+Note that while these have the syntax of, and are referred to as, options, most of them are in fact commands which are executed as encountered.
+                                                                                =head3 C<--create>
+
+Create the database. Otherwise it is assumed that the database already exists.
+It is an error to try to work on a database which does not otherwise exist.
+
+This command will created the database by running C<createdb>,
+install the Postgis extensions, and then execute
+the C<schema.base> SQL file which will create the tables
+C<displayorder> and C<symbols> which contain the data used to drive the
+C<mkmap> program.
+
+Those tables are then initialised with data from
+C<displayorder.csv> and C<symbols.base> respectively.
+Both tables will have additional information added when
+using the C<--add> command.
+
+=head3 C<--quiet>
+
+Perform work quietly. Otherwise C<build-database> is quite verbose.
+
+=head3 C<--prefix=<prefix>>
+
+When generating a table name, prefix the table name with the specified prefix.
+This is particularly useful when populating a database from multiple
+different sources, which are quite likely to have tables with similar names.
+This option is only useful when using the C<--load> command below.
+
+=head3 C<--remove=<count>>
+
+Remove C<count> characters from the beginning of the table name before prepending the prefix.
+
+=head3 C<--overwrite>
+
+Overwrite existing data in the database by deleting a table and recreating it.
+
+=head3 C<--add=<category>>
+
+Add ancillary information for a particular set (called a "category" here) of data. This includes information like which data to use from various tables, and which map symbols correspond to that data.
+See below for the known categories.
+                                                                                =head3 C<--load=<data-spec>>
+
+                                                                                Load data into the database. The data-spec argument consists of a category name (see below), followed by a colon and a file or directory specification. This is interpreted as specified below, and tables are created as necessary and populated with data from the source.
+
+=head2 Known data formats
+
+=head3 Esri shape files
+
+Esri shape files are the most tested way of getting data through this script.
+The internal C<load-shp> function will descend into a directory hierarchy,
+finding all the files with a C<.shp> extension, and copy the data from
+that file into a corresponding table, creating the table if necessary.
+
+It will also detect the presence of files specifying the names
+of the columns (the shapefile format being limited to
+10-character names) and name the columns correctly in the table.
+
+=head3 Esri Pgdb files
+
+Esri personal geodatabase files are Jet-format files (Microsoft Access format)
+which contain the geographic data. These files are interpreted by a pure
+Raku script, and loading them will be quite slow. They were written for,
+and have only been tested on, the Geoscience Australia 1:250000 series maps.
+They may work for other files.
+
+=head3 GeoJSON
+
+The routines here to import GeoJSON files were written for NSW data
+and have only been tested on that data. They are written in pure Raku
+and will be slow.
+
+=head2 Known categories
+
+=head3 ca (Canada)
+
+This works in the same way as C<vic> except that tables are
+loaded from C<displayorder.ca> and C<symbols.ca>.
+
+=head3 ga (Geoscience Australia)
+
+This category is used to load data from Geoscience Australia 1:250000 maps.
+This is a little more complicated than the other types because of the nature
+of the data — i.e. Jet database files (the Microsoft Access format).
+
+After loading some basic information into the database,
+C<--add=ga> will load a table C<def250k> from C<def250k.csv>. It then
+uses the contents of that table to create the tables used to store data.
+This involves runing the script mktables. (The C<def250k> table can
+probably be deleted after this step.)
+
+C<--load=ga:<dir>> will then find all C<.mdb> files in the specified
+directory, and run C<import-ga> to load the data into the database
+tables. Each table within a file will be loaded in parallel in an
+attempt to get some reasonable speed, but the process is still slow.
+
+Note that the import-ga script currently leaves files in a directory
+in C</tmp>. These can be safely deleted.
+
+=head3 qld (Queensland — Q-Topo)
+
+This works in the same way as C<vic> except that tables are
+loaded from C<displayorder.qld> and C<symbols.qld>.
+
+=head3 nsw (New South Wales)
+
+=head3 vic (Victoria — Vicmap)
+
+This category requires data from Vicmap, presumably downloaded from
+L<https://https://datashare.maps.vic.gov.au> and in Esri shapefile format.
+
+The C<--add=vic> command will load data from C<displayorder.vic>
+and C<symbols.vic> into the C<displayorder> and C<symbols> tables
+respectively.
+
+The C<--load=vic:<file>> command will load Esri shapefile data
+from the specified file or directory.
+
+=head3 tas (Tasmania)
+
+=head3 sa (South Australia)
+
+=head3 uk (United Kingdom)
+
+This data consistes of shape files, so the commands are similar to those for C<vic>, but the data files look something like C<.../data/NS/NS_Building.shp> where C<NS> is one of the MGRS rectangles covering the UK. f you want all the data for the UΚ in a single table, you will need the option C<--remove=3> on the C<build-database> command line.
+
+=head3 osm (OpenStreetMap)
+
+=head1 EXAMPLES
+
+=head2 Vicmap
+
+If you have a directory C</data/Vicmap> containing a hierarchy
+of Vicmap data in Esri shape file format, then the following
+command will create a new database, and populate it with all the data.
+It will take quite some time to execute.
+
+  build-database --create --prefix=vm_ --add=vic --load=vic:/data/Vicmap vicmap
+
+If you have a previously populated database of Vicmap data,
+perhaps generated by the command above, and have downloaded
+a new dataset to replace some of the existing tables,
+with the data in files under C</data/Vicmap/new>, then
+the following command will update the database.
+
+  build-database --prefix=vm_ --overwrite --load=vic:/data/Vicmap/new vicmap
+=end pod

@@ -1,148 +1,49 @@
-#!/usr/bin/raku
-
-use Text::CSV;
-use DBIish;
-
-shell 'psql -d vicmap -c "drop table publictoilets"';
-
-shell Q:to 'EOF';
-psql -d vicmap -c "
 create table publictoilets (
-  ToiletID int,
+  FacilityID int,
   URL text,
   Name text,
+  FacilityType text,
   Address1 text,
   Town text,
   State text,
-  Postcode text,
   AddressNote text,
+  Latitude float,
+  Longitude float,
+  Parking boolean,
+  ParkingAccessible boolean,
+  ParkingNote text,
+  KeyRequired boolean,
+  MLAK24 boolean,
+  MLAKAfterHours boolean,
+  PaymentRequired boolean,
+  AccessNote text,
+  AdultChange boolean,
+  ChangingPlaces boolean,
+  BYISling boolean,
+  ACShower boolean,
+  ACMLAK boolean,
+  AdultChangeNote text,
+  BabyChange boolean,
+  BabyCareRoom boolean,
+  BabyChangeNote text,
+  DumpPoint boolean,
+  DPWashout boolean,
+  DPAfterHours boolean,
+  DumpPointNote text,
+  OpeningHours text,
+  OpeningHoursNote text,
   Male boolean,
   Female boolean,
   Unisex boolean,
-  FacilityType text,
-  ToiletType text,
-  AccessLimited boolean,
-  PaymentRequired boolean,
-  KeyRequired boolean,
-  AccessNote text,
-  Parking boolean,
-  ParkingNote text,
-  AccessibleMale boolean,
-  AccessibleFemale boolean,
-  AccessibleUnisex boolean,
-  AccessibleNote text,
-  MLAK boolean,
-  ParkingAccessible boolean,
-  AccessibleParkingNote text,
-  IsOpen text,
-  OpeningHoursSchedule text,
-  OpeningHoursNote text,
-  BabyChange boolean,
-  Showers boolean,
-  DrinkingWater boolean,
+  AllGender boolean,
+  Ambulant boolean,
+  Accessible boolean,
+  LHTransfer boolean,
+  RHTransfer boolean,
+  ToiletNote text,
   SharpsDisposal boolean,
+  DrinkingWater boolean,
   SanitaryDisposal boolean,
-  IconURL text,
-  IconAltText text,
-  Notes text,
-  Status text,
-  Latitude float,
-  Longitude float
+  MensPadDisposal boolean,
+  Shower boolean
 );
-grant select, insert on publictoilets to ro;
-"
-EOF
-
-my $db = 'vicmap';
-my $passwd = 'xyz123';
-
-my $dbh = DBIish.connect("Pg", user => 'ro', password => $passwd, dbname => $db, RaiseError => 0);
-my $sth = $dbh.prepare('INSERT INTO publictoilets (
-  ToiletID,
-  URL,
-  Name,
-  Address1,
-  Town,
-  State,
-  Postcode,
-  AddressNote,
-  Male,
-  Female,
-  Unisex,
-  FacilityType,
-  ToiletType,
-  AccessLimited,
-  PaymentRequired,
-  KeyRequired,
-  AccessNote,
-  Parking,
-  ParkingNote,
-  AccessibleMale,
-  AccessibleFemale,
-  AccessibleUnisex,
-  AccessibleNote,
-  MLAK,
-  ParkingAccessible,
-  AccessibleParkingNote,
-  IsOpen,
-  OpeningHoursSchedule,
-  OpeningHoursNote,
-  BabyChange,
-  Showers,
-  DrinkingWater,
-  SharpsDisposal,
-  SanitaryDisposal,
-  IconURL,
-  IconAltText,
-  Notes,
-  Status,
-  Latitude,
-  Longitude
-) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
-
-for Text::CSV.parse-file('ToiletmapExport_141001_090000.csv', :output('hashes')) -> %line {
-  my @values = %line<
-                     ToiletID
-                     URL
-                     Name
-                     Address1
-                     Town
-                     State
-                     Postcode
-                     AddressNote
-                     Male
-                     Female
-                     Unisex
-                     FacilityType
-                     ToiletType
-                     AccessLimited
-                     PaymentRequired
-                     KeyRequired
-                     AccessNote
-                     Parking
-                     ParkingNote
-                     AccessibleMale
-                     AccessibleFemale
-                     AccessibleUnisex
-                     AccessibleNote
-                     MLAK
-                     ParkingAccessible
-                     AccessibleParkingNote
-                     IsOpen
-                     OpeningHoursSchedule
-                     OpeningHoursNote
-                     BabyChange
-                     Showers
-                     DrinkingWater
-                     SharpsDisposal
-                     SanitaryDisposal
-                     IconURL
-                     IconAltText
-                     Notes
-                     Status
-                     Latitude
-                     Longitude
-                    >;
-  $sth.execute(@values);
-}
-

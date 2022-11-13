@@ -1,4 +1,6 @@
 featuretype,symbol,type,dbtable
+"",65,line,vm_locality_polygon
+"",62,line,vm_lga_polygon
 "MARINE NATIONAL PARK - SCHEDULE 7, NATIONAL PARKS ACT:47",0,area,vm_parkres
 "MARINE SANCTUARY - SCHEDULE 8, NATIONAL PARKS ACT:48",0,area,vm_parkres
 "NATIONAL PARK - SCHEDULE 2, NATIONAL PARKS ACT:6",0,area,vm_parkres
