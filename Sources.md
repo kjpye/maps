@@ -172,31 +172,35 @@ How to populate the VicMap database.
   * Goto Search, and enter what you want in the "what" field.
   Useful things are "tr_road", tr_rail", "hy_water", "el_ground",
   "el_contour" or just "vicmap".
+  To get virtually everything, try 'tree_density', 'vicmap_address',
+  'vicmap_admin', 'vicmap_features_of_interest', 'vicmap_elevation',
+  'vicmap_hydro', 'vicmap_property', 'vicmap_transport',
+  'vicmap_vegetation' and perhaps 'vicmap_index' and 'vicmap_planning'.
+  'vicmap_reftab' will be needed as it gives the meaning of many other
+  columns in the other tables.
+  These resources include a superset of the tables mentioned above.
   * Select the databases you want.
   The useful databases (i.e. those which the scripts know how to handle)
   include tr_road, tr_road_infrastructure, tr_road_locality,
   hy_water_area_polygon, hy_water_point, hy_water_struct_area_polygon,
   hy_water_struct_line, hy_water_struct_point, hy_watercourse,
   tr_rail, tr_rail_infrastructure, el_contour.
-  * Clock on "proceed to order".
-  * Select the area you want the data for.
-  ("Whole of State" could generate rather large files,
+  * Click on "Add to Cart".
+  * When you are ready, click on "Order Configuration".
+  * Select the projection ("Geographicals on GDA2020"),
+  buffer ("4km"),
+  format ("ESRI Shape file")
+  and the area you want the data for (or choose "Select all area available").
+  ("All area available" could generate rather large files,
   but they're manageable except for things like tree_density
   which contain great detail.)
-  I usually use "Local Government Area" and wherever
-  I'm interested in at the moment.
-  (Note that the product of the number of datasets,
-  and the number of areas must be no more then 12.)
-  * Select the buffer zone (i.e. how far outside the selected area
-  you want data for),
-  the format ("ESRI shapefile"),
-  projection ("_Geographicals on GDA-2020") and delivery method
-  * Click on "Apply to All".
-  * Now click "Submit", and "Submit" again.
-  * When your order is ready,
+  Apparently choosing local government areas is no longer an option.
+  * Now click "Proceed to My Cart", and "Proceed to Your Details".
+  * Agree to the terms of use (after reading them :-); and
+  * Click "Confirm".
+  * When your order is ready, which may be many hours later,
   you will receive an email with the link to the data,
   which is valid for ten days.
-  When the servers are busy this might take up to an hour or two.
   For very large database (Tree density for the whole state for example)
   you will be given a link to an ftp site which contains the files.
   Make sure you download data in the correct format.
